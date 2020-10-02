@@ -1,0 +1,112 @@
+{SPELL-SCRIPTS}
+All these scripts are optional.
+
+Here is the sequence of events that takes place for each target when a spell is cast:
+
+1) If the spell is not cumulative and the target is already under the influence of
+	the same spell then exit.
+2) Run any "DoesSpellAttackSucceed" hooks.  If any hook returns a value starting
+	with "N" then exit.
+3) Run any 'Saving Throw' script.  Determine if a 'saving throw' succeeds.  Run
+	either the 'Saving Throw Succeeded' script or the 'Saving Throw Failed' script.
+	If the save succeeds and the save negates, then exit.  Else adjust any effects
+	appropriately.
+   (see below for more on Saving Throw Scripts)
+4) Execute the 'Spell Begin Script'.  If the script does not return "1" then exit.
+	At this point, it is guaranteed that the 'Spell End Script' will be run
+	exactly once when the spell's
+   duration expires.
+5) Apply any specified spell effects such as reducing hitpoints, increasing
+	wisdom, etc.
+6) Execute any 'InvokeSpellOnTarget' hooks.
+7) If the spell effects are not 'Permanent', then compute the duration of the
+	effects, including any adjustments by 'SpellDuration' hooks.
+8) When the duration of the spell has elapsed, remove any effects of this spell
+	that still remain on this target and run the 'Spell End Script'. For permanent
+	effects, the 'Spell End Script' will run after an infinite delay (never, for
+	practical purposes).
+
+The 'Saving Throw Script' can be used to supply a bonus that will be applied to any
+'Saving Throw Dice Roll'.
+Attacker, Target, and Spell context.
+
+The 'Saving Throw Succeeded Script' and 'Saving Throw Failed Script' can be used
+to provide an alternate message when the spell encounters the target.  The message
+should be placed in Hook Parameter[5] and is formatted the same as the standard
+message with substitutions for /c, /d, /s, and /t.
+Attacker, Target, and Spell Context.
+
+{SPELL-EFFECT-SCRIPTS}
+SSpell effects are the bread and butter of spells. They determine such varied
+things as how much to change an attrubute like Hit Points, or Armor Class, etc.
+None, one or multiple Spell Effects are allowed per level. Each Spell Effect has
+its own set of scripts: Activation and Modification.
+Activation scripts must either return a 0 (false) or 1 (true). This can determine
+if the effect should be applied. Examples of use would be to check if a particular
+race or class is present, if a quest has been started or completed, if it is day
+or night, etc.
+Modification scripts modify the spell effect in some way. Examples scripts might
+double the damage done in the spell effect if the target is a particular race or
+class (or halve the damage), may reduce an attribute set in the spell effect by
+an additoiinal amount if the criteria is met, etc.
+
+{COMBAT_EVENT}
+Use of this event allows the party to fight monsters and/or NPCs. The designer may
+set every detail for the combat from the type and number of combatants, to the
+approximate placement of the monsters, to the art and sounds used.
+You can use up to 100 total combatants, if you add more, DC will use the first 100
+and ignore the rest.
+
+{COMBAT_TREASURE}
+This event allows the designer to give the party items and/or money. The items may
+be identified (revealing full name often of a magical nature) or not at the
+designer's discretion. It is important to note that the Combat Treasure event is
+placed before the Combat event.
+
+{GUIDED_TOUR}
+The Guided Tour event is used to move the party from the start location to another
+location on the map determined by the designer.
+The tour can either be set start in the square that activated this event, or at a
+specific map coordinate - moving the party from the current square to the
+specified cell, if different.
+Each step can do one thihng, including move forward one step, turn a direction
+(relative to the current direction facing), or do nothing. At each step text can
+be displayed.
+
+{LOGIC_BLOCK}
+By using this event, the designer may accomplish any number of things including
+comparing character or party statistics to numbers, variables, or other statistics;
+perform logical tests of conditions; and running pre-determined scripts. Please
+see Appendix B of the Dunction Craft Help for an in-depth look at using this event.
+http://www.dianneandpaul.net/UAF/Help/AppendixB-LogicBlock.html
+or
+http://manikus.reonis.com/Help/AppendixB-LogicBlock.html
+
+{UTILITIES EVENT}
+This is the event used to end the game. It can also be used to manipulate quests
+and quest stages. For setting quest stages, 65000 is the number to set to complete
+the quest, 65001 is the number to set to have the quest fail. Any number higher
+than 65001, will be rounded down to 65001.
+
+{BACKGROUND_SLOTS}
+Selecting a backdrop slot is achieved by either double-clicking on the slot or by
+clicking on the backdrop slot and pressing the 'Load Slot' button.
+There are 192 backdrop slots per level and each slot may hold two backdrops (for a
+total of 384 per level), the one on the left being the primary slot, and the one on
+the right being the one displayed during a time set per each slot.
+
+{WALL_SLOTS}
+Wall slots are on the left of the editor. Select a slot and put either a wall or
+wall and overlay or wall and door. To place the wall, either double click the slot
+or select the 'Wall' button. Overlays and doors are selected by clicking on their
+respective buttons.
+Wall slots are set only for the current level, for which you have 192 slots to use.
+The kind of wall (open, blocked, etc) is determined by the button in the upper
+right hand and applies to the next wall placed.
+
+{ZONE_DATA}
+The Zone Editor controls what is shown and heard for each zone. Text entered into
+the Zone Message box will appear when the party enters the zone, each time it
+enters the zone.
+There are 16 zones available for each level.
+

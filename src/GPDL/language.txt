@@ -1,0 +1,88 @@
+All variables are strings.
+
+That bears repeating........**All** variables are strings.
+
+You are allowed to write, for example:
+
+     $IF ($EQUAL (x,1)) {y=7};
+
+    but it means  $IF ($EQUAL(x,"1")) {y="7"};
+
+---------------------------------------------------------
+You will notice that function definitions 
+require braces around the statements 
+constituting the function and that you terminate the
+definition with a 'sentinel' identifing the function.  
+You may tire of this.  But it will keep
+the braces matching.  Otherwise, you are likely to
+get to the end of the file and be missing (or have an
+extra) brace.  And this compiler is not very smart about
+pointing out where the actual error occurred.  Unlike the
+C-compiler you are familiar with, this compiler allows
+function definitions inside function definitions.  
+So we force you to make functions look like this:
+
+	$FUNC turn (direction) {
+		$IF (direction) {turnright}
+		$ELSE {turnleft};
+	} turn; // Identify function just defined
+
+Some control structures also require an 'end-sentinel'.
+    $SWITCH (n) {
+        $CASE ......
+		$CASE ......
+	} $ENDSWITCH ;
+
+	
+---------------------------------------------------------
+For starters, there are no operators.  Nothing like
+the things you are used to.  Like '==', '<', '*'.
+Everything is done with function calls: '$EQUAL',
+'$LESS', '$TIMES'.  The exception is
+'+' to concatentate two strings.  Example:
+
+       $SAY( "abc" + "xyz");
+
+But you can concatenate two constant strings by simply putting
+them next to each other.    $SAY ("abc" "xyz");
+---------------------------------------------------------
+In general, if it makes sense for a function to 
+apply to the numeric value of a string then the
+function name will start with 'n'.
+Example:
+         $EQUAL  ("3","03")  is false
+		 $nEQUAL ("3","03")  is true
+		 $EQUAL  ("3"," 3")  is false
+		 $nEQUAL ("3"," 3")  is true
+You should be a bit careful.  For example, $TIMES is perfectly 
+capable of multiplying 1000-digit numbers but it will take a while.
+$nTIMES does hardware integer multiplication.
+----------------------------------------------------------
+Truth is represented by a "1" and false is represented
+by "".  This works out well for numeric operations because
+whenever a number is needed, the empty string turns 
+into zero.  Tests for truth interpret any non-empty string as
+true and the empty string as false.
+-----------------------------------------------------------
+The $RESPOND keyword.
+
+$RESPOND is used to respond to the player's typed input.
+It must be used inside a $WHILE (or where a $CONTINUE
+makes sense).  It is like a macro.
+
+$RESPOND(pattern, text) is expanded into the following:
+
+	$IF( $GREP( pattern, $LISTENTEXT() ) { 
+		$SAY( text ); 
+		$CONTINUE;
+	};
+
+Example:
+	$WHILE (listen()) { // listen() returns false when player says "goodbye".
+        $RESPOND("\\bhi\\b|hello","Hello,there.");
+		$RESPOND("job","I clean these park benches for a living.");
+		$RESPOND("name","My name is Jason McCall Stevenson.  "
+		                "You can call me 'Sir'.");
+		$RESPOND("Howard","Howard lives in a cave.");
+	};
+-----------------------------------------------------------

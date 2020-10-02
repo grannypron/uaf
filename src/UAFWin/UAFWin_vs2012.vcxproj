@@ -1,0 +1,306 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>UAFWin</ProjectName>
+    <ProjectGuid>{DECD0186-F021-4864-A9E3-318AE98B413E}</ProjectGuid>
+    <Keyword>MFCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110_xp</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110_xp</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.60315.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <LibraryPath>C:\Development\UAF\DX8SDK\lib;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir_71A)lib</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <LibraryPath>C:\Development\UAF\DX8SDK\lib;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir_71A)lib</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/UAFWin.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>MinSpace</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\shared;..\cdx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;UAFEngine;xTASKTRACE;SIMPLE_STRUCTURE;xTRACE_TIMER_DETAILS;WINVER=0x0500;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\Release/UAFWin.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <BrowseInformation />
+      <BrowseInformationFile>.\Release/</BrowseInformationFile>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>vfw32.lib;amstrmid.lib;winmm.lib;ddraw.lib;dsound.lib;dxguid.lib;cdx.lib;bass.lib;zlibr.lib;libpngr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Release/UAFWin.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\shared;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>.\Release/UAFWin.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release/UAFWin.bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>md ..\..\UAFWin
+copy release\UAFWin.exe ..\..\UAFWin\UAFWin.exe
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Debug/UAFWin.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\shared;..\cdx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;UAFEngine;TRACE_TIMER_DETAILS;TASKTRACE;SIMPLE_STRUCTURE;WINVER=0x0500;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\Debug/UAFWin.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformationFile>.\Debug/</BrowseInformationFile>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/FIXED:NO %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>vfw32.lib;amstrmid.lib;winmm.lib;ddraw.lib;dsound.lib;dxguid.lib;cdxd.lib;bass.lib;zlibr.lib;libpngr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Debug/UAFWin.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\shared;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>LIBCMT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Debug/UAFWin.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug/UAFWin.bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>md ..\..\UAFWin
+copy debug\UAFWin.exe ..\..\UAFWin\UAFWin.exe
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Shared\ASL.cpp" />
+    <ClCompile Include="CDXBitmapFont.cpp" />
+    <ClCompile Include="..\Shared\Char.cpp" />
+    <ClCompile Include="CharStatsForm.cpp" />
+    <ClCompile Include="..\Shared\class.cpp" />
+    <ClCompile Include="Combatant.cpp" />
+    <ClCompile Include="Combatants.cpp" />
+    <ClCompile Include="..\Shared\ConfigFile.cpp" />
+    <ClCompile Include="CProcinp.cpp" />
+    <ClCompile Include="Dgngame.cpp" />
+    <ClCompile Include="Disptext.cpp" />
+    <ClCompile Include="Drawtile.cpp" />
+    <ClCompile Include="Dungeon.cpp" />
+    <ClCompile Include="..\Shared\FileParse.cpp" />
+    <ClCompile Include="FormattedText.cpp" />
+    <ClCompile Include="..\Shared\GameEvent.cpp" />
+    <ClCompile Include="Forth.cpp" />
+    <ClCompile Include="GameMenu.cpp" />
+    <ClCompile Include="..\Shared\GameRules.cpp" />
+    <ClCompile Include="Getinput.cpp" />
+    <ClCompile Include="..\Shared\GlobalData.cpp" />
+    <ClCompile Include="..\Shared\Globals.cpp" />
+    <ClCompile Include="..\Shared\GPDLcomp.cpp" />
+    <ClCompile Include="..\Shared\GPDLexec.cpp" />
+    <ClCompile Include="..\Shared\Graphics.cpp" />
+    <ClCompile Include="..\UAFWinEd\ImportWarning.cpp" />
+    <ClCompile Include="..\Shared\Items.cpp" />
+    <ClCompile Include="ItemsForm.cpp" />
+    <ClCompile Include="..\Shared\Level.cpp" />
+    <ClCompile Include="Mainfrm.cpp" />
+    <ClCompile Include="..\Shared\Money.cpp" />
+    <ClCompile Include="..\Shared\Monster.cpp" />
+    <ClCompile Include="MouseThread.cpp" />
+    <ClCompile Include="..\Shared\Movie.cpp" />
+    <ClCompile Include="ObjectScripts.cpp" />
+    <ClCompile Include="..\Shared\Party.cpp" />
+    <ClCompile Include="path.cpp" />
+    <ClCompile Include="..\Shared\PicData.cpp" />
+    <ClCompile Include="..\Shared\PicSlot.cpp" />
+    <ClCompile Include="..\Shared\Property.cpp" />
+    <ClCompile Include="..\Shared\regexp.cpp" />
+    <ClCompile Include="RestTimeForm.cpp" />
+    <ClCompile Include="RunEvent.cpp" />
+    <ClCompile Include="..\Shared\RunTimeIF.cpp" />
+    <ClCompile Include="Screen.cpp" />
+    <ClCompile Include="..\Shared\SoundMgr.cpp" />
+    <ClCompile Include="..\Shared\Specab.cpp" />
+    <ClCompile Include="..\Shared\Spell.cpp" />
+    <ClCompile Include="SpellForm.cpp" />
+    <ClCompile Include="..\Shared\Stackwalker.cpp" />
+    <ClCompile Include="..\Shared\stdafx.cpp" />
+    <ClCompile Include="..\Shared\taglist.cpp" />
+    <ClCompile Include="TextForm.cpp" />
+    <ClCompile Include="..\Shared\Timer.cpp" />
+    <ClCompile Include="..\Shared\traits.cpp" />
+    <ClCompile Include="Treas.cpp" />
+    <ClCompile Include="..\Shared\Viewport.cpp" />
+    <ClCompile Include="XBrowseForFolder.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Dungeon.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Shared\ASL.h" />
+    <ClInclude Include="..\Shared\bass.h" />
+    <ClInclude Include="CDXBitmapFont.h" />
+    <ClInclude Include="..\Shared\Char.h" />
+    <ClInclude Include="CharStatsForm.h" />
+    <ClInclude Include="..\Shared\class.h" />
+    <ClInclude Include="Combatant.h" />
+    <ClInclude Include="Combatants.h" />
+    <ClInclude Include="..\Shared\ConfigFile.h" />
+    <ClInclude Include="CProcinp.h" />
+    <ClInclude Include="..\..\..\Program Files\Microsoft Visual Studio\VC98\Include\CRTDBG.H" />
+    <ClInclude Include="Dgngame.h" />
+    <ClInclude Include="Disptext.h" />
+    <ClInclude Include="Drawtile.h" />
+    <ClInclude Include="Dungeon.h" />
+    <ClInclude Include="..\Shared\Externs.h" />
+    <ClInclude Include="..\Shared\FileParse.h" />
+    <ClInclude Include="FormattedText.h" />
+    <ClInclude Include="..\Shared\GameEvent.h" />
+    <ClInclude Include="GameMenu.h" />
+    <ClInclude Include="..\Shared\GameRules.h" />
+    <ClInclude Include="Getinput.h" />
+    <ClInclude Include="..\Shared\GlobalData.h" />
+    <ClInclude Include="..\Shared\GPDLcomp.h" />
+    <ClInclude Include="..\Shared\GPDLexec.h" />
+    <ClInclude Include="..\Shared\GPDLOpCodes.h" />
+    <ClInclude Include="..\Shared\Graphics.h" />
+    <ClInclude Include="..\UAFWinEd\ImportWarning.h" />
+    <ClInclude Include="..\Shared\Items.h" />
+    <ClInclude Include="ItemsForm.h" />
+    <ClInclude Include="..\Shared\Level.h" />
+    <ClInclude Include="Mainfrm.h" />
+    <ClInclude Include="..\Shared\Money.h" />
+    <ClInclude Include="..\Shared\Monster.h" />
+    <ClInclude Include="MouseThread.h" />
+    <ClInclude Include="ObjectScripts.h" />
+    <ClInclude Include="..\Shared\Party.h" />
+    <ClInclude Include="path.h" />
+    <ClInclude Include="..\Shared\PicData.h" />
+    <ClInclude Include="..\Shared\PicSlot.h" />
+    <ClInclude Include="..\Shared\Property.h" />
+    <ClInclude Include="..\Shared\regexp.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="RestTimeForm.h" />
+    <ClInclude Include="..\Shared\RunTimeIF.h" />
+    <ClInclude Include="Screen.h" />
+    <ClInclude Include="..\Shared\SharedQueue.h" />
+    <ClInclude Include="..\Shared\SoundMgr.h" />
+    <ClInclude Include="..\Shared\Specab.h" />
+    <ClInclude Include="..\Shared\Spell.h" />
+    <ClInclude Include="SpellForm.h" />
+    <ClInclude Include="..\Shared\Stackwalker.h" />
+    <ClInclude Include="..\Shared\stdafx.h" />
+    <ClInclude Include="..\Shared\SurfaceMgr.h" />
+    <ClInclude Include="..\Shared\Taglist.h" />
+    <ClInclude Include="TextForm.h" />
+    <ClInclude Include="..\Shared\Thread.h" />
+    <ClInclude Include="..\Shared\Timer.h" />
+    <ClInclude Include="..\Shared\traits.h" />
+    <ClInclude Include="Treas.h" />
+    <ClInclude Include="..\Shared\Version.h" />
+    <ClInclude Include="..\Shared\Viewport.h" />
+    <ClInclude Include="XBrowseForFolder.h" />
+    <ClInclude Include="..\Shared\zconf.h" />
+    <ClInclude Include="..\Shared\zlib.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\config.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cursor1.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="UAFWin.ico" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

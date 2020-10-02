@@ -1,0 +1,546 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>UAFWinEd</ProjectName>
+    <ProjectGuid>{0CCD48C3-1D34-443A-BCB3-9292E7087370}</ProjectGuid>
+    <Keyword>MFCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140_xp</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140_xp</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.60315.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <LibraryPath>C:\Development\UAF\DX8SDK\lib;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir_71A)lib</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <LibraryPath>C:\Development\UAF\DX8SDK\lib;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir_71A)lib</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Debug/UAFWinEd.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\shared;..\cdx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN32;WIN32;_DEBUG;_WINDOWS;UAFEDITOR;SIMPLE_STRUCTURE;WINVER=0x0501;_CRT_SECURE_NO_WARNINGS;NO_WARN_MBCS_MFC_DEPRECATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\Debug/UAFWinEd.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformationFile>.\Debug/</BrowseInformationFile>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/FIXED:NO %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>vfw32.lib;amstrmid.lib;winmm.lib;ddraw.lib;dsound.lib;dxguid.lib;cdxd.lib;bass.lib;zlibr.lib;libpngr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Debug/UAFWinEd.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\shared;C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.10240.0\ucrt\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>LIBCMT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Debug/UAFWinEd.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug/UAFWinEd.bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>md ..\..\UAFWinEd
+copy debug\UAFWinEd.exe ..\..\UAFWinEd\UAFWinEd.exe
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/UAFWinEd.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>MinSpace</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\shared;..\cdx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;UAFEDITOR;SIMPLE_STRUCTURE;WINVER=0x0501;_CRT_SECURE_NO_WARNINGS;NO_WARN_MBCS_MFC_DEPRECATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\Release/UAFWinEd.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <BrowseInformation />
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>vfw32.lib;amstrmid.lib;winmm.lib;ddraw.lib;dsound.lib;dxguid.lib;cdx.lib;bass.lib;zlibr.lib;libpngr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Release/UAFWinEd.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\shared;C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.10240.0\ucrt\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>.\Release/UAFWinEd.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>.\Release/UAFWinEd.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release/UAFWinEd.bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>md ..\..\UAFWinEd
+copy release\UAFWinEd.exe ..\..\UAFWinEd\UAFWinEd.exe
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AccessDlg.cpp" />
+    <ClCompile Include="Addnpc.cpp" />
+    <ClCompile Include="AddSpecialObject.cpp" />
+    <ClCompile Include="AnimationStyle.cpp" />
+    <ClCompile Include="ArrowHeaderCtrl.cpp" />
+    <ClCompile Include="AskSureDlg.cpp" />
+    <ClCompile Include="..\Shared\ASL.cpp" />
+    <ClCompile Include="AttibuteDataEdit.cpp" />
+    <ClCompile Include="AttributeSelect.cpp" />
+    <ClCompile Include="BaseDialog.cpp" />
+    <ClCompile Include="BkGndPicDlg.cpp" />
+    <ClCompile Include="Buttons.cpp" />
+    <ClCompile Include="Campevnt.cpp" />
+    <ClCompile Include="Cbattres.cpp" />
+    <ClCompile Include="..\Shared\Char.cpp" />
+    <ClCompile Include="CharacterEditor.cpp" />
+    <ClCompile Include="Chardlg.cpp" />
+    <ClCompile Include="ChooseCombatMonsters.cpp" />
+    <ClCompile Include="ChooseMonster.cpp" />
+    <ClCompile Include="ChooseNPC.cpp" />
+    <ClCompile Include="ChooseOptions.cpp" />
+    <ClCompile Include="ChooseSpeclAbDlg.cpp" />
+    <ClCompile Include="ChurchDlg.cpp" />
+    <ClCompile Include="..\Shared\class.cpp" />
+    <ClCompile Include="ClassDlg.cpp" />
+    <ClCompile Include="Colorbox.cpp" />
+    <ClCompile Include="CombatEvent.cpp" />
+    <ClCompile Include="CombatMonsterDetails.cpp" />
+    <ClCompile Include="..\Shared\ConfigFile.cpp" />
+    <ClCompile Include="CombatTreasureDlg.cpp" />
+    <ClCompile Include="CrossReferenceDlg.cpp" />
+    <ClCompile Include="Dbutils.cpp" />
+    <ClCompile Include="DesignList.cpp" />
+    <ClCompile Include="DesignStatsDlg.cpp" />
+    <ClCompile Include="DiffLvlData.cpp" />
+    <ClCompile Include="DiffLvlSettings.cpp" />
+    <ClCompile Include="DlgPicture.cpp" />
+    <ClCompile Include="EditAttributes.cpp" />
+    <ClCompile Include="EditBGSlots.cpp" />
+    <ClCompile Include="EditorOptions.cpp" />
+    <ClCompile Include="EditText.cpp" />
+    <ClCompile Include="EditWallSlots.cpp" />
+    <ClCompile Include="Encnter.cpp" />
+    <ClCompile Include="EntryPointDlg.cpp" />
+    <ClCompile Include="EventViewer.cpp" />
+    <ClCompile Include="..\Shared\FileParse.cpp" />
+    <ClCompile Include="..\Shared\GameEvent.cpp" />
+    <ClCompile Include="GameResChange.cpp" />
+    <ClCompile Include="..\Shared\GameRules.cpp" />
+    <ClCompile Include="GetMoney.cpp" />
+    <ClCompile Include="GetMoneySackData.cpp" />
+    <ClCompile Include="Givedmg.cpp" />
+    <ClCompile Include="Giveexp.cpp" />
+    <ClCompile Include="..\Shared\GlobalData.cpp" />
+    <ClCompile Include="GlobalDataDlg.cpp" />
+    <ClCompile Include="..\Shared\Globals.cpp" />
+    <ClCompile Include="GlobalSndChooser.cpp" />
+    <ClCompile Include="Globtext.cpp" />
+    <ClCompile Include="..\Shared\GPDLcomp.cpp" />
+    <ClCompile Include="..\Shared\GPDLexec.cpp" />
+    <ClCompile Include="..\Shared\Graphics.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <InlineFunctionExpansion Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AnySuitable</InlineFunctionExpansion>
+    </ClCompile>
+    <ClCompile Include="HealParty.cpp" />
+    <ClCompile Include="Help.cpp" />
+    <ClCompile Include="IconPicDlg.cpp" />
+    <ClCompile Include="IconPicPoolDlg.cpp" />
+    <ClCompile Include="ImportFRUAData.cpp" />
+    <ClCompile Include="ImportWarning.cpp" />
+    <ClCompile Include="ItemDB.cpp" />
+    <ClCompile Include="ItemDBDlg.cpp" />
+    <ClCompile Include="Itemdlg.cpp" />
+    <ClCompile Include="ItemEditor.cpp" />
+    <ClCompile Include="ItemKeyQuestDlg.cpp" />
+    <ClCompile Include="..\Shared\Items.cpp" />
+    <ClCompile Include="JournalAddEventDlg.cpp" />
+    <ClCompile Include="JournalDataDlg.cpp" />
+    <ClCompile Include="JournalEntryDlg.cpp" />
+    <ClCompile Include="..\Shared\Level.cpp" />
+    <ClCompile Include="ListSort.cpp" />
+    <ClCompile Include="LogicBlock.cpp" />
+    <ClCompile Include="MagicalItemProp.cpp" />
+    <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="Mapstyle.cpp" />
+    <ClCompile Include="..\Shared\Money.cpp" />
+    <ClCompile Include="MoneyConfigDlg.cpp" />
+    <ClCompile Include="..\Shared\Monster.cpp" />
+    <ClCompile Include="MonsterAttackDetails.cpp" />
+    <ClCompile Include="MonsterAttacksDlg.cpp" />
+    <ClCompile Include="MonsterDBDlg.cpp" />
+    <ClCompile Include="MonsterEditor.cpp" />
+    <ClCompile Include="..\Shared\Movie.cpp" />
+    <ClCompile Include="Npcsays.cpp" />
+    <ClCompile Include="..\Shared\Party.cpp" />
+    <ClCompile Include="PassTimeDlg.cpp" />
+    <ClCompile Include="Password.cpp" />
+    <ClCompile Include="..\Shared\PicData.cpp" />
+    <ClCompile Include="..\Shared\PicSlot.cpp" />
+    <ClCompile Include="PlayMovieDlg.cpp" />
+    <ClCompile Include="PreviewFileDlg.cpp" />
+    <ClCompile Include="..\Shared\Property.cpp" />
+    <ClCompile Include="QButtonOptions.cpp" />
+    <ClCompile Include="QListOptions.cpp" />
+    <ClCompile Include="QuestEventData.cpp" />
+    <ClCompile Include="QuestionYesNoData.cpp" />
+    <ClCompile Include="RandomEvent.cpp" />
+    <ClCompile Include="..\Shared\regexp.cpp" />
+    <ClCompile Include="Removnpc.cpp" />
+    <ClCompile Include="RequestFilename.cpp" />
+    <ClCompile Include="..\Shared\RunTimeIF.cpp" />
+    <ClCompile Include="ScrollPicDlg.cpp" />
+    <ClCompile Include="SearchParamDlg.cpp" />
+    <ClCompile Include="SelectFolderDialog.cpp" />
+    <ClCompile Include="SelectLevel.cpp" />
+    <ClCompile Include="SelectPicDlg.cpp" />
+    <ClCompile Include="shelllink.cpp" />
+    <ClCompile Include="Shopdlg.cpp" />
+    <ClCompile Include="SmallPicDlg.cpp" />
+    <ClCompile Include="SmallPicPoolDlg.cpp" />
+    <ClCompile Include="SmallTownEvent.cpp" />
+    <ClCompile Include="SortableListCtrl.cpp" />
+    <ClCompile Include="SoundChooser.cpp" />
+    <ClCompile Include="SoundEventDlg.cpp" />
+    <ClCompile Include="..\Shared\SoundMgr.cpp" />
+    <ClCompile Include="..\Shared\Specab.cpp" />
+    <ClCompile Include="SpecAbMsgEnter.cpp" />
+    <ClCompile Include="SpecAbMsgs.cpp" />
+    <ClCompile Include="SpecialItemDlg1.cpp" />
+    <ClCompile Include="SpecialKeyBlockage.cpp" />
+    <ClCompile Include="..\Shared\Spell.cpp" />
+    <ClCompile Include="SpellAttribute.cpp" />
+    <ClCompile Include="SpellDBDlgEx.cpp" />
+    <ClCompile Include="Spelldlg.cpp" />
+    <ClCompile Include="SpellEditor.cpp" />
+    <ClCompile Include="..\Shared\Stackwalker.cpp" />
+    <ClCompile Include="StartingEquipDlg.cpp" />
+    <ClCompile Include="..\Shared\stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\Shared\stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="StepEventDlg.cpp" />
+    <ClCompile Include="..\Shared\taglist.cpp" />
+    <ClCompile Include="TakePartyItems.cpp" />
+    <ClCompile Include="Tavdlg.cpp" />
+    <ClCompile Include="TavernTalesDlg.cpp" />
+    <ClCompile Include="TeleportDlg.cpp" />
+    <ClCompile Include="TestPartySelectDlg.cpp" />
+    <ClCompile Include="TextEvent.cpp" />
+    <ClCompile Include="..\Shared\Timer.cpp" />
+    <ClCompile Include="TitleScreenConfig.cpp" />
+    <ClCompile Include="TitleScreenData.cpp" />
+    <ClCompile Include="Tour.cpp" />
+    <ClCompile Include="Traindlg.cpp" />
+    <ClCompile Include="..\Shared\traits.cpp" />
+    <ClCompile Include="TransferEvent.cpp" />
+    <ClCompile Include="UAFWinEd.cpp" />
+    <ClCompile Include="UAFWinEdDoc.cpp" />
+    <ClCompile Include="UAFWinEdView.cpp" />
+    <ClCompile Include="UAImport.cpp" />
+    <ClCompile Include="UtilitiesEventData.cpp" />
+    <ClCompile Include="VaultEvent.cpp" />
+    <ClCompile Include="VersionDlg.cpp" />
+    <ClCompile Include="..\Shared\Viewport.cpp" />
+    <ClCompile Include="WallPicDlg.cpp" />
+    <ClCompile Include="WhoPaysDlg.cpp" />
+    <ClCompile Include="WhoTriesDlg.cpp" />
+    <ClCompile Include="XBrowseForFolder.cpp" />
+    <ClCompile Include="Zonedlg.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="UAFWinEd.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AccessDlg.h" />
+    <ClInclude Include="Addnpc.h" />
+    <ClInclude Include="AddSpecialObject.h" />
+    <ClInclude Include="AnimationStyle.h" />
+    <ClInclude Include="ArrowHeaderCtrl.h" />
+    <ClInclude Include="AskSureDlg.h" />
+    <ClInclude Include="..\Shared\ASL.h" />
+    <ClInclude Include="AttibuteDataEdit.h" />
+    <ClInclude Include="AttributeSelect.h" />
+    <ClInclude Include="BaseDialog.h" />
+    <ClInclude Include="BkGndPicDlg.h" />
+    <ClInclude Include="Buttons.h" />
+    <ClInclude Include="Campevnt.h" />
+    <ClInclude Include="Cbattres.h" />
+    <ClInclude Include="..\Shared\Char.h" />
+    <ClInclude Include="CharacterEditor.h" />
+    <ClInclude Include="Chardlg.h" />
+    <ClInclude Include="ChooseCombatMonsters.h" />
+    <ClInclude Include="ChooseMonster.h" />
+    <ClInclude Include="ChooseNPC.h" />
+    <ClInclude Include="ChooseOptions.h" />
+    <ClInclude Include="ChooseSpeclAbDlg.h" />
+    <ClInclude Include="ChurchDlg.h" />
+    <ClInclude Include="..\Shared\class.h" />
+    <ClInclude Include="ClassDlg.h" />
+    <ClInclude Include="Colorbox.h" />
+    <ClInclude Include="CombatEvent.h" />
+    <ClInclude Include="CombatMonsterDetails.h" />
+    <ClInclude Include="..\Shared\ConfigFile.h" />
+    <ClInclude Include="CombatTreasureDlg.h" />
+    <ClInclude Include="CrossReference.h" />
+    <ClInclude Include="Dbutils.h" />
+    <ClInclude Include="DesignList.h" />
+    <ClInclude Include="DesignStatsDlg.h" />
+    <ClInclude Include="DiffLvlData.h" />
+    <ClInclude Include="DiffLvlSettings.h" />
+    <ClInclude Include="..\UAFWin\Disptext.h" />
+    <ClInclude Include="DlgPicture.h" />
+    <ClInclude Include="EditAttributes.h" />
+    <ClInclude Include="EditBGSlots.h" />
+    <ClInclude Include="EditorOptions.h" />
+    <ClInclude Include="EditText.h" />
+    <ClInclude Include="EditWallSlots.h" />
+    <ClInclude Include="EdWindows.h" />
+    <ClInclude Include="Encnter.h" />
+    <ClInclude Include="EntryPointDlg.h" />
+    <ClInclude Include="EventViewer.h" />
+    <ClInclude Include="..\Shared\Externs.h" />
+    <ClInclude Include="..\Shared\FileParse.h" />
+    <ClInclude Include="..\UAFWin\FormattedText.h" />
+    <ClInclude Include="..\Shared\GameEvent.h" />
+    <ClInclude Include="GameResChange.h" />
+    <ClInclude Include="..\Shared\GameRules.h" />
+    <ClInclude Include="GetMoney.h" />
+    <ClInclude Include="GetMoneySackData.h" />
+    <ClInclude Include="Givedmg.h" />
+    <ClInclude Include="Giveexp.h" />
+    <ClInclude Include="..\Shared\GlobalData.h" />
+    <ClInclude Include="GlobalDataDlg.h" />
+    <ClInclude Include="GlobalSndChooser.h" />
+    <ClInclude Include="Globtext.h" />
+    <ClInclude Include="..\Shared\GPDLcomp.h" />
+    <ClInclude Include="..\Shared\GPDLexec.h" />
+    <ClInclude Include="..\Shared\GPDLOpCodes.h" />
+    <ClInclude Include="..\Shared\Graphics.h" />
+    <ClInclude Include="HealParty.h" />
+    <ClInclude Include="Help.h" />
+    <ClInclude Include="IconPicDlg.h" />
+    <ClInclude Include="IconPicPoolDlg.h" />
+    <ClInclude Include="ImportFRUAData.h" />
+    <ClInclude Include="ImportWarning.h" />
+    <ClInclude Include="ItemDB.h" />
+    <ClInclude Include="ItemDBDlg.h" />
+    <ClInclude Include="Itemdlg.h" />
+    <ClInclude Include="ItemEditor.h" />
+    <ClInclude Include="ItemKeyQuestDlg.h" />
+    <ClInclude Include="..\Shared\Items.h" />
+    <ClInclude Include="JournalAddEventDlg.h" />
+    <ClInclude Include="JournalDataDlg.h" />
+    <ClInclude Include="JournalEntryDlg.h" />
+    <ClInclude Include="..\Shared\Level.h" />
+    <ClInclude Include="ListSort.h" />
+    <ClInclude Include="LogicBlock.h" />
+    <ClInclude Include="magicalitemprop.h" />
+    <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="Mapstyle.h" />
+    <ClInclude Include="..\Shared\Money.h" />
+    <ClInclude Include="MoneyConfigDlg.h" />
+    <ClInclude Include="..\Shared\Monster.h" />
+    <ClInclude Include="MonsterAttackDetails.h" />
+    <ClInclude Include="MonsterAttacksDlg.h" />
+    <ClInclude Include="MonsterDBDlg.h" />
+    <ClInclude Include="MonsterEditor.h" />
+    <ClInclude Include="..\Shared\Movie.h" />
+    <ClInclude Include="Npcsays.h" />
+    <ClInclude Include="..\Shared\Party.h" />
+    <ClInclude Include="PassTimeDlg.h" />
+    <ClInclude Include="Password.h" />
+    <ClInclude Include="..\Shared\PicData.h" />
+    <ClInclude Include="..\Shared\PicSlot.h" />
+    <ClInclude Include="PlayMovieDlg.h" />
+    <ClInclude Include="PreviewFileDlg.h" />
+    <ClInclude Include="..\Shared\ProjectVersion.h" />
+    <ClInclude Include="..\Shared\Property.h" />
+    <ClInclude Include="QButtonOptions.h" />
+    <ClInclude Include="QListOptions.h" />
+    <ClInclude Include="QuestEventData.h" />
+    <ClInclude Include="QuestionYesNoData.h" />
+    <ClInclude Include="RandomEvent.h" />
+    <ClInclude Include="..\Shared\regexp.h" />
+    <ClInclude Include="Removnpc.h" />
+    <ClInclude Include="RequestFilename.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="..\Shared\RunTimeIF.h" />
+    <ClInclude Include="ScrollPicDlg.h" />
+    <ClInclude Include="SearchParamDlg.h" />
+    <ClInclude Include="SelectFolderDialog.h" />
+    <ClInclude Include="SelectLevel.h" />
+    <ClInclude Include="SelectPicDlg.h" />
+    <ClInclude Include="..\Shared\SharedQueue.h" />
+    <ClInclude Include="shelllink.h" />
+    <ClInclude Include="Shopdlg.h" />
+    <ClInclude Include="SmallPicDlg.h" />
+    <ClInclude Include="SmallPicPoolDlg.h" />
+    <ClInclude Include="SmallTownEvent.h" />
+    <ClInclude Include="SortableListCtrl.h" />
+    <ClInclude Include="SoundChooser.h" />
+    <ClInclude Include="SoundEventDlg.h" />
+    <ClInclude Include="..\Shared\SoundMgr.h" />
+    <ClInclude Include="..\Shared\Specab.h" />
+    <ClInclude Include="SpecAbMsgEnter.h" />
+    <ClInclude Include="SpecAbMsgs.h" />
+    <ClInclude Include="SpecialItemDlg1.h" />
+    <ClInclude Include="SpecialKeyBlockage.h" />
+    <ClInclude Include="..\Shared\Spell.h" />
+    <ClInclude Include="SpellAttribute.h" />
+    <ClInclude Include="SpellDBDlgEx.h" />
+    <ClInclude Include="Spelldlg.h" />
+    <ClInclude Include="SpellEditor.h" />
+    <ClInclude Include="SpellSpecialChoose.h" />
+    <ClInclude Include="SpellSpecialConfig.h" />
+    <ClInclude Include="..\Shared\Stackwalker.h" />
+    <ClInclude Include="StartingEquipDlg.h" />
+    <ClInclude Include="..\Shared\stdafx.h" />
+    <ClInclude Include="StepEventDlg.h" />
+    <ClInclude Include="..\Shared\SurfaceMgr.h" />
+    <ClInclude Include="TakePartyItems.h" />
+    <ClInclude Include="Tavdlg.h" />
+    <ClInclude Include="TavernTalesDlg.h" />
+    <ClInclude Include="TeleportDlg.h" />
+    <ClInclude Include="TestPartySelectDlg.h" />
+    <ClInclude Include="TextEvent.h" />
+    <ClInclude Include="..\Shared\Thread.h" />
+    <ClInclude Include="..\Shared\Timer.h" />
+    <ClInclude Include="TitleScreenConfig.h" />
+    <ClInclude Include="TitleScreenData.h" />
+    <ClInclude Include="Tour.h" />
+    <ClInclude Include="Traindlg.h" />
+    <ClInclude Include="..\Shared\traits.h" />
+    <ClInclude Include="TransferEvent.h" />
+    <ClInclude Include="UAFWinEd.h" />
+    <ClInclude Include="UAFWinEdDoc.h" />
+    <ClInclude Include="UAFWinEdView.h" />
+    <ClInclude Include="UAImport.h" />
+    <ClInclude Include="UtilitiesEventData.h" />
+    <ClInclude Include="VaultEvent.h" />
+    <ClInclude Include="VersionDlg.h" />
+    <ClInclude Include="..\Shared\Viewport.h" />
+    <ClInclude Include="WallPicDlg.h" />
+    <ClInclude Include="WhoPaysDlg.h" />
+    <ClInclude Include="WhoTriesDlg.h" />
+    <ClInclude Include="XBrowseForFolder.h" />
+    <ClInclude Include="Zonedlg.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\cursor1.cur" />
+    <None Include="res\UAFWinEd.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\icon1.ico" />
+    <Image Include="res\PlayArrow.ico" />
+    <Image Include="res\playstop.ico" />
+    <Image Include="res\Toolbar.bmp" />
+    <Image Include="res\UAFWinEd.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\ability.txt" />
+    <Text Include="..\..\baseclass.txt" />
+    <Text Include="..\..\classes.txt" />
+    <Text Include="..\..\config.txt" />
+    <Text Include="..\..\items.txt" />
+    <Text Include="..\..\monsters.txt" />
+    <Text Include="..\..\races.txt" />
+    <Text Include="..\..\skills.txt" />
+    <Text Include="..\..\SpellGroups.txt" />
+    <Text Include="..\..\spells.txt" />
+    <Text Include="..\..\traits.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="UAFWinEd.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

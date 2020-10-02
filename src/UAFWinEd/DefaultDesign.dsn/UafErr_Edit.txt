@@ -1,0 +1,8 @@
+Opened Error Log on Sun Sep 20 13:50:26 2009
+7b7454c8 Loading Config File = 'D:\Projects\UAF\UAF\src\UAFWinEd\DefaultDesign.dsn\Data\config.txt'
+7b7454c8 Editor Art Dir = D:\Projects\UAF\UAF\src\UAFWinEd\Release\EditorResources\
+7b7454c8 Editor Art Dir = D:\Projects\UAF\UAF\src\UAFWinEd\Release\EditorResources\
+7b7454c9 Failed to find required art file D:\Projects\UAF\UAF\src\UAFWinEd\Release\TemplateDesign.dsn\Resources\OverArt.png
+Please re-install Dungeon Craft
+7b7454c9 (MB) Installation Error: Failed to find required art file D:\Projects\UAF\UAF\src\UAFWinEd\Release\TemplateDesign.dsn\Resources\OverArt.png
+Please re-install Dungeon Craft

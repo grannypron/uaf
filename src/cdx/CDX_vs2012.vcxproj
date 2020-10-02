@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>CDX</ProjectName>
+    <ProjectGuid>{575CDC0F-15B6-4498-A77B-360FD47310AA}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110_xp</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110_xp</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.60315.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <TargetName>cdxd</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WINVER=0x0500;_CRT_SECURE_NO_WARNINGS;CDX_LOG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\Debug/CDX_vs2008.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation />
+      <BrowseInformationFile>.\Debug/</BrowseInformationFile>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnablePREfast>false</EnablePREfast>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug/CDX_vs2008.bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName)$(TargetExt) ..\Shared\$(TargetName)$(TargetExt)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WINVER=0x0500;_CRT_SECURE_NO_WARNINGS;CDX_LOG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\Release/CDX_vs2008.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>.\Release\CDX.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release/CDX_vs2008.bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>copy release\cdx.lib ..\Shared\cdx.lib</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="cdxfile.cpp" />
+    <ClCompile Include="cdximage.cpp" />
+    <ClCompile Include="cdximagebase.cpp" />
+    <ClCompile Include="cdximagebmp.cpp" />
+    <ClCompile Include="cdximagejpg.cpp" />
+    <ClCompile Include="cdximagepcx.cpp" />
+    <ClCompile Include="cdximagepng.cpp" />
+    <ClCompile Include="cdximagepsd.cpp" />
+    <ClCompile Include="cdximagetga.cpp" />
+    <ClCompile Include="cdxinput.cpp" />
+    <ClCompile Include="cdxiso.cpp" />
+    <ClCompile Include="cdxlayer.cpp" />
+    <ClCompile Include="cdxlog.cpp" />
+    <ClCompile Include="cdxmap.cpp" />
+    <ClCompile Include="cdxmapcell.cpp" />
+    <ClCompile Include="cdxmusic.cpp" />
+    <ClCompile Include="cdxmusiccd.cpp" />
+    <ClCompile Include="cdxresource.cpp" />
+    <ClCompile Include="cdxscreen.cpp" />
+    <ClCompile Include="cdxsound.cpp" />
+    <ClCompile Include="cdxsoundbuffer.cpp" />
+    <ClCompile Include="cdxsprite.cpp" />
+    <ClCompile Include="cdxspritelist.cpp" />
+    <ClCompile Include="cdxsurface.cpp" />
+    <ClCompile Include="cdxtile.cpp" />
+    <ClCompile Include="ddutils.cpp" />
+    <ClCompile Include="dxerrors.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cdx.h" />
+    <ClInclude Include="cdxclist.h" />
+    <ClInclude Include="cdxfile.h" />
+    <ClInclude Include="cdximage.h" />
+    <ClInclude Include="cdximagebase.h" />
+    <ClInclude Include="cdximagebmp.h" />
+    <ClInclude Include="cdximagejpg.h" />
+    <ClInclude Include="cdximagepcx.h" />
+    <ClInclude Include="cdximagepng.h" />
+    <ClInclude Include="cdximagepsd.h" />
+    <ClInclude Include="cdximagetga.h" />
+    <ClInclude Include="cdxinput.h" />
+    <ClInclude Include="cdxlayer.h" />
+    <ClInclude Include="cdxlink.h" />
+    <ClInclude Include="cdxlog.h" />
+    <ClInclude Include="cdxmap.h" />
+    <ClInclude Include="cdxmidi.h" />
+    <ClInclude Include="cdxmusic.h" />
+    <ClInclude Include="cdxresource.h" />
+    <ClInclude Include="cdxscreen.h" />
+    <ClInclude Include="cdxsound.h" />
+    <ClInclude Include="cdxsprite.h" />
+    <ClInclude Include="cdxstructs.h" />
+    <ClInclude Include="cdxsurface.h" />
+    <ClInclude Include="cdxtile.h" />
+    <ClInclude Include="cdxtypes.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

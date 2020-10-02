@@ -1,0 +1,82 @@
+-------
+$BREAK:          
+	A control statement.  Exits from the currently
+        active loop structure ($WHILE) or switch
+        structure ($SWITCH).
+-------
+$DEBUG(int n)
+    Returns old debug level so you can restore it if you like.
+	Set debug level (bits may be combined as in 3 = 2 + 1)
+	This stays in effect until the game is exited.  It is
+	not saved as part of the save-file.
+		0   debug off
+		1   MessageBox when errors occur
+		2   User function trace in Interp.LOG
+			A single logfile is created and used for the
+			duration of gameplay.  So you can turn debug
+			off and on and the log file will contain all
+			of the pieces.
+
+-------
+$GETVAR(name)
+    Returns empty string if variable has never been set with $SETVAR.
+
+-------
+$GREP(pattern,string);
+	GREP patterns are compiled and run rather efficiently
+	so long as you don't use too may '*'s and back-references.
+    $GREP returns true ("1") if match or false ("") if no match.
+	$GREP has side-effects.  In particular, you can reference
+	the matched sub-strings using $GREPMATCH(n);
+
+
+		The most important syntax:
+		 .     any character
+		 ^     character in column 0
+		 *     repeat previous match zero or more times
+		 +     repeat previous match one or more times
+		 ?     previous character 0 or 1 times
+		 [a-g] any character from 'a' to 'g'
+		 ()    grouping sub-strings
+		 /3    reference substring 3
+		 |     alternation  (logical 'or')
+		 /b    the division between a word-character and a non-word-character.
+               Example:   "\\bhi\\b"
+                                would match "xx hi xx"
+                                but not     "xx high xx"
+
+-------
+$NOT(val)
+    Logical not.
+    If val=="" then "1" else "".
+-------
+$RANDOM (int n);
+	Returns number between zero and n-1.
+    $RANDOM(34) might return "0", "23", or "33".
+
+-------
+$SETVAR(name.value)
+    Return value is old value.
+    Variable is created at runtime.  Initial value is "".
+    For example,   $SETVAR ("Age", $PLUS($GETVAL("Age"),1));
+
+-------
+$SWITCH (expression) { case statements } $ENDSWITCH ;
+	Allows you to select among many alternatives.  The
+	$DEFAULT need not be present but should appear
+	after all other $CASEes.  If you omit a $BREAK then
+	code will flow into the code for the following $CASE.
+	Example:
+
+		$SWITCH ( characterClass ) {
+			$CASE "fighter"  : fight(); $BREAK;
+			$CASE "boozer"   : drink(); $BREAK;
+			$GCASE "swimmer" : drown(); $BREAK; // good- or bad- swimmer
+			$CASE "woman"    :
+			$CASE "girl"     : blush(); // Note fallthrough!!!
+			$DEFAULT         : pay();   $BREAK;
+		} $ENDSWITCH;
+
+	You can use $GCASE in place of the $CASE to do grep-like
+	testing instead of equality testing.
+

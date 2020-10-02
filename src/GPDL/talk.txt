@@ -1,0 +1,467 @@
+
+$FUNC error ()
+{
+  $IF (1)
+  {
+    $RETURN true;
+  }
+  $ELSE
+  {
+    $RETURN false;
+  };
+} error;
+
+$FUNC huh () {
+    // Return 'true' if conversation should be aborted.
+    $IF ($RANDOM(10) ==# 0) { // Provide hint for beginners!
+        $SAY ("You should ask people their name and about their jobs.  "
+              "And when "
+              "you finish talking, you must say 'Bye'.");
+    };
+    $SWITCH ($RANDOM(8)) {
+    $CASE 0: $SAY ("I'm sorry.  I didn't understand you."); $BREAK;
+    $CASE 1: $SAY ("Pardon me.  Can you say that again?");  $BREAK;
+    $CASE 2: $SAY ("Excuse me?  I must not have been listening."); $BREAK;
+    $CASE 3: $SAY ("Huh?"); $BREAK;
+    $CASE 4: $SAY ("Speak up, please.  I'm a bit hard of hearing."); $BREAK;
+    $CASE 5: $SAY ("You're mumbling.  Diction training might help."); $BREAK;
+    $CASE 6: $SAY ("That's easy for you to say."); $BREAK;
+    $CASE 7: $SAY ("Come back when your brain is working, you moron!"); $RETURN "1";
+    } $ENDSWITCH;
+} huh;
+
+
+$FUNC listen(listenersName) {
+    // Maintains control as long as the response is 
+    // a simple "hello", "goodbye", etc. sort of thing.
+    // We will also respond to "name" if you provide a non-blank
+    // listenersName.
+    // Returns false if conversation should be terminated.
+    $WHILE ($LISTEN()) {
+        $SWITCH ($LISTENTEXT()) {
+        $GCASE "name":
+            $IF ($EQUAL("",listenersName)) {
+                $RETURN "1";
+            };
+            $SAY("My name is "+listenersName + ".");
+            $CONTINUE;
+        $GCASE "hello|\\bhi\\b":  
+            $SWITCH($RANDOM(3)) {
+                $CASE 0: $SAY("Hello");     $BREAK;
+                $CASE 1: $SAY("Hi, there"); $BREAK;
+                $CASE 2: $SAY("Greetings"); $BREAK;
+            } $ENDSWITCH;
+            $CONTINUE;
+        $GCASE "goodbye|bye":$SAY("Goodbye"); $RETURN "";
+        } $ENDSWITCH;
+        $RETURN "1";
+    };
+    $RETURN "";
+} listen;
+
+$FUNC factorial(n) {
+    // Compute n!
+    $IF (n <# 2) { $RETURN 1;};  // Takes care of negative numbers, too.
+    $RETURN $TIMES(n, factorial(n -# 1));  // n * (n-1)!
+} factorial;
+
+$PUBLIC $FUNC MayorOfBritannia() {
+    $DEBUG(3);  // Forever
+    $IF ($GET_GLOBAL_ASL("WrongDigit")) {
+        $SAY("God help us.  You provided the wrong digit and "
+             "now it is only a matter of time before all is lost.  "
+             "Please go away.  I am going to spend my last hours "
+             "with my inner being and you are interfering.");
+        $RETURN;
+    };
+    $IF ($GET_GLOBAL_ASL("CorrectDigit")) {
+         $SAY ("You have done all I have asked.  I have no missions "
+               "for you at this time.  Please enjoy your stay in "
+               "our country.");
+         $RETURN;
+    };
+    $IF ($GET_PARTY_ASL("HASJEWELS")) {
+        $SAY (  "Congratulations.  The jewelry is safe and I hope "
+                "you will enjoy the reward.  You did so well that I "
+                "want you to undertake a new challange.  There is a "
+                "device (I cannot say more at this time)  that is "
+                "potentially very dangerous.  We need the correct "
+                "code to disable it.  The wrong code will cause a disaster.");
+        $SAY (  "We know the code is the first four digits of 97 "
+                "factorial and we know "
+                "that the first three digits are 961.  "
+                "If you can compute 97 factorial and tell us the fourth "
+                "digit we would be very grateful.");
+        $SAY (  "Do you know the digit?  Please don't say 'yes' unless "
+                "you are sure.");
+        $LISTEN();
+        $IF ($GREP("yes",$LISTENTEXT())) {
+             $SAY ("OK....What is the digit?");
+             $LISTEN();
+             $IF($NOT($NUMERIC($LISTENTEXT()))) {
+                 $SAY ("That is not a digit.  Come again when you "
+                       "have a digit for me.");
+                 $RETURN;
+             };
+             $IF(9 <# $LISTENTEXT()) {
+                 $SAY ("I need a single digit.  Please determine the "
+                       "proper digit and return.");
+                 $RETURN;
+             };
+             $SAY("I hope you are right");
+             $IF(9 ==# $LISTENTEXT()) {
+                 $SET_GLOBAL_ASL("CorrectDigit",1);
+                 $RETURN;
+             };
+             $SET_GLOBAL_ASL("WrongDigit",1);
+             $RETURN;
+        };
+        $SAY ( "I'm glad you are honest.  Please determine the "
+               "correct digit and return as soon as possible");
+        $RETURN;
+    };
+    $SAY ("Press the space bar to let me know you have heard.");
+    $SAY ("Use the up- and down-arrows to scroll through the text "
+          "that you are are currently reading.  When you have finished, "
+          "you can press the space bar at any time so as not to have to "
+          "listen to everything I have said over and over and over again.  "
+          "But of course you are welcome to listen if you like.");
+    $SAY ("If I am listening, I will write 'You say:' at the front of "
+          "a line.  Type your response and press 'Enter'.");
+    $LISTEN();
+    $SAY ("Great!  You seem to have gotten the idea.");
+    $SAY ("If you want to see how these conversations were created, "
+          "look in the file 'talk.txt'.  The very best feature of this "
+          "scheme is that the size of your swap file is the only "
+          "limitation.");
+    $SAY ("Now I will tell you that I am the chief clerk of the Mayor "
+          "of Britannia.  I have "
+          "been given the responsibility of finding someone willing to go "
+          "out into the world and recover the jewelry that was stolen from "
+          "the King's own daughter during her wedding ceremony.  I hereby "
+          "appoint you to the task.  Go about the country asking people "
+          "questions about their name, job, interests, etc.  I am sure "
+          "that you will succeed and I can assure you that the Mayor "
+          "will reward you "
+          "handsomely.  Good luck!");
+} MayorOfBritannia ;
+
+$PUBLIC $FUNC BarkeepOfPaws() {
+    $SAY("Greetings.  Welcome to the Jingles Pub.  What can I do for you?");
+    $WHILE (listen("")) {
+        $RESPOND ("name",   "I don't really have a name.  When people "
+                            "want me they just yell 'Heah, Stupid!'.  "
+                            "I'm expected to answer politely."
+        );
+        $RESPOND ("job",    "Right now I tend bar but in the olde "
+                            "days I did much more exciting things.  "
+                            "In fact, Simon and I used to run with a "
+                            "fellow named Blackthorn.  We did a lot "
+                            "of crazy things.  Just ask Simon about "
+                            "his days with Blackthorn."
+        );
+        $RESPOND ("Simon",  "I think Simon lives in Yew now.");
+        $RESPOND ("Blackthorn", "I have not seen Blackthorn for years.");
+        $IF(huh()) {$BREAK;};
+    };
+} BarkeepOfPaws;
+
+$PUBLIC $FUNC SimonOfYew() {
+    $SAY("Hello.  Nice to see a new face in town.");
+    $WHILE (listen("Simon")) {
+        $RESPOND("Job",         "I'm a bit of a writer.  Have you ever read "
+                                "my books?  One of them is about that "
+                                "famous fellow, Blackthorn."
+        );
+        $RESPOND("Blackthorn",  "Blackthorn?  He used to live here in "
+                                "Yew.  But that was many years ago.  "
+                                "I have no idea where he might have gone.  "
+                                "I do know that Richard was his very best "
+                                "friend.  Perhaps Richard will know "
+                                "where to find him."
+        );
+        $RESPOND("Richard",     "Richard got tired of writing games, "
+                                "became a farmer, and now lives just "
+                                "outside of Paws with his mother.  But "
+                                "he had to change his name to "
+                                "Craig to keep the Ultima fans from "
+                                "overrunning the entire county!  "
+                                "I hear from him every now and again from "
+                                "travelers that pass through here.  "
+                                "He still attracts quite a bit of "
+                                "attention.  But only a few of us know "
+                                "his real identity.  Please, keep "
+                                "this information to yourself!"
+        );
+        $IF(huh()) {$BREAK;};
+    };
+} SimonOfYew ;
+
+$PUBLIC $FUNC CraigOfPaws() {
+    $SAY("Good morning.  Nice day today.  Are you moving here permanently?  "
+         "If so, you had better let the mayor know.  You will eventually "
+         "discover why.");
+    $WHILE(listen("Craig")) {
+        $RESPOND("Job",         "I am a mathematics professor.  But "
+                                "nobody has any use for my specialty "
+                                "now that everyone has a calculator."
+        );
+        $RESPOND("calculator",  "Calculators are evil!"
+        );
+        $RESPOND("speciali?ty", "Yes.  I am afraid my training has left "
+                                "me with a rather narrow speciality."
+        );
+        $RESPOND("training",    "Training is quite necessary, don't you "
+                                "think?  But go for a broader education.  "
+                                "Mine left me a common farmer now that "
+                                "technology has put such capabilities in "
+                                "the hand of every schoolchild."
+        );
+        $RESPOND("Blackthorn",  "Don't mention that man!  Please.  "
+                                "I had a run-in with him in Vesper "
+                                "just last month.  He doesn't play fair!  "
+                                "The whole town wishes he would take "
+                                "his leave but he seems content to "
+                                "stay there and live off the money "
+                                "he extorts from the shopkeepers.  "
+                                "If you do visit him be sure to ask "
+                                "him about how his brother Ralph "
+                                "came into posession of the jewelry.  "
+                                "Make sure you let him know that you "
+                                "are aware of the connection between "
+                                "Ralph and the jewelry."
+        );
+        $RESPOND("\\bmale\\b",  "Do you mean 'mail', perhaps?"
+        );
+        $IF ($GREP("factor*",$LISTENTEXT())) {
+            $SAY (  "You are trying to butter me up, "
+                    "aren't you?  Well, it is "
+                    "working.  Give me a number between 1 and 100.");
+            $WHILE("true") {
+                $LISTEN();
+                   $IF($NUMERIC($LISTENTEXT()))  {
+                   $IF(0 <# $LISTENTEXT())  {
+                   $IF($LISTENTEXT() <# 101) {
+                     $SAY ( $LISTENTEXT()+" factorial is "+factorial($LISTENTEXT()));
+                     $BREAK;
+                   };};};
+                $SAY("I don't like that number.");
+            };
+            $CONTINUE;
+        };
+        $IF(huh()) {$BREAK;};
+    };
+} CraigOfPaws;
+
+$PUBLIC $FUNC BlackthornOfVesper() {
+    $SAY("Please be brief.  I have better things to do.");
+    $WHILE (listen("Blackthorn")) {
+        $RESPOND("job",         "I'm in sales.  I sell protection."
+        );
+        // If both "Ralph" and "jewelry" in same sentence.
+        $RESPOND ("Jewel.*Ralph|Ralph.*Jewel",
+                                "Who told you about him and the "
+                                "jewelry?   You must understand that "
+                                "Ralph couldn't help himself.  He "
+                                "found that cache of jewelry and "
+                                "it blew his mind.  He has since "
+                                "repented and is looking for "
+                                "some way to return it to the King.  "
+                                "But he cannot let the King "
+                                "know who stole it in the first place.  "
+                                "Ralph values his head!  If you "
+                                "convince Ralph that you will keep his "
+                                "name out of it, I'm sure he will "
+                                "tell you where it is.  You can "
+                                "get a few good points from the "
+                                "King by returning his daughter's prized "
+                                "jewelry.  Just say you found it while "
+                                "scuba-diving.  The King is pretty "
+                                "dumb.  When you meet Ralph use our "
+                                "boyhood password.  SUPERMAN spelled "
+                                "backwards."
+        );
+        $RESPOND("Where.*Ralph","I don't know where he is."
+        );
+        $RESPOND("Ralph",       "My brother?  Ralph?  You know "
+                                "about Ralph?  He's not such a bad "
+                                "fellow once you get to know him."
+        );
+        $RESPOND("jewelry",     "Boy!  I wish I had some jewelry.  "
+                                "I could stop prying my living out of the "
+                                "few coins I can snatch from the "
+                                "ridiculously poor people in this towne."
+        );
+        $IF(huh()) {$BREAK;};
+    };
+} BlackthornOfVesper;
+    
+    
+$PUBLIC $FUNC RalphOfYew() {
+    $SAY("Hi, there.  Can I help you?  I work cheap!");
+    $WHILE (listen("Ralph")) {
+        $RESPOND("job",         "I do odd jobs for cash.  I like to keep my "
+                                "name off the government lists.  I really "
+                                "would rather not attract attention to myself."
+        );
+        $IF ($GREP("namrepus",$LISTENTEXT())) {
+            $SAY(               "Ahh!  You have met my brother.  Well, "
+                                "I guess you must know everything.  "
+                                "And since I see none of the King's "
+                                "guards with you, I can assume that "
+                                "you have a selfish motive for helping  "
+                                "me out.  I doubt that you are "
+                                "driven by altruism.  "
+                                "Here is the jewelry and I hope it brings you "
+                                "better luck than it did me.  "
+                                "By the way, did you know that Richard "
+                                "can compute factorials?  "
+                                "If he knows you are interested you can "
+                                "be his friend for life!!!.");
+            $SET_PARTY_ASL("HASJEWELS",1); 
+            $CONTINUE;
+        };
+        $RESPOND("Richard",     "I'm not at liberty to tell you more of "
+                                                                "Richard.  I've already said too much.  "
+                                "He is sort of in hiding.  Openly hiding, "
+                                "if you know what I mean."
+        );
+        $IF(huh()) {$BREAK;};
+    };
+} RalphOfYew;
+
+$PUBLIC $FUNC diplomaFactory() {
+    $SAY ("Greetings.  A very good day to you.  May I be of "
+          "service in any way?  I see that you are playing version " 
+          + $GET_GAME_VERSION() + " of Dungeon Craft");
+    $WHILE (listen("Eric")) {
+        $RESPOND("job","I sell education.  You name the college "
+                       "and I will see to it that you graduate.  "
+                       "In minutes!  Not the years that one normally "
+                       "requires for such a well rounded education.  "
+                       "Perhaps you would like a diploma.");
+        $IF ($GREP("diploma",$LISTENTEXT())) {
+            $SAY ("Name the college.");
+            $LISTEN();
+            $IF ($GET_CHAR_ASL(0,"Diploma")) {
+            $IF ($PARTYSIZE() ># 1) {
+                $SAY ("I see you already have a diploma.  You can give "
+                      "that one to your friend and I will give you "
+                      "the new one");
+                $SET_CHAR_ASL(1,"Diploma",$GET_CHAR_ASL(0,"Diploma"));
+            }; };
+            $SET_CHAR_ASL(0,"Diploma",$LISTENTEXT());
+            $SAY ("There you go!  I will be sending a bill at the "
+                  "end of the month.  By the way, Your Charisma has"
+                  " just increased!");
+            $SET_CHAR_CHA(0, $GET_CHAR_CHA(0) +# 1);
+            $BREAK;
+        };
+        huh();
+    };
+} diplomaFactory;
+
+$PUBLIC $FUNC CloseYew() {
+    $DELETE_LEVEL_STATS_ASL($GET_GAME_CURRLEVEL(),"$Wall,8,7,S");
+    $DELETE_LEVEL_STATS_ASL($GET_GAME_CURRLEVEL(),"$Block,8,7,S");
+    $SAY ("Yew...This used to be a small town on the road to "
+          "Empath Abbey.  Look at it now!");
+} CloseYew ;
+
+
+$PUBLIC $FUNC GatesToYew() {
+    $FUNC WrongPartySize() {
+        $IF ($EQUAL($PARTYSIZE(),2)) {$RETURN;};
+        $SAY ("Sorry.  The laws of Yew allow only parties of "
+              "two to enter.");
+        $RETURN 1;
+    } WrongPartySize ;
+
+
+    $FUNC partyContainsSex(sex) {
+        $IF($EQUAL($GET_CHAR_SEX(0),sex)) {$RETURN 1;};
+        $IF($EQUAL($GET_CHAR_SEX(1),sex)) {$RETURN 1;};
+    } partyContainsSex;
+
+
+    $FUNC WrongSexes() {
+        $IF (partyContainsSex("Male")) {
+        $IF (partyContainsSex("Female")) {
+            $RETURN;
+        }; };
+        $SAY ("Sorry.  The laws of Yew require that people enter "
+              "the town as man and wife.  That's one male and "
+              "one female.");
+        $RETURN 1;
+    } WrongSexes ;
+
+    $FUNC WrongDiploma(cnum) {
+        $IF ($EQUAL($GET_CHAR_ASL(cnum,"Diploma"),"")) {
+            $SAY ("Sorry " +$GET_CHAR_NAME(cnum) +
+                  " but you seem to have graduated from "
+                  "nowhere.  The laws of Yew only allow "
+                  "college graduates to enter.");
+            $RETURN 1;
+        };
+        $IF ($NOT($GREP("Giddeon",$GET_CHAR_ASL(cnum,"Diploma")))) {
+            $SAY ("Sorry, " + $GET_CHAR_NAME(cnum) + " but I see "
+                  "that you graduated from " +
+                  $GET_CHAR_ASL(cnum,"Diploma") +
+                  ".  The laws of Yew require that only graduates "
+                  " of Giddeon be allowed to enter.");
+            $RETURN 1;
+        };
+        $RETURN; // correct diploma
+    } WrongDiploma ;
+
+    $IF (WrongPartySize()) { $RETURN; };
+    $IF (WrongSexes())     { $RETURN; };
+    $IF (WrongDiploma(0))  { $RETURN; };
+    $IF (WrongDiploma(1))  { $RETURN; };
+    $SAY ("OK.  I have opened the gate behind and to your right.");
+    $SET_LEVEL_STATS_ASL($GET_GAME_CURRLEVEL(),"$Wall,8,7,S",0);  // Remove the wall
+    $SET_LEVEL_STATS_ASL($GET_GAME_CURRLEVEL(),"$Block,8,7,S","OpenBlk"); // No block
+} GatesToYew;
+
+$PUBLIC $FUNC quest()
+{
+    $VAR qn;
+    $VAR qv;
+    $SAY("We are going to test quest variables");
+    $WHILE (1)
+    {
+        $SAY("Enter a quest name (or carriage return)");
+        qn = $LISTEN();
+        $IF ($EQUAL(qn, "")) {$BREAK;};
+        $SAY("Enter value or increment");
+        qv = $LISTEN();
+        $SAY("Result is " + $SET_QUEST(qn, qv));
+    };
+} quest;
+
+$PUBLIC $FUNC SayGender()
+{
+  $SAY("Gender for active character is " + $Gender($Myself()));
+} SayGender;
+
+$PUBLIC $FUNC SayRace()
+{
+  $SAY("Race for active character is " + $Race($Myself()));
+} SayRace;
+
+$PUBLIC $FUNC SayClass()
+{
+  $SAY("Class for active character is " + $Class($Myself()));
+} SayClass;
+
+$PUBLIC $FUNC PickClass()
+{
+    $VAR qn;
+    $WHILE (1)
+    {
+        $SAY("Enter a character name (or carriage return)");
+        qn = $LISTEN();
+        $IF ($EQUAL(qn, "")) {$BREAK;};
+        $SAY("Class is " + $Class($Name(qn)));
+    };
+} PickClass;

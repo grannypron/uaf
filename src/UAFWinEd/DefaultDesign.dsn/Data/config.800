@@ -1,0 +1,438 @@
+// Main Config File
+//
+//******************************************************
+// Current Resolution 800 x 600
+// Values are max size! ANYTHING higher will go over the frame!
+// SmallPic           264 x 316 (includes spritepic and 3D view)
+// SmallPicFrame      292 x 344
+// BigPic             772 x 366
+// WallPic            168 x 201, 72 x 87, 24 x 29, -> 264,316
+//***************************
+Install_Dir = h:\PROGRA~1\DungeonCraft
+Default_Resources = h:\PROGRA~1\DungeonCraft\DefaultArt\800
+Default_Resources2 = h:\PROGRA~1\DungeonCraft\DefaultArt
+CommonCharFolder = h:\PROGRA~1\DungeonCraft\CharSave
+Game_Exec = h:\PROGRA~1\DungeonCraft\UAFWin\UAFWin.exe
+// error log location defaults to same folder
+// as executable, use the following to change it
+//LOG_ERROR_PATH = C:\UAF\UAFErrors.txt
+HttpUpdate1 = http://uaf.sourceforge.net
+//***************************
+// Shared Config
+//***************************
+Force_SysMem = 1
+LOG_ERRORS = 1
+LOG_DATABASE_ERRORS = 40
+LOG_COMPILE_ERRORS = 40
+MAX_UNDO_ACTIONS = 20
+EDITOR_COLOR_1 = 0,0,0
+EDITOR_COLOR_2 = 0,0,255
+EDITOR_COLOR_3 = 0,255,0
+EDITOR_COLOR_4 = 255,0,0
+EDITOR_COLOR_5 = 255,255,0
+EDITOR_COLOR_6 = 255,0,255
+EDITOR_COLOR_7 = 0,255,255
+EDITOR_COLOR_8 = 192,192,192
+EDITOR_COLOR_9 = 128,128,128
+EDITOR_COLOR_10 = 128,128,255
+EDITOR_COLOR_11 = 128,255,128
+EDITOR_COLOR_12 = 255,128,128
+EDITOR_COLOR_13 = 255,128,0
+EDITOR_COLOR_14 = 0,128,255
+EDITOR_COLOR_15 = 192,192,0
+EDITOR_COLOR_16 = 255,255,255
+
+// for each zone
+DEFAULT_SUMMONED_MONSTER = Goblin
+
+// combat sounds
+DEF_CHAR_DEATH = CharDeath.wav
+DEF_CHAR_MOVE = CharMove.wav
+DEF_HIT = Hit.wav
+DEF_MISS = Miss.wav
+DEF_CAST = cast.wav
+DEF_BUMP = bump.wav
+DEF_STEP = step.wav
+DEF_INTRO = intro.wav
+DEF_DEATH = death.wav
+
+// default art files, changes only affect editor
+DEF_HORZ_BAR = bo_defhb.png
+DEF_VERT_BAR = bo_defvb.png
+DEF_FRAME = bo_deffr.png
+DEF_COMBAT_WALLS = cw_defcw.png
+DEF_COMBAT_WALLS_WILDERNESS = cww_defcww.png
+DEF_COMBAT_CURSOR = cu_defcc.png
+DEF_COMBAT_DEATH_ICON = defcdi.png
+DEF_COMBAT_DEATH = defcd.png
+DEF_CAMP = sp_defca.png
+DEF_TREASURE = sp_deftr.png
+DEF_ICONBG = defib.png
+
+//***************************
+// Game Engine Config
+//***************************
+Screen_Width  = 800
+Screen_Height = 600
+Color_Bits    = 32
+Inter_Character_Delay = 15
+
+// text colors used
+COLOR_WHITE = 255,255,255
+COLOR_BLACK = 0,0,0
+COLOR_GREEN = 0,255,0
+COLOR_RED = 255,0,0
+COLOR_YELLOW = 255,255,0
+COLOR_BLUE = 128,128,255
+COLOR_COMBAT_GREEN = 0,255,0
+COLOR_COMBAT_RED = 255,0,0
+COLOR_COMBAT_YELLOW = 255,255,0
+COLOR_COMBAT_BLUE = 64,128,255
+BACKGROUND_FILL = 0,0,0
+BACKGROUND_COMBAT_FILL = 0,0,0
+COLOR_KEYBOARD_SHORTCUT = 251,133,15
+USE_KEYBOARD_SHORTCUT = 1
+COLOR_CUSTOM_1 = 102,247,159
+
+// combat flags, they will only affect the debug build
+// of the engine
+//Monster_NoMove     = 0
+//Monster_AlwaysMiss = 1
+//Monster_AlwaysHit  = 0
+//Monster_NoCast     = 0
+//Monster_PlyrControl = 0
+//Monster_NoDeath    = 0
+//Party_AlwaysMiss   = 0
+//Party_AlwaysHit    = 0
+
+//DLD Starting x,y where text messages will be written to
+TEXTBOX = 16,464
+DEFAULT_MENU_HORZ = 16,581
+DEFAULT_MENU_VERT = 200,200
+DEFAULT_MENU_TEXTBOX = 600,400
+PARTYNAMES = 16,16,416,16
+LOCATIONTEXT = 75,420
+VERSIONTEXT = 355,379
+BIGPICSIZE = 14,14,786,380
+TEXTBOX_LINES = 6
+
+HORZ_BAR_TOP = 0,0
+HORZ_BAR_MIDDLE = 0,448
+HORZ_BAR_BOTTOM = 0,566
+VERT_BAR_LEFT = 0,14
+VERT_BAR_MIDDLE = 400,14
+VERT_BAR_RIGHT = 786,0
+VIEWPORT_FRAME = 64,64
+VIEWPORT_FRAME_SRC = 0,0,292,344
+VIEWPORT_FRAME_OFFSET = 418,-14 //in character view
+VIEWPORT_RECT = 78,78,342,394
+VERT_BAR_LONG = 0,14,14,600
+VERT_BAR_SHORT = 14,14,28,448
+//VERT_BAR_LONG_2 = 28,0,42,600
+HORZ_BAR_LONG = 0,0,800,14
+HORZ_BAR_LONG_2 = 0,14,800,28
+HORZ_BAR_LONG_3 = 0,28,800,42
+
+// Default UA-like wall rects used for 3D View
+// These are source bitmap coords
+// within the art image file. Check the BlankWall.bmp template
+// to match these labels to a wall section.
+// Specify pixel coords for left, top, right+1, bottom+1
+// These apply to walls, overlays, and doors
+//
+A_WALL_RECT = 588,219,636,536
+B_WALL_RECT = 783,219,831,536
+C_WALL_RECT = 393,219,441,420
+D_WALL_RECT = 513,219,561,420
+E_WALL_RECT = 393,219,561,420
+F_WALL_RECT = 3,219,51,420
+G_WALL_RECT = 198,219,246,420
+H_WALL_RECT = 783,3,855,90
+I_WALL_RECT = 393,3,417,90
+J_WALL_RECT = 3,3,27,32
+K_WALL_RECT = 588,3,612,90
+L_WALL_RECT = 783,3,807,90
+M_WALL_RECT = 831,3,855,90
+N_WALL_RECT = 27,219,51,420
+O_WALL_RECT = 198,219,222,420
+P_WALL_RECT = 198,3,222,32
+
+// x,y offsets added to VIEWPORT_RECT.left,VIEWPORT_RECT.top to get
+// new dest x,y within viewport frame
+A_OFF = -48,0
+B_OFF = 168,0
+C_OFF = 0,60
+D_OFF = 0,60
+E_OFF = 0,60
+F_OFF = -48,60
+G_OFF = 72,60
+H_OFF = 0,117
+I_OFF = 0,117
+J_OFF = 0,144
+K_OFF = 48,117
+L_OFF = 0,117
+M_OFF = 0,117
+N_OFF = -24,60
+O_OFF = 72,60
+P_OFF = 0,144
+
+// viewport_coords holds the coords for drawing tiles in the
+// regular viewport, which is composed of 13 viewable squares
+// no matter which direction the player is facing.  
+//
+// The viewport map is numbered as:
+//
+// 5 distant walls
+//      0  2  4  3  1
+//      5  7  9  8  6
+//        10 12 11
+//
+// 7 distant walls
+//   13 0  2  4  3  1 14
+//      5  7  9  8  6
+//        10 12 11
+//
+//  with the player standing in 12.
+//
+// These are destination offsets from the ViewportX,Y
+// for where the viewport 3D walls are drawn.
+//
+// Defaults for 5 distant walls
+VIEWPORT_COORD_0 = 0,0
+VIEWPORT_COORD_1 = 216,0
+VIEWPORT_COORD_2 = 48,0
+VIEWPORT_COORD_3 = 168,0
+VIEWPORT_COORD_4 = 96,0
+VIEWPORT_COORD_5 = 0,0
+VIEWPORT_COORD_6 = 240,0
+VIEWPORT_COORD_7 = 24,0
+VIEWPORT_COORD_8 = 168,0
+VIEWPORT_COORD_9 = 96,0
+VIEWPORT_COORD_10 = 0,0
+VIEWPORT_COORD_11 = 216,0
+VIEWPORT_COORD_12 = 48,0
+
+MAX_ALTERNATE_WALL_FORMATS = 3
+
+// format for wall type 1 - from Kevin's Tavern demo
+// uses 5 distant walls
+WIDTH_WALL_FORMAT_1 = 720
+HEIGHT_WALL_FORMAT_1 = 540
+NUM_DISTANT_WALLS_1 = 5
+A1_WALL_RECT = 3,3,51,320
+B1_WALL_RECT = 225,3,273,320
+C1_WALL_RECT = 504,3,552,320
+D1_WALL_RECT = 276,3,324,320
+E1_WALL_RECT = 54,3,222,320
+F1_WALL_RECT = 327,3,375,320
+G1_WALL_RECT = 453,3,501,320
+H1_WALL_RECT = 378,3,450,320
+I1_WALL_RECT = 582,3,606,320
+J1_WALL_RECT = 690,3,714,320
+K1_WALL_RECT = 636,3,660,320
+L1_WALL_RECT = 663,3,687,320
+M1_WALL_RECT = 555,3,579,320
+N1_WALL_RECT = 351,3,375,320
+O1_WALL_RECT = 453,3,477,320
+P1_WALL_RECT = 609,3,633,320
+A1_OFF = -48,0
+B1_OFF = 168,0
+C1_OFF = 0,0
+D1_OFF = 0,0
+E1_OFF = 0,0
+F1_OFF = -48,0
+G1_OFF = 72,0
+H1_OFF = 0,0
+I1_OFF = 0,0
+J1_OFF = 0,0
+K1_OFF = 48,0
+L1_OFF = 0,0
+M1_OFF = 0,0
+N1_OFF = -24,0
+O1_OFF = 72,0
+P1_OFF = 0,0
+// Defaults for 5 distant walls
+VIEWPORT_COORD_0_1 = 0,0
+VIEWPORT_COORD_1_1 = 216,0
+VIEWPORT_COORD_2_1 = 48,0
+VIEWPORT_COORD_3_1 = 168,0
+VIEWPORT_COORD_4_1 = 96,0
+VIEWPORT_COORD_5_1 = 0,0
+VIEWPORT_COORD_6_1 = 240,0
+VIEWPORT_COORD_7_1 = 24,0
+VIEWPORT_COORD_8_1 = 168,0
+VIEWPORT_COORD_9_1 = 96,0
+VIEWPORT_COORD_10_1 = 0,0
+VIEWPORT_COORD_11_1 = 216,0
+VIEWPORT_COORD_12_1 = 48,0
+
+// format for wall type 2 - from Kevin's New Walls
+// uses 7 distant walls
+WIDTH_WALL_FORMAT_2 = 750
+HEIGHT_WALL_FORMAT_2 = 563
+NUM_DISTANT_WALLS_2 = 7
+A2_WALL_RECT = 3,3,51,320
+B2_WALL_RECT = 225,3,273,320
+C2_WALL_RECT = 504,3,552,320
+D2_WALL_RECT = 276,3,324,320
+E2_WALL_RECT = 54,3,222,320
+F2_WALL_RECT = 327,3,375,320
+G2_WALL_RECT = 453,3,501,320
+H2_WALL_RECT = 378,3,450,320
+I2_WALL_RECT = 582,3,594,320
+J2_WALL_RECT = 690,3,702,320
+K2_WALL_RECT = 648,3,660,320
+L2_WALL_RECT = 663,3,687,320
+M2_WALL_RECT = 555,3,579,320
+//N2_WALL_RECT = 351,3,375,320
+N2_WALL_RECT = 327,3,375,320
+//O2_WALL_RECT = 453,3,477,320
+O2_WALL_RECT = 453,3,501,320
+P2_WALL_RECT = 597,3,645,320
+A2_OFF = -48,0
+B2_OFF = 168,0
+C2_OFF = 0,0
+D2_OFF = 0,0
+E2_OFF = 0,0
+F2_OFF = -48,0
+G2_OFF = 72,0
+H2_OFF = 0,0
+I2_OFF = -12,0
+J2_OFF = 0,0
+K2_OFF = 48,0
+L2_OFF = 0,0
+M2_OFF = 0,0
+N2_OFF = -24,0
+O2_OFF = 48,0
+P2_OFF = 0,0
+
+// Defaults for 7 distant walls
+VIEWPORT_COORD_0_2 = 12,0
+VIEWPORT_COORD_1_2 = 204,0
+VIEWPORT_COORD_2_2 = 60,0
+VIEWPORT_COORD_3_2 = 156,0
+VIEWPORT_COORD_4_2 = 108,0
+VIEWPORT_COORD_5_2 = 0,0
+VIEWPORT_COORD_6_2 = 240,0
+VIEWPORT_COORD_7_2 = 24,0
+VIEWPORT_COORD_8_2 = 168,0
+VIEWPORT_COORD_9_2 = 96,0
+VIEWPORT_COORD_10_2 = 0,0
+VIEWPORT_COORD_11_2 = 216,0
+VIEWPORT_COORD_12_2 = 48,0
+VIEWPORT_COORD_13_2 = 0,0
+VIEWPORT_COORD_14_2 = 252,0 
+
+//New EasyWalltex Format 800 res
+WIDTH_WALL_FORMAT_3 = 248
+HEIGHT_WALL_FORMAT_3 = 528
+NUM_DISTANT_WALLS_3 = 5
+A3_WALL_RECT = 2,2,50,320
+B3_WALL_RECT = 198,2,245,320
+C3_WALL_RECT = 78,322,126,523
+D3_WALL_RECT = 198,322,246,523
+E3_WALL_RECT = 78,322,246,523
+F3_WALL_RECT = 50,62,98,263
+N3_WALL_RECT = 74,62,98,263
+G3_WALL_RECT = 150,62,198,263
+O3_WALL_RECT = 150,62,174,263
+H3_WALL_RECT = 3,322,75,409
+L3_WALL_RECT = 3,322,27,409
+M3_WALL_RECT = 51,322,75,409
+I3_WALL_RECT = 98,120,122,206
+J3_WALL_RECT = 3,412,27,440
+K3_WALL_RECT = 126,120,150,206
+P3_WALL_RECT = 3,412,27,440
+A3_OFF = -48,0
+B3_OFF = 168,0
+C3_OFF = 0,60
+D3_OFF = 0,60
+E3_OFF = 0,60
+F3_OFF = -48,60
+G3_OFF = 72,60
+H3_OFF = 0,117
+I3_OFF = 0,117
+J3_OFF = 0,144
+K3_OFF = 48,117
+L3_OFF = 0,117
+M3_OFF = 0,117
+N3_OFF = -24,60
+O3_OFF = 72,60
+P3_OFF = 0,144
+VIEWPORT_COORD_0_3 = 0,0
+VIEWPORT_COORD_1_3 = 216,0
+VIEWPORT_COORD_2_3 = 48,0
+VIEWPORT_COORD_3_3 = 168,0
+VIEWPORT_COORD_4_3 = 96,0
+VIEWPORT_COORD_5_3 = 0,0
+VIEWPORT_COORD_6_3 = 240,0
+VIEWPORT_COORD_7_3 = 24,0
+VIEWPORT_COORD_8_3 = 168,0
+VIEWPORT_COORD_9_3 = 96,0
+VIEWPORT_COORD_10_3 = 0,0
+VIEWPORT_COORD_11_3 = 216,0
+VIEWPORT_COORD_12_3 = 48,0
+
+// Coords of viewport where 3d view
+// and small pics are displayed.
+// These are source bitmap coords
+// within the art file
+// Specify pixel coords for left, top, right+1, bottom+1
+//DLD VIEWPORT_RECT = 48,57,224,268
+VIEWPORT_RECT = 79,54,345,380
+
+// These are the coordinates used to 
+// draw the map graphics.
+// each entry is left,top,right+1,bottom+1
+
+// size of objects drawn
+HORZ_SIZE  = 0,0,4,2
+HORZOFFSET_SIZE = 0,0,6,2
+VERT_SIZE = 0,0,2,4
+VERTOFFSET_SIZE = 0,0,2,6
+MAP_OUTER_SQUARE_SIZE = 0,0,16,16
+MAP_INNER_SQUARE_SIZE = 0,0,8,8
+
+
+// For each each map square, add these offsets to the top,left 
+// of the map art getting blitted to that square
+NORTH_OFFSET_1 = 2,0
+NORTH_OFFSET_2 = 6,0
+NORTH_OFFSET_3 = 10,0
+NORTH_OFFSET_4 = 5,2
+SOUTH_OFFSET_1 = 2,14
+SOUTH_OFFSET_2 = 6,14
+SOUTH_OFFSET_3 = 10,14
+SOUTH_OFFSET_4 = 5,12
+EAST_OFFSET_1 = 14,2
+EAST_OFFSET_2 = 14,6
+EAST_OFFSET_3 = 14,10
+EAST_OFFSET_4 = 12,5
+WEST_OFFSET_1 = 0,2
+WEST_OFFSET_2 = 0,6
+WEST_OFFSET_3 = 0,10
+WEST_OFFSET_4 = 2,5
+CENTER_OFFSET = 4,4
+
+// size of arrow used on area map
+ARROW_SIZE = 0,0,8,8
+
+// Arrow source coords
+ARROW_NORTH = 0,21,8,29
+ARROW_EAST = 8,21,16,29
+ARROW_SOUTH = 8,29,16,37
+ARROW_WEST = 0,29,8,37
+
+//Added By DLD
+PARTYNAMES = 18,18,425,18
+LOCATIONTEXT = 75,395
+VERSIONTEXT = 355,379
+BIGPICSIZE = 14,16,772,436
+TextBox_Lines = 5
+
+COMBAT_MAP_HEIGHT = 50
+COMBAT_MAP_WIDTH = 50
+
+// only 2 valid values
+// 44100 or 22050
+SOUND_PLAYBACK_RATE = 22050

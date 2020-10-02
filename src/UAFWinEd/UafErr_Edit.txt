@@ -1,0 +1,8 @@
+1d768a0b 494307851 00000000000000DungeonCraft Editor version 3.45
+1d768a0c      1 0000000000000000 Editor folder = D:\projects\UAF\src\UAFWinEd\Release
+1d76ac0f   8707 0000000000000000 User chose "D:\projects\UAF\src\UAFWinEd" as design folder
+Opened Error Log on Fri Dec 22 15:29:46 2017
+1d76ac0f      0 0000000000000000 Did not find config file at: "D:\projects\UAF\src\UAFWinEd\Data\config.txt"
+1d76ac11      2 0000000000000000 Unable to locate config.txt file
+1d76ac11      0 0000000000000000 (MB) Config.txt Error: Unable to find and load config.txt file
+

@@ -1,0 +1,3 @@
+Global: D:\Projects\UAF\UAF\src\UAFWinEd\DefaultDesign.dsn\Resources\bump.wav
+Global: D:\Projects\UAF\UAF\src\UAFWinEd\DefaultDesign.dsn\Resources\step.wav
+Global: D:\Projects\UAF\UAF\src\UAFWinEd\DefaultDesign.dsn\Resources\Combat Test.dsnintro.mp3
