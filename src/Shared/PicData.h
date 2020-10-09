@@ -99,6 +99,7 @@ public:
   CString filename;
   int timeDelay;
   int NumFrames;
+  int RestartFrame;
   int FrameWidth;
   int FrameHeight;
   long key;

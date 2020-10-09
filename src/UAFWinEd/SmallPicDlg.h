@@ -42,6 +42,7 @@ public:
 	int		m_NumFrames;
 	int		m_FrameWidth;
 	int		m_FrameHeight;
+	int     m_RestartFrame;
 	//}}AFX_DATA
 
 

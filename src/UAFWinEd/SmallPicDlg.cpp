@@ -47,6 +47,7 @@ CSmallPicDlg::CSmallPicDlg(PIC_DATA& pic, CWnd* pParent /*=NULL*/)
 	m_NumFrames = 0;
 	m_FrameWidth = 0;
 	m_FrameHeight = 0;
+    m_RestartFrame = 0;
 	//}}AFX_DATA_INIT
 
   m_SmallPic = pic;
@@ -66,6 +67,7 @@ void CSmallPicDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SmallPicture2, m_SmallPicResult);
 	DDX_Text(pDX, IDC_DELAY, m_TimeDelay);
 	DDX_Text(pDX, IDC_NUMFRAMES, m_NumFrames);
+    DDX_Text(pDX, IDC_RESTARTFRAME, m_RestartFrame);
 	DDX_Text(pDX, IDC_FWIDTH, m_FrameWidth);
 	DDX_Text(pDX, IDC_FHEIGHT, m_FrameHeight);
 	//}}AFX_DATA_MAP
@@ -113,8 +115,12 @@ BOOL CSmallPicDlg::OnInitDialog()
   m_FrameHeight = m_SmallPic.FrameHeight;
   m_FrameWidth = m_SmallPic.FrameWidth;
   m_NumFrames = m_SmallPic.NumFrames;
+  m_RestartFrame = m_SmallPic.RestartFrame;
   if (m_NumFrames == 1)
-    m_TimeDelay = 0;
+  {
+      m_TimeDelay = 0;
+      m_RestartFrame = 1;
+  }
   
   UpdateData(FALSE);
 
@@ -152,7 +158,10 @@ void CSmallPicDlg::LoadFile()
   UpdateData(TRUE);
 
   if (m_NumFrames == 1)
-    m_TimeDelay = 0;
+  {
+      m_TimeDelay = 0;
+      m_RestartFrame = 1;
+  }
 
   //m_SmallPic.filename = m_CurrentFile;
   //m_SmallPic.FrameHeight = m_FrameHeight;
@@ -175,6 +184,7 @@ void CSmallPicDlg::LoadFile()
     data.FrameWidth = m_FrameWidth;
     data.NumFrames = m_NumFrames;
     data.timeDelay = m_TimeDelay;
+    data.RestartFrame = m_RestartFrame;
 
     if (m_SmallPicResult.LoadSourcePictures(data)) // can start animation
     {
@@ -208,6 +218,7 @@ void CSmallPicDlg::OnOK()
   m_SmallPic.FrameHeight = m_FrameHeight;
   m_SmallPic.FrameWidth = m_FrameWidth;
   m_SmallPic.NumFrames = m_NumFrames;
+  m_SmallPic.RestartFrame = m_RestartFrame;
   if (m_SmallPic.NumFrames<=1)
     m_SmallPic.flags &= ~PIC_DATA::AF_Loop;
 
@@ -241,7 +252,7 @@ void CSmallPicDlg::OnUpdatestats()
   UpdateData(TRUE);
 
   if (m_NumFrames < 1) m_NumFrames = 1;
-  if (m_NumFrames == 1) m_TimeDelay = 0;
+  if (m_NumFrames == 1) { m_TimeDelay = 0; m_RestartFrame = 1; }
   if ((m_TimeDelay < 30) && (m_TimeDelay != 0))
     m_TimeDelay = 2000;
   if (m_FrameWidth < 1) m_FrameWidth = 1;
@@ -351,6 +362,7 @@ void CSmallPicDlg::OnClearpic()
   UpdateData(TRUE);
 	m_SmallPic.Clear();
   m_NumFrames=1;
+  m_RestartFrame = 1;
   m_CurrentFile="";
   UpdateData(FALSE);
   OnUpdatestats();
