@@ -140,7 +140,7 @@ public:
   BOOL ValidSurface(long key);
   BOOL ChangeSurfaceType(long key, SurfaceType type);
 
-  long AddSprite(const char *filename, int width, int height, int frames, SurfaceType type);
+  long AddSprite(const char *filename, int width, int height, int frames, int restartFrame, SurfaceType type);
   BOOL ReleaseSprite(long &key);
   BOOL SetFrame(long key, int frame);
   int  GetFrame(long key);

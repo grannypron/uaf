@@ -648,7 +648,7 @@ long Graphics::AddFileSurface(const char *filename, SurfaceType type, const CStr
 // PURPOSE: 
 //
 //*****************************************************************************
-long Graphics::AddSprite(const char *filename, int width, int height, int frames, SurfaceType picType)
+long Graphics::AddSprite(const char *filename, int width, int height, int frames, int restartFrame, SurfaceType picType)
 {
   // filename only....no path
 
@@ -725,7 +725,7 @@ long Graphics::AddSprite(const char *filename, int width, int height, int frames
   if (pSurf != NULL)
   {
     success = SUCCEEDED(pSurf->Create(m_pScreen, rootName, width, height, frames, MemoryUsageFlag));      
-
+    pSurf->SetType(restartFrame);
     // for sprites, the block size is the size for 1 frame, while the non-block
     // size is for the whole source image.
     if (success)
@@ -907,8 +907,16 @@ BOOL Graphics::SetNextFrame(long key)
   if (pSurf != NULL)
   {
     int frame = pSurf->GetFrame() + 1;
-    if (frame >= GetMaxFrames(pSurf))
-      frame = 0;
+    if (frame >= GetMaxFrames(pSurf)) {
+        if (pSurf->GetType() > 0) // We use the hijacked "Type" attribute of CDX Sprite here for the restart frame attribute
+        {
+            frame = pSurf->GetType() - 1;
+        }
+        else 
+        {
+            frame = 0;
+        }
+    }
     pSurf->SetFrame(frame);
     return TRUE;
   }

@@ -106,7 +106,8 @@ void PIC_DATA::Serialize(CArchive &ar, double version, const CString& path)
 
     ar << UseAlpha;
     ar << AlphaValue;
-    
+    ar << RestartFrame;
+
   }
   else
   {
@@ -142,6 +143,11 @@ void PIC_DATA::Serialize(CArchive &ar, double version, const CString& path)
       ar >> UseAlpha;
       ar >> AlphaValue;
     }    
+
+    if (version >= _VERSION_524)
+    {
+        ar >> RestartFrame;
+    }
   }
 
   PostSerialize(ar.IsStoring(), version);
@@ -169,6 +175,7 @@ void PIC_DATA::Serialize(CAR &ar, double version, const CString& path)
     // no need to save LoopCounter
     ar << UseAlpha;
     ar << AlphaValue;    
+    ar << RestartFrame;
   }
   else
   {
@@ -201,6 +208,10 @@ void PIC_DATA::Serialize(CAR &ar, double version, const CString& path)
       ar >> UseAlpha;
       ar >> AlphaValue;
     }
+    if (version >= _VERSION_524)
+    {
+      ar >> RestartFrame;
+    }
   }
 
   PostSerialize(ar.IsStoring(), version);
@@ -221,6 +232,7 @@ const char *JKEY_STYLE = "style";
 const char *JKEY_ALLOWCENTERING = "allowCentering";
 const char *JKEY_USEALPHA = "useAlpha";
 const char *JKEY_ALPHA = "alpha";
+const char* JKEY_RESTART_FRAME = "restartFrame";
 
 void PIC_DATA::Export(JWriter& jw, const char *name)
 {
@@ -239,6 +251,7 @@ void PIC_DATA::Export(JWriter& jw, const char *name)
     // no need to save LoopCounter
   jw.NameAndBool(JKEY_USEALPHA, UseAlpha);
   jw.NameAndValue(JKEY_ALPHA, AlphaValue);    
+  jw.NameAndValue(JKEY_RESTART_FRAME, RestartFrame);
   jw.EndList();
 };
 void PIC_DATA::Import(JReader& jr, const char *name)
@@ -257,6 +270,7 @@ void PIC_DATA::Import(JReader& jr, const char *name)
     // no need to save LoopCounter
   jr.NameAndBool(JKEY_USEALPHA, UseAlpha);
   jr.NameAndValue(JKEY_ALPHA, AlphaValue);    
+  jr.NameAndValue(JKEY_RESTART_FRAME, RestartFrame);
   jr.EndList();
 };
 #endif
@@ -347,12 +361,12 @@ BOOL PIC_DATA::LoadPicSurfaces(const CString& path)
   if (path.IsEmpty())
   {
     //WriteDebugString("110 Calling AddSprite(%s)\n", filename);
-    key = GraphicsMgr.AddSprite(filename, FrameWidth, FrameHeight, NumFrames, picType);
+    key = GraphicsMgr.AddSprite(filename, FrameWidth, FrameHeight, NumFrames, RestartFrame, picType);
   }
   else
   {
     //WriteDebugString("111 Calling AddSprite(%s)\n", path + filename);
-    key = GraphicsMgr.AddSprite(filename, FrameWidth, FrameHeight, NumFrames, picType);
+    key = GraphicsMgr.AddSprite(filename, FrameWidth, FrameHeight, NumFrames, RestartFrame, picType);
   };
 
 //   if (key < 0)
@@ -552,6 +566,7 @@ void PIC_DATA::SetDefaults()
     FrameWidth = ViewportWidth;
     FrameHeight = ViewportHeight;
     NumFrames = 1;
+    RestartFrame = 1;
     SetPre0840LoopForeverDefaults();
     break;
   case IconDib:
@@ -740,6 +755,7 @@ void PIC_DATA::Clear()
    AllowCentering=TRUE;
    UseAlpha=FALSE;
    AlphaValue=0;   
+   RestartFrame=0;
 }
 
 PIC_DATA& PIC_DATA::operator =(const PIC_DATA& src) 
@@ -761,7 +777,8 @@ PIC_DATA& PIC_DATA::operator =(const PIC_DATA& src)
   LoopCounter=src.LoopCounter;
   AllowCentering=src.AllowCentering;
   UseAlpha=src.UseAlpha;
-  AlphaValue=src.AlphaValue;  
+  AlphaValue=src.AlphaValue;
+  RestartFrame=src.RestartFrame;
   return *this;
 }
 
@@ -782,7 +799,8 @@ BOOL PIC_DATA::operator ==(const PIC_DATA& src) const
   if (AllowCentering!=src.AllowCentering) return FALSE;
   if (UseAlpha!=src.UseAlpha) return FALSE;
   if (AlphaValue!=src.AlphaValue) return FALSE;
-  
+  if (RestartFrame!=src.RestartFrame) return FALSE;
+
   // ignore transient LoopCounter
   return TRUE; 
 }

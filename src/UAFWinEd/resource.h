@@ -1028,6 +1028,7 @@
 #define IDC_FWIDTH                      1615
 #define IDC_FHEIGHT                     1616
 #define IDC_NUMFRAMES                   1617
+#define IDC_RESTARTFRAME                1602
 #define IDC_VIEWALLPIC                  1618
 #define IDC_UPDATESTATS                 1619
 #define IDC_TOGGLEANIM                  1620
