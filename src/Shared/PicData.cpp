@@ -343,7 +343,7 @@ BOOL PIC_DATA::LoadPicSurfaces(const CString& path)
 
    if (picType == BigPicDib) //DLD 12/20/00
    {                         //
-     SetDefaults();          //
+     //SetDefaults();          // // Only overwrite if really empty because we now allow animation frames in BigPics
    }                         //end add
 
    //
@@ -458,7 +458,7 @@ BOOL PIC_DATA::AnimateNextFrame(LONGLONG timestamp)
   //ASSERT(picType == SmallPicDib);
 
   // combat art is animated in COMBAT_SPRITE_DATA::Update()
-  if ((picType == SmallPicDib) && (style == AS_None))
+  if ((picType == SmallPicDib || picType == BigPicDib) && (style == AS_None))
   {
     if ((timestamp - lastTime) >= (DWORD)timeDelay)
     {

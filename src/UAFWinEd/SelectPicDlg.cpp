@@ -125,7 +125,8 @@ void CSelectPicDlg::OnLoadpic()
       break;
 
    case BigPicDib:
-      LoadBigPic();
+      LoadSmallPic();
+      m_pic.picType = BigPicDib;
       break;
 
    case SpriteDib:
