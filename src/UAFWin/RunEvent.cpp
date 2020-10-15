@@ -1218,6 +1218,18 @@ void GameEvent::CheckSecretDoors(void)
   }
 }
 
+CString GameEvent::getTreasureMessage(CString defaultMessage, EVENT_CONTROL control) {
+    HOOK_PARAMETERS hookParameters;
+    CString giveTreasureMessage = "";
+    giveTreasureMessage = control.eventcontrol_asl.Lookup("TreasureMessage");
+    if (giveTreasureMessage.IsEmpty()) {
+        giveTreasureMessage = RunGlobalScript("Global_Messages", "EventGiveTreasure", true);
+    }
+    if (giveTreasureMessage.IsEmpty()) {
+        giveTreasureMessage = defaultMessage;  // Default treasure message
+    }
+    return giveTreasureMessage;
+}
 void GameEvent::UpdatePartyMovementData(void)
 {
   int inc = GetTimeInc(party.searching);
@@ -6541,7 +6553,7 @@ void GIVE_TREASURE_DATA::OnInitialEvent(void)
   menu.setMenu(GiveTreasureMenuData, NULL, FALSE, this, "GiveTreasure");
   menu.setHorzOrient();
   menu.MapKeyCodeToMenuItem(KC_ESCAPE, 5);
-  FormatDisplayText(textData,"You Have Found Treasure!");
+    FormatDisplayText(textData, getTreasureMessage("You Have Found Treasure!", control));
 
   // load treasure picture
   int zone = levelData.GetCurrZone(party.Posx,party.Posy);
@@ -19774,7 +19786,11 @@ void COMBAT_RESULTS_MENU_DATA::OnInitialEvent(void)
     if ((m_pTreasEvent->items.GetHeadPosition() != NULL) || (m_pTreasEvent->money.Total() > 0.0))
     {
       CString tmp;
-      if (party.numCharacters == 1)
+            const char* scriptName;
+            CString giveTreasureMessage = getTreasureMessage("", control);
+            if (!giveTreasureMessage.IsEmpty())
+                tmp += "\n" + giveTreasureMessage;
+            else if (party.numCharacters == 1)
         tmp += "\nYOU HAVE FOUND TREASURE!";
       else
         tmp += "\nTHE PARTY HAS FOUND TREASURE!";

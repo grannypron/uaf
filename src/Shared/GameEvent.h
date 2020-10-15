@@ -1007,7 +1007,7 @@ public:
   EventSourceType GetEventSource() const { return m_source; }
   BOOL IsAChainEvent() const { return ((x == -1) && (y == -1)); }
   BOOL IsValidEvent() const { return ((event != NoEvent) && (id > 0)); }
-
+  CString getTreasureMessage(CString defaultMessage, EVENT_CONTROL control);
 #ifdef UAFEngine  
   BOOL IsGlobalEvent() const { return (m_source==GlobalEventSrc); }
   GameEvent *EventType2EventPointer (eventType evType, unsigned int id);
