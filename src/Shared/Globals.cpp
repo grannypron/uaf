@@ -123,7 +123,7 @@ extern const double VersionSaveIDs = 0.998914;
 
 extern const double PRODUCT_VER = 5.24; //09OCt2020//2OCt2015//22July2015
 //extern const double ENGINE_VER = 1.0304;  //13October2014
-extern const double ENGINE_VER = 5.21;  //27Jan2016
+extern const double ENGINE_VER = 5.24;  //27Jan2016
 
 
 extern unsigned int gamedatSignature;
