@@ -603,7 +603,7 @@ CHARACTER.prototype.SerializeCAR = function (car, version) {
     }
     else {
         var temp;
-        temp = ar.readInt();  // Possible character version
+        temp = car.readInt();  // Possible character version
         if ((temp & UAFUtil.ByteFromHexString("0x80000000")) != 0) {
             // This is a character version, not an index.
             this.characterVersion = temp;
@@ -623,7 +623,7 @@ CHARACTER.prototype.SerializeCAR = function (car, version) {
         this.alignment = car.readInt();
 
         if (version >= _VERSION_0912_)
-            this.allowInCombat = ar.readBool();
+            this.allowInCombat = car.readBool();
 
         this.status = car.readInt();
         {
@@ -743,7 +743,7 @@ CHARACTER.prototype.SerializeCAR = function (car, version) {
             this.CanBeSaved = car.readBool();
 
         if (version >= _VERSION_0900_)
-            this.HasLayedOnHandsToday = ar.readBool();
+            this.HasLayedOnHandsToday = car.readBool();
 
         if (version < _VERSION_0661_) {
             temp = car.readInt(); this.money.Coins[itemClassType.PlatinumType] = temp;
@@ -847,13 +847,13 @@ CHARACTER.prototype.SerializeCAR = function (car, version) {
         //UpdateSpellAbility();
         // 20101217TEMP m_spellbook.SortSpells();
     }
-    this.smallPic.SerializeCAR(ar, version, RUNTIME_ENVIRONMENT.PicArtDir());
+    this.smallPic.SerializeCAR(car, version, RUNTIME_ENVIRONMENT.PicArtDir());
     if (!car.IsStoring()) {
         if (version <= _VERSION_0840_)
             this.smallPic.SetPre0840LoopForeverDefaults();
     }
     this.myItems.SerializeCAR(car, version);
-    if (ar.IsLoading() && (this.characterVersion == 0)) {
+    if (car.IsLoading() && (this.characterVersion == 0)) {
         // Old versions included armor and such in m_AC.
         // We need to subtract it out for newer versions.
         this.m_AC -= this.myItems.GetProtectModForRdyItems();
@@ -1005,7 +1005,7 @@ CHARACTER.prototype.getInfo = function () {
                 "race=" + RACE_DATA_TYPE.GetRaceName(this.race) + ";" +
                 "gender=" + (this.GetAdjGender() == genderType.Male ? "male" : "female") + ";" +
                 "class=" + CLASS_DATA_TYPE.PeekClass(this.GetClass()).m_name + ";" +
-                "align=" + alignmentType.get(this.GetAlignment()) + ";"
+                "align=" + alignmentType.GetAlignmentName(this.GetAlignment()) + ";"
 
     return result;
 };
@@ -2219,7 +2219,44 @@ CHARACTER.prototype.GetType = function () {
 }
 
 
-CHARACTER.prototype.DisplayCurrSpellEffects = function (SrcFunc) { throw "todo";};
+CHARACTER.prototype.DisplayCurrSpellEffects = function (SrcFunc) {
+    if (DUMP_CHAR_SPELL_ATTS) {
+
+        if (this.m_spellEffects.GetCount() == 0)
+            return;
+
+        var src = "";
+
+        if (this.GetName().IsEmpty())
+            return; // sometimes gets called for empty CHARACTER slots in PARTY struct
+
+        //Sleep(10);  // PORT NOTE: Yeah, no.
+
+        Globals.WriteDebugString("*** BEGIN SPELL_EFFECT records for \'" + this.GetName() + "\' from " + SrcFunc + "\n");
+
+        var pos = this.m_spellEffects.GetHeadPosition();
+        while (pos != null) {
+            var data = this.m_spellEffects.GetNext(pos);
+            pos = this.spellEffects.NextPos(pos);
+            if (data.flags & SPELL_EFFECTS_DATA.EFFECT_SPELL)
+            src = "SPELL";
+        else if (data.flags & SPELL_EFFECTS_DATA.EFFECT_CHARSPECAB)
+            src = "CHARSPECAB";
+        else if (data.flags & SPELL_EFFECTS_DATA.EFFECT_SPELLSPECAB)
+            src = "SPELLSPECAB";
+        else if (data.flags & SPELL_EFFECTS_DATA.EFFECT_ITEMSPECAB)
+            src = "ITEMSPECAB";
+        else
+            src = "!!INVALID!!";
+
+
+            Globals.WriteDebugString("   Attrib \'" + data.affectedAttr + "\', Parent " + data.parent + ", Src " + src + ", Flags " + data.flags + "\n");
+        }
+
+        Globals.WriteDebugString("*** END SPELL_EFFECT records for \'" + GetName() + "\'\n", );
+    }
+};
+
 
 
 CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };

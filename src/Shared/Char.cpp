@@ -1875,15 +1875,6 @@ void CHARACTER::Serialize(CArchive &ar, double version)
     ar << temp;
 
     AS(ar,name);
-/*
-    ar << FighterExperience;
-    ar << ClericExperience;
-    ar << RangerExperience;
-    ar << PaladinExperience;
-    ar << MUExperience;
-    ar << ThiefExperience;
-    ar << DruidExperience;
-*/
     ar << THAC0;
     ar << morale;
     ar << encumbrance;

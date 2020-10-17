@@ -13,7 +13,7 @@ function CArchive(path, version) {
     } else {
         this.MFCSerializer = new UAFLib.MFCSerializer(path);
     }
-    this.MFCSerializer.debug = true;
+    this.MFCSerializer.debug = false;
     this.isStoring = false;
     this.version = version;
 }

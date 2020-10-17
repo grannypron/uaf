@@ -47,7 +47,7 @@ namespace UAFLib
                 int lineCount = fileContents.Split('\n').Length;
                 engine.Execute(fileContents);
                 lib.Add(new LibraryFile(file, lineCount));
-                System.Console.WriteLine(file + ":" + lineCount);
+                //System.Console.WriteLine(file + ":" + lineCount);
             }
             return lib;
         }

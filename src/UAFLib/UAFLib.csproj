@@ -61,14 +61,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Druid.chr" />
     <None Include="dude_noheader.chr" />
     <None Include="dude.chr" />
-    <None Include="items.dat" />
-    <None Include="joe.chr" />
-    <None Include="Level001.lvl" />
     <None Include="packages.config" />
     <None Include="SaveB.pty" />
+    <None Include="Tests\Druid.chr" />
+    <None Include="Tests\Priestess.chr" />
+    <None Include="Tests\Rogue.chr" />
+    <None Include="Tests\Warrior.chr" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="js\aaaclass.js" />
