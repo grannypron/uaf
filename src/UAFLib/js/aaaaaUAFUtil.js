@@ -1,0 +1,33 @@
+function UAFUtil() {
+};
+
+UAFUtil.prototype.ByteFromHexString = function (str) {
+    return parseInt(str, 16);
+};
+
+UAFUtil.prototype.StringToBase38 = function (str) {
+    var result;
+    var i;
+    var c;
+    var len;
+    result = 0;
+    len = str.length;
+    for (i = 0; i < 6; i++) {
+        if (len <= i) c = ' ';
+        else c = str.indexOf(i);
+        if (c == ' ') c = 1;
+        else if ((c >= '0') && (c <= '9')) c = c - '0' + 2;
+        else if ((c >= 'A') && (c <= 'Z')) c = c - 'A' + 12;
+        else if ((c >= 'a') && (c <= 'z')) c = c - 'a' + 12;
+        else c = 0;
+        result = result * 38 + c;
+    };
+    return result;
+}
+
+UAFUtil.prototype.setCharAt = function(str, index, chr) {
+    if (index > str.length - 1) return str;
+    return str.substr(0, index) + chr + str.substr(index + 1);
+}
+
+var UAFUtil = new UAFUtil();
