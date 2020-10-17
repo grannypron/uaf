@@ -1221,8 +1221,8 @@ void GameEvent::CheckSecretDoors(void)
 CString GameEvent::getTreasureMessage(CString defaultMessage, EVENT_CONTROL control) {
     HOOK_PARAMETERS hookParameters;
     CString giveTreasureMessage = "";
-    giveTreasureMessage = control.eventcontrol_asl.Lookup("TreasureMessage");
-    if (giveTreasureMessage.IsEmpty()) {
+    giveTreasureMessage = FindEventAttribute("TreasureMessage");
+    if (giveTreasureMessage.IsEmpty() || giveTreasureMessage == "-?-?-") {   //-?-?- is the empty attribute indicator
         giveTreasureMessage = RunGlobalScript("Global_Messages", "EventGiveTreasure", true);
     }
     if (giveTreasureMessage.IsEmpty()) {
@@ -19788,8 +19788,11 @@ void COMBAT_RESULTS_MENU_DATA::OnInitialEvent(void)
       CString tmp;
             const char* scriptName;
             CString giveTreasureMessage = getTreasureMessage("", control);
-            if (!giveTreasureMessage.IsEmpty())
+            if (!giveTreasureMessage.IsEmpty()) {
                 tmp += "\n" + giveTreasureMessage;
+                // Set the treasure message for the next give treasure event to be the treasure message used here - as requested by manikus (see uaf_00004)
+                m_pTreasEvent->control.eventcontrol_asl.Insert("TreasureMessage", giveTreasureMessage, ASLF_MODIFIED | ASLF_READONLY);
+            }
             else if (party.numCharacters == 1)
         tmp += "\nYOU HAVE FOUND TREASURE!";
       else
