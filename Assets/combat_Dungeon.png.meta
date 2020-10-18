@@ -1,0 +1,944 @@
+fileFormatVersion: 2
+guid: cd6cdc2bb7f9ed54db01b747e89639c4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8808697377440177572
+    second: combat_Dungeon_0
+  - first:
+      213: 5028623058415162916
+    second: combat_Dungeon_1
+  - first:
+      213: 4471133917542266651
+    second: combat_Dungeon_2
+  - first:
+      213: 1749644417940511326
+    second: combat_Dungeon_3
+  - first:
+      213: 6258666980583610473
+    second: combat_Dungeon_4
+  - first:
+      213: -3288234924138305948
+    second: combat_Dungeon_5
+  - first:
+      213: 5569421950947357466
+    second: combat_Dungeon_6
+  - first:
+      213: 6977480776431078762
+    second: combat_Dungeon_7
+  - first:
+      213: 204669699416827048
+    second: combat_Dungeon_8
+  - first:
+      213: -6813974713835008561
+    second: combat_Dungeon_9
+  - first:
+      213: -131709066918688911
+    second: combat_Dungeon_10
+  - first:
+      213: -3859825223199101890
+    second: combat_Dungeon_11
+  - first:
+      213: 4267042333902568915
+    second: combat_Dungeon_12
+  - first:
+      213: -5945682839246424603
+    second: combat_Dungeon_13
+  - first:
+      213: 8165270782181060206
+    second: combat_Dungeon_14
+  - first:
+      213: 2813447094963915308
+    second: combat_Dungeon_15
+  - first:
+      213: -4237672797127347032
+    second: combat_Dungeon_16
+  - first:
+      213: 4924366842186762142
+    second: combat_Dungeon_17
+  - first:
+      213: 6641267830993974479
+    second: combat_Dungeon_18
+  - first:
+      213: 1328094192046379708
+    second: combat_Dungeon_19
+  - first:
+      213: -1409376870480285968
+    second: combat_Dungeon_20
+  - first:
+      213: -5552723230000440522
+    second: combat_Dungeon_21
+  - first:
+      213: 7387832852691758973
+    second: combat_Dungeon_22
+  - first:
+      213: -4624031469821311034
+    second: combat_Dungeon_23
+  - first:
+      213: 9198068659589386992
+    second: combat_Dungeon_24
+  - first:
+      213: 8399470318896346332
+    second: combat_Dungeon_25
+  - first:
+      213: -3403544112023869293
+    second: combat_Dungeon_26
+  - first:
+      213: -1153277339131695630
+    second: combat_Dungeon_27
+  - first:
+      213: 153493369865993802
+    second: combat_Dungeon_28
+  - first:
+      213: 1962274670071479945
+    second: combat_Dungeon_29
+  - first:
+      213: 8532150383490903380
+    second: combat_Dungeon_30
+  - first:
+      213: -5730393725157988127
+    second: combat_Dungeon_31
+  - first:
+      213: -3830027896361040358
+    second: combat_Dungeon_32
+  - first:
+      213: 7697996021293118876
+    second: combat_Dungeon_33
+  - first:
+      213: -1093178816257390916
+    second: combat_Dungeon_34
+  - first:
+      213: -6699934256243025287
+    second: combat_Dungeon_35
+  - first:
+      213: 6544029201107410494
+    second: combat_Dungeon_0
+  - first:
+      213: 6304001928809274046
+    second: combat_Dungeon_1
+  - first:
+      213: -8593883510165692070
+    second: combat_Dungeon_2
+  - first:
+      213: 4458909160448392348
+    second: combat_Dungeon_3
+  - first:
+      213: -4750910066926589632
+    second: combat_Dungeon_4
+  - first:
+      213: 6247870305369204422
+    second: combat_Dungeon_5
+  - first:
+      213: 4630675078357053931
+    second: combat_Dungeon_6
+  - first:
+      213: 3898624431999923690
+    second: combat_Dungeon_7
+  - first:
+      213: -5468420208550047927
+    second: combat_Dungeon_8
+  - first:
+      213: 4969143281605993009
+    second: combat_Dungeon_9
+  - first:
+      213: 6706151843566813580
+    second: combat_Dungeon_10
+  - first:
+      213: -1731006090339333783
+    second: combat_Dungeon_11
+  - first:
+      213: -8147910333845446452
+    second: combat_Dungeon_12
+  - first:
+      213: -7636975611633077994
+    second: combat_Dungeon_13
+  - first:
+      213: 4780552426873167950
+    second: combat_Dungeon_14
+  - first:
+      213: -8159493058838723393
+    second: combat_Dungeon_15
+  - first:
+      213: 3602222694174341218
+    second: combat_Dungeon_16
+  - first:
+      213: 341847716178697712
+    second: combat_Dungeon_17
+  - first:
+      213: 5835454246494396595
+    second: combat_Dungeon_18
+  - first:
+      213: -4724402550909337674
+    second: combat_Dungeon_19
+  - first:
+      213: 7222850451317058496
+    second: combat_Dungeon_20
+  - first:
+      213: -7085629988793282509
+    second: combat_Dungeon_21
+  - first:
+      213: 8184524883513198838
+    second: combat_Dungeon_22
+  - first:
+      213: 5137043872583188270
+    second: combat_Dungeon_23
+  - first:
+      213: 2462233330671767891
+    second: combat_Dungeon_24
+  - first:
+      213: -8598871390660853950
+    second: combat_Dungeon_25
+  - first:
+      213: 3399794712953288485
+    second: combat_Dungeon_26
+  - first:
+      213: -3286726983912841377
+    second: combat_Dungeon_27
+  - first:
+      213: 11571615741068942
+    second: combat_Dungeon_28
+  - first:
+      213: -8962260232913713715
+    second: combat_Dungeon_29
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: -1
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 48
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: combat_Dungeon_0
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 126
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3e5acbf2ef01da50800000000000000
+      internalID: 6544029201107410494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_1
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 126
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebadd0eaa505c7750800000000000000
+      internalID: 6304001928809274046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 126
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a51ac77da746cb880800000000000000
+      internalID: -8593883510165692070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_3
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 126
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c9cf242d14a31ed30800000000000000
+      internalID: 4458909160448392348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_4
+      rect:
+        serializedVersion: 2
+        x: 242
+        y: 126
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 049630d2770611eb0800000000000000
+      internalID: -4750910066926589632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_5
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 126
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c62e3aa0f4e4b650800000000000000
+      internalID: 6247870305369204422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_6
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 126
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be1f9bb0376734040800000000000000
+      internalID: 4630675078357053931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_7
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 126
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae5b30ed342ba1630800000000000000
+      internalID: 3898624431999923690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_8
+      rect:
+        serializedVersion: 2
+        x: 482
+        y: 126
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94f8ec21bc44c14b0800000000000000
+      internalID: -5468420208550047927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_9
+      rect:
+        serializedVersion: 2
+        x: 542
+        y: 126
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 132e42aac71f5f440800000000000000
+      internalID: 4969143281605993009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_10
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 66
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8181ad2299011d50800000000000000
+      internalID: 6706151843566813580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_11
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 66
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9694941d12b3af7e0800000000000000
+      internalID: -1731006090339333783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_12
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 66
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc0686988beccee80800000000000000
+      internalID: -8147910333845446452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_13
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 66
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 611f946c423040690800000000000000
+      internalID: -7636975611633077994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_14
+      rect:
+        serializedVersion: 2
+        x: 242
+        y: 66
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4028e19a1fe75240800000000000000
+      internalID: 4780552426873167950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_15
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 66
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb407a83b48a3ce80800000000000000
+      internalID: -8159493058838723393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_16
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 66
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 268bc18747aadf130800000000000000
+      internalID: 3602222694174341218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_17
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 66
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0fd1c1acfac7eb400800000000000000
+      internalID: 341847716178697712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_18
+      rect:
+        serializedVersion: 2
+        x: 482
+        y: 66
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b0e75938b2bbf050800000000000000
+      internalID: 5835454246494396595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_19
+      rect:
+        serializedVersion: 2
+        x: 542
+        y: 66
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bf791139ec8f6eb0800000000000000
+      internalID: -4724402550909337674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_20
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 6
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cbe5889738bc3460800000000000000
+      internalID: 7222850451317058496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_21
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 6
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3301f140119caad90800000000000000
+      internalID: -7085629988793282509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_22
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 6
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f84621a406459170800000000000000
+      internalID: 8184524883513198838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_23
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 6
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2ffae45f227a4740800000000000000
+      internalID: 5137043872583188270
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_24
+      rect:
+        serializedVersion: 2
+        x: 242
+        y: 6
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35151d43b2c9b2220800000000000000
+      internalID: 2462233330671767891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_25
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 6
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24ff36a670caaa880800000000000000
+      internalID: -8598871390660853950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_26
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 6
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 527f4de474f7e2f20800000000000000
+      internalID: 3399794712953288485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_27
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 6
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5f1f22d8333362d0800000000000000
+      internalID: -3286726983912841377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_28
+      rect:
+        serializedVersion: 2
+        x: 482
+        y: 6
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8649bdb25c192000800000000000000
+      internalID: 11571615741068942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: combat_Dungeon_29
+      rect:
+        serializedVersion: 2
+        x: 542
+        y: 6
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc581906dc7af9380800000000000000
+      internalID: -8962260232913713715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
