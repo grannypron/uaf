@@ -6624,7 +6624,7 @@ void GIVE_TREASURE_DATA::OnKeypress(key_code key, char ascii)
     else if (treasureItemListText.GetCount() > 0)
     {
       SetMyState(TASK_AskLeaveTreasureBehind);
-      PushEvent(new ASK_YES_NO_MENU_DATA("THERE IS STILL TREASURE HERE\nDO YOU WANT TO LEAVE IT BEHIND?",TRUE, GiveTreasure), DeleteEvent);
+      PushEvent(new ASK_YES_NO_MENU_DATA("THERE IS STILL TREASURE HERE\r\nDO YOU WANT TO LEAVE IT BEHIND?",TRUE, GiveTreasure), DeleteEvent);
     }
     else
     {
@@ -8178,7 +8178,7 @@ void ITEMS_MENU_DATA::OnKeypress(key_code key, char ascii)
           }
           else
           {
-            msg.Format("THE COST OF IDENTIFICATION IS %i %s\nYOU DO NOT HAVE ENOUGH", pData->costToId, globalData.moneyData.GetName(globalData.moneyData.GetDefaultType()));
+            msg.Format("THE COST OF IDENTIFICATION IS %i %s\r\nYOU DO NOT HAVE ENOUGH", pData->costToId, globalData.moneyData.GetName(globalData.moneyData.GetDefaultType()));
             PushEvent(new ASK_YES_NO_MENU_DATA(msg,FALSE, CONTROL_ItemsMenu), DeleteEvent);
           }        
         }
@@ -19692,10 +19692,10 @@ void COMBAT_RESULTS_MENU_DATA::OnInitialEvent(void)
     {
       CString tmp;
       if (party.numCharacters == 1)
-        tmp.Format("\nYOU RECEIVE %i EXPERIENCE POINTS", 
+        tmp.Format("\r\nYOU RECEIVE %i EXPERIENCE POINTS", 
                    m_exptotal);
       else
-        tmp.Format("\nTHE PARTY RECEIVES %i EXPERIENCE POINTS", 
+        tmp.Format("\r\nTHE PARTY RECEIVES %i EXPERIENCE POINTS", 
                    m_exptotal);
       tempText += tmp;
 
@@ -19775,9 +19775,9 @@ void COMBAT_RESULTS_MENU_DATA::OnInitialEvent(void)
     {
       CString tmp;
       if (party.numCharacters == 1)
-        tmp += "\nYOU HAVE FOUND TREASURE!";
+        tmp += "\r\nYOU HAVE FOUND TREASURE!";
       else
-        tmp += "\nTHE PARTY HAS FOUND TREASURE!";
+        tmp += "\r\nTHE PARTY HAS FOUND TREASURE!";
       tempText += tmp;
     }
     else
@@ -26668,7 +26668,7 @@ void APPRAISE_SELECT_DATA::OnInitialEvent(void)
   menu.setHorzOrient();
   menu.MapKeyCodeToMenuItem(KC_ESCAPE, 3);
   CString msg;
-  msg.Format("YOU HAVE\n%u %s\n%u %s\nNOT YET APPRAISED",
+  msg.Format("YOU HAVE\r\n%u %s\r\n%u %s\r\nNOT YET APPRAISED",
              m_pMoney->NumGems(),
              globalData.moneyData.GetName(GemType),
              m_pMoney->NumJewelry(),
