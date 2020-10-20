@@ -18,4 +18,23 @@ ITEM_DATA_TYPE.prototype.PeekItem = function(itemID) {
     return null;
 }
 
-var ITEM_DATA_TYPE = new ITEM_DATA_TYPE();
+
+ITEM_DATA_TYPE.prototype.FreeArt = function() {
+    var i, n;
+    n = this.GetCount();
+    for (i = 0; i < n; i++) {
+        this.GetItem(i).FreeArt();
+    }
+}
+
+ITEM_DATA_TYPE.prototype.GetCount = function () {
+    return this.mItemDataTypes.GetCount();
+}
+
+ITEM_DATA_TYPE.prototype.ClearSounds = function() {
+    var i, n;
+    n = this.GetCount();
+    for (i = 0; i < n; i++) {
+        this.GetItem(i).ClearSounds();
+    };
+}

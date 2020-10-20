@@ -1,5 +1,20 @@
 /** TODO **/
 function ASLENTRY() {
+    this.m_flags = 0;
+    this.m_value = "";
+    this.m_key = "";
+    this.Clear();
+}
+function ASLENTRYKeyValueFlags(key, value, flags) {
+    this.m_key = key;
+    this.m_value = value;
+    this.m_flags = flags;
+}
+
+ASLENTRY.prototype.Clear = function () {
+    this.m_flags = 0;
+    this.m_value = "";
+    this.m_key = "";
 }
 
 ASLENTRY.prototype.DeSerialize = function (car) {
@@ -8,8 +23,8 @@ ASLENTRY.prototype.DeSerialize = function (car) {
     n = m_key.length;
     var x20 = UAFUtil.ByteFromHexString("0x20");
     for (i = 0; i < n; i++) {
-        if (m_key.charCodeAt(i) < x20) {
-            m_key = UAFUtil.setCharAt(m_key, i, String.fromCharCode(m_key.charCodeAt(i) + x20));
+        if (this.m_key.charCodeAt(i) < x20) {
+            this.m_key = UAFUtil.setCharAt(this.m_key, i, String.fromCharCode(this.m_key.charCodeAt(i) + x20));
         };
     };
 

@@ -10,7 +10,7 @@ MONEY_SACK.prototype.Clear = function () {
     /**TODO**/
 }
 MONEY_SACK.prototype.NumCoinTypes = function () {
-    return MONEY_DATA_TYPE.MAX_COIN_TYPES;
+    return moneyData.MAX_COIN_TYPES;
 }
 MONEY_SACK.prototype.SerializeCAR = function(ar, version)
 {
@@ -69,7 +69,7 @@ MONEY_SACK.prototype.SerializeCAR = function(ar, version)
             var data;
             var temp, i;
             temp = ar.readInt();
-            Globals.ASSERT(temp < MONEY_DATA_TYPE.MAX_GEMS);
+            Globals.ASSERT(temp < moneyData.MAX_GEMS, "MONEY_SACK.js::SerializeCAR");
 
             for (i = 0; i < temp; i++) {
                 data.Clear();
@@ -78,7 +78,7 @@ MONEY_SACK.prototype.SerializeCAR = function(ar, version)
             }
 
             temp = ar.readInt();
-            Globals.ASSERT(temp < MONEY_DATA_TYPE.MAX_JEWELRY);
+            Globals.ASSERT(temp < moneyData.MAX_JEWELRY, "MONEY_SACK.js::SerializeCAR");
 
             for (i = 0; i < temp; i++) {
                 data.Clear();

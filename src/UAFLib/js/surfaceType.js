@@ -27,6 +27,5 @@ function surfaceTypeObj() {
     Object.setPrototypeOf(this, entityType.prototype);
 }
 
-var surfaceType = new surfaceTypeObj(alignmentType);
 
 

@@ -9,6 +9,13 @@ function MONEY_DATA_TYPE() {
     this.HRType = null;
     this.DefType = null;
     this.weight = 0;
+
+    this.MAX_COIN_TYPES = 10;
+    this.DEFAULT_COINS_PER_POUND = 10;
+    this.MAX_NON_APPRAISED_GEM_JEWELRY = INT_MAX - 1;
+    this.MAX_GEMS = this.MAX_NON_APPRAISED_GEM_JEWELRY;
+    this.MAX_JEWELRY = this.MAX_NON_APPRAISED_GEM_JEWELRY;
+
     this.Clear();
 
 }
@@ -58,8 +65,3 @@ double ConvertToDefault(double amount, itemClassType srcType, double * overflow=
 void Serialize(CArchive & ar, double version);
 void Serialize(CAR & ar, double version);
 **/
-MONEY_DATA_TYPE.MAX_COIN_TYPES = 10;
-MONEY_DATA_TYPE.DEFAULT_COINS_PER_POUND = 10;
-MONEY_DATA_TYPE.MAX_NON_APPRAISED_GEM_JEWELRY = INT_MAX - 1;
-MONEY_DATA_TYPE.MAX_GEMS = MONEY_DATA_TYPE.MAX_NON_APPRAISED_GEM_JEWELRY;
-MONEY_DATA_TYPE.MAX_JEWELRY = MONEY_DATA_TYPE.MAX_NON_APPRAISED_GEM_JEWELRY;

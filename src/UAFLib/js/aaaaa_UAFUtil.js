@@ -30,4 +30,13 @@ UAFUtil.prototype.setCharAt = function(str, index, chr) {
     return str.substr(0, index) + chr + str.substr(index + 1);
 }
 
+
+UAFUtil.prototype.ScriptAtoI = function(p, min, max)
+{
+    var n = parseInt(p);
+    if (n < min) n = min;
+    if (n > max) n = max;
+    return n;
+}
+
 var UAFUtil = new UAFUtil();

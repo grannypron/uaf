@@ -47,7 +47,6 @@ CHARACTER.prototype.IsSameCharacter = function(dude) {
 CHARACTER.prototype.Clear = function(isConstructor) { 
     if (!isConstructor) {isConstructor = false;}
 
-    var party = new PARTY();  //** PORT NOTE: Added by me **/
     this.DisableTalkIfDead=true;
     this.TalkEvent=0;
     this.TalkLabel="TALK";
@@ -1743,7 +1742,7 @@ CHARACTER.prototype.addCharMoneyToItemList = function (list) {
     for (var i = 0; i < this.money.NumCoinTypes(); i++)
     {
         if (this.money.IsActive(globalData.moneyData.GetItemClass(i))) {
-            var itype = MONEY_DATA_TYPE.GetItemClass(i);
+            var itype = moneyData.GetItemClass(i);
             list.Add(this.money.Coins[i], itype, money.Name(itype));
         }
     }
@@ -2168,7 +2167,7 @@ CHARACTER.prototype.GetAdjHitBonus = function (weaponID, distance, flags) {
 
     var weaponType;
 
-    weaponType = ITEM_DATA_TYPE.GetWpnType(weaponID);
+    weaponType = itemData.GetWpnType(weaponID);
     switch (weaponType) {
         case weaponClassType.NotWeapon:
         case weaponClassType.HandBlunt:
@@ -2511,9 +2510,4 @@ CHARACTER.prototype.GetFirstEffectAttributeMod = function(attr) {
         pos = this.m_spellEffects.NextPos(pos);   //PORT NOTE: Added - no out params in Javascript, so have to advance pointer (pos)
     }
     return null;
-}
-
-//** PORT NOTE: Added by me **/
-function GetParty() {
-    return party;
 }

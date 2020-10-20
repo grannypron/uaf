@@ -1,6 +1,6 @@
 function Globals() {
     this.CHARACTER_VERSION = UAFUtil.ByteFromHexString("0x80000001");
-    this.combatData = new COMBAT_DATA();
+    this.logDebuggingInfo = false;
     this.version = 6.0;
     this.debugSeverity = 0;
 }
@@ -13,12 +13,16 @@ Globals.prototype.debug = function (msg) {
     var log = System.Console.WriteLine; log(msg);
 }
 
+Globals.prototype.MsgBoxError = function (msg) {
+    /** TODO **/
+}
+
 Globals.prototype.debugStop = function (msg) {
     var log = Globals.debug(msg); Globals.die("debugStop");
 }
 
 Globals.prototype.IsCombatActive = function () {
-    return this.combatData.m_bCombatActive;
+    return combatData.m_bCombatActive;
 }
 
 Globals.prototype.StripFilenamePath = function (filename) {
@@ -33,9 +37,9 @@ Globals.prototype.StripFilenamePath = function (filename) {
     return filename.substr(filename.lastIndexOf("\\") + 1);
 }
 
-Globals.prototype.ASSERT = function (val) {
+Globals.prototype.ASSERT = function (val, msg) {
     if (!val) {
-        throw "Assertion failed.";
+        throw "Assertion failed.\n" + msg;
     }
 }
 
@@ -58,5 +62,21 @@ Globals.MIN_CONSTITUTION = 3;
 Globals.MAX_CONSTITUTION = 25;
 Globals.MIN_CHARISMA = 3;
 Globals.MAX_CHARISMA = 25;
+
+Globals.CombatScreenX = 14;
+Globals.CombatScreenY = 14;
+Globals.TILES_HORZ = 8;
+Globals.TILES_VERT = 9;
+
+Globals.SCREEN_WIDTH = 640;  // these change to reflect the current
+Globals.SCREEN_HEIGHT = 480; // screen resolution for the editor
+Globals.COLOR_BITS = 24;
+
+Globals.MAX_COMBATANTS = 100;
+Globals.MAX_CHARS_IN_ROW = 3; // how many chars wide the battle line can be
+Globals.MAX_COMBAT_IDLE_ROUNDS = 20;
+
+
+
 
 var Globals = new Globals();

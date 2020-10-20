@@ -60,15 +60,16 @@ A_ASLENTRY_L.prototype.SerializeCAR = function (ar, mapName) {
 
 
 A_ASLENTRY_L.prototype.InsertASLENTRY = function(pEntry) {
-    // PORT NOTE:  Rewrite to make this simpler - seems like a singleton collection that replaces if the entry is already present
+    // PORT NOTE:  Rewrite to make this simpler - seems like a collection that replaces if the entry is already present
     for (var i = 0; i < this.mItems.length; i++) {
         var aslEntry = this.mItems[i];
         if (pEntry.Equals(aslEntry)) {
             this.mItems[i] = pEntry;
-            return;
+            return true;
         }
     }
     this.mItems.push(pEntry);
+    return false;
 }
 
 

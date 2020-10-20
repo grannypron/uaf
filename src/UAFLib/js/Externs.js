@@ -6,6 +6,23 @@ var FAKE_CHARACTER_TYPE = 127;
 var IN_PARTY_TYPE = 128;
 var NO_READY_ITEM = -1;
 
+var MAXTASK = 30;
+var MAX_PARTY_MEMBERS = 12;
+
+var NO_DUDE = -1;
+
+var FACE_NORTH = 0;
+var FACE_EAST = 1;
+var FACE_SOUTH = 2;
+var FACE_WEST = 3;
+var FACE_NW = 4;
+var FACE_NE = 5;
+var FACE_SW = 6;
+var FACE_SE = 7;
+
+var COMBAT_TILE_WIDTH = 48;
+var COMBAT_TILE_HEIGHT = 48;
+
 // ArchiveString and DeArchiveString
 //
 // Empty CStrings are stored as a single

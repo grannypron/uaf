@@ -14,8 +14,6 @@ function alignmentTypeObj() {
     Object.setPrototypeOf(this, entityType.prototype);
 }
 
-var alignmentType = new alignmentTypeObj(alignmentType);
-
 alignmentType.GetAlignmentName = function (align) {
     var temp = "??";
     switch (align) {

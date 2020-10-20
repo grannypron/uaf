@@ -7,5 +7,3 @@ function creatureSizeTypeObj() {
     entityType.call(this, creatureSizeType);
     Object.setPrototypeOf(this, entityType.prototype);
 }
-
-var creatureSizeType = new creatureSizeTypeObj(creatureSizeType);

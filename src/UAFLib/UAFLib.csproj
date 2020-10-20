@@ -61,8 +61,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="dude_noheader.chr" />
-    <None Include="dude.chr" />
     <None Include="packages.config" />
     <None Include="SaveB.pty" />
     <None Include="Tests\Druid.chr" />
@@ -71,14 +69,53 @@
     <None Include="Tests\Warrior.chr" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="js\aaaclass.js" />
-    <Content Include="js\aaaaaentityType.js" />
+    <Content Include="js\aaa_class.js" />
+    <Content Include="js\ATTACK_DETAILS.js" />
+    <Content Include="js\ATTACK_DATA.js" />
+    <Content Include="js\AURA_SHAPE.js" />
+    <Content Include="js\AURA_WAVELENGTH.js" />
+    <Content Include="js\A_SPECABILITY_DEF_L.js" />
+    <Content Include="js\AURA_ATTACHMENT.js" />
+    <Content Include="js\CBRESULT.js" />
+    <Content Include="js\COMBAT_SUMMARY - Copy.js" />
+    <Content Include="js\DEFAULT_GLOBAL_SCRIPT.js" />
+    <Content Include="js\CBFUNC.js" />
+    <Content Include="js\SPECAB_STRING_TYPE.js" />
+    <Content Include="js\SCRIPT_SOURCE_TYPE.js" />
+    <Content Include="js\MonsterArrangement.js" />
+    <Content Include="js\PATH_DIR.js" />
+    <Content Include="js\RECT.js" />
+    <Content Include="js\entityType.js" />
+    <Content Include="js\COMBAT_SUMMARY.js" />
+    <Content Include="js\MONSTER_DATA_TYPE.js" />
+    <Content Include="js\PATH_MANAGER.js" />
+    <Content Include="js\SPELL_DATA_TYPE.js" />
+    <Content Include="js\Drawtile.js" />
+    <Content Include="js\TERRAIN_CELL.js" />
+    <Content Include="js\TAG_LIST.js" />
+    <Content Include="js\TURNING_SUMMARY.js" />
+    <Content Include="js\QueuedCombatantData.js" />
+    <Content Include="js\EventSourceType.js" />
+    <Content Include="js\GameEvent.js" />
+    <Content Include="js\COMBAT_EVENT_DATA.js" />
+    <Content Include="js\eventDirType.js" />
+    <Content Include="js\eventType.js" />
+    <Content Include="js\OBSTICAL_TYPE.js" />
+    <Content Include="js\eventSurpriseType.js" />
+    <Content Include="js\combatVictorType.js" />
+    <Content Include="js\eventTurnUndeadModType.js" />
+    <Content Include="js\eventDistType.js" />
+    <Content Include="js\LASTACTION.js" />
+    <Content Include="js\individualCombatantState.js" />
+    <Content Include="js\Combatant.js" />
     <Content Include="js\ASLENTRY.js" />
     <Content Include="js\A_CStringPAIR_L.js" />
     <Content Include="js\COIN_TYPE.js" />
     <Content Include="js\GEM_CONFIG.js" />
     <Content Include="js\itemClassType.js" />
-    <Content Include="js\zzzzGLOBAL_STATS.js" />
+    <Content Include="js\SoundMgr.js" />
+    <Content Include="js\zzzGlobalSingletons.js" />
+    <Content Include="js\GLOBAL_STATS.js" />
     <Content Include="js\itemReadiedLocation.js" />
     <Content Include="js\ITEM.js" />
     <Content Include="js\ITEM_DATA.js" />
@@ -88,14 +125,14 @@
     <Content Include="js\SPELL_LIST.js" />
     <Content Include="js\surfaceType.js" />
     <Content Include="js\BASECLASS_STATS.js" />
-    <Content Include="js\aaaaaUnorderedQueue.js" />
+    <Content Include="js\aaaaa_UnorderedQueue.js" />
     <Content Include="js\RUNTIME_ENVIRONMENT.js" />
     <Content Include="js\MONEY_DATA_TYPE.js" />
     <Content Include="js\weaponClassType.js" />
     <Content Include="js\alignmentType.js" />
     <Content Include="js\CAR.js" />
     <Content Include="js\CLASS_DATA_TYPE.js" />
-    <Content Include="js\aaaaaintsafe.js" />
+    <Content Include="js\aaaaa_intsafe.js" />
     <Content Include="js\GameRules.js" />
     <Content Include="js\Items.js" />
     <Content Include="js\COMBAT_DATA.js" />
@@ -120,10 +157,12 @@
     <Content Include="js\SPELL_ABILITY.js" />
     <Content Include="js\ITEM_DATA_TYPE.js" />
     <Content Include="js\CHARACTER_ID.js" />
+    <Content Include="Tests\TestSimpleCombat.js" />
     <Content Include="Tests\TestStripFilenamePath.js" />
+    <Content Include="Tests\TestTagList.js" />
     <Content Include="Tests\TestUtilHex.js" />
     <Content Include="Tests\TestCharacterSerialize.js" />
-    <Content Include="js\aaaaaUAFUtil.js" />
+    <Content Include="js\aaaaa_UAFUtil.js" />
     <Content Include="js\CHARACTER.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

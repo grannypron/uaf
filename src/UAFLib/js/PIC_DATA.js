@@ -24,6 +24,57 @@ PIC_DATA.prototype.Clear = function () {
     /**TODO**/
 }
 
+PIC_DATA.prototype.SetDefaults = function () {
+    Globals.ASSERT(this.picType != surfaceType.BogusDib, "PIC_DATA.js::SetDefaults");
+
+    if ((this.NumFrames > 0)
+        && (this.FrameWidth > 0)
+        && (this.FrameHeight > 0)
+        && (this.picType != surfaceType.BigPicDib)
+        && (this.picType != surfaceType.SmallPicDib)
+        && (this.picType != surfaceType.IconDib)
+        && (this.picType != surfaceType.SpriteDib)) //DLD 12/20/00
+        return;
+
+    switch (this.picType) {
+        case surfaceType.SmallPicDib:
+            this.sx = this.ViewportX;
+            this.sy = this.ViewportY;
+            this.FrameWidth = this.ViewportWidth;
+            this.FrameHeight = this.ViewportHeight;
+            this.NumFrames = 1;
+            this.SetPre0840LoopForeverDefaults();
+            break;
+        case surfaceType.IconDib:
+            this.sx = -1; // never used by icons
+            this.sy = -1;
+            this.FrameWidth = COMBAT_TILE_WIDTH;
+            this.FrameHeight = COMBAT_TILE_HEIGHT;
+            this.NumFrames = 2; // 1 ready, 1 attack pose
+            this.SetPre0840NonLoopDefaults();
+            break;
+        case surfaceType.SpriteDib:
+            this.sx = this.ViewportX;
+            this.sy = this.ViewportY;
+            this.FrameWidth = this.ViewportWidth;
+            this.FrameHeight = this.ViewportHeight;
+            this.NumFrames = 3; // 1 for each distance from party: UpClose, Near, Distant
+            this.SetPre0840NonLoopDefaults();
+            break;
+        case surfaceType.BigPicDib:
+            this.sx = this.BigPic_x;         //DLD 12/20/00 //sx = ViewportScreenX;
+            this.sy = this.BigPic_y;         // sy = ViewportScreenY;
+            this.FrameWidth = this.BigPic_w; // FrameWidth = 608;
+            this.FrameHeight = this.BigPic_h;//FrameHeight = 288; //end add change 
+            this.NumFrames = 1;
+            this.SetPre0840NonLoopDefaults();
+            break;
+
+        default:
+            Globals.ASSERT(false, "PIC_DATA.js::SetDefaults");
+            break;
+    }
+}
 
 PIC_DATA.prototype.PreSerialize = function (IsStoring) {
     if (IsStoring) {

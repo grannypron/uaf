@@ -14,4 +14,3 @@ function charStatusTypeObj() {
     Object.setPrototypeOf(this, entityType.prototype);
 }
 
-var charStatusType = new charStatusTypeObj(charStatusType);

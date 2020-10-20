@@ -31,7 +31,6 @@ function weaponClassTypeObj() {
     Object.setPrototypeOf(this, entityType.prototype);
 }
 
-var weaponClassType = new weaponClassTypeObj(weaponClassType);
 
 
 var MAX_WEAPON_CLASS = 11;

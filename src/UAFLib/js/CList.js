@@ -1,10 +1,3 @@
-/**
- * This class acts as a wrapper around the serializer that conforms to the MFC spec that I picked up from 
- * https://www.codeproject.com/Articles/32741/Implementing-MFC-Style-Serialization-in-NET-Part-1?msg=5755237#xx5755237xx
- * 
- * Also, it adopts the naming used in the MFC CArchive class so as to keep the porting from C++ simpler
- */
-
 function CList() {
     this.mList = [];
 }
@@ -61,3 +54,6 @@ CList.prototype.RemoveAll = function () {
     this.mList = [];
 }
 
+CList.prototype.IsEmpty = function () {
+    return this.mList.length == 0;
+}
