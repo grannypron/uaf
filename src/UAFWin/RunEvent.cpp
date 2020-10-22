@@ -1218,7 +1218,7 @@ void GameEvent::CheckSecretDoors(void)
   }
 }
 
-CString GameEvent::getGlobalEventMessage(CString defaultMessage, EVENT_CONTROL control, CString hookName, CString attributeName, HOOK_PARAMETERS hookParameters) {
+CString GameEvent::getGlobalEventMessage(CString defaultMessage, CString hookName, HOOK_PARAMETERS hookParameters, CString attributeName, EVENT_CONTROL control) {
     CString giveTreasureMessage = "";
     if (!attributeName.IsEmpty()) {
         const ASLENTRY* pASL;
@@ -6560,7 +6560,7 @@ void GIVE_TREASURE_DATA::OnInitialEvent(void)
   menu.setHorzOrient();
   menu.MapKeyCodeToMenuItem(KC_ESCAPE, 5);
   HOOK_PARAMETERS hookParameters;
-   FormatDisplayText(textData, getGlobalEventMessage("You Have Found Treasure!", control, "EventGiveTreasure", "TreasureMessage", hookParameters));
+   FormatDisplayText(textData, getGlobalEventMessage("You Have Found Treasure!", "EventGiveTreasure", hookParameters, "TreasureMessage", control));
 
   // load treasure picture
   int zone = levelData.GetCurrZone(party.Posx,party.Posy);
@@ -6638,12 +6638,16 @@ void GIVE_TREASURE_DATA::OnKeypress(key_code key, char ascii)
     if (party.moneyPooled)
     {      
       SetMyState(TASK_AskLeaveMoneyBehind);
-      PushEvent(new ASK_YES_NO_MENU_DATA("LEAVE ALL TREASURE BEHIND?",TRUE, GiveTreasure), DeleteEvent);
+      HOOK_PARAMETERS hookParameters;
+      CString message = getGlobalEventMessage("LEAVE ALL TREASURE BEHIND?", "EventGiveTreasureLeft", hookParameters, "TreasureLeftMessage", control);
+      PushEvent(new ASK_YES_NO_MENU_DATA(message,TRUE, GiveTreasure), DeleteEvent);
     }
     else if (treasureItemListText.GetCount() > 0)
     {
       SetMyState(TASK_AskLeaveTreasureBehind);
-      PushEvent(new ASK_YES_NO_MENU_DATA("THERE IS STILL TREASURE HERE\r\nDO YOU WANT TO LEAVE IT BEHIND?",TRUE, GiveTreasure), DeleteEvent);
+      HOOK_PARAMETERS hookParameters;
+      CString message = getGlobalEventMessage("THERE IS STILL TREASURE HERE\r\nDO YOU WANT TO LEAVE IT BEHIND?", "EventGiveTreasureLeft", hookParameters, "TreasureLeftMessage", control);
+      PushEvent(new ASK_YES_NO_MENU_DATA(message,TRUE, GiveTreasure), DeleteEvent);
     }
     else
     {
@@ -19703,16 +19707,19 @@ void COMBAT_RESULTS_MENU_DATA::OnInitialEvent(void)
   
   case PartyWins: {
     bool stopMessage = false;
-    CString winMessage;
     globalData.global_asl.Insert("Combat Result", "Win", ASLF_MODIFIED);
+    CString winMessage;
     const ASLENTRY* pASL = m_pOrigEvent->control.eventcontrol_asl.Find("CombatWinMessage");
     if (pASL != NULL) { winMessage = pASL->Value(); }
+    CString leaveTreasureMessage;
+    const ASLENTRY* pASL2 = m_pOrigEvent->control.eventcontrol_asl.Find("TreasureLeftMessage");
+    if (pASL2 != NULL) { leaveTreasureMessage = pASL2->Value(); }
     char s_exptotal[20];
     itoa(m_exptotal, s_exptotal, 10);
     if (winMessage.IsEmpty()) {
         HOOK_PARAMETERS hookParameters;
         hookParameters[1] = s_exptotal;
-        winMessage = getGlobalEventMessage("", control, "EventCombatWin", "", hookParameters);
+        winMessage = getGlobalEventMessage("", "EventCombatWin", hookParameters, "", control);
     }
     if (!winMessage.IsEmpty()) {
       tempText = winMessage;
@@ -19814,7 +19821,12 @@ void COMBAT_RESULTS_MENU_DATA::OnInitialEvent(void)
       const char* scriptName;
       // Insert the treasure message for the subsequent GiveTreasure event
       HOOK_PARAMETERS hookParameters;
-      m_pTreasEvent->control.eventcontrol_asl.Insert("TreasureMessage", getGlobalEventMessage("", control, "EventCombatTreasure", "TreasureMessage", hookParameters), ASLF_MODIFIED | ASLF_READONLY);
+      m_pTreasEvent->control.eventcontrol_asl.Insert("TreasureMessage", getGlobalEventMessage("", "EventCombatTreasure", hookParameters, "TreasureMessage", control), ASLF_MODIFIED | ASLF_READONLY);
+
+      // If treasure leaving attribute is supplied, pass it on to the subsequent GiveTreasure
+      if (!leaveTreasureMessage.IsEmpty()) {
+        m_pTreasEvent->control.eventcontrol_asl.Insert("TreasureLeftMessage", leaveTreasureMessage, ASLF_MODIFIED | ASLF_READONLY);
+      }
       if (party.numCharacters == 1)
         tmp += "\r\nYOU HAVE FOUND TREASURE!";
       else
