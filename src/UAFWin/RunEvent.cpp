@@ -1218,12 +1218,11 @@ void GameEvent::CheckSecretDoors(void)
   }
 }
 
-CString GameEvent::getTreasureMessage(CString defaultMessage, EVENT_CONTROL control, CString hookName, BOOL useEventAttribute) {
-    HOOK_PARAMETERS hookParameters;
+CString GameEvent::getGlobalEventMessage(CString defaultMessage, EVENT_CONTROL control, CString hookName, CString attributeName, HOOK_PARAMETERS hookParameters) {
     CString giveTreasureMessage = "";
-    if (useEventAttribute) {
+    if (!attributeName.IsEmpty()) {
         const ASLENTRY* pASL;
-        pASL = control.eventcontrol_asl.Find("TreasureMessage");
+        pASL = control.eventcontrol_asl.Find(attributeName);
         if (pASL != NULL)
         {
             giveTreasureMessage = pASL->Value();
@@ -6560,7 +6559,8 @@ void GIVE_TREASURE_DATA::OnInitialEvent(void)
   menu.setMenu(GiveTreasureMenuData, NULL, FALSE, this, "GiveTreasure");
   menu.setHorzOrient();
   menu.MapKeyCodeToMenuItem(KC_ESCAPE, 5);
-    FormatDisplayText(textData, getTreasureMessage("You Have Found Treasure!", control, "EventGiveTreasure", true));
+  HOOK_PARAMETERS hookParameters;
+   FormatDisplayText(textData, getGlobalEventMessage("You Have Found Treasure!", control, "EventGiveTreasure", "TreasureMessage", hookParameters));
 
   // load treasure picture
   int zone = levelData.GetCurrZone(party.Posx,party.Posy);
@@ -6632,7 +6632,7 @@ void GIVE_TREASURE_DATA::OnKeypress(key_code key, char ascii)
                                                     m_detectSpellID),
                                                         DeleteEvent);
 #endif
-    }
+    } 
     break;
   case 5: // Exit
     if (party.moneyPooled)
@@ -19701,29 +19701,47 @@ void COMBAT_RESULTS_MENU_DATA::OnInitialEvent(void)
     }
     break;   
   
-  case PartyWins:
+  case PartyWins: {
+    bool stopMessage = false;
+    CString winMessage;
     globalData.global_asl.Insert("Combat Result", "Win", ASLF_MODIFIED);
-    if (party.numCharacters == 1)
-      tempText = "YOU HAVE WON!";
-    else
-      tempText = "THE PARTY HAS WON!";
-    if (m_exptotal > 0)
+    const ASLENTRY* pASL = m_pOrigEvent->control.eventcontrol_asl.Find("CombatWinMessage");
+    if (pASL != NULL) { winMessage = pASL->Value(); }
+    char s_exptotal[20];
+    itoa(m_exptotal, s_exptotal, 10);
+    if (winMessage.IsEmpty()) {
+        HOOK_PARAMETERS hookParameters;
+        hookParameters[1] = s_exptotal;
+        winMessage = getGlobalEventMessage("", control, "EventCombatWin", "", hookParameters);
+    }
+    if (!winMessage.IsEmpty()) {
+      tempText = winMessage;
+      tempText.Replace("^X", s_exptotal);
+      stopMessage = true;
+    } else
     {
-      CString tmp;
       if (party.numCharacters == 1)
-        tmp.Format("\r\nYOU RECEIVE %i EXPERIENCE POINTS", 
-                   m_exptotal);
+        tempText = "YOU HAVE WON!";
       else
-        tmp.Format("\r\nTHE PARTY RECEIVES %i EXPERIENCE POINTS", 
-                   m_exptotal);
-      tempText += tmp;
+        tempText = "THE PARTY HAS WON!";
 
-      // don't do this here
-      //party.distributeExpPoints(combatData.expPointTotal);
-      //exptotal = combatData.expPointTotal;
-      //combatData.expPointTotal = 0;
-    }           
+      if (m_exptotal > 0)
+      {
+        CString tmp;
+        if (party.numCharacters == 1)
+          tmp.Format("\r\nYOU RECEIVE %i EXPERIENCE POINTS",
+            m_exptotal);
+          else
+            tmp.Format("\r\nTHE PARTY RECEIVES %i EXPERIENCE POINTS",
+                 m_exptotal);
+        tempText += tmp;
 
+        // don't do this here
+        //party.distributeExpPoints(combatData.expPointTotal);
+        //exptotal = combatData.expPointTotal;
+        //combatData.expPointTotal = 0;
+      }
+    }
     {
       int i;
       for (i=0; i<party.numCharacters; i++)
@@ -19795,12 +19813,15 @@ void COMBAT_RESULTS_MENU_DATA::OnInitialEvent(void)
       CString tmp;
       const char* scriptName;
       // Insert the treasure message for the subsequent GiveTreasure event
-      m_pTreasEvent->control.eventcontrol_asl.Insert("TreasureMessage", getTreasureMessage("", control, "EventCombatTreasure", true), ASLF_MODIFIED | ASLF_READONLY);
+      HOOK_PARAMETERS hookParameters;
+      m_pTreasEvent->control.eventcontrol_asl.Insert("TreasureMessage", getGlobalEventMessage("", control, "EventCombatTreasure", "TreasureMessage", hookParameters), ASLF_MODIFIED | ASLF_READONLY);
       if (party.numCharacters == 1)
         tmp += "\r\nYOU HAVE FOUND TREASURE!";
       else
         tmp += "\r\nTHE PARTY HAS FOUND TREASURE!";
-      tempText += tmp;
+      if (!stopMessage) {
+        tempText += tmp;
+      }
     }
     else
     {
@@ -19809,7 +19830,7 @@ void COMBAT_RESULTS_MENU_DATA::OnInitialEvent(void)
     };
     FormatDisplayText(textData, tempText);
     break;
-
+    }
   case PartyRanAway:
     globalData.global_asl.Insert("Combat Result", "Flee", ASLF_MODIFIED);
     if (party.numCharacters == 1)
