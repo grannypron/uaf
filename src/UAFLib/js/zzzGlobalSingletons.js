@@ -5,6 +5,7 @@ var combatVictorType = new combatVictorTypeObj();
 var creatureSizeType = new creatureSizeTypeObj(creatureSizeType);
 var eventDirType = new eventDirTypeObj();
 var eventDistType = new eventDistTypeObj();
+var ActorInstanceType = new ActorInstanceTypeObj();
 var EventSourceType = new EventSourceTypeObj();
 var genderType = new genderTypeObj(genderType);
 var eventType = new eventTypeObj();
@@ -18,6 +19,7 @@ var moneyData = new MONEY_DATA_TYPE();
 var surfaceType = new surfaceTypeObj();
 var SCRIPT_SOURCE_TYPE = new SCRIPT_SOURCE_TYPEObj();
 var SPECAB_STRING_TYPE = new SPECAB_STRING_TYPEObj();
+var SPELL_EFFECTS_DATA = new SPELL_EFFECTS_DATA();
 var CBFUNC = new CBFUNCObj();
 var CBRESULT = new CBRESULTObj();
 var globalData = new GLOBAL_STATS();
@@ -33,4 +35,17 @@ var combatSummary = new COMBAT_SUMMARY();
 var PATH_DIR = new PATH_DIRObj();
 var monsterArrangement = new MonsterArrangement();
 
+var raceData = new RACE_DATA_TYPE();
+var baseclassData = new BASE_CLASS_DATA_TYPE();
+var classData = new CLASS_DATA_TYPE();
+var specialAbilitiesData = new A_SPECABILITY_DEF_L();
+var abilityData = null;//new ABILITY_DATA_TYPE();
+
+
 var pathMgr = new PATH_MANAGER();
+
+var RunTimeIF = new RunTimeIF();
+
+var RNG = new DefaultRNG();
+
+var DEFAULT_SPELL_EFFECT_FLAGS = SPELL_EFFECTS_DATA.ALL_TARG_TYPES;

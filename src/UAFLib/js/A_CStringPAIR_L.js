@@ -8,6 +8,26 @@ A_CStringPAIR_L.prototype.Clear = function () {
     this.mItems = [];
 }
 
+A_CStringPAIR_L.prototype.GetStartPosition = function () {
+    return 0;
+}
+A_CStringPAIR_L.prototype.GetNextAssoc = function (pos) {
+    return this.mItems[pos];
+}
+
+A_CStringPAIR_L.prototype.NextPos = function (pos) {
+    var pos = pos + 1;
+    if (pos >= pos.length) {
+        return null;
+    } else {
+        return pos;
+    }
+}
+
+A_CStringPAIR_L.prototype.GetCount = function () {
+    this.mItems.length;
+}
+
 
 A_CStringPAIR_L.prototype.InsertKeyValue = function (key, value) {
     // PORT NOTE:  Rewrite to make this simpler - seems like a collection that replaces if the entry is already present

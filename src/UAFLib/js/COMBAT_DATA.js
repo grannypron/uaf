@@ -220,6 +220,7 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
     this.m_bStartingNewCombatRound = true;
 
 
+
     var monsterCount = 0;
     this.monsterDistance = this.m_pEvent.distance;
     for (; ;)  // Try distances until at least one monster in sincluded
@@ -397,7 +398,7 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
             this.ClearCharContext();
             if (!priority.IsEmpty()) {
                 var k;
-                k = parseInt(priority);
+                k = UAFUtil.ScriptAtoI(priority);
                 this.m_aCombatants[i].scriptPriority = k;
             };
         };
@@ -436,7 +437,6 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
 
     this.PlaceCursorOnDude(0, true);
     Drawtile.ClearEmptyCellSearch(); // don't need this data anymore
-
     {
         var hookParameters = new HOOK_PARAMETERS();
         var scriptContext = new SCRIPT_CONTEXT();
@@ -749,7 +749,7 @@ COMBAT_DATA.prototype.AddCombatants = function () {
 
 
 COMBAT_DATA.prototype.AddCharsToCombatants = function() {
-    var temp;
+    var temp = new COMBATANT();
 
     for (i = 0; i < party.numCharacters; i++)
     {
@@ -762,13 +762,13 @@ COMBAT_DATA.prototype.AddCharsToCombatants = function() {
 
             // Add new combatant to array of combatants.
             //temp.InitFromCharData(i);
-            this.m_aCombatants[m_iNumCombatants] = temp;
+            this.m_aCombatants[this.m_iNumCombatants] = temp;
             this.m_iNumCombatants++;
             {
                 var j;
                 for (j = 0; j < this.m_iNumCombatants; j++) {
-                    if (this.m_aCombatants[j].m_pCharacter == NULL) continue;
-                    this.m_aCombatants[j].m_pCharacter.m_pCombatant = m_aCombatants[j];
+                    if (this.m_aCombatants[j].m_pCharacter == null) continue;
+                    this.m_aCombatants[j].m_pCharacter.m_pCombatant = this.m_aCombatants[j];
                 };
             }
             this.m_aCombatants[this.m_iNumCombatants - 1].InitFromCharData(i);

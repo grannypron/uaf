@@ -13,6 +13,10 @@ Globals.prototype.debug = function (msg) {
     var log = System.Console.WriteLine; log(msg);
 }
 
+Globals.prototype.WriteDebugString = function (msg) {
+    this.debug(msg);
+}
+
 Globals.prototype.MsgBoxError = function (msg) {
     /** TODO **/
 }
@@ -23,6 +27,11 @@ Globals.prototype.debugStop = function (msg) {
 
 Globals.prototype.IsCombatActive = function () {
     return combatData.m_bCombatActive;
+}
+
+Globals.prototype.GetMaxPartyMembers = function()
+{
+    return (Math.min(MAX_PARTY_MEMBERS, globalData.GetMaxPartySize()));
 }
 
 Globals.prototype.StripFilenamePath = function (filename) {
@@ -47,6 +56,20 @@ Globals.prototype.GetGameVersion = function(data) {
     return data.version;
 }
 
+Globals.prototype.RollDice = function(sides, numTimes, bonus) {
+    if (sides <= 0) return bonus;//0.0;
+    if (numTimes <= 0) return bonus;//0.0;
+    var result = 0.0;
+    for (var i = 0; i < numTimes; i++)
+    result += ((this.randomMT() % sides) + 1);
+    result += bonus;
+    return result;
+}
+
+Globals.prototype.randomMT = function () {
+    // Passing this off to an RNG that can be swapped in
+    return RNG.newDWORD();
+}
 
 Globals.MIN_INTELLIGENCE = 3;
 Globals.MAX_INTELLIGENCE = 25;

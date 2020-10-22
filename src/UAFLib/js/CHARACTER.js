@@ -1,7 +1,6 @@
 ///*** LEFT OFF: THAC0 is returning NaN
 
 
-var DEFAULT_SPELL_EFFECT_FLAGS = SPELL_EFFECTS_DATA.ALL_TARG_TYPES;
 var MAX_CHARACTERS = INT_MAX; // Max pre-gen NPC's 
 var MAX_CHAR_NAME = 30; // should match MAX_MONSTER_NAME!
 var MAX_AC = 10;
@@ -885,7 +884,7 @@ CHARACTER.prototype.getCharWeaponText = function (wpn, dmg) {
     temp2 = "";
     var dmg_bonus = 0;
 
-    var wpnHand = this.myItems.GetReadiedItem(WeaponHand, 0);
+    var wpnHand = this.myItems.GetReadiedItem(Items.WeaponHand, 0);
 
     if (wpnHand != Items.NO_READY_ITEM) {
         var itemID = new ITEM_ID();
@@ -1001,9 +1000,9 @@ CHARACTER.prototype.getInfo = function () {
                 "DEX=" + this.GetAdjDex() + ";" +
                 "CON=" + this.GetAdjCon() + ";" +
                 "CHA=" + this.GetAdjCha() + ";" +
-                "race=" + RACE_DATA_TYPE.GetRaceName(this.race) + ";" +
+                "race=" + raceData.GetRaceName(this.race) + ";" +
                 "gender=" + (this.GetAdjGender() == genderType.Male ? "male" : "female") + ";" +
-                "class=" + CLASS_DATA_TYPE.PeekClass(this.GetClass()).m_name + ";" +
+                "class=" + classData.PeekClass(this.GetClass()).m_name + ";" +
                 "align=" + alignmentType.GetAlignmentName(this.GetAlignment()) + ";"
 
     return result;
@@ -1173,7 +1172,7 @@ CHARACTER.prototype.CanReady = function (index) {
             var hookParameters = new HOOK_PARAMETERS();
             var scriptContext = new SCRIPT_CONTEXT();
             var answer;
-            actor = this.GetContext();
+            actor = this.GetContextActor();
             actor = RunTimeIF.SetCharContext(actor);
             pItem = this.itemData.GetItem(this.myItems.GetItem(index));
             scriptContext.SetCharacterContext(this);
@@ -1586,7 +1585,7 @@ CHARACTER.prototype.ReadyXXXScript = function (rdyLoc, scriptName, index) {
             var pItem;
             var hookParameters = new HOOK_PARAMETERS();
             var scriptContext = new SCRIPT_CONTEXT();
-            actor = this.GetContext();
+            actor = this.GetContextActor();
             actor = RunTimeIF.SetCharContext(actor);
             pItem = this.itemData.GetItem(this.myItems.GetItem(index));
             scriptContext.SetCharacterContext(this);
@@ -1606,7 +1605,7 @@ CHARACTER.prototype.UnReadyXXXScript = function (scriptName, index) {
     var pItem;
     var hookParameters = new HOOK_PARAMETERS();
     var scriptContext = new SCRIPT_CONTEXT();
-    actor = this.GetContext();
+    actor = this.GetContextActor();
     actor = RunTimeIF.SetCharContext(actor);
     pItem = this.itemData.GetItem(this.myItems.GetItem(index));
     scriptContext.SetCharacterContext(this);
@@ -1757,7 +1756,7 @@ CHARACTER.prototype.addCharMoneyToItemList = function (list) {
 
 CHARACTER.prototype.removeCharMoney = function (itype, qty) {
     if (!Items.itemIsMoney(itype)) {
-        UAFUtil.WriteDebugString("Wrong item type passed to removeCharMoney()\n");
+        Globals.WriteDebugString("Wrong item type passed to removeCharMoney()\n");
         return;
     }
 
@@ -2121,7 +2120,7 @@ CHARACTER.prototype.GetAdjMaxMovement = function (flags, comment) {
             var pCombatant;
             minmax[0] = -1;
             minmax[1] = UAFUtil.ByteFromHexString("0x7fffffff");
-            actor = this.GetContext();
+            actor = this.GetContextActor();
             actor = RunTimeIF.SetCharContext(actor);
             hookParameters[5].Format("%i", GetMaxMovement());
             scriptContext.SetCharacterContext(this);
@@ -2142,7 +2141,7 @@ CHARACTER.prototype.GetAdjMaxMovement = function (flags, comment) {
             };
             scriptContext.Clear();
             RunTimeIF.ClearCharContext();
-            if ((minmax[0] == -1) && (minmax[1] == 0x7fffffff)) return GetMaxMovement();
+            if ((minmax[0] == -1) && (minmax[1] == 0x7fffffff)) return this.GetMaxMovement();
             else return minmax[1];
         }
     }
@@ -2256,7 +2255,291 @@ CHARACTER.prototype.DisplayCurrSpellEffects = function (SrcFunc) {
     }
 };
 
+CHARACTER.prototype.UpdateSpellAbility = function () {
+    if (this.GetType() == MONSTER_TYPE) return;
 
+/**
+#ifdef UpdateSpellOld   // PORT NOTE: Did not copy over all the commented out code for this - assumed no UpdateSpellOld
+#else
+**/
+    if (this.spellAbility.valid) return;
+    this.spellAbility.Clear();
+    this.spellAbility.valid = true;
+/**
+#ifdef OldDualClass20180126   // PORT NOTE: Did not copy over all the commented out code for this - assumed no OldDualClass20180126
+#else
+**/
+    {
+        var i, n;
+        n = this.baseclassStats.length;
+        for (i = 0; i < n; i++) {
+            var pBaseclassStats;
+            pBaseclassStats = this.baseclassStats[i];       // PORT NOTE:  Used regular array so no need for peeks
+            this.UpdateSpellAbilityForBaseclass(pBaseclassStats);
+        };
+    };
+//#endif
+//#endif
+};
+
+CHARACTER.prototype.UpdateSpellAbilityForBaseclass = function (pBaseclassStats) {
+    var m, j, effectiveBaseclassLevel;
+    var pBaseclass;
+    if (!this.CanUseBaseclassBaseclassStats(pBaseclassStats)) return;
+    if (pBaseclassStats.currentLevel > 0)
+    {
+        effectiveBaseclassLevel = pBaseclassStats.currentLevel;
+    }
+    else
+    {
+        effectiveBaseclassLevel = pBaseclassStats.previousLevel;
+    };
+    if ((pBaseclassStats.pBaseclassData == null)
+        ||  (pBaseclassStats.pBaseclassData.BaseclassID() != pBaseclassStats.baseclassID))
+    {
+        pBaseclassStats.pBaseclassData = baseclassData.GetByBaseclassID(pBaseclassStats.baseclassID);
+    };
+    pBaseclass = pBaseclassStats.pBaseclassData;
+    if (pBaseclass == null) return;
+    m = pBaseclass.GetCastingInfoCount();
+    for (j=0; j<m; j++)
+    {
+        var k, spellLevel;
+        var primeScore, bonusScore, maxSpells, maxSpellLevel, baseclassLevel;
+        var pMaxSpellsByPrime = [];
+        var pMaxSpellLevelsByPrime = [];
+        var pSpellLimits = [];
+        var pCastingInfo = [];
+        var pSchoolID = "";
+        var pPrimeAbility = "";
+        var pBonusAbility = "";
+        var pSchoolAbility;
+        pCastingInfo = pBaseclass.PeekCastingInfo(j);
+        pSchoolID = pCastingInfo.schoolID;
+        // Do we already have a spell ability for this school?
+        k = spellAbility.LocateSchoolAbility(pSchoolID);
+        if (k < 0) {
+            var schoolAbility = new SCHOOL_ABILITY();
+            schoolAbility.schoolID = pSchoolID;
+            k = spellAbility.GetSchoolAbilityCount();
+            // We need to add a school to the spellAbility
+            spellAbility.Add(schoolAbility);
+        };
+        pSchoolAbility             = spellAbility.GetSchoolAbility(k);
+        pPrimeAbility              = pCastingInfo.primeAbility;
+        pBonusAbility              = pBaseclass.m_spellBonusAbility;
+        baseclassLevel             = effectiveBaseclassLevel;
+        pMaxSpellsByPrime          = pCastingInfo.m_maxSpellsByPrime;
+        pMaxSpellLevelsByPrime     = pCastingInfo.m_maxSpellLevelsByPrime;
+        primeScore                 = GetAbilityScore(pPrimeAbility);
+        bonusScore                 = GetAbilityScore(pBonusAbility);
+        pSpellLimits               = pCastingInfo.m_spellLimits[baseclassLevel-1];
+        {
+          var idx;
+          maxSpellLevel            = 0;
+          for (idx=0; idx < MAX_SPELL_LEVEL; idx++)
+          {
+            if (pSpellLimits[idx] != 0) maxSpellLevel = idx+1;
+          };
+        };
+        maxSpells                  = pMaxSpellsByPrime[primeScore-1];
+        if (maxSpells > pSchoolAbility.maxSpells)
+        {
+          pSchoolAbility.maxSpells = maxSpells;
+        };
+        pSchoolAbility.maxAbilitySpellLevel = pMaxSpellLevelsByPrime[primeScore-1];
+        for (spellLevel = 1; spellLevel <= maxSpellLevel; spellLevel++)
+        {
+            if (pSpellLimits[spellLevel-1] >= pSchoolAbility.base[spellLevel-1])
+            {
+            pSchoolAbility.base[spellLevel-1] = pSpellLimits[spellLevel-1];
+            if (baseclassLevel > pSchoolAbility.baseclassLevel[spellLevel-1])
+            {
+                pSchoolAbility.baseclassLevel[spellLevel-1] = baseclassLevel;
+                // The highest baseclass level that contributed the largest 
+                // number of base spells at this spell level.
+            };
+        };
+    };
+    {  // Add the bonus spells for high baseclass levels.
+      var idx, num;
+      num = pBaseclass.m_bonusSpells.GetSize()/3;
+      for (idx =0; idx<num; idx++)
+      {
+        if (bonusScore >= pBaseclass.m_bonusSpells[3* idx])
+        {
+          var level, bonus;
+          level = pBaseclass.m_bonusSpells[3* idx +2];
+          if (level > maxSpellLevel) continue;
+          if (level > pSchoolAbility.maxAbilitySpellLevel) continue;
+          bonus = pBaseclass.m_bonusSpells[3* idx +1];
+          pSchoolAbility.bonus[level-1] += bonus;
+        };
+      };
+    };
+  };
+}
+
+CHARACTER.prototype.CanUseBaseclassBaseclassStats = function (pBaseclassStats) {
+    // He can use this baseclass if it is a current baseclass.
+    //
+    // He can use this baseclass if it is a previous baseclass
+    // and a current baseclass level is greater than this previous baseclass level.
+    //
+    if (pBaseclassStats.currentLevel > 0) return true;
+    if (pBaseclassStats.previousLevel <= 0) return false;
+    {
+        var i, n;
+        n = this.baseclassStats.GetCount();
+        for (i = 0; i < n; i++) {
+            if (this.baseclassStats[i].previousLevel > 0) continue;
+            if (this.baseclassStats[i].currentLevel > pBaseclassStats.previousLevel) return true;
+        };
+    };
+    return false;
+}
+
+CHARACTER.prototype.GetAllowInCombat = function () {
+    return this.allowInCombat;
+}
+
+CHARACTER.prototype.GetMorale = function () {
+    return this.morale;
+}
+
+CHARACTER.prototype.SetAllowPlayerControlFlag = function (flag) {
+    this.allowPlayerControl = flag;
+    this.SetAutomatic(!this.allowPlayerControl);
+}
+
+CHARACTER.prototype.SetAutomatic = function (flag) {
+    this.automatic = flag;
+}
+
+CHARACTER.prototype.determineNbrAttacks = function () {
+    var spellName = "";
+    var actor;
+    var hookParameters = new HOOK_PARAMETERS();
+    var scriptContext = new SCRIPT_CONTEXT();
+
+    var minmax = [- 1, 9999999];
+    actor = this.GetContextActor();
+    actor = RunTimeIF.SetCharContext(actor);
+
+    var pCombatant;
+    pCombatant = this.m_pCombatant;
+    if (pCombatant != null) {
+        var pWeapon;
+        var wpn;
+        var weaponID;
+        wpn = this.myItems.GetReadiedItem(Items.WeaponHand, 0);
+        if (wpn != Items.NO_READY_ITEM) {
+            weaponID = this.myItems.GetItem(wpn);
+            pWeapon = itemData.GetItem(weaponID);
+            scriptContext.SetItemContext(pWeapon);
+            scriptContext.SetItemContextKey(wpn);
+        };
+        scriptContext.SetCombatantContext(pCombatant);
+    };
+
+    scriptContext.SetCharacterContext(this);
+    if (pCombatant != null) {
+        pCombatant.RunCombatantScripts(SPECAB.GET_NUMBER_OF_ATTACKS,
+            SPECAB.ScriptCallback_MinMax,
+            minmax,
+            "Determine number of attacks");
+    };
+    SPECAB.RunCharacterScripts(SPECAB.GET_NUMBER_OF_ATTACKS,
+        SPECAB.ScriptCallback_MinMax,
+        minmax,
+        "Determine number of attacks");
+    RunTimeIF.ClearCharContext();
+
+    if (minmax[1] != 9999999) {
+        this.SetNbrAttacks(minmax[1]);
+        return this.GetNbrAttacks();
+    };
+
+    if (this.GetType() != MONSTER_TYPE)
+        this.SetNbrAttacks(1.0);
+    else
+        this.SetNbrAttacks(monsterData.GetMonsterNbrAttacks(monsterID));
+
+    if (this.myItems.GetReadiedItem(WeaponHand, 0) != Items.NO_READY_ITEM) {
+        var wpnAttacks = itemData.GetItemROF(this.myItems.GetItem(this.myItems.GetReadiedItem(WeaponHand, 0)));
+        if (wpnAttacks < 1.0) wpnAttacks = 1.0;
+        this.SetNbrAttacks(wpnAttacks);
+        // check for sweeps
+    }
+    return this.GetNbrAttacks();
+}
+
+CHARACTER.prototype.GetContextActor = function (pActor) {               // PORT NOTE: Changed to have a return type since no out params in JS.  Also, changed name because no overrides by parameter types in JS
+  //  Avoid all these extra Clears!!!  ActorType data;
+
+    var pActor = new ActorType();
+    if (this.m_pCombatant != null)
+    {
+        return this.m_pCombatant.GetContextActor();
+    };
+    this.pActor.Clear();
+
+    if (this.IsPartyMember()) {
+        pActor.SetPartySrc();
+    }
+    else {
+        switch (this.GetType()) {
+        case MONSTER_TYPE:
+            pActor.SetMonsterSrc();
+            break;
+        case NPC_TYPE:
+            pActor.SetNPCSrc();
+            if (this.gender == genderType.Bishop) {
+                pActor.SetBishopSrc();
+            };
+            break;
+        case CHAR_TYPE:
+            // This will be used during character creation. The temp char
+            // is displayed before it is added to the party.
+            //return NULL_ACTOR;
+            pActor.SetCreatedCharacterSrc();
+            break;
+        case FAKE_CHARACTER_TYPE:
+            // Used when processing script $CASTSPELLONTARGET.
+            pActor.SetFakeCharacterSrc();
+            if (this.IsCombatActive()) {
+                pActor.Flags &= ~FLAG_NONCOMBAT;
+                pActor.Flags |= FLAG_COMBAT;
+            };
+            break;
+        }
+    }
+
+    // if ClassFlag=0, GetCurrentLevel will
+    // return the highest level attained from
+    // all classes this character has
+    pActor.Level = 0;  // Unknown level
+
+    pActor.m_raceID = this.race;
+    pActor.m_classID = this.GetClass();
+    if (this.gender == genderType.Bishop) {
+        pActor.Instance = this.origIndex;
+        pActor.instanceType = ActorInstanceType.InstanceType_GlobalDataIndex;
+    }
+    else if (this.IsPartyMember()) {
+        pActor.Instance = this.uniquePartyID; // assigned when added to party, never changes
+        pActor.instanceType = ActorInstanceType.InstanceType_UniquePartyID;
+    }
+    else {
+        pActor.Instance = this.origIndex;
+        pActor.instanceType = ActorInstanceType.InstanceType_OrigIndex;
+    };
+    return pActor;
+}
+
+CHARACTER.prototype.IsPartyMember = function () {
+    return ((this.type & IN_PARTY_TYPE) > 0);
+}
 
 CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };
 CHARACTER.prototype.GetBestMemorizedHealingSpell = function (pSpellID) { throw "todo"; };
@@ -2270,8 +2553,6 @@ CHARACTER.prototype.UpdateStats = function (IsNewChar) { throw "todo"; };
 CHARACTER.prototype.UpdateBaseclassLevels = function () { throw "todo"; };
 CHARACTER.prototype.UpdateLevelBasedStats = function () { throw "todo"; };
 CHARACTER.prototype.UpdateSkillBasedStats = function () { throw "todo"; };
-CHARACTER.prototype.UpdateSpellAbility = function () { throw "todo"; };
-CHARACTER.prototype.UpdateSpellAbilityForBaseclass = function(pBaseclassStats) { throw "todo"; }
 CHARACTER.prototype.CanBeModified = function() { throw "todo"; }
 CHARACTER.prototype.generateNewCharacter = function(StartExperience, StartExpType) { throw "todo"; }
 CHARACTER.prototype.getNewCharLevel = function(pTrainableBaseclasses, maxLevelGain) { throw "todo"; }
@@ -2289,15 +2570,13 @@ CHARACTER.prototype.TrainCharacter = function(pTrainableBaseclasses) { throw "to
 CHARACTER.prototype.CanChangeToClass = function(pFromClass, pToClass) { throw "todo"; }
 CHARACTER.prototype.CreateChangeClassList = function(pClassArray) { throw "todo"; }
 CHARACTER.prototype.HumanChangeClass = function(classID) { throw "todo"; }
-CHARACTER.prototype.CanUseBaseclass = function(pBaseclassStats) { throw "todo"; }
-CHARACTER.prototype.CanUseBaseclass = function(baseclassID) { throw "todo"; }
+CHARACTER.prototype.CanUseBaseclassBaseclassID = function(baseclassID) { throw "todo"; }
 CHARACTER.prototype.IsDualClass = function() { throw "todo"; }
 CHARACTER.prototype.IsUsingBaseclass = function(baseclassID) { throw "todo"; }
 CHARACTER.prototype.IsAlive = function() { throw "todo"; }
 CHARACTER.prototype.GetContext = function(pActor, baseclassID) { throw "todo"; }
 CHARACTER.prototype.GetContext = function(pActor, schoolID) { throw "todo"; }
 CHARACTER.prototype.GetContext = function(pActor, pSpell) { throw "todo"; }
-CHARACTER.prototype.GetContext = function(pActor) { throw "todo"; }
 CHARACTER.prototype.EvalDiceAsClass = function(dice, baseclassID, pRollerLevel) { throw "todo"; }
 CHARACTER.prototype.EvalDiceAsClass = function(dice, schoolID, spellLevel, pRollerLevel) { throw "todo"; }
 CHARACTER.prototype.EvalDiceAsClass = function(dice, pSpell, pRollerLevel) { throw "todo"; }
@@ -2310,7 +2589,6 @@ CHARACTER.prototype.GetCureDisease = function() { throw "todo"; }
 CHARACTER.prototype.SetCureDisease = function(val) { throw "todo"; }
 CHARACTER.prototype.IncCureDisease = function() { throw "todo"; }
 CHARACTER.prototype.HaveCureDisease = function() { throw "todo"; }
-CHARACTER.prototype.GetMorale = function() { throw "todo"; }
 CHARACTER.prototype.GetAdjMorale = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
 CHARACTER.prototype.SetMorale = function(val) { throw "todo"; }
 CHARACTER.prototype.DetermineUnarmedHitDice = function() { throw "todo"; }
@@ -2318,7 +2596,6 @@ CHARACTER.prototype.DetermineCharHitDice = function() { throw "todo"; }
 CHARACTER.prototype.DetermineHitDiceBonus = function(baseclassID) { throw "todo"; }
 CHARACTER.prototype.GetNbrHD = function() { throw "todo"; }
 CHARACTER.prototype.SetNbrHD = function(val) { throw "todo"; }
-CHARACTER.prototype.determineNbrAttacks = function() { throw "todo"; }
 CHARACTER.prototype.GetNbrAttacks = function() { throw "todo"; }
 CHARACTER.prototype.SetNbrAttacks = function(val) { throw "todo"; }
 CHARACTER.prototype.GetCurrentLevel = function(baseclassID) { throw "todo"; }
@@ -2334,7 +2611,6 @@ CHARACTER.prototype.GetMagicResistance = function() { throw "todo"; }
 CHARACTER.prototype.GetAdjMagicResistance = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
 CHARACTER.prototype.SetMagicResistance = function(val) { throw "todo"; }
 CHARACTER.prototype.GetHighestLevelBaseclass = function() { throw "todo"; }
-CHARACTER.prototype.GetAllowInCombat = function() { throw "todo"; }
 CHARACTER.prototype.GetAdjClass = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
 CHARACTER.prototype.GetAdjAlignment = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
 CHARACTER.prototype.GetAdjStatus = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
@@ -2368,14 +2644,11 @@ CHARACTER.prototype.PrimeSpellCastingScore = function(spellSchool) { throw "todo
 CHARACTER.prototype.HaveSpell = function(spellID, checkmemorized) { throw "todo"; }
 CHARACTER.prototype.GetSpellBookIndex = function(spellID, checkMemorized) { throw "todo"; }
 CHARACTER.prototype.GetAbilityLimits = function(abilityID) { throw "todo"; }
-CHARACTER.prototype.IsPartyMember = function() { throw "todo"; }
 CHARACTER.prototype.SetPartyMember = function(flag) {if (flag == undefined) {flag = true;}};
 CHARACTER.prototype.SetType = function(flag) { throw "todo"; }
 CHARACTER.prototype.GetAutomatic = function() { throw "todo"; }
-CHARACTER.prototype.SetAutomatic = function(flag) { throw "todo"; }
 CHARACTER.prototype.GetAdjAutomatic = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
 CHARACTER.prototype.GetAllowPlayerControl = function() { throw "todo"; }
-CHARACTER.prototype.SetAllowPlayerControl = function(flag) { throw "todo"; }
 CHARACTER.prototype.GetAdjAllowPlayerControl = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
 CHARACTER.prototype.GetDetectingInvisible = function() { throw "todo"; }
 CHARACTER.prototype.SetDetectingInvisible = function(flag) { throw "todo"; }
@@ -2451,7 +2724,7 @@ CHARACTER.prototype.CanBeHeldOrCharmed = function() { throw "todo"; }
 CHARACTER.prototype.AffectedByDispelEvil = function() { throw "todo"; }
 CHARACTER.prototype.CharacterID = function(id) { throw "todo"; }
 CHARACTER.prototype.ProcessLingeringSpellEffects = function() { throw "todo"; }
-//CHARACTER.prototype.RunCharacterScripts ( scriptName, enum CBRESULT(*fnc)(enum CBFUNC func, CString *scriptResult, void *pkt), void *pkt, LPCSTR comment) { throw "todo"; }
+CHARACTER.prototype.RunCharacterScripts = function (scriptName, func, pkt, comment) { throw "todo"; }
 CHARACTER.prototype.GetSpellCount = function() { throw "todo"; }
 CHARACTER.prototype.ClearSpellbook = function() { throw "todo"; }
 CHARACTER.prototype.FetchCharacterSpell = function(spellID, pCharSp) { throw "todo"; }
@@ -2510,4 +2783,15 @@ CHARACTER.prototype.GetFirstEffectAttributeMod = function(attr) {
         pos = this.m_spellEffects.NextPos(pos);   //PORT NOTE: Added - no out params in Javascript, so have to advance pointer (pos)
     }
     return null;
+}
+
+
+CHARACTER.prototype.SetPartyMember = function (flag) {
+    if (flag == null || flag == undefined) {
+        flag = true;
+    }
+
+    if (flag) this.type |= IN_PARTY_TYPE;
+    else this.type &= (~IN_PARTY_TYPE);
+
 }

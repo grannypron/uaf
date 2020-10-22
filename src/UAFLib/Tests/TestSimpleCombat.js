@@ -24,12 +24,17 @@ cWarrior.m_pCharacter = Warrior;
 
 //cWarrior.StartAttack(1);
 
+SPECAB.loadData(specialAbilitiesData, "C:\\Users\\Shadow\\Downloads\\Full_Release_191031\\TutorialDesign.dsn\\Data\\specialAbilities.dat");
 
 var combatEventData = new COMBAT_EVENT_DATA();
 var combatData = new COMBAT_DATA();    // This is pretty much the combat "map" and all data on it
 party.Posx = 10;
 party.Posy = 10;
-party.addTempToParty(cWarrior);
+globalData.SetMaxPCs(2);
+globalData.SetMinPCs(2);
+globalData.SetMaxPartySize(2);
+
+party.addTempToParty(Warrior);
 combatEventData.distance = eventDistType.UpClose;
 combatEventData.m_UseOutdoorMap = false; // only outdoor stub is in place right now
 combatData.InitCombatData(combatEventData);

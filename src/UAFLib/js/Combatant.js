@@ -60,6 +60,10 @@ COMBATANT.prototype.Clear = function () {
     this.combatantSA.InsertAbility("Competing", "", "Combatant Constructor ", "");
 }
 
+COMBATANT.prototype.GetName = function () {
+    return this.m_pCharacter.GetName();
+};
+
 COMBATANT.prototype.State = function (ICS) {
     if (this.m_pCharacter != null) {
         //WriteDebugString("DEBUG - COMBATANT(%s)::State(%d)\n", m_pCharacter->GetName(),ICS);
@@ -92,14 +96,15 @@ COMBATANT.prototype.EnterGuardingState = function () {
         "Combatant entering guarding state");
 }
 
-COMBATANT.prototype.RunCombatantScripts = function(scriptName, callback, pkt, comment) {
+COMBATANT.prototype.RunCombatantScripts = function (scriptName, fnc, pkt, comment) {
+    //Globals.debug("RunCombatantScripts:"  + scriptName);
         return this.combatantSA.RunScripts(scriptName,
             fnc,
             pkt,
             comment,
-            ScriptSourceType_Combatant,
+            SCRIPT_SOURCE_TYPE.ScriptSourceType_Combatant,
 //#ifdef newCombatant                           // PORT NOTE: Don't know which to choose
-            GetName()
+            this.GetName()
 //#else
 //name
 //#endif
@@ -158,4 +163,106 @@ COMBATANT.prototype.StartAttack = function(targ, additionalAttacks) {
     this.EnsureVisibleTarget(targ);
     this.continueAttack = true;
     return true;
+}
+
+COMBATANT.prototype.InitFromCharData = function(dude) {
+    if (this.m_pCharacter != null) {
+        Globals.die(0x6659c);
+    }
+    this.m_pCharacter = party.characters[dude];
+    if (this.m_pCharacter.m_pCombatant != null) {
+        Globals.die(0x5cbff);
+    };
+    this.m_pCharacter.m_pCombatant = this;
+    this.m_preCombatMorale = this.m_pCharacter.GetMorale();
+
+    this.SetPartyMember(true);
+    this.State(individualCombatantState.ICS_None);
+    origKey = dude;
+    this.m_iMovement = 0;
+    this.m_iNumDiagonalMoves = 0;
+
+    this.friendly = true;
+    this.m_adjFriendly = 0;
+    // NPC in party cannot be controlled in combat unless it is a 
+    // pre-generated character
+    //20140915 PRS SetAllowPlayerControl( (GetType()==CHAR_TYPE) || (m_pCharacter->IsPreGen) );
+    this.SetAllowPlayerControl(true);
+    this.m_iFacing = this.DetermineInitialFacing(party.facing);
+    this.m_iMoveDir = this.m_iFacing;
+
+    this.determineNbrAttacks(); // lookup max possible defaults
+    if (this.GetAdjAutomatic()) {
+        this.ReadyBestArmor();
+        this.ReadyBestWpn(NO_DUDE);
+        this.ReadyBestShield();
+    }
+    this.determineNbrAttacks();
+    this.determineAvailAttacks(this.GetNbrAttacks()); // now take ready wpn into account
+    //WriteDebugString("add 2: origIndex %i, origKey %i\n", origIndex, origKey);
+}
+
+COMBATANT.prototype.SetPartyMember = function (flag) {
+    if (flag == null || flag == undefined) { flag = true; }
+    this.m_pCharacter.SetPartyMember(flag);
+}
+
+COMBATANT.prototype.SetAllowPlayerControl = function (flag) {
+    this.m_pCharacter.SetAllowPlayerControlFlag(flag);
+}
+
+COMBATANT.prototype.determineNbrAttacks = function () {
+    return this.m_pCharacter.determineNbrAttacks();
+}
+
+COMBATANT.prototype.determineAvailAttacks = function (numberOfAttacks) {
+    this.availAttacks = numberOfAttacks;
+
+    /** //PORT NOTE:  Nah not worth it for the debug message
+    var temp = availAttacks;
+    var t = timeGetTime();
+    TRACE("%d determineAvailAttacks\n", t);
+    TRACE("Setting availAttacks for %i to %f\n", self, temp);   
+    */
+}
+
+COMBATANT.prototype.DetermineInitialFacing = function(PartyFacing) {
+    switch (PartyFacing) {
+        case FACE_NORTH:
+        case FACE_SOUTH:
+            if (Globals.RollDice(100, 1, 0) <= 50)
+                return FACE_EAST;
+            else
+                return FACE_WEST;
+
+        case FACE_EAST:
+            return FACE_EAST;
+        case FACE_WEST:
+            return FACE_WEST;
+    }
+    return FACE_EAST;
+}
+
+COMBATANT.prototype.GetContextActor = function() {
+    var pActor = new ActorType();
+    pActor.Clear();
+
+    if (this.IsPartyMember()) {
+        pActor.SetCombatPartySrc(this.friendly);
+    }
+    else {
+        if (this.GetType() == MONSTER_TYPE)
+            pActor.SetCombatMonsterSrc(this.friendly);
+        else if (this.GetType() == NPC_TYPE)
+            pActor.SetCombatNPCSrc(this.friendly);
+        //#ifdef newCombatantx                            // PORT NOTE: ????
+        else
+            Globals.die(0xea667);
+        //#endif
+    }
+    return pActor;
+}
+
+COMBATANT.prototype.IsPartyMember = function()  {
+    return this.m_pCharacter.IsPartyMember();
 }

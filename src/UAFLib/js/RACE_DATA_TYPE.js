@@ -7,4 +7,3 @@ RACE_DATA_TYPE.prototype.GetRaceName = function (str) {
     return str;
 }
 
-var RACE_DATA_TYPE = new RACE_DATA_TYPE();

@@ -8,5 +8,3 @@ CLASS_DATA_TYPE.prototype.PeekClass = function (str) {
     obj.m_name = str;
     return obj;
 }
-
-var CLASS_DATA_TYPE = new CLASS_DATA_TYPE();

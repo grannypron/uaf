@@ -801,7 +801,7 @@ Drawtile.prototype.ObsticalType = function(x, y, w, h, CheckOccupants, ignoreCur
                 dude = getCombatantInCell(x + j, y + i, 1, 1);
                 if ((dude != NO_DUDE) && (!ignoreCurrentCombatant || (dude != combatData.GetCurrCombatant())))
                     return OBSTICAL_TYPE.OBSTICAL_occupied;
-                if (pCombatantLinger != NULL) {
+                if (pCombatantLinger != null) {
                     if (activeSpellList.LingerSpellBlocksCombatant(x + j, y + i, pCombatantLinger)) return OBSTICAL_TYPE.OBSTICAL_lingeringSpell;
                 };
             }

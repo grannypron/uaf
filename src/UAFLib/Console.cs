@@ -18,6 +18,8 @@ namespace UAFLib
                 runTest(@"..\..\..\UAFLib\Tests\TestStripFilenamePath.js");
                 runTest(@"..\..\..\UAFLib\Tests\TestCharacterSerialize.js");
                 runTest(@"..\..\..\UAFLib\Tests\TestTagList.js");
+                runTest(@"..\..\..\UAFLib\Tests\TestRollDice.js");
+                runTest(@"..\..\..\UAFLib\Tests\TestGlobalStats.js");
                 runTest(@"..\..\..\UAFLib\Tests\TestSimpleCombat.js");
                 // Next: make a test case where the monsters get added - see COMBAT_DATA.prototype.AddMonstersToCombatants and implement COMBAT_DATA.prototype.determineInitCombatPos
             }

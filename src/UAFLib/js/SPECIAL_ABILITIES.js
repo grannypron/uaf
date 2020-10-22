@@ -9,6 +9,27 @@ SPECIAL_ABILITIES.prototype.Clear = function () {
     this.m_specialAbilities.Clear();
 }
 
+SPECIAL_ABILITIES.prototype.GetHeadPosition = function () {
+    return this.m_specialAbilities.GetStartPosition();
+}
+
+SPECIAL_ABILITIES.prototype.FindAbility = function (key) {
+    for (i = 0; i < this.m_specialAbilities; i++) {
+        if (this.m_specialAbilities[i] != null && this.m_specialAbilities[i].m_key == key) {
+            return this.m_specialAbilities[i];
+        }
+    }
+}
+
+SPECIAL_ABILITIES.prototype.GetNextData = function(pos) {
+    var pEntry;
+    pEntry = this.m_specialAbilities.GetNextAssoc(pos);
+    return pEntry;
+}
+
+SPECIAL_ABILITIES.prototype.NextPos = function(pos) {
+    return this.m_specialAbilities.NextPos(pos);
+}
 
 SPECIAL_ABILITIES.prototype.SerializeCAR = function(ar, version, objName, objType) {
     if ((version <= 0.920) && !ar.IsStoring()) {
@@ -43,6 +64,86 @@ SPECIAL_ABILITIES.prototype.InsertAbility = function(name, param, d1, d2) {
     };
     this.InsertAbility_RO(name, param, d1, d2);
 }
+
+SPECIAL_ABILITIES.prototype.GetCount = function (){
+    this.m_specialAbilities.GetCount();
+}
+
+SPECIAL_ABILITIES.prototype.RunScripts = function(scriptName, fnc, pkt, comment, sourceType, sourceName) {
+    var scripts = [SPECAB.MAX_SPEC_AB];
+    var saAbility = [SPECAB.MAX_SPEC_AB];
+    var binScript = "";
+    var numScript = 0;
+    var i;
+    var pAbility = null;
+    var pSpecAb;
+    var pSpecString;
+    var pos;
+    
+    pos = this.GetHeadPosition();
+    while (pos != null) {
+        pAbility = this.GetNextData(pos);
+        pos = this.NextPos(pos);
+        if (pAbility == null) break;  // Why would this happen?
+        Globals.debug(specialAbilitiesData);
+        pSpecAb = specialAbilitiesData.FindAbility(pAbility.m_key);
+        if (pSpecAb == null) continue;
+        pSpecString = pSpecAb.Find(scriptName);
+        if (pSpecString == null) continue;
+        if (numScript >= SPECAB.MAX_SPEC_AB) continue;
+        if (pSpecString.Flags() == SPECAB_STRING_TYPE.SPECAB_SCRIPT) {
+            var gpdlcomp = new GPDLCOMP();
+            binScript = gpdlcomp.CompileScript(frontEnd + pSpecString.Value() + backEnd, SAentries);
+            if (binScript[0] != 0) {
+                Globals.WriteDebugString("* * * * Script Error in " + pAbility.Key() + "[" + scriptName + "]\n");
+                pSpecString.Value(binScript);
+                pSpecString.Flags(SPECAB_STRING_TYPE.SPECAB_SCRIPTERROR);
+                pSpecAb.Insert(scriptName, binScript, SPECAB_STRING_TYPE.SPECAB_SCRIPTERROR);
+                continue;
+            };
+            pSpecString.Value(binScript);
+            pSpecString.Flags(SPECAB_STRING_TYPE.SPECAB_BINARYCODE);
+            pSpecAb.Insert(scriptName, binScript, SPECAB_STRING_TYPE.SPECAB_BINARYCODE);
+        };
+        if (pSpecString.Flags() != SPECAB_STRING_TYPE.SPECAB_BINARYCODE) continue;
+        saAbility[numScript] = pAbility;
+        scripts[numScript++] = pSpecString;
+    };
+    if (numScript != 0) {
+        var callbackResult;
+        for (i = 0; i < numScript; i++) {
+            pSpecString = scripts[i];
+            pScriptContext.SetAbility(this, saAbility[i]);
+            pScriptContext.SetSA_Source_Type(sourceType);
+            pScriptContext.SetSA_Source_Name(sourceName);
+            pScriptContext.SetSA_ScriptName(pSpecString.Key());
+            gpdlStack.Push();
+            SPECAB.p_hook_parameters[0] = gpdlStack.activeGPDL().ExecuteScript(scripts[i].Value(), 1, null, 0);
+            gpdlStack.Pop();
+            pScriptContext.ClearAbility();
+            callbackResult = fnc(CBFUNC.CBF_EXAMINESCRIPT, SPECAB.p_hook_parameters[0], pkt);
+
+            if ((globalLoggingFlags & 1) || (globalSA_debug.Find(saAbility[i].Key()) != NULL)) {
+                WriteDebugString("@@SA \"%s\" Script \"%s\": %s%s returned \"%s\"\n",
+                    saAbility[i].Key(),
+                    scripts[i].Key(),
+                    pScriptContext.GetSourceTypeName(),
+                    sourceName,
+                    SPECAB.p_hook_parameters[0]);
+            };
+
+            if (callbackResult == CBR_STOP) {
+                return SPECAB.p_hook_parameters[0];
+            };
+        };
+        fnc(CBFUNC.CBF_ENDOFSCRIPTS, SPECAB.p_hook_parameters[0], pkt);
+    }
+    else {
+        fnc(CBFUNC.CBF_DEFAULT, SPECAB.p_hook_parameters[0], pkt);
+    };
+    return SPECAB.p_hook_parameters[0];
+}
+
 
 function SPECAB() {
 
@@ -181,7 +282,11 @@ function SPECAB() {
     this.NO_SUCH_SA                     = "-?-?-= ";
 
     this.ClearHookParameters = function () {
-        throw "todo";
+        var i;
+        this.p_hook_parameters = [];
+        for (i = 0; i < 10; i++) {
+            this.p_hook_parameters[i] = "";
+        };
     }
 
     this.NUMHOOKPARAM = 10;
@@ -288,41 +393,82 @@ function SPECAB() {
 
 };
 
+SPECAB.prototype.loadData = function (data, fullPath) {
+    var e;
+    var myFile;
+    var success = true;
+
+    if (globalData.version < _SPECIAL_ABILITIES_VERSION_) return success;
+
+    var fileBytes;
+    try {
+        fileBytes = System.IO.File.ReadAllBytes(fullPath);
+    } catch (ex) {
+        Globals.WriteDebugString("Unable to open special abilities db file " + fullPath + ", error " + ex + " \n");
+        return 0;
+    }
+
+    data.Clear();
 
 
-function HOOK_PARAMETERS() {
-    this.m_prevHookParameters = null;
-    this.m_hookParameters = [SPECAB.NUMHOOKPARAM];
-    this.m_prevHookParameters = SPECAB.p_hook_parameters;
-    SPECAB.p_hook_parameters = this;
-};
+    {
+        Globals.WriteDebugString("Loading special abilities DB\n");
+        var ar = new CAR(System.IO.File.OpenRead(fullPath), 6.0);
+//        try {
+            data.SerializeCAR(ar);
+//        }
+//        catch (ex)
+//        {
+//            throw ex;
+//            Globals.WriteDebugString("Unable to load special abilities data file " + fullPath + "\n");
+//            success = false;
+//        }
+        ar.Close();
+    }
 
+    if (data.GetCount() == 0)
+        Globals.WriteDebugString("No special abilities in special abilities db file\n");
 
-function SCRIPT_CONTEXT() {
-    this.m_prevScriptContext = null;
-    this.m_prevScriptContext = SPECAB.pScriptContext;
-    this.pScriptContext = this;
+    return success;
+}
 
-    this.context = null;          // The context of RunScripts()
-    this.pItemContext = null;
-    this.pBaseclassContext = null;
-    this.pClassContext = null;
-    this.pSpellContext = null;
-    this.pMonstertypeContext = null;
-    this.pSpellgroupContext = null;
-    this.pRaceContext = null;
-    this.pAbilityContext = null;
-    this.pToHitComputationContext = null;
-//#ifdef USE_TRAITS         // PORT NOTE: ???
-    this.pTraitContext = null;
-//#endif
-    this.pCreatedCharacterContext = null;
-    this.scriptSourceType = SCRIPT_SOURCE_TYPE.ScriptSourceType_Unknown;
-    this.eventX = -1;
-    this.eventY = -1;
-    this.eventID = -1;
-    this.eventLevel = -1;
-};
+SPECAB.prototype.ScriptCallback_MinMax = function (func, scriptResult, pkt) {
+    var minmax = pkt;
+    var n;
+    var pStr;
+    if (func != CBFUNC.CBF_EXAMINESCRIPT) return CBRESULT.CBR_CONTINUE;
+    pStr = scriptResult;
+    // If it starts with a number we simply move the
+    // max down to that number and the min up to that number.
+    if (UAFUtil.IsDigit(pStr[0])) {
+        n = UAFUtil.ScriptAtoI(pStr, minmax[0], minmax[1]);
+        if (n > minmax[0]) minmax[0] = n;
+        if (n < minmax[1]) minmax[1] = n;
+        return CBRESULT.CBR_CONTINUE;
+    };
+    for (; ;) {
+        if (pStr[0] == '=') {
+            n = UAFUtil.ScriptAtoI(pStr, minmax[0], minmax[1]);
+            if (n > minmax[0]) minmax[0] = n;
+            if (n < minmax[1]) minmax[1] = n;
+            continue;
+        };
+        if (pStr[0] == '<') {
+            pStr++;
+            n = SUAFUtil.criptAtoI(pStr, minmax[0], 0x7fffffff);
+            minmax[1] = n;
+            continue;
+        };
+        if (pStr[0] == '>') {
+            pStr++;
+            n = UAFUtil.ScriptAtoI(pStr, 0, minmax[1]);
+            minmax[0] = n;
+            continue;
+        };
+        return CBRESULT.CBR_CONTINUE;
+    };
+}
+
 
 
 var SPECAB = new SPECAB();

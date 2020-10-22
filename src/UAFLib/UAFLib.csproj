@@ -52,6 +52,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="UAFCArchive">
+      <HintPath>Debug\UAFCArchive.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Console.cs" />
@@ -63,21 +66,33 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="SaveB.pty" />
+    <None Include="specialAbilities.dat" />
     <None Include="Tests\Druid.chr" />
     <None Include="Tests\Priestess.chr" />
     <None Include="Tests\Rogue.chr" />
     <None Include="Tests\Warrior.chr" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="js\aaa_class.js" />
+    <Content Include="js\ActorInstanceType.js" />
+    <Content Include="js\CDATA.js" />
+    <Content Include="js\CODES.js" />
+    <Content Include="js\DDATA.js" />
+    <Content Include="js\HOOK_PARAMTERS.js" />
+    <Content Include="js\RNG.js" />
+    <Content Include="js\RunTimeIF.js" />
+    <Content Include="js\SCRIPT_CONTEXT.js" />
+    <Content Include="js\SPECABILITY_DEF.js" />
+    <Content Include="js\SPELL_EFFECTS_DATA.js" />
     <Content Include="js\ATTACK_DETAILS.js" />
     <Content Include="js\ATTACK_DATA.js" />
     <Content Include="js\AURA_SHAPE.js" />
     <Content Include="js\AURA_WAVELENGTH.js" />
     <Content Include="js\A_SPECABILITY_DEF_L.js" />
     <Content Include="js\AURA_ATTACHMENT.js" />
+    <Content Include="js\BASE_CLASS_DATA_TYPE.js" />
     <Content Include="js\CBRESULT.js" />
-    <Content Include="js\COMBAT_SUMMARY - Copy.js" />
+    <Content Include="js\EVENT_TRIGGER_DATA.js" />
+    <Content Include="js\TASK_STATE_DATA.js" />
     <Content Include="js\DEFAULT_GLOBAL_SCRIPT.js" />
     <Content Include="js\CBFUNC.js" />
     <Content Include="js\SPECAB_STRING_TYPE.js" />
@@ -93,6 +108,7 @@
     <Content Include="js\Drawtile.js" />
     <Content Include="js\TERRAIN_CELL.js" />
     <Content Include="js\TAG_LIST.js" />
+    <Content Include="js\ActorType.js" />
     <Content Include="js\TURNING_SUMMARY.js" />
     <Content Include="js\QueuedCombatantData.js" />
     <Content Include="js\EventSourceType.js" />
@@ -157,7 +173,9 @@
     <Content Include="js\SPELL_ABILITY.js" />
     <Content Include="js\ITEM_DATA_TYPE.js" />
     <Content Include="js\CHARACTER_ID.js" />
+    <Content Include="Tests\TestRollDice.js" />
     <Content Include="Tests\TestSimpleCombat.js" />
+    <Content Include="Tests\TestGlobalStats.js" />
     <Content Include="Tests\TestStripFilenamePath.js" />
     <Content Include="Tests\TestTagList.js" />
     <Content Include="Tests\TestUtilHex.js" />

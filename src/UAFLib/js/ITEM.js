@@ -24,7 +24,7 @@ ITEM.prototype.Clear = function ()
     charges = 0;
     cursed = FALSE;
     paid = -1;
-    pItemData = NULL;
+    pItemData = null;
 };
 
 ITEM.prototype.SerializeCAR = function (ar, ver) {

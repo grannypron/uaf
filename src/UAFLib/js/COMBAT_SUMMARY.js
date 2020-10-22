@@ -1,4 +1,4 @@
-** TODO ** /
+/** TODO **/
 function COMBAT_SUMMARY() {
     this.m_thinkCount = 0;
     this.m_filenum = 0;

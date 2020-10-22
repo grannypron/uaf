@@ -31,12 +31,19 @@ UAFUtil.prototype.setCharAt = function(str, index, chr) {
 }
 
 
-UAFUtil.prototype.ScriptAtoI = function(p, min, max)
-{
+UAFUtil.prototype.ScriptAtoI = function(p, min, max) {
     var n = parseInt(p);
     if (n < min) n = min;
     if (n > max) n = max;
     return n;
 }
+
+
+
+UAFUtil.prototype.IsDigit = function(c) {
+    return (c >= '0') && (c <= '9');
+}
+
+
 
 var UAFUtil = new UAFUtil();

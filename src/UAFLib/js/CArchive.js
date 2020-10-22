@@ -42,6 +42,14 @@ CArchive.prototype.writeByte = function (val) {
     this.MFCSerializer.writeByte(val);
 }
 
+CArchive.prototype.readChar = function () {
+    return this.readByte();
+}
+
+CArchive.prototype.writeChar = function (val) {
+    this.writeByte(val);
+}
+
 CArchive.prototype.writeObject = function (obj) {
     obj.Serialize(this, this.version);
 }
@@ -83,3 +91,6 @@ CArchive.prototype.readFloat = function () {
 }
 
 
+CArchive.prototype.Close = function () {
+    return this.MFCSerializer.Close();
+}

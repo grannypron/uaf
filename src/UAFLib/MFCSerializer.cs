@@ -290,5 +290,9 @@ namespace UAFLib
 			}
 			return b;
 		}
+		public void Close()
+        {
+			this.mStream.Close();
+        }
 	}
 }

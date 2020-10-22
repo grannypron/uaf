@@ -9,6 +9,17 @@ var NO_READY_ITEM = -1;
 var MAXTASK = 30;
 var MAX_PARTY_MEMBERS = 12;
 
+// These were moved to externs.h because so many
+// files needed just these four symbols from char.h
+// and monster.h.
+var CHAR_TYPE = 1;
+var NPC_TYPE = 2;
+var MONSTER_TYPE = 3;
+var FAKE_CHARACTER_TYPE = 127;
+var IN_PARTY_TYPE = 128;
+
+var NO_MONSTER = -1;
+
 var NO_DUDE = -1;
 
 var FACE_NORTH = 0;
@@ -295,4 +306,25 @@ var _ITEM_DB_VERSION_             = _VERSION_0560_;
 var _SPELL_DB_VERSION_            = _VERSION_0560_;
 var _MONSTER_DB_VERSION_          = _VERSION_0500_;
 var _SPECIAL_ABILITIES_VERSION_   = _VERSION_0930;
-var _CELL_CONTENTS_VERSION        = 5.0;
+var _CELL_CONTENTS_VERSION = 5.0;
+
+
+var EA_NULL     = 0x000;
+var EA_ENEMY    = 0x001;
+var EA_ALLY     = 0x002;
+var EA_LOCATION = 0x004;
+    
+var FLAG_COMBAT             = 0x001;
+var FLAG_NONCOMBAT          = 0x002;
+var FLAG_XY                 = 0x004;
+var FLAG_PARTY_MEMBER       = 0x008;
+var FLAG_ITEM               = 0x010;
+var FLAG_MONSTER            = 0x020;
+var FLAG_NPC                = 0x040;
+var FLAG_FAKE_COMBATANT     = 0x080;
+var FLAG_COMBATANT          = 0x100;      // Combatant versus character
+var FLAG_CREATED_CHARACTER  = 0x200;
+var FLAG_FAKE_CHARACTER     = 0x400;
+var FLAG_BISHOP             = 0x800;
+
+var LEVEL_UNKNOWN           = 0xffffffff;

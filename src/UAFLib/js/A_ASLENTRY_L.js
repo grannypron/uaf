@@ -30,6 +30,7 @@ A_ASLENTRY_L.prototype.SerializeCAR = function (ar, mapName) {
         else {
             var temp;
             var count;
+            Globals.debug("ar:" + ar.m_compressType);
             temp = ar.readString();
             if (temp != mapName) {
                 var msg;
