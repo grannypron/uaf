@@ -11,6 +11,21 @@ namespace UAFLib
         
         public void helloWorld()
         {
+
+            /*
+            unsafe
+            {
+                fixed (char* p = @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\specialAbilities.dat")
+                {
+                    CARWrapper cFileWrapper = new CARWrapper(p, 13);   // 12 for the string header and one for the compression type (which is 02)
+                    int i = cFileWrapper.decompressInt(4);
+                    sbyte* s = cFileWrapper.decompressString();
+                    System.Console.WriteLine(i);
+                }
+            }
+            //c.decompress
+            */
+
             try
             {
                 //**TODO: go back through the C++ source and find all instances of "delete" and re-insert them back with calls to a MemoryManager() class.  Apparently jint responds to delete statements, although all engines might not
@@ -20,6 +35,8 @@ namespace UAFLib
                 runTest(@"..\..\..\UAFLib\Tests\TestTagList.js");
                 runTest(@"..\..\..\UAFLib\Tests\TestRollDice.js");
                 runTest(@"..\..\..\UAFLib\Tests\TestGlobalStats.js");
+                runTest(@"..\..\..\UAFLib\Tests\TestLoadSAs.js");
+                // Left off: Where the heck is Combatant::combatantSA getting loaded.  I only see one dummy(?) SA loaded in in the constructor - run the debugger on the live and catch InsertAbility
                 runTest(@"..\..\..\UAFLib\Tests\TestSimpleCombat.js");
                 // Next: make a test case where the monsters get added - see COMBAT_DATA.prototype.AddMonstersToCombatants and implement COMBAT_DATA.prototype.determineInitCombatPos
             }
@@ -57,7 +74,7 @@ namespace UAFLib
             {
                 String fileContents = LoadFileFromString(file);
                 int lineCount = fileContents.Split('\n').Length;
-                engine.Execute(fileContents);
+                 engine.Execute(fileContents);
                 lib.Add(new LibraryFile(file, lineCount));
                 //System.Console.WriteLine(file + ":" + lineCount);
             }

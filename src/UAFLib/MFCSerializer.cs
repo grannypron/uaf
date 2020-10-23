@@ -294,5 +294,11 @@ namespace UAFLib
         {
 			this.mStream.Close();
         }
+
+		public string decompress(int n)
+		{
+			return "";
+		}
 	}
+
 }

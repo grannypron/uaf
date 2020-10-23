@@ -24,6 +24,7 @@ SPECIAL_ABILITIES.prototype.FindAbility = function (key) {
 SPECIAL_ABILITIES.prototype.GetNextData = function(pos) {
     var pEntry;
     pEntry = this.m_specialAbilities.GetNextAssoc(pos);
+
     return pEntry;
 }
 
@@ -79,14 +80,12 @@ SPECIAL_ABILITIES.prototype.RunScripts = function(scriptName, fnc, pkt, comment,
     var pSpecAb;
     var pSpecString;
     var pos;
-    
     pos = this.GetHeadPosition();
     while (pos != null) {
         pAbility = this.GetNextData(pos);
-        pos = this.NextPos(pos);
+        pos = this.NextPos(pos);    // PORT NOTE:  Get the list of ability keys that I have stored (i.e. in this collection)
         if (pAbility == null) break;  // Why would this happen?
-        Globals.debug(specialAbilitiesData);
-        pSpecAb = specialAbilitiesData.FindAbility(pAbility.m_key);
+        pSpecAb = specialAbilitiesData.FindAbility(pAbility.m_key);  // PORT NOTE:  Look up my ability key in the global abilities database
         if (pSpecAb == null) continue;
         pSpecString = pSpecAb.Find(scriptName);
         if (pSpecString == null) continue;
@@ -394,6 +393,26 @@ function SPECAB() {
 };
 
 SPECAB.prototype.loadData = function (data, fullPath) {
+
+    /** TODO  - temporarily using a stub here because the compression is just too hard right now **/
+    var loader = new UAFLib.SpecabilityLoader();
+    var data = loader.load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\SpecialAbilities.xml");
+
+    var enumerator = data.GetEnumerator();
+    while (enumerator.MoveNext()) {
+        var key = enumerator.Current.Key;
+        var value = enumerator.Current.Value;
+        for (var idxAsl = 0; idxAsl < value.length; idxAsl++) {
+            try {
+                specialAbilitiesData.InsertString(key, value[idxAsl][0], value[idxAsl][1], 2);
+            } catch (ex) {
+                Globals.debug("SA load failed on " + key);
+            }
+        }
+    }
+    return true;
+
+/*
     var e;
     var myFile;
     var success = true;
@@ -429,7 +448,7 @@ SPECAB.prototype.loadData = function (data, fullPath) {
     if (data.GetCount() == 0)
         Globals.WriteDebugString("No special abilities in special abilities db file\n");
 
-    return success;
+    return success;*/
 }
 
 SPECAB.prototype.ScriptCallback_MinMax = function (func, scriptResult, pkt) {

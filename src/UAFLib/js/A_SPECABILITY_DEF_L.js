@@ -8,17 +8,42 @@ A_SPECABILITY_DEF_L.prototype.Clear = function () {
 }
 
 A_SPECABILITY_DEF_L.prototype.FindAbility = function (key) {
+    var idx = this.FindAbilityIdx(key);
+    if (idx == null)
+        return null;
+    return this.mItems[idx];
+}
+
+A_SPECABILITY_DEF_L.prototype.FindAbilityIdx = function (key) {
     for (idx = 0; idx < this.mItems.length; idx++) {
         if (this.mItems[idx].m_specAbName == key) {
-            return this.mItems[idx];
+            return idx;
         }
     }
     return null;
 }
 
+A_SPECABILITY_DEF_L.prototype.GetCount = function () {
+    return this.mItems.length;
+}
+
+A_SPECABILITY_DEF_L.prototype.InsertString = function (abilityName, key, value, flags) {
+    // PORT NOTE: Rewrote
+    // Find the Ability by the name.  If it is not present, add it
+    var idx = this.FindAbilityIdx(abilityName);
+    if (idx == null) {
+        idx = this.mItems.push(new SPECABILITY_DEF());
+        idx = idx - 1;
+    }
+    this.mItems[idx].m_specAbName = abilityName;
+    this.mItems[idx].m_abilityStrings.Insert(key, value, flags);
+}
+
 
 A_SPECABILITY_DEF_L.prototype.SerializeCAR = function (car) {
-    if (car.IsStoring()) {
+    //**TODO: This is done in SPECAB.loadData now **/
+
+    /*if (car.IsStoring()) {
         var count;
         var pos;
         var pSpecAb;
@@ -80,7 +105,7 @@ A_SPECABILITY_DEF_L.prototype.InsertAbility = function (specAbilityName) {
         //return foundData;
     //};
     //return pSpecAbilityDef;
-
+    */
 }
 
 

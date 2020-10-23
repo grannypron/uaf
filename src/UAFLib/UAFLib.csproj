@@ -28,6 +28,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -52,7 +53,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UAFCArchive">
+    <Reference Include="UAFCArchive, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>Debug\UAFCArchive.dll</HintPath>
     </Reference>
   </ItemGroup>
@@ -62,6 +64,7 @@
     <Compile Include="LibraryInfo.cs" />
     <Compile Include="MFCSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpecabilityLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -173,7 +176,9 @@
     <Content Include="js\SPELL_ABILITY.js" />
     <Content Include="js\ITEM_DATA_TYPE.js" />
     <Content Include="js\CHARACTER_ID.js" />
+    <Content Include="SpecialAbilities.xml" />
     <Content Include="Tests\TestRollDice.js" />
+    <Content Include="Tests\TestLoadSAs.js" />
     <Content Include="Tests\TestSimpleCombat.js" />
     <Content Include="Tests\TestGlobalStats.js" />
     <Content Include="Tests\TestStripFilenamePath.js" />

@@ -16,8 +16,8 @@ A_CStringPAIR_L.prototype.GetNextAssoc = function (pos) {
 }
 
 A_CStringPAIR_L.prototype.NextPos = function (pos) {
-    var pos = pos + 1;
-    if (pos >= pos.length) {
+    pos = pos + 1;
+    if (pos >= this.mItems.length) {
         return null;
     } else {
         return pos;
@@ -39,7 +39,7 @@ A_CStringPAIR_L.prototype.InsertKeyValue = function (key, value) {
     }
     var CStringPAIR = {};
     CStringPAIR.m_key = key;
-    CStringPAIR.m_key = value;
+    CStringPAIR.m_value = value;
     this.mItems.push(CStringPAIR);
     return false;
 }

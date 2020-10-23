@@ -2,7 +2,26 @@
 #include "CAR.h"
 
 
+static int mallocSequence = 0;
+void* My_malloc(int size)
+{
+    int* result;
+    result = (int*)malloc(size + sizeof(int));
+    if (result == NULL)
+    {
+        exit(1);
+    };
+    *result = ++mallocSequence;
+    return (void*)(result + 1);
+}
 
+void My_free(void* addr)
+{
+    free((int*)addr - 1);
+}
+
+
+//CAR::CAR(CFileWrapper cFile, UINT nMode) : ar(&cFile.cfile, nMode) {}
 //CAR::CAR(CFile *pFile, UINT nMode) :  CArchive(pFile, nMode)
 CAR::CAR(CFile* pFile, UINT nMode) : ar(pFile, nMode)
 {
@@ -18,6 +37,44 @@ CAR::CAR(CFile* pFile, UINT nMode) : ar(pFile, nMode)
     m_OC = 0;
     m_numCode = 0;
     m_C = 0;
+}
+
+
+void CAR::Compress(bool compression)
+{
+    m_compressType = 0;
+    if (compression)
+    {
+        m_codes = new CODES;
+        m_w = 0xffff;
+        m_bufferIndex = 0;
+        m_stkLen = 0;
+        m_OC = 0xffff;
+        m_numCode = 256;
+        if (IsStoring())
+        {
+            //*this << (char)2; // Compression type in clear  // PORT NOTE: Hard-coded this
+            memset(m_buffer, 0, sizeof(m_buffer));
+            m_compressType = 2;
+            m_cData = new CDATA; // Compression Data
+        }
+        else
+        {
+            m_dData = new DDATA; // Decompression Data
+            //*this >> m_compressType;
+            m_compressType = 2;  // PORT NOTE: Hard-coded this
+        };
+    }
+    else
+    {
+        if (m_cData != NULL) delete m_cData;
+        if (m_dData != NULL) delete m_dData;
+        if (m_codes != NULL) delete m_codes;
+        m_cData = NULL;
+        m_dData = NULL;
+        m_codes = NULL;
+    };
+
 }
 
 
@@ -90,7 +147,7 @@ void CAR::compress(const char* chars, int n)
     };
 }
 
-void CAR::decompress(char* chars, int n)
+void CAR::decompressInt(char* chars, int n, MemoryReader* source)
 {
     // static unsigned _int16 OC=0xffff;
     // static unsigned _int16 prefix[8192];
@@ -113,7 +170,7 @@ void CAR::decompress(char* chars, int n)
         };
         if (m_bufferIndex == 0)
         {
-            if (Read(m_buffer, sizeof(m_buffer)) != sizeof(m_buffer)) return;
+            if (source->read(m_buffer, sizeof(m_buffer)) != sizeof(m_buffer)) return;
         };
         theN = (unsigned __int16)(((*((unsigned int*)(((char*)m_buffer) + (m_bufferIndex >> 3)))) >> (m_bufferIndex & 7)) & 0x1fff);
         m_bufferIndex = (m_bufferIndex + 13) % 416;
@@ -123,7 +180,7 @@ void CAR::decompress(char* chars, int n)
             m_numCode = 256;
             if (m_bufferIndex == 0)
             {
-                if (Read(m_buffer, 52) != 52) return;
+                if (source->read(m_buffer, 52) != 52) return;
             };
             theN = (unsigned __int16)(((*((unsigned int*)(((char*)m_buffer) + (m_bufferIndex >> 3)))) >> (m_bufferIndex & 7)) & 0x1fff);
             m_bufferIndex = (m_bufferIndex + 13) % 416;
@@ -170,6 +227,68 @@ void CAR::decompress(char* chars, int n)
         *chars = m_dData->m_stack[--m_stkLen];
     };
 }
+
+
+void CAR::decompressString(CString& str, MemoryReader* src)
+{
+    if (m_compressType == 0)
+    {
+        //*(CArchive *)this >> str;
+        ar >> str;
+        return; //*this;
+    };
+    unsigned int index;
+    decompressInt((char*)(&index), 4, src);
+    if (index == 0)
+    { // A new string
+  //    *(CArchive *)this >> str;
+        int len;
+        char* temp = NULL;
+        decompressInt((char*)(&len), 4, src);
+        if (len > 1000000)
+        {
+            throw(0x23);
+        };
+        if (len == 0)
+        {
+            str = "";
+        }
+        else
+        {
+            temp = (char*)My_malloc(len + 1);
+            if (temp == NULL)
+            {
+                //MsgBoxError("Memory exhausted");
+                str = "";
+            }
+            else
+            {
+                decompressInt((char*)(&len), 4, src);
+                temp[len] = 0;
+                str = CString(temp, len);
+                if (m_compressType > 1)
+                {
+                    if (len != (int)strlen(temp))
+                    {
+                        My_free(temp);
+                        return;// *this;
+                    };
+                };
+            };
+        };
+        m_stringArray.SetAtGrow(m_nextIndex, str);
+        m_nextIndex++;
+        if (temp != NULL) My_free(temp);
+        return;// *this;
+    };
+    if (index >= (unsigned)m_stringArray.GetSize())
+    {
+        throw 0x23;
+    };
+    str = m_stringArray[index];
+    //return *this;
+}
+
 
 
 

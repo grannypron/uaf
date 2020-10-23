@@ -166,18 +166,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CAR.h" />
+    <ClInclude Include="CARWrapper.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="MemoryReader.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CAR.cpp" />
-    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="CARWrapper.cpp" />
+    <ClCompile Include="MemoryReader.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\Downloads\Full_Release_191031\TutorialDesign.dsn\Data\specialAbilities.dat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -97,7 +97,6 @@ COMBATANT.prototype.EnterGuardingState = function () {
 }
 
 COMBATANT.prototype.RunCombatantScripts = function (scriptName, fnc, pkt, comment) {
-    //Globals.debug("RunCombatantScripts:"  + scriptName);
         return this.combatantSA.RunScripts(scriptName,
             fnc,
             pkt,

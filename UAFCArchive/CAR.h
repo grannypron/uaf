@@ -1,10 +1,13 @@
 #pragma once 
-#include "afx.h"
+#include <afx.h>
+#include <afxtempl.h>
+#include "MemoryReader.h"
 
 #define CArchiveBufSize 7
 #define CArchiveBufCur 9
 #define CArchiveBufMax 10
 #define CArchiveBufStart 11
+
 
 public class CAR //: public CArchive
 {
@@ -75,11 +78,11 @@ private:
 private:
     char m_compressType;
     unsigned int m_nextIndex;
+    CMap <CString, LPCSTR, unsigned int, unsigned int> stringIndex;
+    CArray <CString, CString&> m_stringArray;
     DDATA* m_dData; // Allocated at run time on heap.  We like
     CDATA* m_cData; // to keep these large items off the stack.
     CODES* m_codes;
-    void compress(const char* chars, int num);
-    void decompress(char* chars, int num);
     unsigned __int16 m_w;
     unsigned int m_bufferIndex;
     unsigned int m_buffer[13]; // 52 bytes
@@ -89,6 +92,10 @@ private:
     unsigned char m_C;
 public:
     CAR(CFile* pFile, UINT nMode);
+    //CAR(CFileWrapper cFile, UINT nMode);
     ~CAR(void);
     void Compress(bool compress);
+    void compress(const char* chars, int num);
+    void decompressInt(char* chars, int num, MemoryReader* src);
+    void decompressString(CString& str, MemoryReader* src);
 };

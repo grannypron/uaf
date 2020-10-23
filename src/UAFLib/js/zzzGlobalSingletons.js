@@ -49,3 +49,6 @@ var RunTimeIF = new RunTimeIF();
 var RNG = new DefaultRNG();
 
 var DEFAULT_SPELL_EFFECT_FLAGS = SPELL_EFFECTS_DATA.ALL_TARG_TYPES;
+
+
+var UAFLib = importNamespace("UAFLib");  // For Jint to access C# library

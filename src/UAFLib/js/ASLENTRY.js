@@ -36,6 +36,12 @@ ASLENTRY.prototype.Equals = function (atv) {
     if (atv == null) { return null; }
     return atv.m_flags == this.m_flags && atv.m_value == this.m_value;
 }
+
+
+ASLENTRY.prototype.Flags = function () {
+    throw "todo -- ASLENTRY.prototype.Flags";
+}
+
 /**
  *  TODO
 ASLENTRY.prototype.Serialize = function (ar) { }

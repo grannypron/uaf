@@ -24,16 +24,28 @@
     <ClInclude Include="CAR.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CARWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CAR.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CARWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\Downloads\Full_Release_191031\TutorialDesign.dsn\Data\specialAbilities.dat" />
   </ItemGroup>
 </Project>
