@@ -25,6 +25,7 @@ cWarrior.m_pCharacter = Warrior;
 //cWarrior.StartAttack(1);
 
 SPECAB.loadData(specialAbilitiesData, "C:\\Users\\Shadow\\Downloads\\Full_Release_191031\\TutorialDesign.dsn\\Data\\specialAbilities.dat");
+Globals.logDebuggingInfo = true;
 
 var combatEventData = new COMBAT_EVENT_DATA();
 var combatData = new COMBAT_DATA();    // This is pretty much the combat "map" and all data on it

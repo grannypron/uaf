@@ -236,7 +236,7 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
         this.determineInitCombatPos();
 
         for (i = 0; i < this.m_iNumCombatants; i++) {
-            //WriteDebugString("DEBUG - Combatant %d starts at (%d,%d)\n", i, m_aCombatants[i].x, m_aCombatants[i].y);
+            Globals.WriteDebugString("DEBUG - Combatant " + i + " starts at (" + m_aCombatants[i].x + "," + m_aCombatants[i].y + ")\n");
         };
         if (Globals.logDebuggingInfo) {
             Globals.WriteDebugString("Finished placing combatants on map\n");
@@ -1220,7 +1220,6 @@ COMBAT_DATA.prototype.determineInitCombatPos = function () {
     var pReset = true;
     var mReset = true;
     var partyArrangement;
-
     monsterArrangement.Activate(this.NumCombatants());
 
 
@@ -1301,7 +1300,8 @@ COMBAT_DATA.prototype.determineInitCombatPos = function () {
         if (this.m_aCombatants[i].GetIsFriendly()) {
             var rx;
             var ry;
-            this.determineInitCombatPos(this.m_aCombatants[i],
+            Globals.debug("COMBAT_DATA::determineInitCombatPos: " + i + ", " + this.m_aCombatants[i]);
+            this.determineInitCombatPosCombatant(this.m_aCombatants[i],
                                 i, 
                                 pReset,
                                 true,
@@ -1320,7 +1320,6 @@ COMBAT_DATA.prototype.determineInitCombatPos = function () {
             this.getNextMonsterCombatDirection(i, mReset);
         }
     };
-
 
     monsterArrangement.totalNumMonster = monsterArrangement.numMonster[0]
         + monsterArrangement.numMonster[1]
@@ -1415,6 +1414,7 @@ COMBAT_DATA.prototype.determineInitCombatPos = function () {
             };
         };
     };
+
     monsterArrangement.deActivate();
 }
 
@@ -1476,4 +1476,134 @@ COMBAT_DATA.prototype.ComputeDistanceFromParty = function() {
         };
     };
     delete queue;
-};
+}
+
+
+COMBAT_DATA.prototype.determineInitCombatPosCombatant = function(pCombatant, i, reset, ignoreCurrentCombatant, partyArrangement) {
+    if (pCombatant.GetIsFriendly()) {
+        //#ifdef newPartyArrangement                  // PORT NOTE: I THINK this is on
+        var facing = 0;
+        var dirStr = 0;
+        var partySize = 0;
+        var partyArrangementIndex = 0;
+        // Save the position of the party itself as seen by the monsters.
+        // Manikus says this is the position of the party member in the
+        // case that the party consists of one character.
+        facing = party.GetPartyFacing();
+
+        switch (facing) {
+            default:  // To keep the compiler quiet.
+            case FACE_NORTH: dirStr = 0; break;
+            case FACE_EAST: dirStr = 1; break;
+            case FACE_SOUTH: dirStr = 2; break;
+            case FACE_WEST: dirStr = 3; break;
+        };
+        partyArrangementIndex = dirStr * (MAX_PARTY_MEMBERS + 1) * (MAX_PARTY_MEMBERS);
+        // partyArrangement points to one of four direction strings.
+        //
+        // Now find the string that corresponds to the party size.
+        partySize = party.numCharacters;
+        partyArrangementIndex += (partySize - 1) * (partySize);   //n*(a+b)/2=(ps-1)*(2+2*(ps-1))/2=(ps-1)*(1+ps-1)
+        // Now we assume that the marching order is equal to i.
+        partyArrangementIndex += 2 * i;
+
+        this.getNextCharCombatPos(pCombatant,
+            reset,
+            ignoreCurrentCombatant,
+            partyArrangement + partyArrangementIndex);
+        //#else
+        //     getNextCharCombatPos(pCombatant, reset, ignoreCurrentCombatant);
+        //#endif
+        if (pCombatant.x >= 0) {
+            this.placeCombatant(pCombatant.x,
+                pCombatant.y,
+                i,
+                pCombatant.width,
+                pCombatant.height);
+        }
+    }
+    else {
+        /*
+         * #ifdef newMonsterArrangement // PORT NOTE: I THINK this is on, but all the code in the true clause was commented out
+        //#else
+           getNextMonsterCombatPos(*pCombatant);
+           if (pCombatant->x >= 0)
+           {
+             placeCombatant(pCombatant->x, 
+                            pCombatant->y, 
+                            i, 
+                            pCombatant->width,
+                            pCombatant->height);
+           }
+         //#endif
+         */
+    }
+}
+
+var COMBAT_DATA_initialX = 0; //
+var COMBAT_DATA_initialY = 0;
+var COMBAT_DATA_searchOrder = [-1, -1, 0, -1, 1, -1, -1, 0, 1, 0, -1, 1, 0, 1, 1, 1];
+
+COMBAT_DATA.prototype.getNextCharCombatPos = function(pDude,  pReset, ignoreCurrentCombatant, partyArrangement) {
+    var initialX = COMBAT_DATA_initialX;        // PORT NOTE: these two were originally static int variables
+    var initialY = COMBAT_DATA_initialY;
+    var bestX = 0, bestY = 0;
+    var x = 0, y = 0, dx = 0, dy = 0;
+    var dir = 0, delta = 0;
+    var i = 0;
+    var searchOrder = COMBAT_DATA_searchOrder; // PORT NOTE:  Another static variable
+
+    if (pReset) {
+        initialX = this.m_iPartyOriginX;
+        initialY = this.m_iPartyOriginY;
+        pReset = false;
+    }
+    bestX = initialX;
+    bestY = initialY;
+    bestX += UAFUtil.Decode(partyArrangement[0]);
+    bestY += UAFUtil.Decode(partyArrangement[1]);
+    //WriteDebugString("DEBUG - initialX=%d; initialY=%d; bestX=%d; bestY=%d\n",initialX, initialY, bestX, bestY);
+    dir = 3;
+    i = -1;
+    for (delta = 0; delta < 8; delta++)  // search 225 cells.....enough is enough!
+    {
+        dx = 1;
+        dy = 0;
+        x = bestX - delta;
+        y = bestY - delta;
+        for (; dir < 4; dir++) {
+            for (; i < 2 * delta; i++) {
+                if (this.PlaceCharacter(pDude, x, y, ignoreCurrentCombatant)) {
+                    if (OBSTICAL_TYPE.OBSTICAL_none != OBSTICAL_TYPE.ObsticalTypeConstrucorIGuessTodo(pDude.x, pDude.y, pDude.width, pDude.height, true, ignoreCurrentCombatant, null))
+                        Globals.WriteDebugString("getNextCharCombatPos() returns a cell containing a wall\n");
+                    else
+                        Globals.TRACE("Placing char at combat pos " + pDude.x + "," + pDude.y + "\n");
+                    return;
+                };
+                x += dx;
+                y += dy;
+            };
+            i = dx;
+            dx = -dy;
+            dy = i;
+            i = 0;
+
+        };
+        dir = 0;
+    };
+
+    if (OBSTICAL_TYPE.OBSTICAL_none != OBSTICAL_TYPE.ObsticalTypeConstrucorIGuessTodo(pDude.x, pDude.y, pDude.width, pDude.height, true, ignoreCurrentCombatant, null))
+        Globals.WriteDebugString("getNextCharCombatPos() returns a cell containing a wall\n");
+    else
+        Globals.TRACE("Placing char at combat pos " + pDude.x + "," + pDude.y + "\n");
+}
+
+
+COMBAT_DATA.prototype.PlaceCharacter = function(pDude, x, y, ignoreCurrentCombatant) {
+    if (OBSTICAL_TYPE.OBSTICAL_none == ObsticalType.ObsticalTypeConstrucorIGuessTodo(x, y, pDude -> width, pDude -> height, TRUE, ignoreCurrentCombatant, NULL)) {
+        pDude.x = x;
+        pDude.y = y;
+        return true;
+    }
+    return false;
+}

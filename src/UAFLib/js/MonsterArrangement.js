@@ -27,7 +27,7 @@
     this.dx = [];
     this.dy = [];
     this.partyPositions = []; //Screen coordinates; 
-    this.monsterPlacement = null;     // MonsterPlacement
+    this.monsterPlacement = [];     // MonsterPlacement
     this.distanceFromParty = [];         // An entry for each cell on the map.
                                               // Index = MAX_TERRAIN*WIDTH * y + x
                                               // Walking distance.  0-->253   254=not computed  255=Not accessible.
@@ -44,8 +44,8 @@ MonsterArrangement.prototype.Activate = function (numCombatants) {
     this.numParty = 0;
     this.partyMinX = UAFUtil.ByteFromHexString("0x7fffffff"); this.partyMinY = UAFUtil.ByteFromHexString("0x7fffffff");
     this.partyMaxX = UAFUtil.ByteFromHexString("0x80000000"); this.partyMaxY = UAFUtil.ByteFromHexString("0x80000000");
-    for (i = 0; i < numCombatants.length; i++) { this.monsterPlacement.push(new MonsterPlacement()); }   //PORT NOTE:  realloc
-    for (i = 0; i < numCombatants; i++) monsterPlacement[i].Clear();
+    for (i = 0; i < numCombatants; i++) { this.monsterPlacement.push(new MonsterPlacement()); }   //PORT NOTE:  realloc
+    for (i = 0; i < numCombatants; i++) this.monsterPlacement[i].Clear();
     this.active = true;
     for (i = 0; i < Drawtile.MAX_TERRAIN_WIDTH * Drawtile.MAX_TERRAIN_HEIGHT; i++) { this.distanceFromParty[i] = 0;}
 }

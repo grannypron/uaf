@@ -40,6 +40,7 @@ var baseclassData = new BASE_CLASS_DATA_TYPE();
 var classData = new CLASS_DATA_TYPE();
 var specialAbilitiesData = new A_SPECABILITY_DEF_L();
 var abilityData = null;//new ABILITY_DATA_TYPE();
+var pScriptContext = new SCRIPT_CONTEXT();
 
 
 var pathMgr = new PATH_MANAGER();

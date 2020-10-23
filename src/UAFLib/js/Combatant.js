@@ -207,7 +207,7 @@ COMBATANT.prototype.SetPartyMember = function (flag) {
 }
 
 COMBATANT.prototype.SetAllowPlayerControl = function (flag) {
-    this.m_pCharacter.SetAllowPlayerControlFlag(flag);
+    this.m_pCharacter.SetAllowPlayerControl(flag);
 }
 
 COMBATANT.prototype.determineNbrAttacks = function () {
@@ -264,4 +264,28 @@ COMBATANT.prototype.GetContextActor = function() {
 
 COMBATANT.prototype.IsPartyMember = function()  {
     return this.m_pCharacter.IsPartyMember();
+}
+
+COMBATANT.prototype.GetAdjAutomatic = function (flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    return this.m_pCharacter.GetAdjAutomatic(flags);
+}
+
+COMBATANT.prototype.GetNbrAttacks = function () {
+    return this.m_pCharacter.GetNbrAttacks();
+}
+
+COMBATANT.prototype.LoadCombatIcon = function () {
+   /**TODO**/
+}
+
+COMBATANT.prototype.determineIconSize = function () {
+    /**TODO**/
+}
+
+COMBATANT.prototype.GetIsFriendly = function () {
+    if (this.m_adjFriendly == 0) return this.friendly;
+    if (this.m_adjFriendly == 1) return true;
+    if (this.m_adjFriendly == 2) return false;
+    return !this.friendly;
 }

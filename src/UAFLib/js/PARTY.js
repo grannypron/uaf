@@ -94,3 +94,8 @@ PARTY.prototype.addTempToParty = function(luckyDude)
     };
     return null;
 }
+
+PARTY.prototype.GetPartyFacing = function()
+{
+    return (this.facing);
+}

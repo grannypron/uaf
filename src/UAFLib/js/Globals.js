@@ -13,6 +13,10 @@ Globals.prototype.debug = function (msg) {
     var log = System.Console.WriteLine; log(msg);
 }
 
+Globals.prototype.TRACE = function (msg) {
+    this.debug(msg);
+}
+
 Globals.prototype.WriteDebugString = function (msg) {
     this.debug(msg);
 }

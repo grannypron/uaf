@@ -41,9 +41,35 @@ SCRIPT_CONTEXT.prototype.SetCombatantContext = function (pCombatant) {
     this.combatantContext = actor.ToString();
 }
 
-SCRIPT_CONTEXT.prototype.SetCharacterContext = function(pChar)
-{
+SCRIPT_CONTEXT.prototype.SetCharacterContext = function(pChar) {
     var actor;
     actor = pChar.GetContextActor();
     this.characterContext = actor.ToString();
+}
+
+
+
+SCRIPT_CONTEXT.prototype.SetAbilitySpecAbCStrPair = function(pSpecAb, pAb) {
+    this.contextASL = null;
+    this.context = pSpecAb;
+    if (pAb != null) specAb = pAb;
+    else {
+        specAb.Clear();
+    };
+}
+
+SCRIPT_CONTEXT.prototype.SetSA_Source_Type = function(source_Type) {
+    this.scriptSourceType = source_Type;
+}
+
+SCRIPT_CONTEXT.prototype.SetSA_Source_Name = function(source_Name) {
+    this.sourceName = source_Name;
+}
+
+SCRIPT_CONTEXT.prototype.SetSA_ScriptName = function(name) {
+    this.scriptName = name;
+}
+
+SCRIPT_CONTEXT.prototype.ClearAbility = function() {
+    this.specAb = [];  //PORT NOTE:  was .Clear()
 }

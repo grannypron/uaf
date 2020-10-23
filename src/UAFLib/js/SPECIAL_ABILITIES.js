@@ -90,6 +90,9 @@ SPECIAL_ABILITIES.prototype.RunScripts = function(scriptName, fnc, pkt, comment,
         pSpecString = pSpecAb.Find(scriptName);
         if (pSpecString == null) continue;
         if (numScript >= SPECAB.MAX_SPEC_AB) continue;
+        // PORT NOTE: Here is where the special ability scripts get compiled if they have not been already
+        // 
+        /* TODO: Stub for now
         if (pSpecString.Flags() == SPECAB_STRING_TYPE.SPECAB_SCRIPT) {
             var gpdlcomp = new GPDLCOMP();
             binScript = gpdlcomp.CompileScript(frontEnd + pSpecString.Value() + backEnd, SAentries);
@@ -103,8 +106,10 @@ SPECIAL_ABILITIES.prototype.RunScripts = function(scriptName, fnc, pkt, comment,
             pSpecString.Value(binScript);
             pSpecString.Flags(SPECAB_STRING_TYPE.SPECAB_BINARYCODE);
             pSpecAb.Insert(scriptName, binScript, SPECAB_STRING_TYPE.SPECAB_BINARYCODE);
+            
         };
         if (pSpecString.Flags() != SPECAB_STRING_TYPE.SPECAB_BINARYCODE) continue;
+        */
         saAbility[numScript] = pAbility;
         scripts[numScript++] = pSpecString;
     };
@@ -112,16 +117,19 @@ SPECIAL_ABILITIES.prototype.RunScripts = function(scriptName, fnc, pkt, comment,
         var callbackResult;
         for (i = 0; i < numScript; i++) {
             pSpecString = scripts[i];
-            pScriptContext.SetAbility(this, saAbility[i]);
+            pScriptContext.SetAbilitySpecAbCStrPair(this, saAbility[i]);
             pScriptContext.SetSA_Source_Type(sourceType);
             pScriptContext.SetSA_Source_Name(sourceName);
             pScriptContext.SetSA_ScriptName(pSpecString.Key());
-            gpdlStack.Push();
-            SPECAB.p_hook_parameters[0] = gpdlStack.activeGPDL().ExecuteScript(scripts[i].Value(), 1, null, 0);
-            gpdlStack.Pop();
+            /** TODO
+            //gpdlStack.Push();
+            //SPECAB.p_hook_parameters[0] = gpdlStack.activeGPDL().ExecuteScript(scripts[i].Value(), 1, null, 0);
+            //gpdlStack.Pop();
+             **/
+            SPECAB.p_hook_parameters[0] = 1;
             pScriptContext.ClearAbility();
             callbackResult = fnc(CBFUNC.CBF_EXAMINESCRIPT, SPECAB.p_hook_parameters[0], pkt);
-
+            /**TODO
             if ((globalLoggingFlags & 1) || (globalSA_debug.Find(saAbility[i].Key()) != NULL)) {
                 WriteDebugString("@@SA \"%s\" Script \"%s\": %s%s returned \"%s\"\n",
                     saAbility[i].Key(),
@@ -130,8 +138,8 @@ SPECIAL_ABILITIES.prototype.RunScripts = function(scriptName, fnc, pkt, comment,
                     sourceName,
                     SPECAB.p_hook_parameters[0]);
             };
-
-            if (callbackResult == CBR_STOP) {
+            */
+            if (callbackResult == CBRESULT.CBR_STOP) {
                 return SPECAB.p_hook_parameters[0];
             };
         };

@@ -2407,7 +2407,7 @@ CHARACTER.prototype.GetMorale = function () {
     return this.morale;
 }
 
-CHARACTER.prototype.SetAllowPlayerControlFlag = function (flag) {
+CHARACTER.prototype.SetAllowPlayerControl = function (flag) {
     this.allowPlayerControl = flag;
     this.SetAutomatic(!this.allowPlayerControl);
 }
@@ -2449,7 +2449,7 @@ CHARACTER.prototype.determineNbrAttacks = function () {
             minmax,
             "Determine number of attacks");
     };
-    SPECAB.RunCharacterScripts(SPECAB.GET_NUMBER_OF_ATTACKS,
+    this.RunCharacterScripts(SPECAB.GET_NUMBER_OF_ATTACKS,
         SPECAB.ScriptCallback_MinMax,
         minmax,
         "Determine number of attacks");
@@ -2465,8 +2465,8 @@ CHARACTER.prototype.determineNbrAttacks = function () {
     else
         this.SetNbrAttacks(monsterData.GetMonsterNbrAttacks(monsterID));
 
-    if (this.myItems.GetReadiedItem(WeaponHand, 0) != Items.NO_READY_ITEM) {
-        var wpnAttacks = itemData.GetItemROF(this.myItems.GetItem(this.myItems.GetReadiedItem(WeaponHand, 0)));
+    if (this.myItems.GetReadiedItem(Items.WeaponHand, 0) != Items.NO_READY_ITEM) {
+        var wpnAttacks = itemData.GetItemROF(this.myItems.GetItem(this.myItems.GetReadiedItem(Items.WeaponHand, 0)));
         if (wpnAttacks < 1.0) wpnAttacks = 1.0;
         this.SetNbrAttacks(wpnAttacks);
         // check for sweeps
@@ -2541,6 +2541,51 @@ CHARACTER.prototype.IsPartyMember = function () {
     return ((this.type & IN_PARTY_TYPE) > 0);
 }
 
+
+CHARACTER.prototype.RunCharacterScripts = function (scriptName, fnc, pkt, comment) {
+    return this.specAbs.RunScripts(scriptName, fnc, pkt, comment, SCRIPT_SOURCE_TYPE.ScriptSourceType_Character, this.name);
+
+}
+
+CHARACTER.prototype.SetNbrAttacks = function (val) {
+    val = Math.max(0, val);
+    this.NbrAttacks = val;
+}
+
+CHARACTER.prototype.GetNbrAttacks = function () {
+    return this.NbrAttacks;
+}
+
+CHARACTER.prototype.GetAdjAutomatic = function (flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    // if player control not allowed, then automatic is TRUE
+    if (!this.GetAdjAllowPlayerControl(flags)) return true;
+    return this.GetAutomatic();
+};
+
+CHARACTER.prototype.GetAutomatic = function () {
+    return this.automatic;
+}
+
+CHARACTER.prototype.GetAllowPlayerControl = function () {
+    return this.allowPlayerControl;
+}
+
+CHARACTER.prototype.GetAdjAllowPlayerControl = function (flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    var key = IF_KEYWORD_INDEX.CHAR_ALLOWPLAYERCONTROL;
+    var val = this.GetAllowPlayerControl();
+    this.ApplySpellEffectAdjustments(flags, key, val);
+    val = Math.max(0, val);
+    val = Math.min(1, val);
+    return val;
+};
+
+CHARACTER.prototype.GetIsFriendly = function () {
+    return (this.m_pCombatant == null) ? true : m_pCombatant.GetIsFriendly();
+}
+
+
 CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };
 CHARACTER.prototype.GetBestMemorizedHealingSpell = function (pSpellID) { throw "todo"; };
 CHARACTER.prototype.GetHealingPointsNeeded = function () { throw "todo"; };
@@ -2596,8 +2641,6 @@ CHARACTER.prototype.DetermineCharHitDice = function() { throw "todo"; }
 CHARACTER.prototype.DetermineHitDiceBonus = function(baseclassID) { throw "todo"; }
 CHARACTER.prototype.GetNbrHD = function() { throw "todo"; }
 CHARACTER.prototype.SetNbrHD = function(val) { throw "todo"; }
-CHARACTER.prototype.GetNbrAttacks = function() { throw "todo"; }
-CHARACTER.prototype.SetNbrAttacks = function(val) { throw "todo"; }
 CHARACTER.prototype.GetCurrentLevel = function(baseclassID) { throw "todo"; }
 CHARACTER.prototype.CurrentBaseclassLevel = function(baseclassID) { throw "todo"; }
 CHARACTER.prototype.SetCurrentLevel = function(baseclassID, lvl) { throw "todo"; }
@@ -2615,7 +2658,6 @@ CHARACTER.prototype.GetAdjClass = function(flags) {if (!flags) {flags = DEFAULT_
 CHARACTER.prototype.GetAdjAlignment = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
 CHARACTER.prototype.GetAdjStatus = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
 CHARACTER.prototype.GetAdjSize = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.GetIsFriendly = function() { throw "todo"; }
 CHARACTER.prototype.SetGender = function(val) { throw "todo"; }
 CHARACTER.prototype.SetGender = function(gender) { throw "todo"; }
 CHARACTER.prototype.SetClass = function(classID) { throw "todo"; }
@@ -2646,10 +2688,6 @@ CHARACTER.prototype.GetSpellBookIndex = function(spellID, checkMemorized) { thro
 CHARACTER.prototype.GetAbilityLimits = function(abilityID) { throw "todo"; }
 CHARACTER.prototype.SetPartyMember = function(flag) {if (flag == undefined) {flag = true;}};
 CHARACTER.prototype.SetType = function(flag) { throw "todo"; }
-CHARACTER.prototype.GetAutomatic = function() { throw "todo"; }
-CHARACTER.prototype.GetAdjAutomatic = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.GetAllowPlayerControl = function() { throw "todo"; }
-CHARACTER.prototype.GetAdjAllowPlayerControl = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
 CHARACTER.prototype.GetDetectingInvisible = function() { throw "todo"; }
 CHARACTER.prototype.SetDetectingInvisible = function(flag) { throw "todo"; }
 CHARACTER.prototype.GetAdjDetectingInvisible = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
@@ -2724,7 +2762,6 @@ CHARACTER.prototype.CanBeHeldOrCharmed = function() { throw "todo"; }
 CHARACTER.prototype.AffectedByDispelEvil = function() { throw "todo"; }
 CHARACTER.prototype.CharacterID = function(id) { throw "todo"; }
 CHARACTER.prototype.ProcessLingeringSpellEffects = function() { throw "todo"; }
-CHARACTER.prototype.RunCharacterScripts = function (scriptName, func, pkt, comment) { throw "todo"; }
 CHARACTER.prototype.GetSpellCount = function() { throw "todo"; }
 CHARACTER.prototype.ClearSpellbook = function() { throw "todo"; }
 CHARACTER.prototype.FetchCharacterSpell = function(spellID, pCharSp) { throw "todo"; }

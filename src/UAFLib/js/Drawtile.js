@@ -842,3 +842,22 @@ Drawtile.prototype.EnsureVisibleTargetTargetForceCenter = function(targ, forceCe
         forceCenter);
     combatData.GetCombatant(targ).OnEnsureVisible();
 }
+
+Drawtile.prototype.placeCombatant = function (x, y, dude, w, h) {
+    var i, j;
+
+    if ((w <= 0) || (h <= 0)) {
+        /**TODO
+         * if (!debugStrings.AlreadyNoted(CString("BWH01"))) {
+            Globals.WriteDebugString("Bogus w,h for icon in placeCombatant()\n");
+            Globals.WriteDebugString("Combatant's name is " + combatData.GetCombatant(dude).GetName() + "\n");
+        };*/
+    };
+
+    for (i = 0; i < h; i++) {
+        for (j = 0; j < w; j++) {
+            if (Drawtile.ValidCoords(y + i, x + j))
+                this.terrain[y + i][x + j].tileIndex = dude;
+        }
+    }
+}

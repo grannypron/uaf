@@ -39,7 +39,11 @@ ASLENTRY.prototype.Equals = function (atv) {
 
 
 ASLENTRY.prototype.Flags = function () {
-    throw "todo -- ASLENTRY.prototype.Flags";
+    return this.m_flags;
+}
+
+ASLENTRY.prototype.Key = function () {
+    return this.m_key;
 }
 
 /**
