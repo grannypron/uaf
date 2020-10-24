@@ -471,6 +471,7 @@ void CGlobalDataDlg::OnSounds()
   dlg.PartyStep = m_data.sounds.PartyStep;
   dlg.DeathMusic = m_data.sounds.DeathMusic;
   dlg.IntroMusic = m_data.sounds.IntroMusic;
+  dlg.CreditsMusic = m_data.sounds.CreditsMusic;
   dlg.CampMusic = m_data.sounds.CampMusic;
 	
   if (dlg.DoModal() == IDOK)
@@ -481,6 +482,7 @@ void CGlobalDataDlg::OnSounds()
     m_data.sounds.PartyStep = dlg.PartyStep;
     m_data.sounds.DeathMusic = dlg.DeathMusic;
     m_data.sounds.IntroMusic = dlg.IntroMusic;
+    m_data.sounds.CreditsMusic = dlg.CreditsMusic;
     m_data.sounds.CampMusic = dlg.CampMusic;
   }
 }
@@ -674,17 +676,10 @@ void CGlobalDataDlg::OnAreaViewArt()
 
 void CGlobalDataDlg::OnCredits() 
 {
-  CScrollPicDlg dlg(m_data.CreditsBgArt, rte.BackgroundArtDir(), "");
+    CTitleScreenData dlg(m_data.creditsData);
+    if (dlg.DoModal() == IDOK)
+        dlg.GetData(m_data.creditsData);
 
-  DWORD result = dlg.DoModal();
-
-  if (result == IDOK)
-  {
-    m_data.CreditsBgArt = dlg.m_Filename;
-    char name[MAX_MEDITBUTTON_TEXT+1];
-    getBaseName(dlg.m_Filename, name, MAX_MEDITBUTTON_TEXT);
-    m_Credits.SetWindowText(name);
-  }		
 }
 
 void CGlobalDataDlg::OnDifflvl() 

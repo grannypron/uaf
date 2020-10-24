@@ -203,6 +203,7 @@ public:
   CString PartyStep;
   CString DeathMusic;
   BACKGROUND_SOUNDS IntroMusic;
+  BACKGROUND_SOUNDS CreditsMusic;
   BACKGROUND_SOUNDS CampMusic;
 };
 
@@ -882,7 +883,7 @@ public:
    CString m_MapArt;  // various area/outdoor map images
    CString IconBgArt;  // background when selecting icons
    CString BackgroundArt; // fills screen
-   CString CreditsBgArt; // displayed at game exit
+//   CString CreditsBgArt; // displayed at game exit
    LOGFONT logfont; // font used during gameplay
 
 // prs 20191227   AVAIL_FONT availableFonts[10];  // 10 fonts each with NumColorNum colors.
@@ -924,6 +925,7 @@ public:
    DIFFICULTY_LEVEL_DATA m_diffLvlData;
    JOURNAL_DATA journalData;
    TITLE_SCREEN_DATA titleData;
+   TITLE_SCREEN_DATA creditsData;
    spellBookType fixSpellBook; // spells used when 'FIX' menu pressed to heal party
    A_ASLENTRY_L global_asl;
    A_ASLENTRY_L temp_asl;
@@ -940,6 +942,7 @@ void PlayCharMiss(BOOL play=TRUE);
 void PlayPartyStep(BOOL play=TRUE); 
 void PlayPartyBump(BOOL play=TRUE); 
 void PlayIntro(BOOL play=TRUE); 
+void PlayOuttro(BOOL play = TRUE);
 void PlayDeath(BOOL play=TRUE); 
 void PlayCampMusic(BOOL play=TRUE);
 void CheckAndPlayBackgroundMusic(int &UsingDayMusic);

@@ -1319,9 +1319,14 @@ void SPLASH_DATA::OnInitialEvent(void)
     PerformWarp();
     return;
   }  
+  if (intro)
+    mScreens = &(globalData.titleData);
+  else 
+    mScreens = &(globalData.creditsData);  // If it's not the intro, it's the outro, so use those title screens instead
 
-  GameVersionInfo.Format("Ver %01.7f", ENGINE_VER);
-  currPos = globalData.titleData.Titles.GetHeadPosition();
+  if (intro)
+    GameVersionInfo.Format("Ver %01.7f", ENGINE_VER);
+  currPos = ((TITLE_SCREEN_DATA*)mScreens)->Titles.GetHeadPosition();
   if ((currPos==NULL)||(!LoadNextScreen()))
   {
     EndSplash();
@@ -1344,7 +1349,7 @@ bool SPLASH_DATA::LoadNextScreen()
     return false;
   }
 
-  TITLE_SCREEN data = globalData.titleData.Titles.GetNext(currPos);
+  TITLE_SCREEN data = ((TITLE_SCREEN_DATA*)mScreens)->Titles.GetNext(currPos);
 
   if (   (data.DisplayBy == TITLE_SCREEN::tsFadeIn)
       && (!IsFirstScreen))
@@ -1391,12 +1396,12 @@ bool SPLASH_DATA::LoadNextScreen()
     break;
   }
 
-  if (globalData.titleData.Timeout < 30)
+  if (((TITLE_SCREEN_DATA*)mScreens)->Timeout < 30)
     usetimer=false;
 
   if ((success)&&(usetimer))
     //((CDungeonApp*)AfxGetApp())->SetIntervalTimer(TASKTIMER_GuidedTour,globalData.titleData.Timeout);
-    SetEventTimer(TASKTIMER_GuidedTour,globalData.titleData.Timeout);
+    SetEventTimer(TASKTIMER_GuidedTour, ((TITLE_SCREEN_DATA*)mScreens)->Timeout);
 
   return success;
 }
@@ -1478,11 +1483,17 @@ void SPLASH_DATA::EndSplash()
 {
   PlayIntro(FALSE);
   ClearFormattedText(errorTextData);
-  if (tempChars.numChars() > 0)
-    ReplaceEvent(new MAIN_MENU_DATA(NULL), DeleteEvent);
-  else
-    ReplaceEvent(new START_MENU_DATA, DeleteEvent);
-  ProcInput.MoveMouseTo(0,0);
+  if (intro) {
+      if (tempChars.numChars() > 0)
+          ReplaceEvent(new MAIN_MENU_DATA(NULL), DeleteEvent);
+      else
+          ReplaceEvent(new START_MENU_DATA, DeleteEvent);
+      ProcInput.MoveMouseTo(0, 0);
+  }
+  else {
+      SignalShutdown();
+      ExitSignaled = 1;
+  }
 }
 
 void SPLASH_DATA::OnKeypress(key_code key, char ascii)
@@ -1704,59 +1715,14 @@ void DO_NOTHING_EVENT::OnInitialEvent(void)
   //ClearFormattedText(textData);
 }
 
-////////////////////////////////////////////////////////////////////EXIT_DATA
-void EXIT_DATA::OnKeypress(key_code key, char ascii)
-{
-  GraphicsMgr.FadeToBlack();
-  SignalShutdown();
-  //gpdlCleanup();
-  ExitSignaled=1;
-}
+
 
 void EXIT_DATA::OnInitialEvent(void)
 {
-  menu.reset(NULL);
-  ClearFormattedText(textData);
-  ClearFormattedText(errorTextData);
-  currPic.Clear();
-  StopAllSounds();
-
-  splashScreenStart = virtualGameTime;//timeGetTime();  
-  if (!Credits())
-  {
-    debugSeverity = 2;
-    WriteDebugString("Credits screen failed to load\n");
-    splashScreenStart += 8000; // don't wait around if credits screen not loaded
-  }
+    PlayOuttro(TRUE);
+    SPLASH_DATA::OnInitialEvent();
 }
 
-bool EXIT_DATA::OnIdle(void)
-{
-  if (ExitSignaled) return true;
-  LONGLONG currTime = virtualGameTime;//timeGetTime();
-  if (   ((currTime - splashScreenStart) >= 7000)
-      || (currTime < splashScreenStart)) // rollover
-  {
-    simulatedKeyQueue.PushKey(VK_RETURN);
-  }  
-  return true;  // Wait for input.  There should be none!  The game is over.
-}
-
-int EXIT_DATA::OnSaveGame(unsigned int *saveArea)
-{
-  return 0; // Nothing needs to be saved.
-}
-
-int EXIT_DATA::OnLoadGame(unsigned int *saveArea)
-{
-  return 0;
-}
-
-unsigned int EXIT_DATA::OnTaskMessage(TASKMESSAGE msg, TASKSTATE taskState)
-{
-  // this one stays put even after a teleport msg
-  return 0;
-}
 
 ///////////////////////////////////////////////////////////////START_MENU_DATA
 void START_MENU_DATA::OnKeypress(key_code key, char ascii)

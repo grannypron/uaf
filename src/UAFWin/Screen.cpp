@@ -443,7 +443,8 @@ void DisplayCombatDataWithSprite(BOOL ShowCursor=TRUE, BOOL FullIcon=TRUE)
 BOOL Credits()
 {  
   WriteDebugString("Loading credits screen and music\n");
-  return GraphicsMgr.FadeInImage(globalData.CreditsBgArt, TitleDib, rte.CreditsArtDir());
+  //return GraphicsMgr.FadeInImage(globalData.CreditsBgArt, TitleDib, rte.CreditsArtDir());
+  return true;
 }
 
 void UpdateStartScreen(const SELECTION_PAGE_FORMAT *format, int fontNumber)

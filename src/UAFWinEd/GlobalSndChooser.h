@@ -44,12 +44,14 @@ public:
 	CButton	m_PartyStep;
 	CButton	m_PartyBump;
 	CButton	m_IntroMusic;
+	CButton	m_CreditsMusic;
 	CButton	m_DeathMusic;
 	//}}AFX_DATA
 
   CString PartyStep;
   CString PartyBump;
   BACKGROUND_SOUNDS IntroMusic;
+  BACKGROUND_SOUNDS CreditsMusic;
   BACKGROUND_SOUNDS CampMusic;
   CString DeathMusic;
   CString CharHit;
@@ -83,6 +85,8 @@ protected:
 	afx_msg void OnCampmusic();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnCreditsmusic();
 };
 
 //{{AFX_INSERT_LOCATION}}
