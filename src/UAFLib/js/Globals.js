@@ -3,6 +3,35 @@ function Globals() {
     this.logDebuggingInfo = false;
     this.version = 6.0;
     this.debugSeverity = 0;
+
+    this.MIN_INTELLIGENCE = 3;
+    this.MAX_INTELLIGENCE = 25;
+    this.MIN_STRENGTH = 3;
+    this.MAX_STRENGTH = 25;
+    this.MIN_STRENGTHMOD = 0;
+    this.MAX_STRENGTHMOD = 100;
+    this.MIN_WISDOM = 3;
+    this.MAX_WISDOM = 25;
+    this.MIN_DEXTERITY = 3;
+    this.MAX_DEXTERITY = 25;
+    this.MIN_CONSTITUTION = 3;
+    this.MAX_CONSTITUTION = 25;
+    this.MIN_CHARISMA = 3;
+    this.MAX_CHARISMA = 25;
+
+    this.CombatScreenX = 14;
+    this.CombatScreenY = 14;
+    this.TILES_HORZ = 8;
+    this.TILES_VERT = 9;
+
+    this.SCREEN_WIDTH = 640;  // these change to reflect the current
+    this.SCREEN_HEIGHT = 480; // screen resolution for the editor
+    this.COLOR_BITS = 24;
+
+    this.MAX_COMBATANTS = 100;
+    this.MAX_CHARS_IN_ROW = 3; // how many chars wide the battle line can be
+    this.MAX_COMBAT_IDLE_ROUNDS = 20;
+
 }
 
 Globals.prototype.die = function (message) {
@@ -74,34 +103,6 @@ Globals.prototype.randomMT = function () {
     // Passing this off to an RNG that can be swapped in
     return RNG.newDWORD();
 }
-
-Globals.MIN_INTELLIGENCE = 3;
-Globals.MAX_INTELLIGENCE = 25;
-Globals.MIN_STRENGTH = 3;
-Globals.MAX_STRENGTH = 25;
-Globals.MIN_STRENGTHMOD = 0;
-Globals.MAX_STRENGTHMOD = 100;
-Globals.MIN_WISDOM = 3;
-Globals.MAX_WISDOM = 25;
-Globals.MIN_DEXTERITY = 3;
-Globals.MAX_DEXTERITY = 25;
-Globals.MIN_CONSTITUTION = 3;
-Globals.MAX_CONSTITUTION = 25;
-Globals.MIN_CHARISMA = 3;
-Globals.MAX_CHARISMA = 25;
-
-Globals.CombatScreenX = 14;
-Globals.CombatScreenY = 14;
-Globals.TILES_HORZ = 8;
-Globals.TILES_VERT = 9;
-
-Globals.SCREEN_WIDTH = 640;  // these change to reflect the current
-Globals.SCREEN_HEIGHT = 480; // screen resolution for the editor
-Globals.COLOR_BITS = 24;
-
-Globals.MAX_COMBATANTS = 100;
-Globals.MAX_CHARS_IN_ROW = 3; // how many chars wide the battle line can be
-Globals.MAX_COMBAT_IDLE_ROUNDS = 20;
 
 
 

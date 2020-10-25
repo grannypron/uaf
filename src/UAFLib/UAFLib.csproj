@@ -82,6 +82,7 @@
     <Content Include="js\DDATA.js" />
     <Content Include="js\HOOK_PARAMTERS.js" />
     <Content Include="js\MonsterPlacement.js" />
+    <Content Include="js\PARTY_POSITIONS.js" />
     <Content Include="js\RNG.js" />
     <Content Include="js\RunTimeIF.js" />
     <Content Include="js\SCRIPT_CONTEXT.js" />

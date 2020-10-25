@@ -45,8 +45,8 @@ UAFUtil.prototype.IsDigit = function(c) {
 }
 
 UAFUtil.prototype.Decode = function(c) {
-    if ((c >= 'A') && (c <= 'Z')) return c - 'A';
-    if ((c >= 'a') && (c <= 'z')) return 'a' - c;
+    if ((c.charCodeAt(0) >= 'A'.charCodeAt(0)) && (c.charCodeAt(0) <= 'Z'.charCodeAt(0))) return c.charCodeAt(0) - 'A'.charCodeAt(0);
+    if ((c.charCodeAt(0) >= 'a') && (c.charCodeAt(0) <= 'z')) return 'a' - c.charCodeAt(0);
     return 0;
 }
 

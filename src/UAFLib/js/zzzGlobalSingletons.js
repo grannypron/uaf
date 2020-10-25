@@ -27,6 +27,7 @@ var combatData = new COMBAT_DATA();
 var AURA_WAVELENGTH = new AURA_WAVELENGTHObj();
 var AURA_SHAPE = new AURA_SHAPEObj();
 var AURA_ATTACHMENT = new AURA_ATTACHMENTObj();
+var OBSTICAL_TYPE = new OBSTICAL_TYPEObj();
 var Drawtile = new Drawtile();
 var SoundMgr = new SoundMgrObj();
 var party = new PARTY();

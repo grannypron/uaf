@@ -26,7 +26,7 @@
     this.turtleStack = 0;   // Room for 2 pushes
     this.dx = [];
     this.dy = [];
-    this.partyPositions = []; //Screen coordinates; 
+    this.partyPositions = []; for (var idx = 0; idx < Globals.MAX_COMBATANTS; idx++) { this.partyPositions[idx] = new PARTY_POSITIONS(); } //Screen coordinates; // PORT NOTE:  C++ initializes this, and so I do here
     this.monsterPlacement = [];     // MonsterPlacement
     this.distanceFromParty = [];         // An entry for each cell on the map.
                                               // Index = MAX_TERRAIN*WIDTH * y + x

@@ -121,8 +121,8 @@ COMBAT_DATA.prototype.Clear = function() {
     this.m_iCurrCaster = -1;
     this.m_iRedirectedSpellTarget = -1;
     this.QComb.Clear();
-    this.m_aCombatants = [Globals.MAX_COMBATANTS];
-    this.m_aTempCOMBATANTS = [Globals.MAX_COMBATANTS];
+    this.m_aCombatants = [Globals.MAX_COMBATANTS]; for (var idx = 0; idx < Globals.MAX_COMBATANTS; idx++) { this.m_aCombatants[idx] = new COMBATANT(); } // PORT NOTE:  C++ initializes this, and so I do here
+    this.m_aTempCOMBATANTS = [Globals.MAX_COMBATANTS]; for (var idx = 0; idx < Globals.MAX_COMBATANTS; idx++) { this.m_aTempCOMBATANTS[idx] = new COMBATANT(); } // PORT NOTE:  C++ initializes this, and so I do here
     this.hurledWeapons.Clear();
     this.turningSummary.Clear();
 }
@@ -236,7 +236,7 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
         this.determineInitCombatPos();
 
         for (i = 0; i < this.m_iNumCombatants; i++) {
-            Globals.WriteDebugString("DEBUG - Combatant " + i + " starts at (" + m_aCombatants[i].x + "," + m_aCombatants[i].y + ")\n");
+            Globals.WriteDebugString("DEBUG - Combatant " + i + " starts at (" + this.m_aCombatants[i].x + "," + this.m_aCombatants[i].y + ")\n");
         };
         if (Globals.logDebuggingInfo) {
             Globals.WriteDebugString("Finished placing combatants on map\n");
@@ -288,11 +288,11 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
                     pSaveCharPointer = this.m_aCombatants[i].m_pCharacter;
                     this.m_aCombatants[i].m_pCharacter = null;
                     // Copy a NULL pointer to m_aTempCOMBATANTS
-                    this.m_aTempCOMBATANTS.SetAt(count, this.m_aCombatants[i]);
+                    this.m_aTempCOMBATANTS[count] = this.m_aCombatants[i]; // PORT NOTE: this was this.m_aTempCOMBATANTS.SetAt(count, this.m_aCombatants[i]);
                     // Move the pointer to m_aTempCOMBATANTS
                     // Make sure they point at each other.
                     this.m_aTempCOMBATANTS[count].m_pCharacter = pSaveCharPointer;
-                    pSaveCharPointer.m_pCombatant = m_aTempCOMBATANTS[i];
+                    pSaveCharPointer.m_pCombatant = this.m_aTempCOMBATANTS[i];
                 };
                 count++;
             }
@@ -339,15 +339,15 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
             // Make sure the combatant <-> character links remain one-to-one
             pSaveCharPointer = this.m_aTempCOMBATANTS[i].m_pCharacter;
             this.m_aTempCOMBATANTS[i].m_pCharacter = null;
-            this.m_aCombatants.SetAt(count, this.m_aTempCOMBATANTS[i]);
+            this.m_aCombatants[count] = this.m_aTempCOMBATANTS[i]; // PORT NOTE:  this was this.m_aCombatants.SetAt(count, this.m_aTempCOMBATANTS[i]);
             // Make sure they point at each other.
             pSaveCharPointer.m_pCombatant = this.m_aCombatants[count];
             this.m_aCombatants[count].m_pCharacter = pSaveCharPointer;
-            Globals.TRACE("Start Data for combatant " + count + ": self " + m_aCombatants[count].self + ", x " + m_aCombatants[count].x + ", y " + m_aCombatants[count].y + ", f " + m_aCombatants[count].GetIsFriendly() + "\n",);
+            Globals.TRACE("Start Data for combatant " + count + ": self " +this.m_aCombatants[count].self + ", x " + this.m_aCombatants[count].x + ", y " + this.m_aCombatants[count].y + ", f " + this.m_aCombatants[count].GetIsFriendly() + "\n",);
             count++;
         };
         if (Globals.logDebuggingInfo) {
-            Globals.WriteDebugString("Total combatants = " + m_iNumCombatants + "\n");
+            Globals.WriteDebugString("Total combatants = " + this.m_iNumCombatants + "\n");
         };
         monsterCount = 0;
         // Let us count the monsters.
@@ -378,8 +378,8 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
             var priority = "";
             this.m_aCombatants[i].LoadCombatIcon();
             this.m_aCombatants[i].determineIconSize();
-            actor = this.m_aCombatants[i].GetContext();
-            this.SetCharContext(actor);
+            actor = this.m_aCombatants[i].GetContextActor();
+            RunTimeIF.SetCharContext(actor);
             scriptContext.SetCharacterContext(this.m_aCombatants[i].m_pCharacter);
             scriptContext.SetCombatantContext(this.m_aCombatants[i]);
             scriptContext.SetClassContext(this.m_aCombatants[i].m_pCharacter.GetClass());
@@ -389,14 +389,14 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
             else {
                 this.m_aCombatants[i].scriptPriority = 250;
             };
-            hookParameters[5].Format("%d", m_aCombatants[i].scriptPriority);
-            priority = this.m_aCombatants[i].RunCombatantScripts(PRE_START_COMBAT,
+            hookParameters[5] = this.m_aCombatants[i].scriptPriority;  // PORT NOTE: This used, CString.Format, which set the value of the string.  Was  hookParameters[5].Format("%d", this.m_aCombatants[i].scriptPriority);
+            priority = this.m_aCombatants[i].RunCombatantScripts(SPECAB.PRE_START_COMBAT,
                 SPECAB.ScriptCallback_RunAllScripts,
                 null,
                 "Initializing new combat");
             scriptContext.Clear();
-            this.ClearCharContext();
-            if (!priority.IsEmpty()) {
+            RunTimeIF.ClearCharContext();
+            if (!(priority == null || priority == "")) {
                 var k;
                 k = UAFUtil.ScriptAtoI(priority);
                 this.m_aCombatants[i].scriptPriority = k;
@@ -411,9 +411,9 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
                 if (this.m_aCombatants[i].scriptPriority == highPri) {
                     this.m_aCombatants[i].LoadCombatIcon();
                     this.m_aCombatants[i].determineIconSize();
-                    actor = this.m_aCombatants[i].GetContext();
-                    this.SetCharContext(actor);
-                    scriptContext.SetCharacterContext(m_aCombatants[i].m_pCharacter);
+                    actor = this.m_aCombatants[i].GetContextActor();
+                    RunTimeIF.SetCharContext(actor);
+                    scriptContext.SetCharacterContext(this.m_aCombatants[i].m_pCharacter);
                     this.m_aCombatants[i].RunCombatantScripts(ON_START_COMBAT,
                         SPECAB.ScriptCallback_RunAllScripts,
                         null,
@@ -459,7 +459,7 @@ COMBAT_DATA.prototype.PlaceCursorOnDude = function (dude, ForceCenter) {
     if ((dude < 0) || (dude >= this.m_iNumCombatants)) return;
     this.m_iCursorX = this.m_aCombatants[dude].x;
     this.m_iCursorY = this.m_aCombatants[dude].y;
-    this.EnsureVisibleTarget(dude, ForceCenter);
+    Drawtile.EnsureVisibleTargetTargetForceCenter(dude, ForceCenter);
 }
 
 COMBAT_DATA.prototype.ResetAim = function() {
@@ -1300,7 +1300,6 @@ COMBAT_DATA.prototype.determineInitCombatPos = function () {
         if (this.m_aCombatants[i].GetIsFriendly()) {
             var rx;
             var ry;
-            Globals.debug("COMBAT_DATA::determineInitCombatPos: " + i + ", " + this.m_aCombatants[i]);
             this.determineInitCombatPosCombatant(this.m_aCombatants[i],
                                 i, 
                                 pReset,
@@ -1515,7 +1514,7 @@ COMBAT_DATA.prototype.determineInitCombatPosCombatant = function(pCombatant, i, 
         //     getNextCharCombatPos(pCombatant, reset, ignoreCurrentCombatant);
         //#endif
         if (pCombatant.x >= 0) {
-            this.placeCombatant(pCombatant.x,
+            Drawtile.placeCombatant(pCombatant.x,
                 pCombatant.y,
                 i,
                 pCombatant.width,
@@ -1574,7 +1573,7 @@ COMBAT_DATA.prototype.getNextCharCombatPos = function(pDude,  pReset, ignoreCurr
         for (; dir < 4; dir++) {
             for (; i < 2 * delta; i++) {
                 if (this.PlaceCharacter(pDude, x, y, ignoreCurrentCombatant)) {
-                    if (OBSTICAL_TYPE.OBSTICAL_none != OBSTICAL_TYPE.ObsticalTypeConstrucorIGuessTodo(pDude.x, pDude.y, pDude.width, pDude.height, true, ignoreCurrentCombatant, null))
+                    if (OBSTICAL_TYPE.OBSTICAL_none != OBSTICAL_TYPE.ObsticalType(pDude.x, pDude.y, pDude.width, pDude.height, true, ignoreCurrentCombatant, null))
                         Globals.WriteDebugString("getNextCharCombatPos() returns a cell containing a wall\n");
                     else
                         Globals.TRACE("Placing char at combat pos " + pDude.x + "," + pDude.y + "\n");
@@ -1592,7 +1591,7 @@ COMBAT_DATA.prototype.getNextCharCombatPos = function(pDude,  pReset, ignoreCurr
         dir = 0;
     };
 
-    if (OBSTICAL_TYPE.OBSTICAL_none != OBSTICAL_TYPE.ObsticalTypeConstrucorIGuessTodo(pDude.x, pDude.y, pDude.width, pDude.height, true, ignoreCurrentCombatant, null))
+    if (OBSTICAL_TYPE.OBSTICAL_none != OBSTICAL_TYPE.ObsticalType(pDude.x, pDude.y, pDude.width, pDude.height, true, ignoreCurrentCombatant, null))
         Globals.WriteDebugString("getNextCharCombatPos() returns a cell containing a wall\n");
     else
         Globals.TRACE("Placing char at combat pos " + pDude.x + "," + pDude.y + "\n");
@@ -1600,10 +1599,29 @@ COMBAT_DATA.prototype.getNextCharCombatPos = function(pDude,  pReset, ignoreCurr
 
 
 COMBAT_DATA.prototype.PlaceCharacter = function(pDude, x, y, ignoreCurrentCombatant) {
-    if (OBSTICAL_TYPE.OBSTICAL_none == ObsticalType.ObsticalTypeConstrucorIGuessTodo(x, y, pDude -> width, pDude -> height, TRUE, ignoreCurrentCombatant, NULL)) {
+    if (OBSTICAL_TYPE.OBSTICAL_none == OBSTICAL_TYPE.ObsticalType(x, y, pDude.width, pDude.height, true, ignoreCurrentCombatant, null)) {
         pDude.x = x;
         pDude.y = y;
         return true;
     }
     return false;
+}
+
+
+//#ifdef newCombatant  // PORT NOTE:  I think this is true
+COMBAT_DATA.prototype.GetCombatant = function (dude) {
+    if (!this.IsValidDude(dude)) return null;
+    if ((this.m_aCombatants[dude].m_pCharacter != null)
+        && (this.m_aCombatants[dude].m_pCharacter.m_pCombatant != this.m_aCombatants[dude])
+    ) {
+        Globals.die(0x8ce2ab);
+    };
+    return this.m_aCombatants[dude];
+}
+//#else
+//COMBATANT * GetCombatant(int dude){ return IsValidDude(dude) ?& m_aCombatants[dude] : NULL; };
+//#endif
+
+COMBAT_DATA.prototype.IsValidDude = function(dude) {
+    return (dude >= 0) && (dude < this.NumCombatants());
 }

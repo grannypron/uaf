@@ -47,6 +47,9 @@ SCRIPT_CONTEXT.prototype.SetCharacterContext = function(pChar) {
     this.characterContext = actor.ToString();
 }
 
+SCRIPT_CONTEXT.prototype.SetClassContext = function (classID) {
+    this.pClassContext = classData.PeekClass(classID);
+}
 
 
 SCRIPT_CONTEXT.prototype.SetAbilitySpecAbCStrPair = function(pSpecAb, pAb) {
@@ -72,4 +75,25 @@ SCRIPT_CONTEXT.prototype.SetSA_ScriptName = function(name) {
 
 SCRIPT_CONTEXT.prototype.ClearAbility = function() {
     this.specAb = [];  //PORT NOTE:  was .Clear()
+}
+
+
+SCRIPT_CONTEXT.prototype.Clear = function() {
+    this.pItemContext = null;
+    this.attackerContext = "";
+    this.characterContext = "";
+    this.targetContext = "";
+    this.combatantContext = "";
+    this.pClassContext = null;
+    this.pSpellContext = null;
+    this.pSpellgroupContext = null;
+    this.pMonstertypeContext = null;
+    this.pRaceContext = null;
+    this.pAbilityContext = null;
+//#ifdef USE_TRAITS               //PORT NOTE:   ??
+    this.pTraitContext = null;
+//#endif
+    this.context = null;
+
+    this.specAb = [];  //PORT NOTE:  was .Clear();
 }
