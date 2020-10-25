@@ -255,7 +255,7 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
                     if ((this.m_aCombatants[i].x != this.m_iPartyStartX) || (this.m_aCombatants[i].y != this.m_iPartyStartY)) {
                         // no path from monster to party, so remove monster.
                         // Remove unreachable monster from combat map.
-                        this.placeCombatant(this.m_aCombatants[i].x, this.m_aCombatants[i].y,
+                        Drawtile.placeCombatant(this.m_aCombatants[i].x, this.m_aCombatants[i].y,
                             NO_DUDE,
                             this.m_aCombatants[i].width,
                             this.m_aCombatants[i].height);
@@ -322,7 +322,7 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
                 if (this.m_aTempCOMBATANTS[i].self != i) {
                     // this one needs updating
                     this.m_aTempCOMBATANTS[i].self = i;
-                    this.placeCombatant(this.m_aTempCOMBATANTS[i].x, this.m_aTempCOMBATANTS[i].y,
+                    Drawtile.placeCombatant(this.m_aTempCOMBATANTS[i].x, this.m_aTempCOMBATANTS[i].y,
                         this.m_aTempCOMBATANTS[i].self,
                         this.m_aTempCOMBATANTS[i].width,
                         this.m_aTempCOMBATANTS[i].height);
@@ -448,7 +448,7 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
                 SPECAB.ScriptCallback_RunAllScripts,
                 null,
                 "Initializing new combat");
-            this.ClearHookParameters();
+            SPECAB.ClearHookParameters();
             scriptContext.Clear();
         };
     };
@@ -511,7 +511,7 @@ COMBAT_DATA.prototype.CheckAuraPlacement = function(pAURA, pMoveData) {
     };
     if (recomputeAura) {
         if (pAURA.cells == null) {
-            pAURA.cells = [MAX_TERRAIN_WIDTH * MAX_TERRAIN_HEIGHT];
+            pAURA.cells = [Drawtile.MAX_TERRAIN_WIDTH * Drawtile.MAX_TERRAIN_HEIGHT];
         };
         pAURA.attachment[0]      = pAURA.attachment[1];
         pAURA.shape[0]           = pAURA.shape[1];

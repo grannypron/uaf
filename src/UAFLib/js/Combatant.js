@@ -189,7 +189,7 @@ COMBATANT.prototype.InitFromCharData = function(dude) {
     this.SetAllowPlayerControl(true);
     this.m_iFacing = this.DetermineInitialFacing(party.facing);
     this.m_iMoveDir = this.m_iFacing;
-
+    Globals.debug();
     this.determineNbrAttacks(); // lookup max possible defaults
     if (this.GetAdjAutomatic()) {
         this.ReadyBestArmor();
@@ -280,7 +280,58 @@ COMBATANT.prototype.LoadCombatIcon = function () {
 }
 
 COMBATANT.prototype.determineIconSize = function () {
-    /**TODO**/
+    this.width = 1;
+    this.height = 1;
+    /**TODO:  They use the size of the image here to determine and set the grid width/height of the combatant 
+     * Hmmm... Not sure what I want to do with this yet given the goal of decoupling
+     * from the graphics code.  Stub for now.
+
+      * var w = 0, h = 0, bits = 0;
+//#ifdef newCombatant            // PORT NOTE: I think this is on
+    if (GraphicsMgr.GetSpriteSurfaceStats(m_pCharacter -> icon.key, w, h, bits))
+//#else
+//    if (GraphicsMgr.GetSpriteSurfaceStats(icon.key, w, h, bits))
+//#endif
+    {
+        int imagewidth = w; // pixel width
+
+        // (width / frame_width) / 2_frames_per_icon
+        w = (w / COMBAT_TILE_WIDTH) / 2;
+
+        // 2 frame minimum (one of each pose, rdy/attack)
+        // frame count is multiple of 2
+        // the icon frame pair used is indicated by iconIndex
+        // adjust for number of frames in icon
+        //#ifdef newCombatant
+        w /= (m_pCharacter -> icon.NumFrames / 2);
+        //#else
+        //        w /= (icon.NumFrames / 2);
+        //#endif
+
+        h = h / COMBAT_TILE_HEIGHT;
+
+        if (w < 1) w = 1;
+        if (h < 1) h = 1;
+
+        width = w;
+        height = h;
+        //#ifdef newCombatant
+        int offset = (m_pCharacter -> iconIndex - 1) * ((width * COMBAT_TILE_WIDTH) * 2);
+        if ((offset + (width * COMBAT_TILE_WIDTH)) >= (imagewidth - width))
+            m_pCharacter -> iconIndex=1;
+        //#else
+        //        int offset = (iconIndex - 1) * ((width * COMBAT_TILE_WIDTH) * 2);
+        //        if ((offset + (width * COMBAT_TILE_WIDTH)) >= (imagewidth - width))
+        //            iconIndex = 1;
+        //#endif
+    }
+  else
+    //#ifdef newCombatant
+    m_pCharacter -> icon.FreePic();
+    //#else
+    //    icon.FreePic();
+    //#endif}
+    */
 }
 
 COMBATANT.prototype.GetIsFriendly = function () {
@@ -288,4 +339,21 @@ COMBATANT.prototype.GetIsFriendly = function () {
     if (this.m_adjFriendly == 1) return true;
     if (this.m_adjFriendly == 2) return false;
     return !this.friendly;
+}
+
+COMBATANT.prototype.GetCenterX = function() {
+    if (this.width <= 1) return this.x;
+    if (this.m_iFacing == FACE_WEST)
+        return (this.x + (this.width / 2) - 1);
+    else
+        return (this.x + (this.width / 2));
+}
+
+COMBATANT.prototype.GetCenterY = function() {
+    if (this.height <= 1) return this.y;
+    return (this.y + (this.height / 2) - 1);
+}
+
+COMBATANT.prototype.OnEnsureVisible = function() {
+    Globals.TRACE("OnEnsureVisible for " + this.self + "\n", );
 }

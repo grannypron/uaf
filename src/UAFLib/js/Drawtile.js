@@ -837,7 +837,7 @@ Drawtile.prototype.ValidCoords = function(y, x) {
 
 
 Drawtile.prototype.EnsureVisibleTargetTargetForceCenter = function(targ, forceCenter) {
-    this.EnsureVisible(combatData.GetCombatant(targ).GetCenterX(),
+    this.EnsureVisibleXYForceCenter(combatData.GetCombatant(targ).GetCenterX(),
         combatData.GetCombatant(targ).GetCenterY(),
         forceCenter);
     combatData.GetCombatant(targ).OnEnsureVisible();
@@ -845,14 +845,14 @@ Drawtile.prototype.EnsureVisibleTargetTargetForceCenter = function(targ, forceCe
 
 Drawtile.prototype.placeCombatant = function (x, y, dude, w, h) {
     var i, j;
+    Globals.debug("Drawtile.prototype.placeCombatant: " + x + "/" + y + "/" + dude + "/" + w + "/" + h);
 
     if ((w <= 0) || (h <= 0)) {
-        /**TODO
-         * if (!debugStrings.AlreadyNoted(CString("BWH01"))) {
+         if (!DEBUG_STRINGS.AlreadyNoted("BWH01")) {
             Globals.WriteDebugString("Bogus w,h for icon in placeCombatant()\n");
             Globals.WriteDebugString("Combatant's name is " + combatData.GetCombatant(dude).GetName() + "\n");
-        };*/
-    };
+        }
+    }
 
     for (i = 0; i < h; i++) {
         for (j = 0; j < w; j++) {
@@ -860,4 +860,37 @@ Drawtile.prototype.placeCombatant = function (x, y, dude, w, h) {
                 this.terrain[y + i][x + j].tileIndex = dude;
         }
     }
+}
+
+
+Drawtile.prototype.EnsureVisibleXYForceCenter = function(tx, ty, forceCenter) {
+    if (!forceCenter) {
+        // the '=' is used so that if icons are on the 
+        // edge of the visible map the visible portion
+        // will still be shifted by one from the icon location,
+        // giving a 1 square gap between icon and map edge.
+        if (tx <= combatData.m_iStartTerrainX)
+            combatData.m_iStartTerrainX = tx - 1;
+        else if (tx >= (combatData.m_iStartTerrainX + Globals.TILES_HORZ - 1))
+            combatData.m_iStartTerrainX = (tx - Globals.TILES_HORZ) + 2;
+
+        if (ty <= combatData.m_iStartTerrainY)
+            combatData.m_iStartTerrainY = ty - 1;
+        else if (ty >= (combatData.m_iStartTerrainY + Globals.TILES_VERT - 1))
+            combatData.m_iStartTerrainY = (ty - Globals.TILES_VERT) + 2;
+    }
+    else {
+        combatData.m_iStartTerrainX = tx - (Globals.TILES_HORZ / 2);
+        combatData.m_iStartTerrainY = ty - (Globals.TILES_VERT / 2);
+    }
+
+    if (combatData.m_iStartTerrainX < 0)
+        combatData.m_iStartTerrainX = 0;
+    else if ((combatData.m_iStartTerrainX + Globals.TILES_HORZ) > Drawtile.MAX_TERRAIN_WIDTH)
+        combatData.m_iStartTerrainX = Drawtile.MAX_TERRAIN_WIDTH - Globals.TILES_HORZ + 1;
+
+    if (combatData.m_iStartTerrainY < 0)
+        combatData.m_iStartTerrainY = 0;
+    else if ((combatData.m_iStartTerrainY + Globals.TILES_VERT) > Drawtile.MAX_TERRAIN_HEIGHT)
+        combatData.m_iStartTerrainY = Drawtile.MAX_TERRAIN_HEIGHT - Globals.TILES_VERT + 1;
 }

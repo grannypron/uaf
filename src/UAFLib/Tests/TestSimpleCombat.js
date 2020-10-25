@@ -41,10 +41,19 @@ combatEventData.m_UseOutdoorMap = false; // only outdoor stub is in place right 
 combatData.InitCombatData(combatEventData);
 Globals.debug("combatData.NumCombatants():" + combatData.NumCombatants());
 
-// Combatant.self gets set here:
-//UAFWin.exe!COMBATANT:: operator = (COMBATANT & src) Line 194	C++
-//UAFWin.exe!COMBAT_DATA:: AddMonstersToCombatants() Line 890	C++
-//UAFWin.exe!COMBAT_DATA:: AddCombatants() Line 505	C++
-//    > UAFWin.exe!COMBAT_DATA:: InitCombatData(COMBAT_EVENT_DATA * event) Line 219	C++
-//UAFWin.exe!COMBAT_EVENT_DATA:: OnInitialEvent() Line 15061	C++
+var dataStr = "";
+var data = [];
+for (i = 0; i < Drawtile.MAX_TERRAIN_HEIGHT; i++) {
+    dataStr += "[";
+    data[i] = [];
+    for (j = 0; j < Drawtile.MAX_TERRAIN_WIDTH; j++) {
+        dataStr += Drawtile.terrain[i][j].tileIndex + ",";
+        data[i][j] = Drawtile.terrain[i][j].tileIndex;
+    }
+    dataStr += "]\n";
+}
+
+
+//consoleResults.payload = dataStr;
+consoleResults.payload = data;
 

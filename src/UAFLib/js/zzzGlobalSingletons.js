@@ -1,4 +1,4 @@
-﻿
+﻿var DEBUG_STRINGS = new DEBUG_STRINGS();
 var alignmentType = new alignmentTypeObj(alignmentType);
 var charStatusType = new charStatusTypeObj(charStatusType);
 var combatVictorType = new combatVictorTypeObj();

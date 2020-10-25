@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Console.cs" />
+    <Compile Include="ConsoleResults.cs" />
     <Compile Include="LibraryFile.cs" />
     <Compile Include="LibraryInfo.cs" />
     <Compile Include="MFCSerializer.cs" />
@@ -76,6 +77,7 @@
     <None Include="Tests\Warrior.chr" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="js\DEBUG_STRINGS.js" />
     <Content Include="js\ActorInstanceType.js" />
     <Content Include="js\CDATA.js" />
     <Content Include="js\CODES.js" />
@@ -128,7 +130,7 @@
     <Content Include="js\eventDistType.js" />
     <Content Include="js\LASTACTION.js" />
     <Content Include="js\individualCombatantState.js" />
-    <Content Include="js\Combatant.js" />
+    <Content Include="js\COMBATANT.js" />
     <Content Include="js\ASLENTRY.js" />
     <Content Include="js\A_CStringPAIR_L.js" />
     <Content Include="js\COIN_TYPE.js" />

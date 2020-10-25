@@ -8,6 +8,7 @@ namespace UAFLib
 {
     public class Console
     {
+        public string mJSPath = @"..\..\..\UAFLib\js\";
         
         public void helloWorld()
         {
@@ -36,9 +37,10 @@ namespace UAFLib
                 runTest(@"..\..\..\UAFLib\Tests\TestRollDice.js");
                 runTest(@"..\..\..\UAFLib\Tests\TestGlobalStats.js");
                 runTest(@"..\..\..\UAFLib\Tests\TestLoadSAs.js");
-                // Left off: Where the heck is Combatant::combatantSA getting loaded.  I only see one dummy(?) SA loaded in in the constructor - run the debugger on the live and catch InsertAbility
-                runTest(@"..\..\..\UAFLib\Tests\TestSimpleCombat.js");
+                ConsoleResults results = runTest(@"..\..\..\UAFLib\Tests\TestSimpleCombat.js");
+                System.Console.WriteLine(results.payload);
                 // Next: make a test case where the monsters get added - see COMBAT_DATA.prototype.AddMonstersToCombatants and implement COMBAT_DATA.prototype.determineInitCombatPos
+                // Next: Get GenerateIndoorCombatMap() working
             }
             catch (JavaScriptException ex)
             {
@@ -52,11 +54,13 @@ namespace UAFLib
 
         }
 
-        private void runTest(string path)
+        public ConsoleResults runTest(string path)
         {
+            ConsoleResults results = new ConsoleResults();
             Engine engine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly));
-            LibraryInfo lib = LoadFiles(@"..\..\..\UAFLib\js\", engine);
-            engine.Execute(LoadFileFromString(path));
+            LibraryInfo lib = LoadFiles(this.mJSPath, engine);
+            engine.SetValue("consoleResults", results).Execute(LoadFileFromString(path));
+            return results;
         }
 
         private string LoadFileFromString(string path)
