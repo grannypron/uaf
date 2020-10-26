@@ -63,7 +63,8 @@ void CGlobalSndChooser::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PARTYSTEP, m_PartyStep);
 	DDX_Control(pDX, IDC_PARTYBUMP, m_PartyBump);
 	DDX_Control(pDX, IDC_INTROMUSIC, m_IntroMusic);
-	DDX_Control(pDX, IDC_DEATHMUSIC, m_DeathMusic);
+    DDX_Control(pDX, IDC_CREDITSMUSIC, m_CreditsMusic);
+    DDX_Control(pDX, IDC_DEATHMUSIC, m_DeathMusic);
 	//}}AFX_DATA_MAP
 }
 
@@ -72,7 +73,8 @@ BEGIN_MESSAGE_MAP(CGlobalSndChooser, CDialog)
 	//{{AFX_MSG_MAP(CGlobalSndChooser)
 	ON_BN_CLICKED(IDC_DEATHMUSIC, OnDeathmusic)
 	ON_BN_CLICKED(IDC_INTROMUSIC, OnIntromusic)
-	ON_BN_CLICKED(IDC_PARTYBUMP, OnPartybump)
+    ON_BN_CLICKED(IDC_CREDITSMUSIC, OnCreditsmusic)
+    ON_BN_CLICKED(IDC_PARTYBUMP, OnPartybump)
 	ON_BN_CLICKED(IDC_PARTYSTEP, OnPartystep)
 	ON_BN_CLICKED(IDC_CHARMISS, OnCharmiss)
 	ON_BN_CLICKED(IDC_CHARHIT, OnCharhit)
@@ -84,6 +86,7 @@ BEGIN_MESSAGE_MAP(CGlobalSndChooser, CDialog)
 	ON_BN_CLICKED(IDC_STOPBGNDQUEUE, OnStopbgndqueue)
 	ON_BN_CLICKED(IDC_CAMPMUSIC, OnCampmusic)
 	//}}AFX_MSG_MAP
+    ON_BN_CLICKED(IDC_CREDITSMUSIC, &CGlobalSndChooser::OnCreditsmusic)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -344,4 +347,32 @@ void CGlobalSndChooser::OnCampmusic()
     }
   }
   UpdateData(FALSE);	
+}
+
+
+void CGlobalSndChooser::OnCreditsmusic()
+{
+    UpdateData(TRUE);
+    SOUND_EVENT tempEvent;
+    POSITION pos = CreditsMusic.sounds.GetHeadPosition();
+    while (pos != NULL)
+    {
+        tempEvent.sounds.AddTail(CreditsMusic.sounds.GetAt(pos));
+        CreditsMusic.sounds.GetNext(pos);
+    }
+
+    CSoundEventDlg dlg(tempEvent);
+    if (dlg.DoModal() == IDOK)
+    {
+        CreditsMusic.Clear();
+        dlg.GetData(tempEvent);
+
+        pos = tempEvent.sounds.GetHeadPosition();
+        while (pos != NULL)
+        {
+            CreditsMusic.sounds.AddTail(tempEvent.sounds.GetAt(pos));
+            tempEvent.sounds.GetNext(pos);
+        }
+    }
+    UpdateData(FALSE);
 }

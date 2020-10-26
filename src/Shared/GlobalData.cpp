@@ -896,7 +896,7 @@ GLOBAL_SOUND_DATA::GLOBAL_SOUND_DATA() : hPartyBump(-1),hPartyStep(-1),hDeathMus
                         /*hIntroMusic(-1),*/ hCharHit(-1), hCharMiss(-1)
 {  
   ClearSounds();
-  PartyBump="";PartyStep="";DeathMusic="";IntroMusic.Clear();
+  PartyBump="";PartyStep="";DeathMusic="";IntroMusic.Clear(); CreditsMusic.Clear();
   CharHit="";CharMiss="";
   CampMusic.Clear();
 }
@@ -904,7 +904,7 @@ GLOBAL_SOUND_DATA::GLOBAL_SOUND_DATA() : hPartyBump(-1),hPartyStep(-1),hDeathMus
 void GLOBAL_SOUND_DATA::Clear(BOOL ctor) 
 { 
   ClearSounds();
-  PartyBump="";PartyStep="";DeathMusic="";IntroMusic.Clear();
+  PartyBump="";PartyStep="";DeathMusic="";IntroMusic.Clear(); CreditsMusic.Clear();
   CharHit="";CharMiss="";
   CampMusic.Clear();
 
@@ -960,6 +960,7 @@ void GLOBAL_SOUND_DATA::Serialize(CArchive &ar)
     AS(ar, PartyStep);
     AS(ar, DeathMusic);
     IntroMusic.Serialize(ar);
+    CreditsMusic.Serialize(ar);
     CampMusic.Serialize(ar);
 
     //AddFolderToPath(CharHit,    rte.SoundDir());
@@ -987,6 +988,16 @@ void GLOBAL_SOUND_DATA::Serialize(CArchive &ar)
     }
     else
       IntroMusic.Serialize(ar);
+
+    CreditsMusic.Clear();
+    if (globalData.version < _VERSION_525)
+    {
+        CString tmp;
+        ar >> tmp;
+        CreditsMusic.sounds.AddHead(tmp);
+    }
+    else
+        CreditsMusic.Serialize(ar);
 
     CampMusic.Clear();
     if (globalData.version >= _VERSION_0910_)
@@ -1023,6 +1034,7 @@ void GLOBAL_SOUND_DATA::Serialize(CAR &ar)
 
 
     IntroMusic.Serialize(ar);
+    CreditsMusic.Serialize(ar);
     CampMusic.Serialize(ar);
 
     //AddFolderToPath(CharHit,    rte.SoundDir());
@@ -1056,7 +1068,15 @@ void GLOBAL_SOUND_DATA::Serialize(CAR &ar)
       IntroMusic.sounds.AddHead(tmp);
     }
     else
-      IntroMusic.Serialize(ar);
+        IntroMusic.Serialize(ar);
+
+    CreditsMusic.Clear();
+    if (globalData.version < _VERSION_525)
+    {
+        //Do nothing because no outro music existing in prior versions - not even a default one
+    }
+    else
+        CreditsMusic.Serialize(ar);
 
     CampMusic.Clear();
     if (globalData.version >= _VERSION_0910_)
@@ -1081,6 +1101,7 @@ const char *JKEY_PARTYBUMP = "partyBump";
 const char *JKEY_PARTYSTEP = "partyStep";
 const char *JKEY_DEATHMUSIC = "deathMusic";
 const char *JKEY_INTROMUSIC = "introMusic";
+const char* JKEY_CREDITSMUSIC = "creditsMusic";
 const char *JKEY_CAMPMUSIC = "campMusic";
 
 void GLOBAL_SOUND_DATA::Export(JWriter& jw)
@@ -1091,6 +1112,7 @@ void GLOBAL_SOUND_DATA::Export(JWriter& jw)
   jw.NameAndValue(JKEY_PARTYSTEP, PartyStep);
   jw.NameAndValue(JKEY_DEATHMUSIC, DeathMusic);
   IntroMusic.Export(jw, JKEY_INTROMUSIC);
+  CreditsMusic.Export(jw, JKEY_CREDITSMUSIC);
   CampMusic.Export(jw, JKEY_CAMPMUSIC);
 }
 
@@ -1102,6 +1124,7 @@ void GLOBAL_SOUND_DATA::Import(JReader& jr)
   jr.NameAndValue(JKEY_PARTYSTEP, PartyStep);
   jr.NameAndValue(JKEY_DEATHMUSIC, DeathMusic);
   IntroMusic.Import(jr, JKEY_INTROMUSIC);
+  CreditsMusic.Import(jr, JKEY_CREDITSMUSIC);
   CampMusic.Import(jr, JKEY_CAMPMUSIC);
 }
 
@@ -1118,6 +1141,7 @@ void GLOBAL_SOUND_DATA::CrossReference(CR_LIST *pCRList)
   pCRList->CR_AddSoundReference(PartyStep, &CRReference);
   pCRList->CR_AddSoundReference(DeathMusic, &CRReference);
   IntroMusic.CrossReference(pCRList, &CRReference);
+  CreditsMusic.CrossReference(pCRList, &CRReference);
   CampMusic.CrossReference(pCRList, &CRReference);
 }
 #endif
@@ -1140,6 +1164,7 @@ GLOBAL_SOUND_DATA& GLOBAL_SOUND_DATA::operator =(const GLOBAL_SOUND_DATA& src)
   PartyStep = src.PartyStep;
   DeathMusic = src.DeathMusic;
   IntroMusic = src.IntroMusic;
+  CreditsMusic = src.CreditsMusic;
   CampMusic = src.CampMusic;
   return *this;
 }
@@ -3781,9 +3806,9 @@ GLOBAL_STATS& GLOBAL_STATS::operator =(const GLOBAL_STATS& src)
   HighlightFont = src.HighlightFont;
   //TitleBgArt = src.TitleBgArt;
   titleData = src.titleData;
+  creditsData = src.creditsData;
   IconBgArt = src.IconBgArt;
   BackgroundArt = src.BackgroundArt;
-  CreditsBgArt = src.CreditsBgArt;
   MapArtSurf = src.MapArtSurf;
   BackgroundSurf=src.BackgroundSurf;
   keyData = src.keyData;
@@ -3878,12 +3903,8 @@ void GLOBAL_STATS::Serialize(CArchive &ar)
     StripFilenamePath(BackgroundArt);
     AS(ar, BackgroundArt);
     //AddFolderToPath(BackgroundArt, rte.BackgroundArtDir());
-
-    StripFilenamePath(CreditsBgArt);
-    AS(ar, CreditsBgArt);
-    //AddFolderToPath(CreditsBgArt, rte.CreditsArtDir());
-
-   i = global_SmallPicImport.GetCount();
+  
+    i = global_SmallPicImport.GetCount();
    ar << i;
    pos = global_SmallPicImport.GetHeadPosition();
    while (pos != NULL)
@@ -3903,10 +3924,12 @@ void GLOBAL_STATS::Serialize(CArchive &ar)
      global_IconPicImport.GetNext(pos)->Serialize(ar, version, rte.PicArtDir());
    }
    titleData.Serialize(ar);
+   creditsData.Serialize(ar);
   }
   else
   {
     titleData.Clear();
+    creditsData.Clear();
 
     ar >> version;
     DAS(ar,designName);
@@ -4001,9 +4024,18 @@ void GLOBAL_STATS::Serialize(CArchive &ar)
 
     if (version >= _VERSION_0566_)
     {
-      DAS(ar,CreditsBgArt);
-      StripFilenamePath(CreditsBgArt);
-      //AddFolderToPath(CreditsBgArt, rte.CreditsArtDir());
+        if (version < _VERSION_525)
+        {
+          // For older versions - Load the old CreditsBgArt filepath in as a single screen in the sequence
+          CString CreditsBgArt;
+          DAS(ar, CreditsBgArt);
+          StripFilenamePath(CreditsBgArt);
+          TITLE_SCREEN data;
+          data.TitleBgArt = CreditsBgArt;
+          data.DisplayBy = TITLE_SCREEN::tsFadeIn;
+          data.UseTrans = FALSE;
+          creditsData.AddTitle(data);
+        }
     }
 
     int count;
@@ -4037,6 +4069,8 @@ void GLOBAL_STATS::Serialize(CArchive &ar)
     }
     if (version >= _VERSION_0800_)
       titleData.Serialize(ar);
+    if (version >= _VERSION_525)
+      creditsData.Serialize(ar);
   }
 
   global_asl.Serialize(ar, "GLOBAL_STATS_ATTRIBUTES");
@@ -4258,10 +4292,6 @@ void GLOBAL_STATS::Serialize(CAR& car)
     AS(car, BackgroundArt);
     //AddFolderToPath(BackgroundArt, rte.BackgroundArtDir());
 
-    StripFilenamePath(CreditsBgArt);
-    AS(car, CreditsBgArt);
-    //AddFolderToPath(CreditsBgArt, rte.CreditsArtDir());
-
    i = global_SmallPicImport.GetCount();
    car << i;
    pos = global_SmallPicImport.GetHeadPosition();
@@ -4287,10 +4317,12 @@ void GLOBAL_STATS::Serialize(CAR& car)
      global_IconPicImport.GetNext(pos)->Serialize(car, version, rte.PicArtDir());
    }
    titleData.Serialize(car);
+   creditsData.Serialize(car);
   }
   else
   {
     titleData.Clear();
+    creditsData.Clear();
     {
       __int64 temp;
       car.Serialize((char *)&temp, sizeof(temp));
@@ -4397,9 +4429,18 @@ void GLOBAL_STATS::Serialize(CAR& car)
 
     if (version >= _VERSION_0566_)
     {
-      DAS(car,CreditsBgArt);
-      StripFilenamePath(CreditsBgArt);
-      //AddFolderToPath(CreditsBgArt, rte.CreditsArtDir());
+        if (version < _VERSION_525)
+        {
+            // For older versions - Load the old CreditsBgArt filepath in as a single screen in the sequence
+            CString CreditsBgArt;
+            DAS(car, CreditsBgArt);
+            StripFilenamePath(CreditsBgArt);
+            TITLE_SCREEN data;
+            data.TitleBgArt = CreditsBgArt;
+            data.DisplayBy = TITLE_SCREEN::tsFadeIn;
+            data.UseTrans = FALSE;
+            creditsData.AddTitle(data);
+        }
     }
 
     int count;
@@ -4433,7 +4474,9 @@ void GLOBAL_STATS::Serialize(CAR& car)
     }
     if (version >= _VERSION_0800_)
       titleData.Serialize(car);
-  }
+    if (version >= _VERSION_525)
+      creditsData.Serialize(car);
+ }
 
   global_asl.Serialize(car, "GLOBAL_STATS_ATTRIBUTES");
   HBarVPArt.Serialize(car);
@@ -4617,9 +4660,9 @@ const char *JKEY_DEADATZEROHP = "deadAtZeroHP";
 const char *JKEY_MAPART= "mapArt";
 const char *JKEY_ICONBGART= "IconBgArt";
 const char *JKEY_BACKGROUNDART= "BackgroundArt";
-const char *JKEY_CREDITSBGART= "CreditsBgArt";
 const char *JKEY_LOGFONT="logFont";
 const char *JKEY_TITLEDATA="titleData";
+const char* JKEY_CREDITSDATA = "creditsData";
 const char *JKEY_SMALLPIC="smallPic";
 const char *JKEY_ICONPIC="iconPic";
 const char *JKEY_HBARVPART = "hBarVPArt";
@@ -4700,10 +4743,6 @@ CONFIG_ITEM_STATUS GLOBAL_STATS::Export(JWriter& jw)
     jw.NameAndValue(JKEY_BACKGROUNDART, BackgroundArt);
     //AddFolderToPath(BackgroundArt, rte.BackgroundArtDir());
 
-    StripFilenamePath(CreditsBgArt);
-    jw.NameAndValue(JKEY_CREDITSBGART, CreditsBgArt);
-    //AddFolderToPath(CreditsBgArt, rte.CreditsArtDir());
-
    //i = global_SmallPicImport.GetCount();
    //car << i;
    pos = global_SmallPicImport.GetHeadPosition();
@@ -4734,6 +4773,7 @@ CONFIG_ITEM_STATUS GLOBAL_STATS::Export(JWriter& jw)
    };
    jw.EndArray();
    titleData.Export(jw);
+   creditsData.Export(jw);
   }
   global_asl.Export(jw);
   HBarVPArt.Export(jw, JKEY_HBARVPART);
@@ -4833,10 +4873,6 @@ CONFIG_ITEM_STATUS GLOBAL_STATS::Import(JReader& jr, BOOL quiet)
     jr.NameAndValue(JKEY_BACKGROUNDART, BackgroundArt);
     //AddFolderToPath(BackgroundArt, rte.BackgroundArtDir());
 
-    StripFilenamePath(CreditsBgArt);
-    jr.NameAndValue(JKEY_CREDITSBGART, CreditsBgArt);
-    //AddFolderToPath(CreditsBgArt, rte.CreditsArtDir());
-
    //i = global_SmallPicImport.GetCount();
    //car << i;
    //pos = global_SmallPicImport.GetHeadPosition();
@@ -4870,6 +4906,7 @@ CONFIG_ITEM_STATUS GLOBAL_STATS::Import(JReader& jr, BOOL quiet)
    };
    jr.EndArray();
    titleData.Import(jr);
+   creditsData.Import(jr);
   }
   global_asl.Import(jr);
   HBarVPArt.Import(jr, JKEY_HBARVPART);
@@ -5281,7 +5318,6 @@ void GLOBAL_STATS::CrossReference(CR_LIST *pCRList)
   pCRList->CR_AddPicReference(m_MapArt, &CRReference);
   pCRList->CR_AddPicReference(IconBgArt, &CRReference);
   pCRList->CR_AddPicReference(BackgroundArt, &CRReference);
-  pCRList->CR_AddPicReference(CreditsBgArt, &CRReference);
   CrossReferenceEquipment(&startEquip,     "Basic", pCRList);
   CrossReferenceEquipment(&ClericEquip,    "Cleric", pCRList);
   CrossReferenceEquipment(&FighterEquip,   "Fighter", pCRList);
@@ -5312,6 +5348,7 @@ void GLOBAL_STATS::CrossReference(CR_LIST *pCRList)
     eventData.CrossReference(&crEI);
   };
   titleData.CrossReference(pCRList, &CRReference);
+  creditsData.CrossReference(pCRList, &CRReference);
   fixSpellBook.CrossReference(pCRList);
   sounds.CrossReference(pCRList);
 }
@@ -5371,9 +5408,9 @@ GLOBAL_STATS::GLOBAL_STATS() : keyData(MAX_SPECIAL_KEYS),
 
    //TitleBgArt="";
    titleData.Clear();
+   creditsData.Clear();
    IconBgArt="";
    BackgroundArt="";
-   CreditsBgArt="";
    
    MapArtSurf = -1; 
    BackgroundSurf=-1;
@@ -5453,9 +5490,9 @@ void GLOBAL_STATS::Clear(BOOL ctor, BOOL npcclear)
    FillDefaultFontData("SYSTEM", 16, &logfont);
    //TitleBgArt="";
    titleData.Clear();
+   creditsData.Clear();
    IconBgArt="";
    BackgroundArt="";
-   CreditsBgArt="";
 
 #ifdef UAFEDITOR
    if (!ctor)
@@ -5467,7 +5504,9 @@ void GLOBAL_STATS::Clear(BOOL ctor, BOOL npcclear)
      CString TitleBgArt("");
      TitleBgArt = ede.TemplateBackgroundArtDir() + DEFAULT_TITLE_BG;//.Format("%s%s", global_editorResourceDir, DEFAULT_TITLE_BG);
      titleData.SetDefault(TitleBgArt);
-     CreditsBgArt = ede.TemplateBackgroundArtDir() + DEFAULT_CREDITS_BG;//.Format("%s%s", global_editorResourceDir, DEFAULT_CREDITS_BG);
+     CString CreditsBgArt("");
+     CreditsBgArt = ede.TemplateBackgroundArtDir() + DEFAULT_CREDITS_BG;
+     creditsData.SetDefault(CreditsBgArt);
    }
 #else
    if (!ctor)
@@ -5480,7 +5519,9 @@ void GLOBAL_STATS::Clear(BOOL ctor, BOOL npcclear)
      CString TitleBgArt("");
      TitleBgArt = DEFAULT_TITLE_BG;
      titleData.SetDefault(TitleBgArt);
+     CString CreditsBgArt(""); 
      CreditsBgArt = DEFAULT_CREDITS_BG;
+     creditsData.SetDefault(CreditsBgArt);
    }
 #endif
 
@@ -5650,6 +5691,10 @@ void GLOBAL_STATS::SaveSounds()
   while (pos!=NULL)
     ::SaveSound(sounds.IntroMusic.sounds.GetNext(pos), GLOBAL_SOUND, rte.SoundDir());
 
+  pos = sounds.CreditsMusic.sounds.GetHeadPosition();
+  while (pos != NULL)
+      ::SaveSound(sounds.CreditsMusic.sounds.GetNext(pos), GLOBAL_SOUND, rte.SoundDir());
+
   pos = sounds.CampMusic.sounds.GetHeadPosition();
   while (pos!=NULL)
     ::SaveSound(sounds.CampMusic.sounds.GetNext(pos), GLOBAL_SOUND, rte.SoundDir());
@@ -5674,7 +5719,6 @@ void GLOBAL_STATS::SaveArt()
    ::SaveArt(CursorArt.filename         ,CommonDib      , GLOBAL_ART, TRUE, rte.CursorArtDir());
    ::SaveArt(m_MapArt                   ,CommonDib      , GLOBAL_ART, TRUE, rte.MapArtDir());
    ::SaveArt(IconBgArt                  ,CommonDib      , GLOBAL_ART, TRUE, rte.IconArtDir());   ::SaveArt(BackgroundArt              ,TransBufferDib , GLOBAL_ART, TRUE, rte.BackgroundArtDir());
-   ::SaveArt(CreditsBgArt               ,TitleDib       , GLOBAL_ART, TRUE, rte.BackgroundArtDir());
 
    // save pre-gen character pics (smallpics, icons, sprites)
 
@@ -5701,6 +5745,10 @@ void GLOBAL_STATS::SaveArt()
    pos = titleData.Titles.GetHeadPosition();
    while (pos != NULL)
      ::SaveArt(titleData.Titles.GetNext(pos).TitleBgArt, TitleDib, GLOBAL_ART, TRUE, rte.TitleArtDir());
+
+   pos = creditsData.Titles.GetHeadPosition();
+   while (pos != NULL)
+       ::SaveArt(creditsData.Titles.GetNext(pos).TitleBgArt, TitleDib, GLOBAL_ART, TRUE, rte.TitleArtDir());
 
    eventData.saveUsedEventArt(GLOBAL_ART);
 }
@@ -6324,6 +6372,23 @@ void PlayIntro(BOOL play)
   }
   else
     pSndMgr->StopBgndQueue();
+}
+
+void PlayOuttro(BOOL play)
+{
+    if (play)
+    {
+        if (pSndMgr != NULL)
+        {
+            pSndMgr->StopBgndQueue();
+            POSITION pos = globalData.sounds.CreditsMusic.sounds.GetHeadPosition();
+            while (pos != NULL)
+                pSndMgr->QueueBgndSound(globalData.sounds.CreditsMusic.sounds.GetNext(pos), FALSE);
+            pSndMgr->PlayBgndQueue();
+        }
+    }
+    else
+        pSndMgr->StopBgndQueue();
 }
 
 void PlayCampMusic(BOOL play) 

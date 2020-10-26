@@ -986,6 +986,7 @@
 #define IDC_SOUNDSELECT                 1556
 #define IDC_CHARHIT                     1556
 #define IDC_CHARMISS                    1557
+#define IDC_CREDITSMUSIC                1558
 #define IDC_REMOVE                      1559
 #define IDC_LOOP                        1560
 #define IDC_SOUNDLIST                   1561
@@ -1017,6 +1018,7 @@
 #define IDC_RenameSpecAbility           1593
 #define IDC_EDITSPELL                   1599
 #define IDC_EDITITEM                    1601
+#define IDC_RESTARTFRAME                1602
 #define IDC_MAP_SCROLL_PIC              1607
 #define IDC_HORZ_SCROLL                 1608
 #define IDC_VERT_SCROLL                 1609
@@ -1028,7 +1030,6 @@
 #define IDC_FWIDTH                      1615
 #define IDC_FHEIGHT                     1616
 #define IDC_NUMFRAMES                   1617
-#define IDC_RESTARTFRAME                1602
 #define IDC_VIEWALLPIC                  1618
 #define IDC_UPDATESTATS                 1619
 #define IDC_TOGGLEANIM                  1620
@@ -1859,7 +1860,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        313
+#define _APS_NEXT_RESOURCE_VALUE        317
 #define _APS_NEXT_COMMAND_VALUE         32887
 #define _APS_NEXT_CONTROL_VALUE         2268
 #define _APS_NEXT_SYMED_VALUE           101

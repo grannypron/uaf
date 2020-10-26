@@ -3301,10 +3301,13 @@ class SPLASH_DATA : public GameEvent
   CString GameVersionInfo;
   POSITION currPos;
   bool IsFirstScreen;
+  bool intro;
+  void *mScreens;
   bool LoadNextScreen();
   void EndSplash();
 public:
-  SPLASH_DATA(void) { event=CONTROL_Splash;hImage=-1;currPos=NULL;IsFirstScreen=true; }
+    SPLASH_DATA(void) { event = CONTROL_Splash; hImage = -1; currPos = NULL; IsFirstScreen = true; intro = true; }
+    SPLASH_DATA(bool _intro) { event = CONTROL_Splash; hImage = -1; currPos = NULL; IsFirstScreen = true; intro = _intro; }
   virtual ~SPLASH_DATA() {  }
   void OnKeypress(key_code key, char ascii);
   void OnMouseClickLeft(int x, int y);
@@ -3517,22 +3520,11 @@ private:
 #endif
 };
 
-class EXIT_DATA : public GameEvent
+class EXIT_DATA : public SPLASH_DATA
 {
-  LONGLONG splashScreenStart;
 public:
-  EXIT_DATA(void) { event=CONTROL_Exit; splashScreenStart=0; }
-  virtual ~EXIT_DATA() { }
-  bool OnIdle(void);
-  void OnDraw(void) { }
-  void OnInitialEvent(void);
-  void OnKeypress(key_code key, char ascii);
-  int  OnSaveGame(unsigned int *saveArea);
-  int  OnLoadGame(unsigned int *saveArea);
-  unsigned int OnTaskMessage(TASKMESSAGE msg, TASKSTATE taskState);
-#ifdef TASKTRACE
-  const char *GetEventTypeName(void){return "EXIT_DATA";};
-#endif
+    EXIT_DATA() : SPLASH_DATA(false) {};
+    void OnInitialEvent(void);
 };
 
 
