@@ -19,10 +19,34 @@ function Deserialize(filename, debug) {
     return result;
 }
 
+function loadClasses() {
+    var data = new CLASS_DATA();
+    data.m_name = "Fighter";
+    data.m_baseclasses.baseclasses.push("fighter");
+    classData.AddClass(data);
+
+    var data2 = new CLASS_DATA();
+    data2.m_name = "Thief";
+    data2.m_baseclasses.baseclasses.push("thief");
+    classData.AddClass(data2);
+
+    var data4 = new CLASS_DATA();
+    data4.m_name = "Druid";
+    data4.m_baseclasses.baseclasses.push("druid");
+    classData.AddClass(data4);
+
+    var data5 = new CLASS_DATA();
+    data5.m_name = "Cleric";
+    data5.m_baseclasses.baseclasses.push("cleric");
+    classData.AddClass(data5);
+
+}
 // Serialize
 /*var ar = new CAR(null, 6.0);
 var log = System.Console.WriteLine;
 character.SerializeCAR(ar, 6.0);*/
+
+loadClasses();
 
 /* These came from running the DC original source */
 var DRUID_RESULT = "name=Druid;pos=255;THAC0=20;AC=6;age=21;maxage=93;HP=8;maxHP=8;enc=20;maxenc=1750;maxmove=12;STR=10;INT=10;WIS=18;DEX=18;CON=15;CHA=15;race=Human;gender=female;class=Druid;align=True Neutral;";

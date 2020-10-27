@@ -28,10 +28,27 @@ function Globals() {
     this.SCREEN_HEIGHT = 480; // screen resolution for the editor
     this.COLOR_BITS = 24;
 
+    this.START_EXP_VALUE = 0;
+    this.START_LVL_VALUE = 1;
+
     this.MAX_COMBATANTS = 100;
     this.MAX_CHARS_IN_ROW = 3; // how many chars wide the battle line can be
     this.MAX_COMBAT_IDLE_ROUNDS = 20;
 
+    this.Ability_Dexterity = "Dexterity";
+    this.Ability_Constitution = "Constitution";
+    this.Ability_Strength = "Strength";
+    this.Ability_Intelligence = "Intelligence";
+    this.Ability_Charisma = "Charisma";
+    this.Ability_Wisdom = "Wisdom";
+
+    this.Baseclass_magicUser = "magicUser";
+    this.Baseclass_thief = "thief";
+    this.Baseclass_paladin = "paladin";
+    this.Baseclass_cleric = "cleric";
+    this.Baseclass_fighter = "fighter";
+    this.Baseclass_ranger = "ranger";
+    this.Baseclass_druid = "druid";
 }
 
 Globals.prototype.die = function (message) {
@@ -105,6 +122,23 @@ Globals.prototype.randomMT = function () {
 }
 
 
+Globals.prototype.GetMonsterQtyMod = function()
+{
+    var lvl = Globals.GetCurrSkillLevel();
+    if ((lvl < 0) || (lvl > 4)) return 0;
+    if (globalData.m_diffLvlData.m_data[lvl].m_ModifyQty)
+        return globalData.m_diffLvlData.m_data[lvl].m_QtyAmount;
+    else
+        return 0;
+}
 
+Globals.prototype.timeGetTime = function() {
+    return (new Date()).getTime();
+}
+
+Globals.prototype.GetCurrSkillLevel = function()
+{
+    return party.skillLevel;
+}
 
 var Globals = new Globals();

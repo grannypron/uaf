@@ -2585,6 +2585,152 @@ CHARACTER.prototype.GetIsFriendly = function () {
     return (this.m_pCombatant == null) ? true : m_pCombatant.GetIsFriendly();
 }
 
+CHARACTER.prototype.SetType = function (flag) {
+    var inparty = this.IsPartyMember();
+    flag &= (~IN_PARTY_TYPE);
+    this.type = flag;
+    if (inparty) this.SetPartyMember(true);
+}
+
+CHARACTER.prototype.SetPartyMember = function (flag) {
+    if (flag == undefined) { flag = true; }
+    if (flag) this.type |= IN_PARTY_TYPE; else this.type &= (~IN_PARTY_TYPE);
+};
+
+CHARACTER.prototype.generateNewCharacter = function (StartExperience, StartExpType) {
+    var actor = new ActorType();
+
+    this.GetContextActor();
+    RunTimeIF.SetCharContext(actor);
+
+    this.rollStats();
+    this.baseclassStats = [];
+
+    // Here we need to add baseclassStats for each
+    // baseclass of his current class.
+    {
+        var pClass;
+        var bcs = new BASECLASS_STATS();
+        var i = 0, n = 0;
+        pClass = classData.PeekClass(this.classID);
+        if (pClass == null) {
+            n = classData.GetCount();
+            if (n == 0) {
+                Globals.WriteDebugString("Unable to assign any Class to character\n");
+                return;
+            };
+            pClass = classData.PeekClass(0);
+            this.classID = pClass.ClassID();
+        }
+        else {
+            bcs.currentLevel = 1;
+            bcs.x_experience = 0;
+            bcs.preDrainLevel = 0;
+            bcs.previousLevel = 0;
+            n = pClass.GetCount();
+            for (i = 0; i < n; i++) {
+                var baseclassID = "";
+                baseclassID = pClass.PeekBaseclassID(i); // PORT NOTE:  CLASS_DATA has .m_baseclasses, a BASECLASS_LIST.  BASECLASS_LIST has .baseclasses, and array of BASECLASS_ID (which probably can just be strings).  So, CLASS_DATA.PeekBaseclassID(idx) is just .m_baseclasses[idx] //                 //classData is a global of CLASS_DATA_TYPE and it has .m_ClassData which is an array of CLASS_DATA //                 // So pClass here is a CLASS_DATA - why does it have multiple BaseclassIDs?  Maybe multiclass?
+                bcs.baseclassID = baseclassID;
+                baseclassStats.Add(bcs);
+            };
+        }
+    };
+    {
+        var i;
+        i = raceData.LocateRace(this.RaceID());
+        if (i < 0) {
+            var n;
+            n = raceData.GetCount();
+            if (n == 0) {
+                Globals.WriteDebugString("Cannot assign any Race to character");
+                return;
+            };
+            race = raceData.m_RaceData[0].RaceID();//PORT NOTE: was raceData.PeekRace(0).RaceID(); but I simplified the raceID to a string type and that changed a few things
+        };
+    };
+
+    if ((this.GetType() == MONSTER_TYPE) || (StartExpType == Globals.START_EXP_VALUE)) {
+        Globals.ASSERT(StartExpType == Globals.START_EXP_VALUE);
+        this.giveCharacterExperience(StartExperience, false);
+    }
+    else // startexp is minimum level
+    {
+        Globals.ASSERT(GetType() != MONSTER_TYPE);
+        Globals.die("Not Needed?"); //Not Implemented(0x47abc, false);
+    }
+
+    Globals.TRACE(Globals.timeGetTime() + " Before getNewCharLevel\n");
+
+    this.getNewCharLevel(null, 999);
+
+    Globals.TRACE(Globals.timeGetTime() + " After getNewCharLevel\n");
+
+    this.DetermineCharMaxAge();
+    this.DetermineCharStartAge(); //(START_AGE + (rand() % (AGE_RANGE+1)));
+    this.age = Math.min(this.maxAge, this.age);
+    this.SetBirthday(Globals.RollDice(365, 1));
+
+    this.status = charStatusType.Okay;
+    this.myItems.Clear();
+
+    this.getNewCharStartingMoney();
+    this.getNewCharStartingEquip();
+    this.determineNbrAttacks();
+    this.DetermineUnarmedHitDice();
+
+    this.maxHitPoints = 0;
+    this.hitpointSeed = randomMT();
+    DetermineNewCharMaxHitPoints(hitpointSeed);
+    if (this.maxHitPoints > 0) {
+        this.hitPoints = this.maxHitPoints;
+        this.UpdateStats(true);
+    }  // else we have a race/class definition error
+
+    RunTimeIF.ClearCharContext();
+}
+
+CHARACTER.prototype.rollStats = function () {
+    var actor;
+    actor = this.GetContextActor();
+    RunTimeIF.SetCharContext(actor);
+
+    this.strength = GameRules.rollSkillDie(Globals.Ability_Strength);
+    this.intelligence = GameRules.rollSkillDie(Globals.Ability_Intelligence);
+    this.wisdom = GameRules.rollSkillDie(Globals.Ability_Wisdom);
+    this.dexterity = GameRules.rollSkillDie(Globals.Ability_Dexterity);
+    this.constitution = GameRules.rollSkillDie(Globals.Ability_Constitution);
+    this.charisma = GameRules.rollSkillDie(Globals.Ability_Charisma);
+
+
+    this.strengthMod = 0;
+    if (this.GetAdjStr() == 18) {
+        var pClass;
+        pClass = classData.PeekClass(classID);
+        if (pClass != null) {
+            var roll;
+            pClass.strengthBonusDice.Roll(roll);
+            this.strengthMod = roll;
+        }
+    }
+
+    this.spellAbility.valid = false;
+    RunTimeIF.ClearCharContext();
+};
+
+CHARACTER.prototype.RaceID = function (raceID) {
+    /**TODO - this is a stub for now - unless this might be all we need here*/
+    return raceID;
+}
+
+CHARACTER.prototype.RaceID = function () {
+    return this.race;
+}
+
+CHARACTER.prototype.getNewCharLevel = function (pTrainableBaseclasses, maxLevelGain) {
+    throw "todo";
+}
+
 
 CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };
 CHARACTER.prototype.GetBestMemorizedHealingSpell = function (pSpellID) { throw "todo"; };
@@ -2592,15 +2738,12 @@ CHARACTER.prototype.GetHealingPointsNeeded = function () { throw "todo"; };
 CHARACTER.prototype.giveCharacterDamage = function (eventSave, attackTHAC0, dmgDice, dmgDiceQty, dmgBonus, spellSave, saveBonus, pAttacker) { throw "todo"; };
 CHARACTER.prototype.giveCharacterDamage = function (damage) { throw "todo"; };
 CHARACTER.prototype.TakeDamage = function (dmg, IsNonLethal, invokeOptions, canFinishCasting, pDeathIndex) { throw "todo"; };
-CHARACTER.prototype.rollStats = function () { throw "todo"; };
 CHARACTER.prototype.GetLevelCap = function (pBaseclass) { throw "todo"; };
 CHARACTER.prototype.UpdateStats = function (IsNewChar) { throw "todo"; };
 CHARACTER.prototype.UpdateBaseclassLevels = function () { throw "todo"; };
 CHARACTER.prototype.UpdateLevelBasedStats = function () { throw "todo"; };
 CHARACTER.prototype.UpdateSkillBasedStats = function () { throw "todo"; };
 CHARACTER.prototype.CanBeModified = function() { throw "todo"; }
-CHARACTER.prototype.generateNewCharacter = function(StartExperience, StartExpType) { throw "todo"; }
-CHARACTER.prototype.getNewCharLevel = function(pTrainableBaseclasses, maxLevelGain) { throw "todo"; }
 CHARACTER.prototype.checkNewCharClassScores = function() { throw "todo"; }
 CHARACTER.prototype.checkNewCharRaceScores = function(ApplyModifiers) { throw "todo"; }
 CHARACTER.prototype.getNewCharStartingMoney = function() { throw "todo"; }
@@ -2686,16 +2829,12 @@ CHARACTER.prototype.PrimeSpellCastingScore = function(spellSchool) { throw "todo
 CHARACTER.prototype.HaveSpell = function(spellID, checkmemorized) { throw "todo"; }
 CHARACTER.prototype.GetSpellBookIndex = function(spellID, checkMemorized) { throw "todo"; }
 CHARACTER.prototype.GetAbilityLimits = function(abilityID) { throw "todo"; }
-CHARACTER.prototype.SetPartyMember = function(flag) {if (flag == undefined) {flag = true;}};
-CHARACTER.prototype.SetType = function(flag) { throw "todo"; }
 CHARACTER.prototype.GetDetectingInvisible = function() { throw "todo"; }
 CHARACTER.prototype.SetDetectingInvisible = function(flag) { throw "todo"; }
 CHARACTER.prototype.GetAdjDetectingInvisible = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
 CHARACTER.prototype.GetDetectingTraps = function() { throw "todo"; }
 CHARACTER.prototype.SetDetectingTraps = function(flag) { throw "todo"; }
 CHARACTER.prototype.GetAdjDetectingTraps = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.RaceID = function() { throw "todo"; }
-CHARACTER.prototype.RaceID = function(raceID) { throw "todo"; }
 CHARACTER.prototype.PeekRaceData = function() { throw "todo"; }
 CHARACTER.prototype.getCharTHAC0 = function() { throw "todo"; }
 CHARACTER.prototype.SetTHAC0 = function(val) { throw "todo"; }

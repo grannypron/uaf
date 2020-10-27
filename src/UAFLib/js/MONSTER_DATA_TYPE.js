@@ -1,6 +1,7 @@
 /** TODO **/
 function MONSTER_DATA_TYPE() {
-    this.MonsterData = [];
+    // **TODO** **EFFICIENCY** - Rewrite so that .MonsterData is an associative array indexed by a monsterID string
+    this.MonsterData = [];          // Array of MONSTER_DATA
 
     this.preSpellNameKey = 0;  //See comment at defintion of VersionSaveIDs 
     this.Name = "";  // In the engine, the printable name.
@@ -99,4 +100,17 @@ MONSTER_DATA_TYPE.prototype.ClearSounds = function () {
         this.MonsterData[i].ClearSounds();
     };
 
+}
+
+MONSTER_DATA_TYPE.prototype.PeekMonster = function (idx) {
+    return this.MonsterData[idx];
+}
+
+MONSTER_DATA_TYPE.prototype.LocateMonster = function (monsterID) {
+    for (var idx = 0; idx < this.MonsterData.length; idx++) {
+        if (this.MonsterData[idx].monsterID = monsterID) {
+            return this.MonsterData[idx];
+        }
+    }    
+    return -1;
 }

@@ -777,323 +777,154 @@ COMBAT_DATA.prototype.AddCharsToCombatants = function() {
 }
 
 COMBAT_DATA.prototype.AddMonstersToCombatants = function () {
-    // STUB - do nothing
-
-/*****************************************************************************
-// NAME:    COMBAT_DATA::AddMonstersToCombatants
-//
-// PURPOSE: 
-//
-// RETURNS: None
-void COMBAT_DATA:: AddMonstersToCombatants()
-**TODO**
-{
-    COMBATANT temp;
-
-    if (m_pEvent -> monsters.GetCount() == 0) {
-        WriteDebugString("No monsters in combat event %i\n", m_pEvent -> GetEventId());
+    var temp = new COMBATANT();
+    if (this.m_pEvent.monsters.GetCount() == 0) {
+        Globals.WriteDebugString("No monsters in combat event " + this.m_pEvent.GetEventId() + "\n");
         return;
     }
 
     // how many monsters can we add?
-    //int MaxMonstersAllowed = MAX_COMBATANTS - NumCombatants()/*m_aCombatants.GetSize()/ - 1;
+    var MaxMonstersAllowed = Globals.MAX_COMBATANTS - this.NumCombatants() - 1;
 
-    if (m_pEvent -> randomMonster) {
+    if (this.m_pEvent.randomMonster) {
         // pick just one monster/NPC from the list
-        int result = RollDice(m_pEvent -> monsters.GetCount(), 1, 0.0);
-        COMBATANT * pCombatant;
+        var result = Globals.RollDice(this.m_pEvent.monsters.GetCount(), 1, 0.0);
+        var pCombatant;
         result -= 1; // make zero-based index;
-        result = max(0, result);
+        result = Math.max(0, result);
 
-        int count;
-        if (m_pEvent -> monsters.monsters[result].UseQty == MONSTER_EVENT:: meUseQty)
+        var count;
+        if (this.m_pEvent.monsters.monsters[result].UseQty == MONSTER_EVENT.meUseQty)
         {
-            count = m_pEvent -> monsters.monsters[result].qty;
+            count = this.m_pEvent.monsters.monsters[result].qty;
         }
     else
         {
-            count = RollDice(m_pEvent -> monsters.monsters[result].qtyDiceSides,
-                m_pEvent -> monsters.monsters[result].qtyDiceQty,
-                m_pEvent -> monsters.monsters[result].qtyBonus);
-            WriteDebugString("Random quantity of combat monster: %i\n", count);
+            count = Globals.RollDice(this.m_pEvent.monsters.monsters[result].qtyDiceSides,
+                this.m_pEvent.monsters.monsters[result].qtyDiceQty,
+                this.m_pEvent.monsters.monsters[result].qtyBonus);
+            GlobalsWriteDebugString("Random quantity of combat monster: " + count + "\n");
         }
 
-        double mod = GetMonsterQtyMod();
+        var mod = Globals.GetMonsterQtyMod();
         if (mod != 0.0) count += ((mod / 100.0) * count);
         if (count > MaxMonstersAllowed) count = MaxMonstersAllowed;
         if (count <= 0) count = 1;
-        for (int j = 0; j < count; j++)
+        for (var j = 0; j < count; j++)
         {
-            /*
-             *  // All of this has been duplicated below so that we add the combatant to the combat
-             *  // before updating its properties.  This is so that any scripts that reference
-             *  // the combatant will find him actually a part of the combat.
-             *     temp.Clear();
-             *     temp.self = m_iNumCombatants; // init relies on self index
-             *
-             *     if (m_pEvent->monsters.monsters[result].type == MONSTER_TYPE)
-             *       temp.InitFromMonsterData(m_pEvent->monsters.monsters[result].monster,
-             *                                m_pEvent->monsters.monsters[result].friendly,
-             *                                m_pEvent->monsters.monsters[result].items,
-             *                                m_pEvent->monsters.monsters[result].money);
-             *     else
-             *       temp.InitFromNPCData(m_pEvent->monsters.monsters[result].monster,
-             *                            m_pEvent->monsters.monsters[result].friendly,
-             *                            m_pEvent->monsters.monsters[result].items,
-             *                            m_pEvent->monsters.monsters[result].money);
-             *
-             *     if (temp.origKey != -1)
-             *     {         
-             *       temp.self = m_iNumCombatants;
-             *       temp.SetMorale(m_pEvent->monsterMorale);
-             *       temp.SetMorale( temp.GetMorale() + m_pEvent->monsters.monsters[result].moraleAdj );
-             *
-             *       int PreSpecAbCount = temp.spellEffects.GetCount();
-             *       // turn on the special abilities
-             *       Not Implemented(0xc98f4a,FALSE);//temp.specAbs.EnableAllFor(&temp);
-             *
-             *       int PostSpecAbCount = temp.spellEffects.GetCount();
-             *       int Diff = PostSpecAbCount - PreSpecAbCount;
-             *       if (Diff > 0)
-             *       {
-             *         POSITION pos = temp.spellEffects.GetTailPosition();  
-             *         while ((pos != NULL) && (Diff > 0))
-             *         {        
-             *           temp.spellEffects.GetAt(pos).flags |= SPELL_EFFECTS_DATA::EFFECT_CHARSPECAB;
-             *           //temp.spellEffects.GetAt(pos).m_gsID = temp.self;
-             *           temp.spellEffects.GetAt(pos).SourceChar_ID(temp.self);
-             *           temp.spellEffects.GetPrev(pos);
-             *           Diff--;
-             *         }
-             *       }
-             *
-             *       m_aCombatants.SetAtGrow(m_iNumCombatants, temp);
-             *       m_iNumCombatants++;
-             *     }
-             * /
-
-
-
-
-            // All of this is a duplicate of code above so that we add the combatant to the combat  //*
-            // before updating its properties.  This is so that any scripts that reference          //*
-            // the combatant will find him actually a part of the combat.                           //*
-            temp.Clear();                                                                        //*
-            //Not Implemented(0xc54d30,FALSE); // I cannot see how this ever worked.              //*
-            // Either it encountered a Not Implemented()          //*
-            // or it failed to SetAtGrow().                      //*
-            temp.self = m_iNumCombatants; // init relies on self index                           //*
-            m_aCombatants.SetAt(m_iNumCombatants, temp);                                         //*
-            pCombatant = & m_aCombatants[m_iNumCombatants];
-            m_iNumCombatants++;                                                                  //*
-            //*
-            if (m_pEvent -> monsters.monsters[result].m_type == MONSTER_TYPE)                      //*
-                //temp.InitFromMonsterData(m_pEvent->monsters.monsters[result].monster,            //*
-                pCombatant -> InitFromMonsterData(m_pEvent -> monsters.monsters[result].monsterID,     //*
-                    m_pEvent -> monsters.monsters[result].friendly,      //*
-                    m_pEvent -> monsters.monsters[result].items,         //*
-                    m_pEvent -> monsters.monsters[result].money);        //*
-            else                                                                                 //*
-                //temp.InitFromNPCData(m_pEvent->monsters.monsters[result].monster,                //*
-                pCombatant -> InitFromNPCData(m_pEvent -> monsters.monsters[result].characterID,       //*
-                    m_pEvent -> monsters.monsters[result].friendly,          //*
-                    m_pEvent -> monsters.monsters[result].items,             //*
-                    m_pEvent -> monsters.monsters[result].money);            //*
-            //*
-            if (pCombatant -> origKey != -1)                                                              //*
-            {                                                                                    //*
-                pCombatant -> SetMorale(m_pEvent -> monsterMorale);                                    //*
-                pCombatant -> SetMorale(pCombatant -> GetMorale()
-                    + m_pEvent -> monsters.monsters[result].moraleAdj);           //*
-                //*
-                int PreSpecAbCount = pCombatant -> m_pCharacter -> m_spellEffects.GetCount();          //*
-                int PostSpecAbCount = pCombatant -> m_pCharacter -> m_spellEffects.GetCount();         //*
-                // turn on the special abilities                                                   //*
-                //Not Implemented(0xc98f4a,FALSE);//temp.specAbs.EnableAllFor(&temp);               //*
-                //*
-                int Diff = PostSpecAbCount - PreSpecAbCount;                                       //*
-                if (Diff > 0)                                                                      //*
-                {                                                                                  //*
-                    POSITION pos = pCombatant -> m_pCharacter -> m_spellEffects.GetTailPosition();       //*
-                    while ((pos != NULL) && (Diff > 0))                                              //*
-                    {                                                                                //*
-                        pCombatant -> m_pCharacter -> m_spellEffects.GetAt(pos) -> flags |= SPELL_EFFECTS_DATA:: EFFECT_CHARSPECAB;   //*
-                        //temp.spellEffects.GetAt(pos).m_gsID = temp.self;                             //*
-                        pCombatant -> m_pCharacter -> m_spellEffects.GetAt(pos) -> SourceChar_ID(pCombatant -> self, true);   //*
-                        pCombatant -> m_pCharacter -> m_spellEffects.PeekPrev(pos);                                //*
-                        Diff--;                                                                        //*
-                    }                                                                                //*
-                }                                                                                  //*
-            }                                                                                    //*    
+            temp.Clear();                                                                        
+            temp.self = this.m_iNumCombatants; // init relies on self index                           
+            m_aCombatants.SetAt(this.m_iNumCombatants, temp);                                         
+            pCombatant = this.m_aCombatants[this.m_iNumCombatants];
+            this.m_iNumCombatants++;                                                                  
+            
+            if (this.m_pEvent.monsters.monsters[result].m_type == MONSTER_TYPE)                      
+                pCombatant.InitFromMonsterDataID(this.m_pEvent.monsters.monsters[result].monsterID,     
+                    this.m_pEvent.monsters.monsters[result].friendly,      
+                    this.m_pEvent.monsters.monsters[result].items,         
+                    this.m_pEvent.monsters.monsters[result].money);        
+            else                                                                                 
+                pCombatant.InitFromNPCData(this.m_pEvent.monsters.monsters[result].characterID,       
+                    this.m_pEvent.monsters.monsters[result].friendly,          
+                    this.m_pEvent.monsters.monsters[result].items,             
+                    this.m_pEvent.monsters.monsters[result].money);            
+            
+            if (pCombatant.origKey != -1)                                                              
+            {                                                                                    
+                pCombatant.SetMorale(this.m_pEvent.monsterMorale);                                    
+                pCombatant.SetMorale(pCombatant.GetMorale()
+                    + this.m_pEvent.monsters.monsters[result].moraleAdj);           
+                
+                var PreSpecAbCount = pCombatant.m_pCharacter.m_spellEffects.GetCount();          
+                var PostSpecAbCount = pCombatant.m_pCharacter.m_spellEffects.GetCount();         
+                // turn on the special abilities                                                   
+                
+                var Diff = PostSpecAbCount - PreSpecAbCount;                                       
+                if (Diff > 0)                                                                      
+                {                               
+                    var pos = pCombatant.m_pCharacter.m_spellEffects.GetTailPosition();       
+                    while ((pos != null) && (Diff > 0))                                              
+                    {                                                                                
+                        pCombatant.m_pCharacter.m_spellEffects.GetAt(pos).flags |= SPELL_EFFECTS_DATA.EFFECT_CHARSPECAB;   
+                        pCombatant.m_pCharacter.m_spellEffects.GetAt(pos).SourceChar_ID(pCombatant.self, true);   
+                        pos = pCombatant.m_pCharacter.m_spellEffects.PrevPos();
+                        Diff--;                                                                        
+                    }                                                                                
+                }                                                                                  
+            }                                                                                        
         }
     }
     else {
         // add all monsters/NPCs
-        for (int i = 0; i < m_pEvent -> monsters.GetCount(); i++)
+        for (var i = 0; i < this.m_pEvent.monsters.GetCount(); i++)
         {
-            int count;
-            if (m_pEvent -> monsters.monsters[i].UseQty == MONSTER_EVENT:: meUseQty)
+            var count;
+            if (this.m_pEvent.monsters.monsters[i].UseQty == MONSTER_EVENT.meUseQty)
             {
-                count = m_pEvent -> monsters.monsters[i].qty;
+                count = this.m_pEvent.monsters.monsters[i].qty;
             }
       else
             {
-                count = RollDice(m_pEvent -> monsters.monsters[i].qtyDiceSides,
-                    m_pEvent -> monsters.monsters[i].qtyDiceQty,
-                    m_pEvent -> monsters.monsters[i].qtyBonus);
-                WriteDebugString("Random quantity of combat monster: %i\n", count);
+                count = Globals.RollDice(this.m_pEvent.monsters.monsters[i].qtyDiceSides,
+                    this.m_pEvent.monsters.monsters[i].qtyDiceQty,
+                    this.m_pEvent.monsters.monsters[i].qtyBonus);
+                Globals.WriteDebugString("Random quantity of combat monster: " + count + "\n");
             }
 
-            double mod = GetMonsterQtyMod();
+            var mod = Globals.GetMonsterQtyMod();
             if (mod != 0.0) count += ((mod / 100.0) * count);
             if (count <= 0) count = 1;
 
-            for (int j = 0; j < count; j++)
+            for (var j = 0; j < count; j++)
             {
-                TRACE("%d countLoop\n", timeGetTime());
-                /*
-                 *  // All of this has been duplicated below so that we add the combatant to the combat
-                 *  // before updating its properties.  This is so that any scripts that reference
-                 *  // the combatant will find him actually a part of the combat.
-                 *       temp.Clear();
-                 *       temp.self = m_iNumCombatants; // init relies on self index
-                 *
-                 *       if (m_pEvent->monsters.monsters[i].type == MONSTER_TYPE)
-                 *         temp.InitFromMonsterData(m_pEvent->monsters.monsters[i].monster,
-                 *                                  m_pEvent->monsters.monsters[i].friendly,
-                 *                                  m_pEvent->monsters.monsters[i].items,
-                 *                                  m_pEvent->monsters.monsters[i].money);
-                 *       else
-                 *         temp.InitFromNPCData(m_pEvent->monsters.monsters[i].monster,
-                 *                              m_pEvent->monsters.monsters[i].friendly,
-                 *                              m_pEvent->monsters.monsters[i].items,
-                 *                              m_pEvent->monsters.monsters[i].money);
-                 *
-                 *       if (temp.origKey != -1)
-                 *       {         
-                 *         temp.self = m_iNumCombatants;
-                 *         temp.SetMorale(m_pEvent->monsterMorale);
-                 *         temp.SetMorale( temp.GetMorale() + m_pEvent->monsters.monsters[i].moraleAdj );
-                 *
-                 *         // int PreSpecAbCount = temp.spellEffects.GetCount();
-                 *         // turn on the special abilities
-                 *         // temp.specAbs.EnableAllFor(&temp);
-                 *
-                 *         // int PostSpecAbCount = temp.spellEffects.GetCount();
-                 *         // int Diff = PostSpecAbCount - PreSpecAbCount;
-                 *         // if (Diff > 0)
-                 *         // {
-                 *         //   POSITION pos = temp.spellEffects.GetTailPosition();  
-                 *         //   while ((pos != NULL) && (Diff > 0))
-                 *         //   {        
-                 *         //     temp.spellEffects.GetAt(pos).flags |= SPELL_EFFECTS_DATA::EFFECT_CHARSPECAB;
-                 *         //     temp.spellEffects.GetAt(pos).SourceChar_ID(temp.self);
-                 *         //     //temp.spellEffects.GetAt(pos).m_gsID = temp.self;
-                 *         //     temp.spellEffects.GetPrev(pos);
-                 *         //     Diff--;
-                 *         //   }
-                 *         // }
-                 *
-                 *         if (NumCombatants() < MaxMonstersAllowed)
-                 *         {
-                 *           m_aCombatants.SetAtGrow(m_iNumCombatants, temp);
-                 *           m_iNumCombatants++;
-                 *         }
-                 *       }
-                 * /
+                Globals.TRACE(Globals.timeGetTime() + " countLoop\n");  // PORT NOTE:  Left out
 
-
-
-
-                // All of this is a duplicate of code above so that we add the combatant to the combat      //*
-                // before updating its properties.  This is so that any scripts that reference              //*
-                // the combatant will find him actually a part of the combat.                               //*
-                temp.Clear();                                                                          //*
-                temp.self = m_iNumCombatants; // init relies on self index                             //*
-                //*
-                if (NumCombatants() < MaxMonstersAllowed)                                              //* 
-                {                                                                                      //* 
-                    COMBATANT * pCombatant;                                                               //*
-                    m_aCombatants.SetAt(m_iNumCombatants, temp);                                         //*
-                    TRACE("%d after SetAt\n", timeGetTime());
-                    m_iNumCombatants++;                                                                  //* 
-                    pCombatant = & m_aCombatants[m_iNumCombatants - 1];                                     //*
-                    //*
-                    if (m_pEvent -> monsters.monsters[i].m_type == MONSTER_TYPE)                             //*
+                // All of this is a duplicate of code above so that we add the combatant to the combat      
+                // before updating its properties.  This is so that any scripts that reference              
+                // the combatant will find him actually a part of the combat.                               
+                temp.Clear();                                                                          
+                temp.self = this.m_iNumCombatants; // init relies on self index                             
+                
+                if (this.NumCombatants() < MaxMonstersAllowed)                                               
+                {                                                                                       
+                    var pCombatant;                                                               
+                    this.m_aCombatants.push(temp); // PORT NOTE: Was this.m_aCombatants.SetAt(this.m_iNumCombatants, temp);
+                    Globals.TRACE(Globals.timeGetTime() + " after SetAt\n");
+                    this.m_iNumCombatants++;
+                    pCombatant = this.m_aCombatants[this.m_iNumCombatants - 1];
+                    if (this.m_pEvent.monsters.monsters[i].m_type == MONSTER_TYPE)                             
                     {
-                        //pCombatant->InitFromMonsterData(m_pEvent->monsters.monsters[i].monster,          //*
-                        pCombatant -> InitFromMonsterData(m_pEvent -> monsters.monsters[i].monsterID,          //*
-                            m_pEvent -> monsters.monsters[i].friendly,          //*
-                            m_pEvent -> monsters.monsters[i].items,             //*
-                            m_pEvent -> monsters.monsters[i].money);            //*
-                        TRACE("%d after InitFromMonsterData\n", timeGetTime());
+                        pCombatant.InitFromMonsterDataID(this.m_pEvent.monsters.monsters[i].monsterID,          
+                            this.m_pEvent.monsters.monsters[i].friendly,          
+                            this.m_pEvent.monsters.monsters[i].items,             
+                            this.m_pEvent.monsters.monsters[i].money);            
+                        Globals.TRACE(timeGetTime() + " after InitFromMonsterData\n", timeGetTime());
                     }
-                    else                                                                                 //*
-                        //pCombatant->InitFromNPCData(m_pEvent->monsters.monsters[i].monster,              //*
-                        pCombatant -> InitFromNPCData(m_pEvent -> monsters.monsters[i].characterID,            //*
-                            m_pEvent -> monsters.monsters[i].friendly,               //*
-                            m_pEvent -> monsters.monsters[i].items,                  //*
-                            m_pEvent -> monsters.monsters[i].money);                 //*
-                    //*
-                    //if (pCombatant->origKey != NO_DUDE)                                                              //*
-                    //if (pCombatant->m_pCharacter->monsterID != "")                                       //*
-                    if ((pCombatant -> origKey != NO_DUDE)                                                              //*
-                        && (pCombatant -> m_pCharacter -> monsterID != ""))                                       //*
+                    else                                                                                 
+                        pCombatant.InitFromNPCData(this.m_pEvent.monsters.monsters[i].characterID,            
+                            this.m_pEvent.monsters.monsters[i].friendly,               
+                            this.m_pEvent.monsters.monsters[i].items,                  
+                            this.m_pEvent.monsters.monsters[i].money);                 
+                    
+                    if ((pCombatant.origKey != NO_DUDE)                                                              
+                        && (pCombatant.m_pCharacter.monsterID != ""))                                       
                     {
-                        //*
-
-                        /* The following has been replaced 20180131  PRS
-                        pCombatant->SetMorale(m_pEvent->monsterMorale);                                           //*
-                        pCombatant->SetMorale( pCombatant->GetMorale() + m_pEvent->monsters.monsters[i].moraleAdj );     //*
-                        * /
-                        /* With this
-                        * /
-                        pCombatant -> SetMorale(pCombatant -> GetMorale() + m_pEvent -> monsterMorale);                                           //*
-
-                        //*
-                        // int PreSpecAbCount = temp.spellEffects.GetCount();                              //*
-                        // turn on the special abilities                                                   //*
-                        // temp.specAbs.EnableAllFor(&temp);                                               //*
-                        //*
-                        // int PostSpecAbCount = temp.spellEffects.GetCount();                             //*
-                        // int Diff = PostSpecAbCount - PreSpecAbCount;                                    //*
-                        // if (Diff > 0)                                                                   //*
-                        // {                                                                               //*
-                        //   POSITION pos = temp.spellEffects.GetTailPosition();                           //*
-                        //   while ((pos != NULL) && (Diff > 0))                                           //*
-                        //   {                                                                             //*
-                        //     temp.spellEffects.GetAt(pos).flags |= SPELL_EFFECTS_DATA::EFFECT_CHARSPECAB;//*          
-                        //     temp.spellEffects.GetAt(pos).SourceChar_ID(temp.self);                      //*
-                        //     //temp.spellEffects.GetAt(pos).m_gsID = temp.self;                          //*
-                        //     temp.spellEffects.GetPrev(pos);                                             //*
-                        //     Diff--;                                                                     //*
-                        //   }                                                                             //*
-                        // }                                                                               //*
-                        //*
-                    }                                                                                    //*
+                        pCombatant.SetMorale(pCombatant.GetMorale() + this.m_pEvent.monsterMorale);                                           
+                    }                                                                                    
                     else {
-                        CHARACTER * pCharacter;
-                        pCharacter = pCombatant -> m_pCharacter;
-                        if (pCharacter != NULL) {
-                            pCombatant -> m_pCharacter -> m_pCombatant = NULL;
-                            pCombatant -> m_pCharacter = NULL;
+                        var pCharacter;
+                        pCharacter = pCombatant.m_pCharacter;
+                        if (pCharacter != null) {
+                            pCombatant.m_pCharacter.m_pCombatant = null;
+                            pCombatant.m_pCharacter = null;
                             delete pCharacter;
                         };
                         m_iNumCombatants--;
                     };
-                }                                                                                      //*
-
-
-
-
-
+                }                                                                                      
             }; // for (j)
         }; //for (i)
     }
-}
-
-*****************************************************************************/
-
 }
 
 

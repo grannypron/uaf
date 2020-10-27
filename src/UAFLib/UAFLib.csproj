@@ -77,17 +77,31 @@
     <None Include="Tests\Warrior.chr" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="js\ABILITY_DATA.js" />
+    <Content Include="js\ABILITY_DATA_TYPE.js" />
+    <Content Include="js\BASECLASS_LIST.js" />
+    <Content Include="js\CLASS_DATA.js" />
+    <Content Include="js\DIFFICULTY_DATA.js" />
+    <Content Include="js\DIFFICULTY_LEVEL_DATA.js" />
+    <Content Include="js\eventTriggerType.js" />
+    <Content Include="js\chainTriggerType.js" />
     <Content Include="js\DEBUG_STRINGS.js" />
     <Content Include="js\ActorInstanceType.js" />
     <Content Include="js\CDATA.js" />
     <Content Include="js\CODES.js" />
     <Content Include="js\DDATA.js" />
+    <Content Include="js\HIT_DICE_LEVEL_BONUS.js" />
     <Content Include="js\HOOK_PARAMTERS.js" />
     <Content Include="js\MonsterPlacement.js" />
+    <Content Include="js\MONSTER_DATA.js" />
+    <Content Include="js\MONSTER_EVENT.js" />
+    <Content Include="js\MONSTER_EVENT_DATA.js" />
     <Content Include="js\PARTY_POSITIONS.js" />
+    <Content Include="js\RACE_DATA.js" />
     <Content Include="js\RNG.js" />
     <Content Include="js\RunTimeIF.js" />
     <Content Include="js\SCRIPT_CONTEXT.js" />
+    <Content Include="js\SOUND_BYTE.js" />
     <Content Include="js\SPECABILITY_DEF.js" />
     <Content Include="js\SPELL_EFFECTS_DATA.js" />
     <Content Include="js\ATTACK_DETAILS.js" />
@@ -116,6 +130,7 @@
     <Content Include="js\TERRAIN_CELL.js" />
     <Content Include="js\TAG_LIST.js" />
     <Content Include="js\ActorType.js" />
+    <Content Include="js\EVENT_CONTROL.js" />
     <Content Include="js\TURNING_SUMMARY.js" />
     <Content Include="js\QueuedCombatantData.js" />
     <Content Include="js\EventSourceType.js" />
@@ -181,6 +196,7 @@
     <Content Include="js\ITEM_DATA_TYPE.js" />
     <Content Include="js\CHARACTER_ID.js" />
     <Content Include="SpecialAbilities.xml" />
+    <Content Include="js\DICEPLUS.js" />
     <Content Include="Tests\TestRollDice.js" />
     <Content Include="Tests\TestLoadSAs.js" />
     <Content Include="Tests\TestSimpleCombat.js" />

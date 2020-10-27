@@ -11,6 +11,8 @@ var genderType = new genderTypeObj(genderType);
 var eventType = new eventTypeObj();
 var eventTurnUndeadModType = new eventTurnUndeadModTypeObj();
 var eventSurpriseType = new eventSurpriseTypeObj();
+var chainTriggerType = new chainTriggerTypeObj();
+var eventTriggerType = new eventTriggerTypeObj();
 var weaponClassType = new weaponClassTypeObj();
 var itemData = new ITEM_DATA_TYPE();
 var spellData = new SPELL_DATA_TYPE();
@@ -28,9 +30,11 @@ var AURA_WAVELENGTH = new AURA_WAVELENGTHObj();
 var AURA_SHAPE = new AURA_SHAPEObj();
 var AURA_ATTACHMENT = new AURA_ATTACHMENTObj();
 var OBSTICAL_TYPE = new OBSTICAL_TYPEObj();
+var abilityData = new ABILITY_DATA_TYPE();
 var Drawtile = new Drawtile();
 var SoundMgr = new SoundMgrObj();
 var party = new PARTY();
+var GameRules = new GameRules();
 
 var combatSummary = new COMBAT_SUMMARY();
 var PATH_DIR = new PATH_DIRObj();
@@ -40,7 +44,6 @@ var raceData = new RACE_DATA_TYPE();
 var baseclassData = new BASE_CLASS_DATA_TYPE();
 var classData = new CLASS_DATA_TYPE();
 var specialAbilitiesData = new A_SPECABILITY_DEF_L();
-var abilityData = null;//new ABILITY_DATA_TYPE();
 var pScriptContext = new SCRIPT_CONTEXT();
 
 

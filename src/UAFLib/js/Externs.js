@@ -6,6 +6,12 @@ var FAKE_CHARACTER_TYPE = 127;
 var IN_PARTY_TYPE = 128;
 var NO_READY_ITEM = -1;
 
+var HIGHEST_CHARACTER_LEVEL = 40;
+
+// The prime attribute 'SCORE' for a certain character
+// capabilities might be Intelligence, Wisdom, Dexterity, etc.
+var HIGHEST_CHARACTER_PRIME = 25;
+
 var MAXTASK = 30;
 var MAX_PARTY_MEMBERS = 12;
 

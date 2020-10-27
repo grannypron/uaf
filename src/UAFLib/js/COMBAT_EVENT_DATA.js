@@ -25,5 +25,24 @@ function COMBAT_EVENT_DATA() {
     this.needDyingSprite = false;
 
     this.Clear();
-    this.event = Combat;
+    this.event = eventType.Combat;
+}
+
+COMBAT_EVENT_DATA.prototype.Clear = function ()
+{
+    super.Clear();
+
+    this.m_stoppedSounds = false;
+    this.m_UseOutdoorMap = false;
+    this.distance = eventDistType.FarAway; eventDirType.direction = Any; m_eSurprise = eventSurpriseType.Neither;
+    this.autoApproach = false; this.outdoors = false; this.noMonsterTreasure = false;
+    this.partyNeverDies = false; this.noMagic = false; this.monsterMorale = 50;
+    this.partyNoExperience = false;
+    this.randomMonster = false;
+    this.turningMod = eventTurnUndeadModType.None;
+    this.monsters.Clear();
+    this.DeathSound = "";
+    this.MoveSound = "";
+    this.TurnUndeadSound = "";
+    this.bgSounds.Clear(); this.m_eTEMPsurprise = eventSurpriseType.Neither;
 }

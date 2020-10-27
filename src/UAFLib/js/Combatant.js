@@ -357,3 +357,117 @@ COMBATANT.prototype.GetCenterY = function() {
 COMBATANT.prototype.OnEnsureVisible = function() {
     Globals.TRACE("OnEnsureVisible for " + this.self + "\n", );
 }
+
+COMBATANT.prototype.SetType = function(flag) {
+    this.m_pCharacter.SetType(flag);
+}
+
+
+COMBATANT.prototype.InitFromMonsterDataID = function (monsterID, IsFriendly, items, msack) {
+    var pMonster;
+    pMonster = monsterData.LocateMonster(monsterID);// PORT NOTE: was monsterData.PeekMonster(monsterID); but I am simplifying the MonsterID to a string
+    Globals.TRACE(Globals.timeGetTime() + " Afet PeekMonster\n");
+    if (pMonster == null) {
+        Globals.WriteDebugString("Cannot find data for monster " + monsterID + "\n");
+        pMonster = monsterData.PeekMonster(0);
+        if (pMonster == null) {
+            Globals.WriteDebugString("Combat with no monsters defined");
+            Globals.die(0x45acb);
+        };
+    }
+    this.InitFromMonsterDataMonster(pMonster, IsFriendly, items, msack);
+}
+
+
+COMBATANT.prototype.InitFromMonsterDataMonster = function (pMonster, IsFriendly, items, msack) {
+    if (this.m_pCharacter != null) {
+        Globals.die(0xc33bd);
+    }
+    this.m_pCharacter = new CHARACTER();
+    this.m_pCharacter.m_pCombatant = this;  // Link the character and combatant one to another.
+    this.deleteChar = true;
+    this.State(individualCombatantState.ICS_None);
+    if (pMonster == null) {
+        Globals.WriteDebugString("Bogus monster index in InitFromMonsterData()\n");
+        this.Clear();
+        this.origKey = NO_DUDE;
+        return;
+    }
+
+    this.SetPartyMember(false);
+    this.SetType(MONSTER_TYPE);
+    this.m_pCharacter.monsterID = pMonster.MonsterID();
+    this.origKey = monsterData.LocateMonster(this.m_pCharacter.monsterID);
+    this.m_pCharacter.classID = pMonster.classID;
+    this.m_pCharacter.race = pMonster.raceID;
+    this.friendly = IsFriendly;
+    this.m_adjFriendly = 0;
+
+    this.generateNewCharacter(pMonster.XP_Value, Globals.START_EXP_VALUE); // determines monster AC,THAC0,Hit Points,etc
+
+    Globals.TRACE(Globals.timeGetTime() + " After generateNewCharacter\n");
+    this.SetStatus(charStatusType.Okay);
+    this.SetAllowPlayerControl(Globals.GetConfigMonsterPlyrControl());
+    this.m_pCharacter.SetName(pMonster.Name);
+    this.m_pCharacter.SetPermInt(pMonster.Intelligence);
+    this.m_pCharacter.SetMagicResistance(pMonster.Magic_Resistance);
+    this.m_pCharacter.SetSize(pMonster.Size);
+    this.SetMorale(pMonster.Morale);
+    this.m_pCharacter.SetUndead(pMonster.undeadType);
+
+    // items specified in combat event for this monster
+    this.m_pCharacter.myItems = items;
+
+    // default monster items in monster database
+    var pos = pMonster.myItems.GetHeadPosition();
+    while (pos != null) {
+        this.m_pCharacter.myItems.AddItem(pMonster.myItems.GetNext(pos));
+    }
+
+    this.m_pCharacter.money = msack; // combat additional money
+    this.m_pCharacter.money.Add(pMonster.money); // monster default money
+
+    m_pCharacter.icon = pMonster.Icon;
+
+    if (false)  // This was done in generateNewCharacter
+    {
+        this.determineNbrAttacks();
+    };
+
+    this.ReadyBestArmor();
+    this.ReadyBestWpn(NO_DUDE);
+    this.ReadyBestShield();
+    this.determineNbrAttacks(); // Take armor and such into account.
+    this.determineAvailAttacks(this.GetNbrAttacks());
+    this.determineMaxMovement();
+
+    if (Globals.GetConfigMonsterNoMove()) {
+        this.SetMaxMovement(0);
+        this.m_iMovement = 0;
+        this.m_iNumDiagonalMoves = 0;
+    }
+
+    Globals.ASSERT(this.GetAdjHitPoints() > 0);
+
+    {
+        var hookParameters = new HOOK_PARAMETERS();
+        var scriptContext = new SCRIPT_CONTEXT();
+        scriptContext.SetCharacterContext(this.m_pCharacter);
+        scriptContext.SetMonsterTypeContext(pMonster);
+        SPECAB.RunGlobalScript("Global_CreateMonsterCombatant", SPECAB.CREATE_MONSTER_COMBATANT, true);
+        pMonster.RunMonsterScripts(
+            SPECAB.CREATE_MONSTER_COMBATANT,
+            SPECAB.ScriptCallback_RunAllScripts,
+            null,
+            "Initializing monster for combat");
+    }
+}
+
+/*  Questionable */   //PORT NOTE:  Comment copied from original source
+COMBATANT.prototype.generateNewCharacter = function(StartExperience, StartExpType) {
+    this.m_pCharacter.generateNewCharacter(StartExperience, StartExpType);
+}
+
+COMBATANT.prototype.GetType = function () {
+    return this.m_pCharacter.GetType();
+}

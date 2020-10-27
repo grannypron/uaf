@@ -3,12 +3,12 @@ function GLOBAL_STATS() {
     this.moneyData = new MONEY_DATA_TYPE();
 
     this.minPCs = 1;           // PORT NOTE: Defaulting to a value here because I don't see (yet) where it gets set
-    this.maxParty_maxPCs;  // Upper 16 bits = maxPartySize; Lower = maxNumPCs
-
+    this.maxParty_maxPCs = 0;  // Upper 16 bits = maxPartySize; Lower = maxNumPCs
+    this.m_diffLvlData = new DIFFICULTY_LEVEL_DATA();
 }
 
 GLOBAL_STATS.prototype.GetMaxPartyMembers = function () {
-    return maxParty_maxPCs >> 16;
+    return this.maxParty_maxPCs >> 16;
 }
 
 GLOBAL_STATS.prototype.GetMinPCs = function()         { return this.minPCs; };
