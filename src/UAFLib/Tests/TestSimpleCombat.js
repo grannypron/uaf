@@ -32,7 +32,8 @@ function loadRaces() {
 function loadMonsters() {
 
     monsterData.MonsterData[0] = new MONSTER_DATA();
-    monsterData.MonsterData[0].name = "Kobold";
+    monsterData.MonsterData[0].Name = "Kobold";
+    monsterData.MonsterData[0].monsterID = "Kobold";
     monsterData.MonsterData[0].classID = "Fighter";
     //icon file = icon_Kobold.png, 0, 2, 48, 48, 0, 1, 2
     //miss sound = sound_Miss.wav
@@ -51,7 +52,6 @@ function loadMonsters() {
     monsterData.MonsterData[0].Morale = 25;
     monsterData.MonsterData[0].XP_Value = 7;
     monsterData.MonsterData[0].m_type = MONSTER_TYPE;
-    Globals.debug("monsterData.MonsterData[0].m_type " + monsterData.MonsterData[0].m_type + "/" + MONSTER_TYPE);
 
     //Class = Fighter
     monsterData.MonsterData[0].Race = RACE_DATA_TYPE.Monster;

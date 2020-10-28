@@ -24,6 +24,28 @@ MONEY_DATA_TYPE.prototype.GetWeight = function () {
     return this.weight;
 }
 
+MONEY_DATA_TYPE.prototype.GetIndex = function (type) {
+    switch (type) {
+        case itemClassType.PlatinumType: return 0;
+        case itemClassType.ElectrumType: return 1;
+        case itemClassType.GoldType: return 2;
+        case itemClassType.SilverType: return 3;
+        case itemClassType.CopperType: return 4;
+        case itemClassType.CoinType6: return 5;
+        case itemClassType.CoinType7: return 6;
+        case itemClassType.CoinType8: return 7;
+        case itemClassType.CoinType9: return 8;
+        case itemClassType.CoinType10: return 9;
+    }
+    Globals.die(0xab526);
+    return 0;
+}
+
+MONEY_DATA_TYPE.prototype.IsActive = function (index) {
+    var i = this.GetIndex(index);
+    Globals.ASSERT(i >= 0);
+    return ((this.Coins[i].GetRate() > 0.0) && (strlen(this.Coins[i].GetName()) > 0));
+}
 
 MONEY_DATA_TYPE.prototype.Clear = function() {
     for (var i = 0; i < this.MAX_COIN_TYPES; i++)

@@ -83,6 +83,7 @@
     <Content Include="js\CLASS_DATA.js" />
     <Content Include="js\DIFFICULTY_DATA.js" />
     <Content Include="js\DIFFICULTY_LEVEL_DATA.js" />
+    <Content Include="js\miscErrorType.js" />
     <Content Include="js\eventTriggerType.js" />
     <Content Include="js\chainTriggerType.js" />
     <Content Include="js\DEBUG_STRINGS.js" />
@@ -92,6 +93,7 @@
     <Content Include="js\DDATA.js" />
     <Content Include="js\HIT_DICE_LEVEL_BONUS.js" />
     <Content Include="js\HOOK_PARAMTERS.js" />
+    <Content Include="js\LITTLE_RAN.js" />
     <Content Include="js\MonsterPlacement.js" />
     <Content Include="js\MONSTER_DATA.js" />
     <Content Include="js\MONSTER_EVENT.js" />
@@ -188,7 +190,6 @@
     <Content Include="js\A_ASLENTRY_L.js" />
     <Content Include="js\PARTY.js" />
     <Content Include="js\SPECIAL_ABILITIES.js" />
-    <Content Include="js\MONSTER_ID.js" />
     <Content Include="js\PIC_DATA.js" />
     <Content Include="js\spellBookType.js" />
     <Content Include="js\ITEM_LIST.js" />

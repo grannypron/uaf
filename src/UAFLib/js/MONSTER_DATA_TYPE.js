@@ -103,14 +103,58 @@ MONSTER_DATA_TYPE.prototype.ClearSounds = function () {
 }
 
 MONSTER_DATA_TYPE.prototype.PeekMonster = function (idx) {
+    if (parseInt(idx) != idx) {                     // PORT NOTE:  Put this in since I am changing the ID of numbers to just be their string name
+        idx = this.LocateMonster(idx);
+    }
     return this.MonsterData[idx];
 }
 
 MONSTER_DATA_TYPE.prototype.LocateMonster = function (monsterID) {
     for (var idx = 0; idx < this.MonsterData.length; idx++) {
         if (this.MonsterData[idx].monsterID = monsterID) {
-            return this.MonsterData[idx];
+            return idx;
         }
     }    
     return -1;
+}
+
+MONSTER_DATA_TYPE.prototype.GetMonsterNbrAttacks = function (monsterID) {
+    var index;
+    if ((index = this.LocateMonster(monsterID)) >= 0)
+        return this.PeekMonster(index).attackData.GetMonsterAttackDetailsCount();
+    else
+        return 0;
+}
+
+MONSTER_DATA_TYPE.prototype.GetMonsterDamageDice = function (monsterID) {
+    var i = 0, n = 0;
+    n = this.GetCount();
+    for (i = 0; i < n; i++) {
+        if (this.PeekMonster(i).monsterID == monsterID) return i;
+    };
+    return -1;
+}
+
+MONSTER_DATA_TYPE.prototype.GetMonsterMovement = function(monsterID) {
+    var index;
+    if ((index = this.LocateMonster(monsterID)) >= 0)
+        return this.PeekMonster(index).Movement;
+    else
+        return 0;
+}
+
+MONSTER_DATA_TYPE.prototype.GetMonsterAC = function (monsterID) {
+    var index;
+    if ((index = this.LocateMonster(monsterID)) >= 0)
+        return this.PeekMonster(index).Armor_Class;
+    else
+        return 0;
+}
+
+MONSTER_DATA_TYPE.prototype.GetMonsterTHAC0 = function (monsterID) {
+    var index;
+    if ((index = this.LocateMonster(monsterID)) >= 0)
+        return this.PeekMonster(index).THAC0;
+    else
+        return 0;
 }

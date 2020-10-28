@@ -898,7 +898,7 @@ COMBAT_DATA.prototype.AddMonstersToCombatants = function () {
                             this.m_pEvent.monsters.monsters[i].friendly,          
                             this.m_pEvent.monsters.monsters[i].items,             
                             this.m_pEvent.monsters.monsters[i].money);            
-                        Globals.TRACE(timeGetTime() + " after InitFromMonsterData\n", timeGetTime());
+                        Globals.TRACE(Globals.timeGetTime() + " after InitFromMonsterData\n");
                     }
                     else                                                                                 
                         pCombatant.InitFromNPCData(this.m_pEvent.monsters.monsters[i].characterID,            

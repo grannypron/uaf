@@ -1,5 +1,8 @@
 ﻿var DEBUG_STRINGS = new DEBUG_STRINGS();
 var alignmentType = new alignmentTypeObj(alignmentType);
+
+var Globals = new Globals();
+
 var charStatusType = new charStatusTypeObj(charStatusType);
 var combatVictorType = new combatVictorTypeObj();
 var creatureSizeType = new creatureSizeTypeObj(creatureSizeType);
@@ -9,6 +12,7 @@ var ActorInstanceType = new ActorInstanceTypeObj();
 var EventSourceType = new EventSourceTypeObj();
 var genderType = new genderTypeObj(genderType);
 var eventType = new eventTypeObj();
+var miscErrorType = new miscErrorTypeObj();
 var eventTurnUndeadModType = new eventTurnUndeadModTypeObj();
 var eventSurpriseType = new eventSurpriseTypeObj();
 var chainTriggerType = new chainTriggerTypeObj();

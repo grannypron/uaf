@@ -18,6 +18,9 @@ ITEM_DATA_TYPE.prototype.PeekItem = function(itemID) {
     return null;
 }
 
+ITEM_DATA_TYPE.prototype.GetItem = function (id) {
+    return this.mItemDataTypes.GetAtPos(id);
+}
 
 ITEM_DATA_TYPE.prototype.FreeArt = function() {
     var i, n;

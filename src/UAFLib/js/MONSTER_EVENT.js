@@ -21,8 +21,8 @@
                     // event that included the modified monster.
                     // Now we do this adjustment at runtime to always use the latest
                     // values for the monsters.
-    money = new MONEY_SACK(); // goodies in monster's inventory
-    items = new ITEM_LIST();
+    this.money = new MONEY_SACK(); // goodies in monster's inventory
+    this.items = new ITEM_LIST();
 }
 
 

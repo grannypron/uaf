@@ -47,7 +47,7 @@ MONSTER_DATA.prototype.ClearSounds = function() {
 MONSTER_DATA.prototype.MonsterID = function() {
     var mID; 
     //#ifdef UAFEngine
-        mID = this.monsterID;
+        mID = this.Name;   // PORT NOTE:  Changed from mID = this.monsterID because I am using a string as the monsterID to simplify now
     //#else
     //    mID = Name; 
     //#endif
@@ -57,3 +57,12 @@ MONSTER_DATA.prototype.MonsterID = function() {
 MONSTER_DATA.prototype.ToString = function () {
     return "MONSTER_DATA";
 }
+
+MONSTER_DATA.prototype.RunMonsterScripts = function (scriptName, fnc, pkt, comment) {
+    return this.specAbs.RunScripts(scriptName,
+        fnc,
+        pkt,
+        comment,
+        SCRIPT_SOURCE_TYPE.ScriptSourceType_Monster,
+        this.Name);
+  };

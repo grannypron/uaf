@@ -4,6 +4,9 @@ function Globals() {
     this.version = 6.0;
     this.debugSeverity = 0;
 
+    this.miscError = 0;
+    this.miscErrorText = [miscErrorType.MAX_MISC_ERROR_MSGS];
+
     this.MIN_INTELLIGENCE = 3;
     this.MAX_INTELLIGENCE = 25;
     this.MIN_STRENGTH = 3;
@@ -49,6 +52,8 @@ function Globals() {
     this.Baseclass_fighter = "fighter";
     this.Baseclass_ranger = "ranger";
     this.Baseclass_druid = "druid";
+
+    this.NoSkill = UAFUtil.ByteFromHexString("0x80000000");
 }
 
 Globals.prototype.die = function (message) {
@@ -141,4 +146,21 @@ Globals.prototype.GetCurrSkillLevel = function()
     return party.skillLevel;
 }
 
-var Globals = new Globals();
+Globals.prototype.GetConfigMonsterPlyrControl = function () {
+    return combatData.m_bMonsterPlyrControl;
+}
+
+Globals.prototype.SetMiscError = function (error) {
+    if ((error >= 0) && (error < MAX_MISC_ERROR_MSGS)) {
+        miscError = error;
+        if (error != miscErrorType.NoError) {
+            if (!this.debugStrings.AlreadyNoted("SME01" + miscErrorText[error])) {
+                this.WriteDebugString("MISC ERROR: " + miscErrorText[error] + "\n");
+            };
+        };
+    }
+}
+
+Globals.prototype.GetConfigMonsterNoMove = function () {
+    return combatData.m_bMonsterNoMove;
+}

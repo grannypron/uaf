@@ -97,3 +97,8 @@ SCRIPT_CONTEXT.prototype.Clear = function() {
 
     this.specAb = [];  //PORT NOTE:  was .Clear();
 }
+
+SCRIPT_CONTEXT.prototype.SetMonsterTypeContext = function(pMonster)
+{
+    this.pMonstertypeContext = pMonster;
+}

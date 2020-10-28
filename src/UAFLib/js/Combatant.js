@@ -365,7 +365,7 @@ COMBATANT.prototype.SetType = function(flag) {
 
 COMBATANT.prototype.InitFromMonsterDataID = function (monsterID, IsFriendly, items, msack) {
     var pMonster;
-    pMonster = monsterData.LocateMonster(monsterID);// PORT NOTE: was monsterData.PeekMonster(monsterID); but I am simplifying the MonsterID to a string
+    pMonster = monsterData.PeekMonster(monsterData.LocateMonster(monsterID));
     Globals.TRACE(Globals.timeGetTime() + " Afet PeekMonster\n");
     if (pMonster == null) {
         Globals.WriteDebugString("Cannot find data for monster " + monsterID + "\n");
@@ -397,6 +397,7 @@ COMBATANT.prototype.InitFromMonsterDataMonster = function (pMonster, IsFriendly,
     this.SetPartyMember(false);
     this.SetType(MONSTER_TYPE);
     this.m_pCharacter.monsterID = pMonster.MonsterID();
+
     this.origKey = monsterData.LocateMonster(this.m_pCharacter.monsterID);
     this.m_pCharacter.classID = pMonster.classID;
     this.m_pCharacter.race = pMonster.raceID;
@@ -425,9 +426,9 @@ COMBATANT.prototype.InitFromMonsterDataMonster = function (pMonster, IsFriendly,
     }
 
     this.m_pCharacter.money = msack; // combat additional money
-    this.m_pCharacter.money.Add(pMonster.money); // monster default money
+    this.m_pCharacter.money.AddMoneySack(pMonster.money); // monster default money
 
-    m_pCharacter.icon = pMonster.Icon;
+    this.m_pCharacter.icon = pMonster.Icon;
 
     if (false)  // This was done in generateNewCharacter
     {
@@ -471,3 +472,58 @@ COMBATANT.prototype.generateNewCharacter = function(StartExperience, StartExpTyp
 COMBATANT.prototype.GetType = function () {
     return this.m_pCharacter.GetType();
 }
+
+COMBATANT.prototype.SetStatus = function(val) {
+    this.m_pCharacter.SetStatus(val);
+}
+
+COMBATANT.prototype.SetMorale = function (val) {
+    this.m_pCharacter.SetMorale(val);
+}
+
+
+COMBATANT.prototype.ReadyBestArmor = function () {
+    this.m_pCharacter.ReadyBestArmor();
+};
+
+COMBATANT.prototype.ReadyBestWpn = function(targ) {
+    var isLargeTarget = false;
+    var dist = 1;
+
+    // get distance to target
+    if (targ == NO_DUDE) {
+        // no combat targets, nobody to shoot at, so just ready 
+        // a hand-to-hand weapon
+        dist = 1;
+        isLargeTarget = false;
+    }
+    else {
+        var targCOMBATANT;
+        targCOMBATANT = this.GetCombatantPtr(targ);
+        Globals.ASSERT(targCOMBATANT != null);
+        if (targCOMBATANT != null) {
+            isLargeTarget = targCOMBATANT.isLargeDude();
+            dist = Distance(self, x, y,
+                targCOMBATANT.self, targCOMBATANT.x, targCOMBATANT.y);
+        }
+    }
+    this.m_pCharacter.ReadyBestWpn(dist, isLargeTarget);
+
+    // if target is distant but don't have distance weapon
+    // then ready hand-to-hand weapon
+    if ((dist > 1) && (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) == Items.NO_READY_ITEM))
+        this.m_pCharacter.ReadyBestWpn(1, isLargeTarget);
+}
+
+COMBATANT.prototype.ReadyBestShield = function () {
+    return this.m_pCharacter.ReadyBestShield();
+};
+
+COMBATANT.prototype.determineMaxMovement = function () {
+    return this.m_pCharacter.determineMaxMovement();
+};
+
+COMBATANT.prototype.GetAdjHitPoints = function (flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    return this.m_pCharacter.GetAdjHitPoints(flags);
+};

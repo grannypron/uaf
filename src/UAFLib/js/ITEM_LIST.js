@@ -8,6 +8,82 @@ ITEM_LIST.prototype.Clear = function () {
     /**TODO**/
 }
 
+ITEM_LIST.prototype.CanReady = function (rdyLoc, pChar, pItem) {
+    throw "todo -- CanReady"
+}
+
+ITEM_LIST.prototype.CanUnReady = function(item) {
+    if (!this.ValidItemListIndex(item))
+        return false;
+    if (!this.IsReady(item))
+        return false;
+    return (!this.IsCursed(item));
+}
+
+ITEM_LIST.prototype.CanReady = function (itemKey) {
+    {
+        var count;
+        var pItemData;
+        var actor;
+        var result = "";
+        var answer = false;
+        var hookParameters = new HOOK_PARAMETERS();
+        var scriptContext = new SCRIPT_CONTEXT();
+        actor = pChar.GetContextActor();
+        pItemData = itemData.GetItem(pItem.itemID);
+        scriptContext.SetCharacterContext(pChar);
+        scriptContext.SetItemContext(pItemData);
+        scriptContext.SetItemContextKey(pItem.key);
+        count = GetReadiedCount(rdyLoc);
+        hookParameters[5] = count;
+        result = pItemData.RunItemScripts(SPECAB.CAN_READY,
+            SPECAB.ScriptCallback_RunAllScripts,
+            null,
+            "Test if item can be readied");
+        answer = true;
+        if (result == null || result == "") {
+            answer = count == 0;
+        }
+        else {
+            if (result[0] != 'Y') answer = false;
+        };
+        if (!(hookParameters[6] == null || hookParameters[6] == "")) {
+            errorText = hookParameters[6];
+            SetMiscError(ErrorText);
+        }
+        return answer;
+    };
+ }
+
+ITEM_LIST.prototype.SetReady = function(index, rdyLoc) {
+    var pos;
+    if ((pos = this.m_items.FindKeyPos(index)) != null) {
+        if (rdyLoc == Items.NotReady) {
+            this.m_items.GetAtPos(pos).ReadyLocation(Items.NotReady); //readyLocation.Clear();
+        }
+        else {
+            this.m_items.GetAtPos(pos).ReadyLocation(rdyLoc);
+        };
+    };
+}
+
+ITEM_LIST.prototype.IsReady = function(index) {
+    var pos;
+    if ((pos = this.m_items.FindKeyPos(index)) != null)
+        return this.m_items.PeekAtPos(pos).ReadyLocation() != Items.NotReady;
+    else
+        return false; 
+}
+
+
+
+ITEM_LIST.prototype.UnReady = function (item) {
+    if (!this.IsReady(item)) return true;
+    if (!this.CanUnReady(item)) return false;
+    this.SetReady(item, Items.NotReady);
+    return true;
+}
+
 ITEM_LIST.prototype.GetReadiedItem = function (rdyLoc, readiedItemCount) {
     var pos = null;
     var pCharItem;

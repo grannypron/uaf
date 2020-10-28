@@ -2,8 +2,8 @@
 /** TODO **/
 function MONEY_SACK() {
     this.Coins = [];
-    this.Gems = new UnorderedQueue();
-    this.Jewelry = new UnorderedQueue();
+    this.Gems = [];   // GEM_TYPE
+    this.Jewelry = [];      // JEWELRY_TYPE
 }
 
 MONEY_SACK.prototype.Clear = function () {
@@ -96,8 +96,8 @@ MONEY_SACK.prototype.GetTotalWeight = function () {
     for (var i = 0; i < this.NumCoinTypes(); i++)
         total += this.Coins[i];
 
-    total += this.Gems.GetCount();
-    total += this.Jewelry.GetCount();
+    total += this.Gems.length;
+    total += this.Jewelry.length;
 
     // now compute weight based on qty per unit weight
 
@@ -111,4 +111,76 @@ MONEY_SACK.prototype.GetTotalWeight = function () {
         total = 0;
 
     return total;
+}
+
+MONEY_SACK.prototype.AddItemClassTypeAmount = function (nIndex, amount) {
+    if (!this.IsActive(nIndex)) return;
+    var i = moneyData.GetIndex(nIndex);
+    this.Coins[i] += amount;
+}
+
+MONEY_SACK.prototype.AddMoneySack = function (src) {
+    for (var i = 0; i < this.NumCoinTypes(); i++)
+        this.Coins[i] += src.Coins[i];
+
+    this.AddGemsGemList(src.Gems);
+    this.AddJewelryJewelryList(src.Jewelry);
+}
+
+MONEY_SACK.prototype.IsActive = function(nIndex) {
+    return (globalData.moneyData.IsActive(nIndex));
+}
+
+MONEY_SACK.prototype.AddGemsGemList = function (data) {
+    for (var idx = 0; idx < data.length; idx++) {
+        if (this.AddGem(data[idx]) == 0)
+            return false; // could not add
+    }
+
+    return true;
+}
+
+MONEY_SACK.prototype.AddGemGemType = function(data) {
+    if (this.Gems.GetCount() >= MAX_GEMS)
+        return 0;
+
+    var id = this.GetNextGemKey();
+    this.Gems[id] = data;
+    return id;
+}
+
+MONEY_SACK.prototype.GetNextGemKey = function () {
+    return this.Gems.length + 1;
+}
+
+
+MONEY_SACK.prototype.AddGemsGemList = function (data) {
+    for (var idx = 0; idx < data.length; idx++) {
+        if (this.AddGem(data[idx]) == 0)
+            return false; // could not add
+    }
+
+    return true;
+}
+
+MONEY_SACK.prototype.AddJewelryJewelryType = function (data) {
+    if (this.Jewelry.GetCount() >= MAX_JEWELRY)
+        return 0;
+
+    var id = this.GetNextJewelryKey();
+    this.Jewelry[id] = data;
+    return id;
+}
+
+MONEY_SACK.prototype.GetNextJewelryKey = function () {
+    return this.Jewelry.length + 1;
+}
+
+MONEY_SACK.prototype.AddJewelryJewelryList = function (data) {
+    for (var idx = 0; idx < data.length; idx++) {
+        if (this.AddJewelry(data[idx]) == 0)
+            return false; // could not add
+    }
+
+    return true;
 }

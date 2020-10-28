@@ -22,7 +22,7 @@ function CHARACTER(character) {
     this.money = new MONEY_SACK();
     this.icon = new PIC_DATA();
     this.smallPic = new PIC_DATA();
-    this.monsterID = new MONSTER_ID();
+    this.monsterID = "";
     this.characterID = new CHARACTER_ID();
     this.specAbs = new SPECIAL_ABILITIES();
     this.blockageData = new BLOCKAGE_STATUS();
@@ -119,7 +119,7 @@ CHARACTER.prototype.Clear = function(isConstructor) {
     this.iconIndex = 1;
     this.smallPic.Clear();
     this.origIndex = -1;
-    this.monsterID.Clear();
+    this.monsterID = "";
     this.characterID = "";
     this.uniquePartyID = UAFUtil.ByteFromHexString("0xff");
     this.specAbs.Clear();
@@ -1305,7 +1305,7 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
         this.myItems.GetNext(pos);
     };
     // clear miscError that may have been set by CanReady()
-    Globals.SetMiscError(Globals.miscErrorType.NoError);
+    Globals.SetMiscError(miscErrorType.NoError);
 
     // we now have best attack, protection, and damage items, if any,
     // for given distance to target
@@ -1320,11 +1320,11 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
     if (dist <= 1) {
         var nonwpn_sum = 0;
         if (!isLargeTarget)
-            nonwpn_sum = (unarmedDieS * unarmedNbrDieS) + unarmedBonus;
+            nonwpn_sum = (this.unarmedDieS * this.unarmedNbrDieS) + this.unarmedBonus;
         else
-            nonwpn_sum = (unarmedDieL * unarmedNbrDieL) + unarmedBonus;
+            nonwpn_sum = (this.unarmedDieL * this.unarmedNbrDieL) + this.unarmedBonus;
 
-        nonwpn_sum *= GetNbrAttacks();
+        nonwpn_sum *= this.GetNbrAttacks();
 
         // better off using natural attacks
         if (wpn_sum < nonwpn_sum) return;
@@ -1352,8 +1352,8 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
 
 CHARACTER.prototype.ReadyBestShield = function () {
     // if 2-handed weapon being used, can't ready a shield
-    if ((this.myItems.GetReadiedItem(ShieldHand, 0) != Items.NO_READY_ITEM)
-        && (this.myItems.GetReadiedItem(ShieldHand, 0) == this.myItems.GetReadiedItem(Items.WeaponHand, 0)))
+    if ((this.myItems.GetReadiedItem(Items.ShieldHand, 0) != Items.NO_READY_ITEM)
+        && (this.myItems.GetReadiedItem(Items.ShieldHand, 0) == this.myItems.GetReadiedItem(Items.WeaponHand, 0)))
         return;
 
     this.ReadyShieldScript(Items.NO_READY_ITEM);
@@ -1386,7 +1386,7 @@ CHARACTER.prototype.ReadyBestShield = function () {
     }
 
     // clear miscError that may have been set by CanReady()
-    Globals.SetMiscError(Globals.miscErrorType.NoError);
+    Globals.SetMiscError(miscErrorType.NoError);
 
     // else try for best defensive bonus item
     if (defIdx != Items.NO_READY_ITEM) {
@@ -1427,7 +1427,7 @@ CHARACTER.prototype.ReadyBestArmor = function () {
     }
 
     // clear miscError that may have been set by CanReady()
-    Globlals.SetMiscError(Globlals.miscErrorType.NoError);
+    Globals.SetMiscError(miscErrorType.NoError);
 
     // else try for best defensive bonus item
     if (defIdx != Items.NO_READY_ITEM) {
@@ -1567,7 +1567,7 @@ CHARACTER.prototype.UnreadyItemByLocation = function (rdyLoc, specAbsOK) {
     //int myitemidx = myItems.GetReady(loctype);
     var myitemidx = this.myItems.GetReadiedItem(rdyLoc, 0);
 
-    var pData = this.itemData.GetItem(this.myItems.GetItem(myitemidx));
+    var pData = itemData.GetItem(this.myItems.GetItem(myitemidx));
     if (pData != null) {
         if (!specAbsOK) {
             pData.specAbs.DisableAllFor(this);
@@ -2122,7 +2122,7 @@ CHARACTER.prototype.GetAdjMaxMovement = function (flags, comment) {
             minmax[1] = UAFUtil.ByteFromHexString("0x7fffffff");
             actor = this.GetContextActor();
             actor = RunTimeIF.SetCharContext(actor);
-            hookParameters[5].Format("%i", GetMaxMovement());
+            hookParameters[5] = this.GetMaxMovement();
             scriptContext.SetCharacterContext(this);
             // Removed 20101228 PRS....sometimes called outside of combat!!! Like taking treasure.
             //pCombatant = this->GetCombatant();
@@ -2132,7 +2132,7 @@ CHARACTER.prototype.GetAdjMaxMovement = function (flags, comment) {
                 minmax,
                 comment);
 
-            pCombatant = m_pCombatant;
+            pCombatant = this.m_pCombatant;
             if (pCombatant != null) {
                 pCombatant.RunCombatantScripts(SPECAB.GET_ADJ_MAX_MOVEMENT,
                     SPECAB.ScriptCallback_MinMax,
@@ -2463,7 +2463,7 @@ CHARACTER.prototype.determineNbrAttacks = function () {
     if (this.GetType() != MONSTER_TYPE)
         this.SetNbrAttacks(1.0);
     else
-        this.SetNbrAttacks(monsterData.GetMonsterNbrAttacks(monsterID));
+        this.SetNbrAttacks(monsterData.GetMonsterNbrAttacks(this.monsterID));
 
     if (this.myItems.GetReadiedItem(Items.WeaponHand, 0) != Items.NO_READY_ITEM) {
         var wpnAttacks = itemData.GetItemROF(this.myItems.GetItem(this.myItems.GetReadiedItem(Items.WeaponHand, 0)));
@@ -2680,8 +2680,8 @@ CHARACTER.prototype.generateNewCharacter = function (StartExperience, StartExpTy
     this.DetermineUnarmedHitDice();
 
     this.maxHitPoints = 0;
-    this.hitpointSeed = randomMT();
-    DetermineNewCharMaxHitPoints(hitpointSeed);
+    this.hitpointSeed = Globals.randomMT();
+    this.DetermineNewCharMaxHitPoints(this.hitpointSeed);
     if (this.maxHitPoints > 0) {
         this.hitPoints = this.maxHitPoints;
         this.UpdateStats(true);
@@ -2728,10 +2728,556 @@ CHARACTER.prototype.RaceID = function () {
 }
 
 CHARACTER.prototype.getNewCharLevel = function (pTrainableBaseclasses, maxLevelGain) {
-    throw "todo";
+    if (this.GetType() == MONSTER_TYPE) {
+        var pMonster;
+        pMonster = monsterData.PeekMonster(this.monsterID);
+        if (pMonster == null) return;
+        var hd = pMonster.Hit_Dice;
+        var bonus = pMonster.Hit_Dice_Bonus;
+        if (!pMonster.UseHitDice) // represents hit points instead of hit dice
+            hd = (hd / GameRules.FIGHTER_HIT_DIE) + 1;
+
+        this.SetLevelBaseClassLevel(Math.max(hd, 1));
+        var hdBonus = bonus;
+        if (hdBonus > 0) {
+            var adjBonus = (hdBonus / 4) + 1;
+            if ((hdBonus % 4) == 0)
+                adjBonus--;
+            this.SetLevel(max(hd, 1) + adjBonus);
+        }
+    }
+    {
+        var i, n, maxLevel, limitLevel;
+        maxLevel = 0;
+        var baseclassID;
+        n = this.GetBaseclassStatsCount();
+        for (i = 0; i < n; i++) {
+            var j, m;
+            var exp;
+            var pstats;
+            var pTrainableBaseclass;
+            var pBaseclass;
+            pstats = this.GetBaseclassStats(i);
+            if (pstats.currentLevel == 0) {
+                continue;  // To next baseclass
+            };
+            // 20170926 exp = pstats->experience;
+            exp = pstats.CurExperience();
+            baseclassID = pstats.baseclassID;
+            pBaseclass = baseclassData.PeekBaseclass(baseclassID);
+            if (pBaseclass == null) {
+                Globals.WriteDebugString("Character " + this.GetName() + " has unknown baseclass '" + baseclassID + "'\n");
+                continue;
+            };
+            m = pBaseclass.GetExpLevelsCount();
+            for (j = m - 1; j >= 0; j--) {
+                if (exp >= pBaseclass.PeekExpLevels(j)) break;
+            };
+            j++; // j is the new level for this baseclass
+            pTrainableBaseclass = null;
+            if (pTrainableBaseclasses != null) {
+                var k, num;
+                num = pTrainableBaseclasses.GetSize();
+                for (k = 0; k < num; k++) {
+                    var pTB;
+                    pTB = pTrainableBaseclasses[k];
+                    if (pTB.baseclassID == baseclassID) {
+                        pTrainableBaseclass = pTB;
+                        break;
+                    };
+                };
+                if (pTrainableBaseclass == null) {
+                    continue;  // To next baseclass
+                };
+            };
+            limitLevel = pstats.currentLevel + maxLevelGain;
+            if (j > pstats.currentLevel + maxLevelGain) {
+                j = pstats.currentLevel + maxLevelGain;
+            };
+            while (pstats.currentLevel < j) {
+                if (pTrainableBaseclass != null) {
+                    if (pstats.currentLevel < pTrainableBaseclass.minLevel) break;
+                    if (pstats.currentLevel > pTrainableBaseclass.maxLevel) break;
+                };
+                pstats.currentLevel++;
+//#ifdef OldDualClass20180126                   // PORT NOTE:  I don't think this is on
+//                temp__canUsePrevClass = -1;
+//#endif
+            };
+            {
+                // At the last possible moment we will check for
+                // level capping caused by skill "MaxLevel$SYS$" defined
+                // in baseclass database and race database.
+                var levelCap;
+                levelCap = this.GetLevelCap(pBaseclass);
+                if (levelCap != Globals.NoSkill) {
+                    if (pstats.currentLevel > levelCap) {
+                        pstats.currentLevel = levelCap;
+                    };
+                };
+            };
+            {
+                // Manikus says we should steal experience points
+                // so that this fellow does not qualify for any
+                // level higher than limitLevel;
+                var maxExp;
+                if (limitLevel < HIGHEST_CHARACTER_LEVEL) {
+                    maxExp = pBaseclass.PeekExpLevels(limitLevel) - 1;
+                    if (pstats.previousLevel <= 0) {
+                        if (pstats.x_experience > maxExp) {
+                            pstats.x_experience = maxExp;
+                        };
+                    };
+                };
+            };
+        };
+    };
 }
 
+CHARACTER.prototype.DetermineCharMaxAge = function () {
+    if (this.GetType() == MONSTER_TYPE) {
+        this.maxAge = 1500;
+        return;
+    }
+    this.maxAge = this.determineCharMaxAgeRace(race);
+}
 
+CHARACTER.prototype.DetermineCharStartAge = function () {
+    if (this.GetType() == MONSTER_TYPE)
+        this.age = GameRules.START_AGE;
+    else
+        this.age = this.determineCharStartAgeRace(race);
+}
+
+CHARACTER.prototype.getNewCharStartingMoney = function () {
+    if (this.GetType() == MONSTER_TYPE) return;
+
+    this.money.Clear();
+    this.money.Add(this.money.GetDefaultType(), this.GetDesignStartPlatinum());
+    for (var g = 0; g < this.GetDesignStartGems(); g++) this.money.AddGem();
+    for (var j = 0; j < this.GetDesignStartJewelry(); j++) this.money.AddJewelry();
+}
+
+CHARACTER.prototype.getNewCharStartingEquip = function () {
+    if (this.GetType() == MONSTER_TYPE) return;
+    this.myItems.Clear();
+    {
+        var pClass;
+        pClass = classData.PeekClass(classID);
+        if (pClass != null) {
+            this.myItems = pClass.m_startingEquipment;
+        };
+    }
+}
+
+CHARACTER.prototype.DetermineUnarmedHitDice = function () {
+    if (this.GetType() == MONSTER_TYPE) {
+        // Mostly a safety net. In combat the actual
+        // attackData array should be used to determine
+        // values for natural attacks (no weapons)
+        //monsterData.GetMonsterDamageDice(origIndex,
+        monsterData.GetMonsterDamageDice(this.monsterID,
+            0, // first attack
+            this.unarmedNbrDieS,
+            this.unarmedDieS,
+            this.unarmedBonus);
+        this.unarmedDieL = this.unarmedDieS;
+        this.unarmedNbrDieL = this.unarmedNbrDieS;
+    }
+    else {
+        this.unarmedDieS = 2;
+        this.unarmedNbrDieS = 1;
+        this.unarmedBonus = 0;
+        this.unarmedDieL = 2;
+        this.unarmedNbrDieL = 1;
+    }
+}
+
+CHARACTER.prototype.DetermineNewCharMaxHitPoints = function (randomSeed) {
+    /*
+     * A little problem....We want to 're-roll' the HP computation, changing
+     * ONLY the bonus for ability scores for Strength, etc.  The computation can be
+     * very complex and non-linear because of multiple baseclasses, averages,
+     * and such.  So we have our own little random number generator
+     * and we seed it before doing anything random.  That way, we can
+     * repeat the computation for new values of strength, etc and only
+     * changes in ability scores will affect the outcome.
+     */
+    var ran = new LITTLE_RAN();
+    ran.Init(randomSeed);
+    if (this.GetType() == MONSTER_TYPE) {
+        var pMonster;
+        pMonster = monsterData.PeekMonster(this.monsterID);
+        if (pMonster == null) return;
+        var hd = pMonster.Hit_Dice;
+        var bonus = pMonster.Hit_Dice_Bonus;
+        if (!pMonster.UseHitDice) // represents hit points instead of hit dice
+        {
+            maxHitPoints = hd;
+        }
+        else {
+            if (hd < 1.0)
+                maxHitPoints = Globals.RollDice(Math.floor(8.0 * hd), 1, bonus);
+            else
+                maxHitPoints = Globals.RollDice(8, hd, bonus);
+        }
+
+        this.maxHitPoints = Math.max(1.0, maxHitPoints);
+        return;
+    }
+
+    var currClass = this.GetAdjClass();
+    var totalBaseClasses;
+    var pClass;
+    pClass = classData.PeekClass(currClass);
+    if (pClass != null) {
+        totalBaseClasses = pClass.GetCount();
+
+        if (totalBaseClasses == 0) {
+            // we have a race/class configuration error
+            Globals.WriteDebugString("Invalid race/class definition - totalClasses = 0 in DetermineNewCharMaxHitPoints()\n");
+            return;
+        }
+    }
+    else {
+        Globals.WriteDebugString("invlaid class definition = \"" + currClass + "\"\n");
+        return;
+    };
+
+    // I think what we wnat to do is:
+    //
+    // For each Baseclass
+    //    Get Hit Dice for that baseclass
+    //    HP = Roll those dice
+    //
+    // Add up all the HP for all Baseclasses and take the average.
+
+    var numBaseclass = 0;
+    var totalHP = 0;
+    var maxHP = 0;
+    var specificHP = 0;
+    numBaseclass = 0;
+    totalHP = 0;
+    maxHP = 0;
+    specificHP = 0;
+    pClass = classData.PeekClass(currClass);
+    if (pClass != null) {
+        var i = 0, n = 0;
+        n = pClass.GetCount();
+        for (i = 0; i < n; i++) {
+            var pBaseclass;
+            var baseclassID = "";
+            baseclassID = pClass.PeekBaseclassID(i);
+            pBaseclass = baseclassData.PeekBaseclass(baseclassID);
+            if (pBaseclass != null) {
+                var pBaseclassStats;
+                pBaseclassStats = PeekBaseclassStats(baseclassID);
+                if (pBaseclassStats != null) {
+                    var j = 0, level = 0, numDice = 0, sides = 0, constant = 0, bonus = 0, HP = 0;
+                    numBaseclass++;
+                    level = pBaseclassStats.currentLevel;
+                    bonus = DetermineHitDiceBonus(pBaseclassStats.baseclassID);
+                    HP = 0;
+                    for (j = 1; j <= level; j++) {
+                        pBaseclass.GetHitDice(j, sides, numDice, constant);
+                        HP += (numDice > 0) ? ran.Roll(sides, numDice, bonus) : 0 + constant;
+                    };
+                    totalHP += HP;
+                }
+            }
+        }
+    }
+    this.maxHitPoints = max(1, totalHP);
+}
+
+CHARACTER.prototype.SetStatus = function (val) {
+    this.status = val;
+    if (this.status == charStatusType.Dead)
+        this.m_spellEffects.RemoveAll(); 
+}
+
+CHARACTER.prototype.SetName = function (val) {
+    this.name = val;
+    this.name = this.name.trim();
+    if (this.name.length > MAX_CHAR_NAME)
+        this.name = this.name.substr(0, MAX_CHAR_NAME);
+}
+
+CHARACTER.prototype.SetPermInt = function(val)
+{
+    if (val != this.intelligence) {
+        spellAbility.valid = false;
+        this.intelligence = val;
+        this.UpdateSkillBasedStats();
+    };
+}
+
+CHARACTER.prototype.UpdateSkillBasedStats = function () {
+    var actor;
+    actor = this.GetContextActor();
+    RunTimeIF.SetCharContext(actor);
+
+    this.maxEncumbrance = this.determineMaxEncumbrance();
+    this.encumbrance = this.determineEffectiveEncumbrance();
+    this.determineMaxMovement();
+
+    var hb = 0, db = 0;
+    var od = 0, omd = 0, bl = 0;
+    GameRules.determineStrengthProperties(this.GetLimitedStr(), this.GetLimitedStrMod(),
+        hb, db,
+        od, omd, bl);
+    this.SetHitBonus(hb);
+    this.SetDmgBonus(db);
+    this.SetThiefSkills();
+    this.UpdateSpellAbility();
+    this.SetCharBaseAC();
+    RunTimeIF.ClearCharContext();
+}
+
+CHARACTER.prototype.SetMagicResistance = function (val) {
+    if (this.GetType() != MONSTER_TYPE) val = 0;
+    val = Math.max(0, val);
+    val = Math.min(100, val);
+    this.magicResistance = val;
+}
+
+CHARACTER.prototype.SetSize = function (val) {
+    this.creatureSize = val;
+}
+
+CHARACTER.prototype.SetMorale = function (val) {
+    val = Math.max(0, val);
+    val = Math.min(100, val);
+    this.morale = val;
+}
+
+CHARACTER.prototype.SetUndead = function (uType) {
+    this.undeadType = uType;
+}
+
+CHARACTER.prototype.determineMaxMovement = function () {
+    if (this.GetType() == MONSTER_TYPE) {
+        var val = monsterData.GetMonsterMovement(this.monsterID);
+        this.SetMaxMovement(val);
+        return this.GetAdjMaxMovement(DEFAULT_SPELL_EFFECT_FLAGS,
+            "Determine monster max movement");
+    }
+
+    var ewt = this.determineEffectiveEncumbrance();
+    var normalEncumbrance = this.determineNormalEncumbrance();
+    var val = 12;
+
+    if (ewt <= normalEncumbrance) val = 12;
+    else if (ewt <= (normalEncumbrance * 2)) val = 9;
+    else if (ewt <= (normalEncumbrance * 3)) val = 6;
+    else if (ewt <= (normalEncumbrance * 4)) val = 3;
+    else val = 1;
+
+    this.SetMaxMovement(val);
+    return this.GetAdjMaxMovement(DEFAULT_SPELL_EFFECT_FLAGS,
+        "Determine non-monster max movement");
+}
+
+CHARACTER.prototype.SetMaxMovement = function (val) {
+    if (this.GetType() != MONSTER_TYPE) {
+        if (val > Globals.MAX_MOVE) val = Globals.MAX_MOVE;
+    }
+    this.maxMovement = val;
+}
+
+CHARACTER.prototype.SetLevelBaseClassLevel = function (baseclassID, lvl) { 
+    var i;
+    i = this.LocateBaseclassStats(baseclassID);
+    if (i >= 0) {
+        var pBaseclassStats;
+        pBaseclassStats = this.GetBaseclassStats(i);
+        pBaseclassStats.currentLevel = lvl;
+    }
+}
+
+CHARACTER.prototype.LocateBaseclassStats = function(baseclassID) {
+    var i = 0, n = 0;
+    n = this.baseclassStats.length;
+    for (i = 0; i < n; i++) {
+        if (this.baseclassStats[i] == baseclassID) return i;
+    }
+    return -1;
+}
+
+CHARACTER.prototype.GetBaseclassStatsCount = function () {
+    return this.baseclassStats.length;
+}
+
+CHARACTER.prototype.UpdateStats = function (IsNewChar) {
+    var actor;
+    actor = this.GetContextActor();
+    RunTimeIF.SetCharContext(actor);
+
+    this.checkNewCharRaceScores(IsNewChar);  // Check Ability limits for race
+    this.checkNewCharClassScores();          // Check Ability limits for class
+
+    this.UpdateBaseclassLevels();  // They may be based on ability scores.
+
+    this.UpdateSkillBasedStats();            // HitBonus, etc
+    this.UpdateLevelBasedStats();            // THAC0, hit dice, etc
+
+    RunTimeIF.ClearCharContext();
+}
+
+CHARACTER.prototype.checkNewCharClassScores = function () {
+
+    if (this.GetType() == MONSTER_TYPE) return;
+
+    var data = new CHARSKILLDATA();
+    data.m_str = GetPermStr();
+    data.m_int = GetPermInt();
+    data.m_wis = GetPermWis();
+    data.m_dex = GetPermDex();
+    data.m_con = GetPermCon();
+    data.m_cha = GetPermCha();
+    this.CheckNewCharRaceScores(race, data);
+
+    this.SetPermStr(data.m_str);
+    this.SetPermInt(data.m_int);
+    this.SetPermWis(data.m_wis);
+    this.SetPermDex(data.m_dex);
+    this.SetPermCon(data.m_con);
+    this.SetPermCha(data.m_cha);
+}
+
+CHARACTER.prototype.checkNewCharRaceScores = function (ApplyModifiers) {
+    if (this.GetType() == MONSTER_TYPE) return;
+
+    var data = new CHARSKILLDATA();
+    data.m_str = GetPermStr();
+    data.m_int = GetPermInt();
+    data.m_wis = GetPermWis();
+    data.m_dex = GetPermDex();
+    data.m_con = GetPermCon();
+    data.m_cha = GetPermCha();
+
+    this.CheckNewCharRaceScores(race, data);
+
+    this.SetPermStr(data.m_str);
+    this.SetPermInt(data.m_int);
+    this.SetPermWis(data.m_wis);
+    this.SetPermDex(data.m_dex);
+    this.SetPermCon(data.m_con);
+    this.SetPermCha(data.m_cha);
+}
+
+CHARACTER.prototype.UpdateLevelBasedStats = function () {
+    var actor;
+    actor = this.GetContextActor();
+    RunTimeIF.SetCharContext(actor);
+
+    this.getCharTHAC0();
+    this.SetThiefSkills();
+    this.DetermineCharHitDice();
+    this.DetermineMaxCureDisease();
+
+    RunTimeIF.ClearCharContext();
+};
+
+CHARACTER.prototype.UpdateBaseclassLevels = function () {
+    this.getNewCharLevel(null, 999);
+};
+
+CHARACTER.prototype.determineMaxEncumbrance = function () {
+    if (this.GetType() == MONSTER_TYPE)
+        return 100000; // monsters are not encumbered in combat?
+
+    return (this.determineNormalEncumbrance() * 5);
+}
+
+CHARACTER.prototype.LimitAb = function (v, min, max) {
+    return Math.min(Math.max(v, min), max);
+}
+
+CHARACTER.prototype.SetHitBonus = function (val) {
+    this.hitBonus = val;
+}
+
+CHARACTER.prototype.SetDmgBonus = function (val) {
+    this.dmgBonus = val;
+}
+
+CHARACTER.prototype.SetThiefSkills = function () {
+    // PORT NOTE:  Body of this method was commented out in original code
+}
+
+CHARACTER.prototype.SetCharBaseAC = function () {
+    if (this.GetType() == MONSTER_TYPE) {
+        this.m_AC = monsterData.GetMonsterAC(this.monsterID);
+    }
+    else {
+        var dex = this.GetAdjDex();
+        if (dex > 14)
+            this.m_AC = 10 - (dex - 14);
+        else
+            this.m_AC = 10;
+        if (this.m_AC > MAX_AC) this.m_AC = MAX_AC;
+        if (this.m_AC < MIN_AC) this.m_AC = MIN_AC;
+    }
+}
+
+CHARACTER.prototype.getCharTHAC0 = function () {
+    var i = 0, n = 0, thac0 = 0;
+    var pBaseclassStats;
+    if (this.GetType() == MONSTER_TYPE) {
+        this.THAC0 = monsterData.GetMonsterTHAC0(this.monsterID);
+        return;
+    }
+    n = baseclassStats.GetCount();
+    this.THAC0 = 20;
+    for (i = 0; i < n; i++) {
+        var level;
+        pBaseclassStats = this.PeekBaseclassStats(i);
+        if (pBaseclassStats == null) continue;
+        if (!this.CanUseBaseclass(pBaseclassStats)) continue;
+        if (pBaseclassStats.currentLevel > 0) {
+            level = pBaseclassStats.currentLevel;
+        }
+        else {
+            level = pBaseclassStats.previousLevel;
+        };
+        if (level < 1) continue;
+        if (level > HIGHEST_CHARACTER_LEVEL) level = HIGHEST_CHARACTER_LEVEL;
+        if ((pBaseclassStats.pBaseclassData == null)
+            || (pBaseclassStats.baseclassID != pBaseclassStats.pBaseclassData.BaseclassID())) {
+            pBaseclassStats.pBaseclassData = baseclassData.PeekBaseclass(pBaseclassStats.baseclassID);
+        };
+        if (pBaseclassStats.pBaseclassData == null) continue;
+        thac0 = pBaseclassStats.pBaseclassData.THAC0[level - 1];;
+        if (thac0 < this.THAC0) this.THAC0 = thac0;
+    }
+}
+
+CHARACTER.prototype.DetermineCharHitDice = function () {
+    if (this.GetType() == MONSTER_TYPE) {
+        var pMonster;
+        pMonster = monsterData.PeekMonster(this.monsterID);
+        if (pMonster == null) return;
+        var hd = pMonster.Hit_Dice;
+        if (!pMonster.UseHitDice) // represents hit points instead of hit dice
+            hd = (hd / FIGHTER_HIT_DIE) + 1;
+        if (hd < 1.0) hd = 1.0;
+        this.SetNbrHD(hd);
+        return;
+    }
+}
+
+CHARACTER.prototype.SetNbrHD = function (val) {
+    val = Math.max(0, val);
+    this.nbrHitDice = val;
+}
+
+CHARACTER.prototype.DetermineMaxCureDisease = function () {
+    this.m_iMaxCureDisease = 0;
+    return this.m_iMaxCureDisease;
+}
+
+CHARACTER.prototype.SetLevel = function (lvl) { throw "todo"; }
 CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };
 CHARACTER.prototype.GetBestMemorizedHealingSpell = function (pSpellID) { throw "todo"; };
 CHARACTER.prototype.GetHealingPointsNeeded = function () { throw "todo"; };
@@ -2739,17 +3285,8 @@ CHARACTER.prototype.giveCharacterDamage = function (eventSave, attackTHAC0, dmgD
 CHARACTER.prototype.giveCharacterDamage = function (damage) { throw "todo"; };
 CHARACTER.prototype.TakeDamage = function (dmg, IsNonLethal, invokeOptions, canFinishCasting, pDeathIndex) { throw "todo"; };
 CHARACTER.prototype.GetLevelCap = function (pBaseclass) { throw "todo"; };
-CHARACTER.prototype.UpdateStats = function (IsNewChar) { throw "todo"; };
-CHARACTER.prototype.UpdateBaseclassLevels = function () { throw "todo"; };
-CHARACTER.prototype.UpdateLevelBasedStats = function () { throw "todo"; };
-CHARACTER.prototype.UpdateSkillBasedStats = function () { throw "todo"; };
 CHARACTER.prototype.CanBeModified = function() { throw "todo"; }
-CHARACTER.prototype.checkNewCharClassScores = function() { throw "todo"; }
-CHARACTER.prototype.checkNewCharRaceScores = function(ApplyModifiers) { throw "todo"; }
-CHARACTER.prototype.getNewCharStartingMoney = function() { throw "todo"; }
-CHARACTER.prototype.getNewCharStartingEquip = function() { throw "todo"; }
 CHARACTER.prototype.getAllowedAlignments = function() { throw "todo"; }
-CHARACTER.prototype.SetThiefSkills = function() { throw "todo"; }
 CHARACTER.prototype.GetThiefBackstabDamageMultiplier = function() { throw "todo"; }
 CHARACTER.prototype.GetThiefBackstabAttackAdjustment = function() { throw "todo"; }
 CHARACTER.prototype.GetThiefSkillArmorAdustments = function() { throw "todo"; }
@@ -2769,8 +3306,6 @@ CHARACTER.prototype.EvalDiceAsClass = function(dice, baseclassID, pRollerLevel) 
 CHARACTER.prototype.EvalDiceAsClass = function(dice, schoolID, spellLevel, pRollerLevel) { throw "todo"; }
 CHARACTER.prototype.EvalDiceAsClass = function(dice, pSpell, pRollerLevel) { throw "todo"; }
 CHARACTER.prototype.WhichBaseclassCastThisSpell = function(pSpell) { throw "todo"; }
-CHARACTER.prototype.SetName = function(val) { throw "todo"; }
-CHARACTER.prototype.DetermineMaxCureDisease = function() { throw "todo"; }
 CHARACTER.prototype.GetMaxCureDisease = function() { throw "todo"; }
 CHARACTER.prototype.SetMaxCureDisease = function(val) { throw "todo"; }
 CHARACTER.prototype.GetCureDisease = function() { throw "todo"; }
@@ -2778,24 +3313,17 @@ CHARACTER.prototype.SetCureDisease = function(val) { throw "todo"; }
 CHARACTER.prototype.IncCureDisease = function() { throw "todo"; }
 CHARACTER.prototype.HaveCureDisease = function() { throw "todo"; }
 CHARACTER.prototype.GetAdjMorale = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.SetMorale = function(val) { throw "todo"; }
-CHARACTER.prototype.DetermineUnarmedHitDice = function() { throw "todo"; }
-CHARACTER.prototype.DetermineCharHitDice = function() { throw "todo"; }
 CHARACTER.prototype.DetermineHitDiceBonus = function(baseclassID) { throw "todo"; }
 CHARACTER.prototype.GetNbrHD = function() { throw "todo"; }
-CHARACTER.prototype.SetNbrHD = function(val) { throw "todo"; }
 CHARACTER.prototype.GetCurrentLevel = function(baseclassID) { throw "todo"; }
 CHARACTER.prototype.CurrentBaseclassLevel = function(baseclassID) { throw "todo"; }
 CHARACTER.prototype.SetCurrentLevel = function(baseclassID, lvl) { throw "todo"; }
-CHARACTER.prototype.SetHitBonus = function(val) { throw "todo"; }
 CHARACTER.prototype.GetDmgBonus = function() { throw "todo"; }
 CHARACTER.prototype.GetAdjDmgBonus = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.SetDmgBonus = function(val) { throw "todo"; }
 CHARACTER.prototype.ComputeCharSavingThrows = function() { throw "todo"; }
 CHARACTER.prototype.DidSaveVersus = function(type, bonus, pSpell, pAttackerr) { throw "todo"; }
 CHARACTER.prototype.GetMagicResistance = function() { throw "todo"; }
 CHARACTER.prototype.GetAdjMagicResistance = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.SetMagicResistance = function(val) { throw "todo"; }
 CHARACTER.prototype.GetHighestLevelBaseclass = function() { throw "todo"; }
 CHARACTER.prototype.GetAdjClass = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
 CHARACTER.prototype.GetAdjAlignment = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
@@ -2805,21 +3333,15 @@ CHARACTER.prototype.SetGender = function(val) { throw "todo"; }
 CHARACTER.prototype.SetGender = function(gender) { throw "todo"; }
 CHARACTER.prototype.SetClass = function(classID) { throw "todo"; }
 CHARACTER.prototype.SetAlignment = function(val) { throw "todo"; }
-CHARACTER.prototype.SetStatus = function(val) { throw "todo"; }
-CHARACTER.prototype.SetUndead = function(uType) { throw "todo"; }
-CHARACTER.prototype.SetSize = function(val) { throw "todo"; }
 CHARACTER.prototype.SetAllowInCombat = function(allow) { throw "todo"; }
 CHARACTER.prototype.IsAlignmentEvil = function() { throw "todo"; }
 CHARACTER.prototype.IsAlignmentGood = function() { throw "todo"; }
 CHARACTER.prototype.determineEncumbrance = function() { throw "todo"; }
 CHARACTER.prototype.determineNormalEncumbrance = function() { throw "todo"; }
-CHARACTER.prototype.determineMaxEncumbrance = function() { throw "todo"; }
 CHARACTER.prototype.GetAdjMaxEncumbrance = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
 CHARACTER.prototype.GetPerm = function () { };
 CHARACTER.prototype.GetAdj = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.GetLimitedStr = function() { throw "todo"; }
-CHARACTER.prototype.GetLimitedStrMod = function() { throw "todo"; }
-CHARACTER.prototype.GetLimited= function() { throw "todo"; }
+CHARACTER.prototype.GetLimited = function() { throw "todo"; }
 CHARACTER.prototype.SetPerm = function(val) { throw "todo"; }
 CHARACTER.prototype.GetAbilityScore = function(abilityName) { throw "todo"; }
 CHARACTER.prototype.CreateAllowedSchoolList = function(pSchoolList) { throw "todo"; }
@@ -2836,14 +3358,11 @@ CHARACTER.prototype.GetDetectingTraps = function() { throw "todo"; }
 CHARACTER.prototype.SetDetectingTraps = function(flag) { throw "todo"; }
 CHARACTER.prototype.GetAdjDetectingTraps = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
 CHARACTER.prototype.PeekRaceData = function() { throw "todo"; }
-CHARACTER.prototype.getCharTHAC0 = function() { throw "todo"; }
 CHARACTER.prototype.SetTHAC0 = function(val) { throw "todo"; }
 CHARACTER.prototype.GetEffectiveAC = function() { throw "todo"; }
-CHARACTER.prototype.SetCharBaseAC = function() { throw "todo"; }
 CHARACTER.prototype.SetAC = function(val) { throw "todo"; }
 CHARACTER.prototype.SetCharAC = function() { throw "todo"; }
 CHARACTER.prototype.DetermineCharMaxHitPoints = function() { throw "todo"; }
-CHARACTER.prototype.DetermineNewCharMaxHitPoints = function(randomSeed) { throw "todo"; }
 CHARACTER.prototype.SetHitPoints = function(val) { throw "todo"; }
 CHARACTER.prototype.SetHitPoints = function(val, int, canFinishCasting) { throw "todo"; }
 CHARACTER.prototype.RestoreMaxHitPoints = function() { throw "todo"; }
@@ -2853,12 +3372,8 @@ CHARACTER.prototype.SetAge = function(val) { throw "todo"; }
 CHARACTER.prototype.GetIconIndex = function() { throw "todo"; }
 CHARACTER.prototype.SetIconIndex = function(val) { throw "todo"; }
 CHARACTER.prototype.GetBirthday = function() { throw "todo"; }
-CHARACTER.prototype.DetermineCharStartAge = function() { throw "todo"; }
-CHARACTER.prototype.DetermineCharMaxAge = function() { throw "todo"; }
 CHARACTER.prototype.SetMaxAge = function(val) { throw "todo"; }
-CHARACTER.prototype.determineMaxMovement = function() { throw "todo"; }
 CHARACTER.prototype.GetAdjMaxMovement_GPDL = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.SetMaxMovement = function(val) { throw "todo"; }
 CHARACTER.prototype.IsReadyToTrain = function(pBaseclassStats) { throw "todo"; }
 CHARACTER.prototype.IsReadyToTrain = function() { throw "todo"; }
 CHARACTER.prototype.GetReadyToTrain = function() { throw "todo"; }
@@ -2871,8 +3386,6 @@ CHARACTER.prototype.giveCharacterExperience = function(exp, UseLimits) {if (UseL
 CHARACTER.prototype.GetCurrExp = function(baseclassID) { throw "todo"; }
 CHARACTER.prototype.SetCurrExp = function(baseclassID, exp) { throw "todo"; }
 CHARACTER.prototype.ClearLevels = function() { throw "todo"; }
-CHARACTER.prototype.SetLevel = function(baseclassID, lvl) { throw "todo"; }
-CHARACTER.prototype.SetLevel = function(lvl) { throw "todo"; }
 CHARACTER.prototype.GetCurrLevel = function(baseclassID) { throw "todo"; }
 CHARACTER.prototype.GetAllowedLevel = function(baseclassID) { throw "todo"; }
 CHARACTER.prototype.IncCurrExp = function(baseclassID, exp) { throw "todo"; }
