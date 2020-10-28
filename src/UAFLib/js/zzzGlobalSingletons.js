@@ -1,7 +1,9 @@
-﻿var DEBUG_STRINGS = new DEBUG_STRINGS();
-var alignmentType = new alignmentTypeObj(alignmentType);
-
+﻿var miscErrorType = new miscErrorTypeObj();
 var Globals = new Globals();
+var DEBUG_STRINGS = new DEBUG_STRINGS();
+var alignmentType = new alignmentTypeObj();
+var surfaceType = new surfaceTypeObj();
+
 
 var charStatusType = new charStatusTypeObj(charStatusType);
 var combatVictorType = new combatVictorTypeObj();
@@ -12,7 +14,6 @@ var ActorInstanceType = new ActorInstanceTypeObj();
 var EventSourceType = new EventSourceTypeObj();
 var genderType = new genderTypeObj(genderType);
 var eventType = new eventTypeObj();
-var miscErrorType = new miscErrorTypeObj();
 var eventTurnUndeadModType = new eventTurnUndeadModTypeObj();
 var eventSurpriseType = new eventSurpriseTypeObj();
 var chainTriggerType = new chainTriggerTypeObj();
@@ -22,7 +23,6 @@ var itemData = new ITEM_DATA_TYPE();
 var spellData = new SPELL_DATA_TYPE();
 var monsterData = new MONSTER_DATA_TYPE();
 var moneyData = new MONEY_DATA_TYPE();
-var surfaceType = new surfaceTypeObj();
 var SCRIPT_SOURCE_TYPE = new SCRIPT_SOURCE_TYPEObj();
 var SPECAB_STRING_TYPE = new SPECAB_STRING_TYPEObj();
 var SPELL_EFFECTS_DATA = new SPELL_EFFECTS_DATA();
@@ -51,7 +51,7 @@ var specialAbilitiesData = new A_SPECABILITY_DEF_L();
 var pScriptContext = new SCRIPT_CONTEXT();
 
 
-var pathMgr = new PATH_MANAGER();
+var pathMgr = new PATH_MANAGER(1000);
 
 var RunTimeIF = new RunTimeIF();
 

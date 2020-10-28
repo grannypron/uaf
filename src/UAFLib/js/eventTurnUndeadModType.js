@@ -8,6 +8,6 @@ function eventTurnUndeadModType() {
 }
 
 function eventTurnUndeadModTypeObj() {
-    entityType.call(this, charStatusType);
+    eventTurnUndeadModType.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }

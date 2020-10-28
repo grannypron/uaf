@@ -5,7 +5,7 @@ function CBFUNC() {
 }
 
 function CBFUNCObj() {
-    entityType.call(this, CBFUNC);
+    CBFUNC.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }
 

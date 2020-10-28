@@ -11,7 +11,7 @@ function SPECAB_STRING_TYPE() {
 };
 
 function SPECAB_STRING_TYPEObj() {
-    entityType.call(this, SPECAB_STRING_TYPE);
+    SPECAB_STRING_TYPE.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }
 

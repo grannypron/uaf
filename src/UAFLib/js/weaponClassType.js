@@ -1,17 +1,17 @@
-var weaponClassType = {};
+var weaponClassType = function() {
     // CanAttack?   AttackAdjacent?   AttackRanged?   NeedsAmmoReadied?  ConsumesAmmo?
     //
-weaponClassType.NotWeapon = 0,       //   No              No               No                N/A              N/A
-weaponClassType.HandBlunt = 1,       //   Yes             Yes              Yes               No               No
-weaponClassType.HandCutting = 2,     //   Yes             Yes              Yes               No               No
-weaponClassType.HandThrow = 3,       //   Yes             Yes              Yes               No               if range > 1
-weaponClassType.SlingNoAmmo = 4,     //   Yes             No               Yes               No               No
-weaponClassType.Bow = 5,             //   Yes             No               Yes               Yes              Yes
-weaponClassType.Crossbow = 6,        //   Yes             No               Yes               Yes              Yes
-weaponClassType.Throw = 7,           //   Yes             No               Yes               No               Yes
-weaponClassType.Ammo = 8,            //   No              N/A              No                N/A              N/A
-weaponClassType.SpellCaster = 9,     //   Yes             Yes              Yes               No               Yes
-weaponClassType.SpellLikeAbility = 10//   Yes             YEs              Yes               No               Yes
+    this.NotWeapon = 0,       //   No              No               No                N/A              N/A
+    this.HandBlunt = 1,       //   Yes             Yes              Yes               No               No
+    this.HandCutting = 2,     //   Yes             Yes              Yes               No               No
+    this.HandThrow = 3,       //   Yes             Yes              Yes               No               if range > 1
+    this.SlingNoAmmo = 4,     //   Yes             No               Yes               No               No
+    this.Bow = 5,             //   Yes             No               Yes               Yes              Yes
+    this.Crossbow = 6,        //   Yes             No               Yes               Yes              Yes
+    this.Throw = 7,           //   Yes             No               Yes               No               Yes
+    this.Ammo = 8,            //   No              N/A              No                N/A              N/A
+    this.SpellCaster = 9,     //   Yes             Yes              Yes               No               Yes
+    this.SpellLikeAbility = 10//   Yes             YEs              Yes               No               Yes
 
     //
     //  CanAttack = isWeapon()
@@ -24,10 +24,10 @@ weaponClassType.SpellLikeAbility = 10//   Yes             YEs              Yes  
     //
     //  ConsumesAmmo = WpnConsumesAmmoAtRange(Range)
     //
-
+}
 
 function weaponClassTypeObj() {
-    entityType.call(this, weaponClassType);
+    weaponClassType.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }
 

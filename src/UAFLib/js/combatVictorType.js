@@ -6,6 +6,6 @@ function combatVictorType() {
 }
 
 function combatVictorTypeObj() {
-    entityType.call(this, combatVictorType);
+    combatVictorType.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }

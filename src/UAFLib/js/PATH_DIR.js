@@ -12,7 +12,7 @@ function PATH_DIR() {
 };
 
 function PATH_DIRObj() {
-    entityType.call(this, PATH_DIR);
+    PATH_DIR.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }
 

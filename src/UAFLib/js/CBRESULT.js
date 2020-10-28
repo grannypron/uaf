@@ -4,7 +4,7 @@ function CBRESULT() {
 }
 
 function CBRESULTObj() {
-    entityType.call(this, CBRESULT);
+    CBRESULT.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }
 

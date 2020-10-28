@@ -10,7 +10,7 @@ function eventDistType() {
 }
 
 function eventDistTypeObj() {
-    entityType.call(this, eventDistType);
+    eventDistType.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }
 

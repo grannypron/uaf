@@ -25,8 +25,6 @@ PIC_DATA.prototype.Clear = function () {
 }
 
 PIC_DATA.prototype.SetDefaults = function () {
-    Globals.ASSERT(this.picType != surfaceType.BogusDib, "PIC_DATA.js::SetDefaults");
-
     if ((this.NumFrames > 0)
         && (this.FrameWidth > 0)
         && (this.FrameHeight > 0)

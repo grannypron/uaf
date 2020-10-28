@@ -34,6 +34,7 @@ namespace UAFLib
                 runTest(@"..\..\..\UAFLib\Tests\TestStripFilenamePath.js");
                 runTest(@"..\..\..\UAFLib\Tests\TestCharacterSerialize.js");
                 runTest(@"..\..\..\UAFLib\Tests\TestTagList.js");
+                runTest(@"..\..\..\UAFLib\Tests\TestPathManager.js");
                 runTest(@"..\..\..\UAFLib\Tests\TestRollDice.js");
                 runTest(@"..\..\..\UAFLib\Tests\TestGlobalStats.js");
                 runTest(@"..\..\..\UAFLib\Tests\TestLoadSAs.js");
@@ -78,7 +79,7 @@ namespace UAFLib
             {
                 String fileContents = LoadFileFromString(file);
                 int lineCount = fileContents.Split('\n').Length;
-                 engine.Execute(fileContents);
+                engine.Execute(fileContents);
                 lib.Add(new LibraryFile(file, lineCount));
                 //System.Console.WriteLine(file + ":" + lineCount);
             }

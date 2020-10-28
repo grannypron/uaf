@@ -16,15 +16,15 @@ function ITEM() {
 
 ITEM.prototype.Clear = function ()
 {
-    key = 0;
-    itemID.Clear();
-    readyLocation.Clear();
-    qty = 0;
-    identified = FALSE;
-    charges = 0;
-    cursed = FALSE;
-    paid = -1;
-    pItemData = null;
+    this.key = 0;
+    this.itemID.Clear();
+    this.readyLocation.Clear();
+    this.qty = 0;
+    this.identified = false;
+    this.charges = 0;
+    this.cursed = false;
+    this.paid = -1;
+    this.pItemData = null;
 };
 
 ITEM.prototype.SerializeCAR = function (ar, ver) {

@@ -5,6 +5,6 @@ function AURA_WAVELENGTH() {
 }
 
 function AURA_WAVELENGTHObj() {
-    entityType.call(this, AURA_WAVELENGTH);
+    AURA_WAVELENGTH.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }

@@ -1,4 +1,4 @@
-function eventDirType() { 
+function eventDirType() {
     this.Any = 0;
     this.North = 1;
     this.South = 2;
@@ -19,7 +19,7 @@ function eventDirType() {
 };
 
 function eventDirTypeObj() {
-    entityType.call(this, eventDirType);
+    eventDirType.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }
 

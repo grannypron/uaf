@@ -44,6 +44,8 @@ function miscErrorType() {
 };
 
 function miscErrorTypeObj() {
-    entityType.call(this, miscErrorType);
+    miscErrorType.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }
+
+var MAX_MISC_ERROR_MSGS = new miscErrorType().LastMiscError + 1;

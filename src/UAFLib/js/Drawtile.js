@@ -162,6 +162,15 @@ Drawtile.prototype.GenerateIndoorCombatMap = function () {
             this.terrain[i][j] = new TERRAIN_CELL();
             this.terrain[i][j].tileIndex = NO_DUDE;
             this.terrain[i][j].tileIndexDead = NO_DUDE;
+            this.CurrentTileCount++;
+            this.CurrentTileData[this.CurrentTileCount] = new TILE_DATA();
+            this.CurrentTileData[this.CurrentTileCount].tile_posy = j;
+            this.CurrentTileData[this.CurrentTileCount].tile_posx = i;
+            this.CurrentTileData[this.CurrentTileCount].tile_invisible = 0;
+            this.CurrentTileData[this.CurrentTileCount].tile_passable = 1;
+            this.CurrentTileData[this.CurrentTileCount].tile_enabled = 1;
+            this.terrain[i][j].cell = this.CurrentTileCount;
+
         }
     }
 
@@ -791,14 +800,14 @@ void GenerateOutdoorCombatMap(int & partyX, int & partyY, PATH_DIR dir)
 
 Drawtile.prototype.ObsticalType = function(x, y, w, h, CheckOccupants, ignoreCurrentCombatant, pCombatantLinger) {
     var i, j, dude;
-
+    
     for (i = 0; i < h; i++) {
         for (j = 0; j < w; j++) {
             if (!this.coordsOnMap(x + j, y + i, 1, 1)) return OBSTICAL_TYPE.OBSTICAL_offMap;
             if (!this.HaveMovability(y + i, x + j)) return OBSTICAL_TYPE.OBSTICAL_wall;
 
             if (CheckOccupants) {
-                dude = getCombatantInCell(x + j, y + i, 1, 1);
+                dude = Drawtile.getCombatantInCell(x + j, y + i, 1, 1);
                 if ((dude != NO_DUDE) && (!ignoreCurrentCombatant || (dude != combatData.GetCurrCombatant())))
                     return OBSTICAL_TYPE.OBSTICAL_occupied;
                 if (pCombatantLinger != null) {
@@ -807,7 +816,6 @@ Drawtile.prototype.ObsticalType = function(x, y, w, h, CheckOccupants, ignoreCur
             }
         }
     }
-
     return OBSTICAL_TYPE.OBSTICAL_none;
 }
 
@@ -815,8 +823,8 @@ Drawtile.prototype.coordsOnMap = function (x, y, width, height) {
     var i, j;
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
-            if (((x + j) < 0) || ((x + j) >= Drawtile.MAX_TERRAIN_WIDTH)) return FALSE;
-            if (((y + i) < 0) || ((y + i) >= Drawtile.MAX_TERRAIN_HEIGHT)) return FALSE;
+            if (((x + j) < 0) || ((x + j) >= Drawtile.MAX_TERRAIN_WIDTH)) return false;
+            if (((y + i) < 0) || ((y + i) >= Drawtile.MAX_TERRAIN_HEIGHT)) return false;
         }
     }
     return true;
@@ -845,7 +853,6 @@ Drawtile.prototype.EnsureVisibleTargetTargetForceCenter = function(targ, forceCe
 
 Drawtile.prototype.placeCombatant = function (x, y, dude, w, h) {
     var i, j;
-    Globals.debug("Drawtile.prototype.placeCombatant: " + x + "/" + y + "/" + dude + "/" + w + "/" + h);
 
     if ((w <= 0) || (h <= 0)) {
          if (!DEBUG_STRINGS.AlreadyNoted("BWH01")) {
@@ -893,4 +900,96 @@ Drawtile.prototype.EnsureVisibleXYForceCenter = function(tx, ty, forceCenter) {
         combatData.m_iStartTerrainY = 0;
     else if ((combatData.m_iStartTerrainY + Globals.TILES_VERT) > Drawtile.MAX_TERRAIN_HEIGHT)
         combatData.m_iStartTerrainY = Drawtile.MAX_TERRAIN_HEIGHT - Globals.TILES_VERT + 1;
+}
+
+Drawtile.prototype.getCombatantInCell = function(x, y, w, h, ignoreDude) {
+    for (var i = 0; i < h; i++)
+    {
+        for (var j = 0; j < w; j++)
+        {
+            if (this.ValidCoords(y + i, x + j)) {
+                if ((this.terrain[y + i][x + j].tileIndex != NO_DUDE)
+                    && (this.terrain[y + i][x + j].tileIndex != ignoreDude)) {
+                    if (this.terrain[y + i][x + j].tileIndex < combatData.NumCombatants()) //m_aCombatants.GetSize())
+                        return this.terrain[y + i][x + j].tileIndex;
+                    else
+                        terrain[y + i][x + j].tileIndex = NO_DUDE;
+                }
+            }
+        }
+    }
+    return NO_DUDE;
+}
+
+
+Drawtile.prototype.IsLineOfSight = function (x0, y0, x1, y1) {
+    var flags = 0, octant = 0;
+    var xDistance = 0, yDistance = 0;
+    xDistance = x1 - x0;
+    yDistance = y1 - y0;
+    // Divide the circle into 8 octants.
+    octant = (xDistance > 0) ? 0 : 4;
+    if (yDistance > 0) octant += 2;
+    if (Math.abs(yDistance) > Math.abs(xDistance)) octant += 1;
+    switch (octant) {                     //  bigd 
+        //     littled                   larger
+        case 0:
+            flags = this.TestLineOfSight(x0, y0, 1, 0, 0, -1, xDistance, -yDistance);
+            break;
+        case 1:
+            flags = this.TestLineOfSight(x1, y1, 0, 1, -1, 0, -yDistance, xDistance);
+            break;
+        case 2:
+            flags = this.TestLineOfSight(x0, y0, 1, 0, 0, 1, xDistance, yDistance);
+            break;
+        case 3:
+            flags = this.TestLineOfSight(x0, y0, 0, 1, 1, 0, yDistance, xDistance);
+            break;
+        case 4:
+            flags = this.TestLineOfSight(x1, y1, 1, 0, 0, 1, -xDistance, -yDistance);
+            break;
+        case 5:
+            flags = this.TestLineOfSight(x1, y1, 0, 1, 1, 0, -yDistance, -xDistance);
+            break;
+        case 6:
+            flags = this.TestLineOfSight(x1, y1, 1, 0, 0, -1, -xDistance, yDistance);
+            break;
+        case 7:
+            flags = this.TestLineOfSight(x0, y0, 0, 1, -1, 0, yDistance, -xDistance);
+            break;
+    };
+    return flags == 0;
+}
+
+
+Drawtile.prototype.TestLineOfSight = function(x0, y0, dx1, dy1, dx2, dy2, c, dc) {
+    // Return non-zero if wall encountered.
+    var flags = 0;
+    var i = 0;
+    var cMax = 2 * c;
+    var numStep = c;
+    c += dc;
+    dc *= 2;
+    for (i = 0; (i < numStep) && (flags == 0); i++) {
+        // Examine the left and right cells at x = x0
+        //
+        // Examine left side of line.
+
+        if ((i | c) != 0) {
+            flags |= this.TestLineOfSight(x0, y0);
+        };
+
+        x0 += dx1; y0 += dy1;
+
+        //
+        // Examine right side of line. 
+        //
+        if (i != numStep - 1) {
+            flags |= this.TestLineOfSight(x0, y0);
+        };
+
+        c += dc;
+        if (c >= cMax) { x0 += dx2; y0 += dy2; c -= cMax; };
+    };
+    return flags;
 }

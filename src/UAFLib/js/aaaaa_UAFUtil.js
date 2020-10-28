@@ -2,7 +2,11 @@ function UAFUtil() {
 };
 
 UAFUtil.prototype.ByteFromHexString = function (str) {
-    return parseInt(str, 16);
+    var val = parseInt(str, 16);
+    if ((str.substr(0, 3) == "0x8") > 0) {  /**TODO**: do this hack for two's complement a little better like if (var & 0x800000000 then...) */
+        val = val - 0x100000000;
+    }
+    return val;
 };
 
 UAFUtil.prototype.StringToBase38 = function (str) {

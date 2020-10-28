@@ -12,7 +12,7 @@ function ActorInstanceType() {
 }
 
 function ActorInstanceTypeObj() {
-    entityType.call(this, ActorInstanceType);
+    ActorInstanceType.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }
 

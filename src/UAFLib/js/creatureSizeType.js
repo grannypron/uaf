@@ -1,9 +1,10 @@
-var creatureSizeType = {};
-creatureSizeType.Small = 0;
-creatureSizeType.Medium = 1;
-creatureSizeType.Large = 2;
+var creatureSizeType = function() {
+    this.Small = 0;
+    this.Medium = 1;
+    this.Large = 2;
+}
 
 function creatureSizeTypeObj() {
-    entityType.call(this, creatureSizeType);
+    creatureSizeType.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }

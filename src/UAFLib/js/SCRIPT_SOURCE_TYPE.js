@@ -15,7 +15,7 @@ function SCRIPT_SOURCE_TYPE() {
 }
 
 function SCRIPT_SOURCE_TYPEObj() {
-    entityType.call(this, SCRIPT_SOURCE_TYPE);
+    SCRIPT_SOURCE_TYPE.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }
 

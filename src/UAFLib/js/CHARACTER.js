@@ -1,6 +1,3 @@
-///*** LEFT OFF: THAC0 is returning NaN
-
-
 var MAX_CHARACTERS = INT_MAX; // Max pre-gen NPC's 
 var MAX_CHAR_NAME = 30; // should match MAX_MONSTER_NAME!
 var MAX_AC = 10;
@@ -236,7 +233,7 @@ CHARACTER.prototype.Serialize = function (ar, version) {
 
         var temp;
         temp = ar.readInt();  // Possible character version
-        if ((temp & 0x80000000) != 0) {
+        if ((temp & UAFUtil.ByteFromHexString("0x80000000")) != 0) {
             // This is a character version, not an index.
             this.characterVersion = temp;
         }

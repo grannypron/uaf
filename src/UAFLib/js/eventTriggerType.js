@@ -26,6 +26,6 @@
 };
 
 function eventTriggerTypeObj() {
-    entityType.call(this, chainTriggerType);
+    eventTriggerType.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }

@@ -81,6 +81,7 @@
     <Content Include="js\ABILITY_DATA_TYPE.js" />
     <Content Include="js\BASECLASS_LIST.js" />
     <Content Include="js\CLASS_DATA.js" />
+    <Content Include="js\CPathFinder.js" />
     <Content Include="js\DIFFICULTY_DATA.js" />
     <Content Include="js\DIFFICULTY_LEVEL_DATA.js" />
     <Content Include="js\miscErrorType.js" />
@@ -129,6 +130,7 @@
     <Content Include="js\PATH_MANAGER.js" />
     <Content Include="js\SPELL_DATA_TYPE.js" />
     <Content Include="js\Drawtile.js" />
+    <Content Include="js\TILE_DATA.js" />
     <Content Include="js\TERRAIN_CELL.js" />
     <Content Include="js\TAG_LIST.js" />
     <Content Include="js\ActorType.js" />
@@ -203,6 +205,7 @@
     <Content Include="Tests\TestSimpleCombat.js" />
     <Content Include="Tests\TestGlobalStats.js" />
     <Content Include="Tests\TestStripFilenamePath.js" />
+    <Content Include="Tests\TestPathManager.js" />
     <Content Include="Tests\TestTagList.js" />
     <Content Include="Tests\TestUtilHex.js" />
     <Content Include="Tests\TestCharacterSerialize.js" />

@@ -5,7 +5,7 @@ function EventSourceType() {
 };
 
 function EventSourceTypeObj() {
-    entityType.call(this, EventSourceType);
+    EventSourceType.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }
 

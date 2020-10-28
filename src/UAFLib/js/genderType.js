@@ -1,9 +1,10 @@
-var genderType = {};
-genderType.Male = 0;
-genderType.Female = 1;
-genderType.Bishop = 2;
+var genderType = function() {
+    this.Male = 0;
+    this.Female = 1;
+    this.Bishop = 2;
+}
 
-function genderTypeObj(values) {
-    entityType.call(this, values);
+function genderTypeObj() {
+    genderType.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }

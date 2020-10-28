@@ -106,7 +106,6 @@ cWarrior.m_pCharacter = Warrior;
 //cWarrior.StartAttack(1);
 
 loadLibraryStub();
-
 SPECAB.loadData(specialAbilitiesData, "C:\\Users\\Shadow\\Downloads\\Full_Release_191031\\TutorialDesign.dsn\\Data\\specialAbilities.dat");
 Globals.logDebuggingInfo = true;
 
@@ -127,8 +126,9 @@ globalData.SetMinPCs(2);
 globalData.SetMaxPartySize(2);
 
 party.addTempToParty(Warrior);
-combatEventData.distance = eventDistType.UpClose;
+combatEventData.distance = eventDistType.Nearby;
 combatEventData.m_UseOutdoorMap = false; // only outdoor stub is in place right now
+combatEventData.direction = eventDirType.North;
 combatData.InitCombatData(combatEventData);
 
 var dataStr = "";
@@ -143,6 +143,7 @@ for (i = 0; i < Drawtile.MAX_TERRAIN_HEIGHT; i++) {
     dataStr += "]\n";
 }
 
+Globals.debug(dataStr);
 
 
 //consoleResults.payload = dataStr;

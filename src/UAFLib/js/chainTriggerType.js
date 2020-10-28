@@ -5,6 +5,6 @@
 };
 
 function chainTriggerTypeObj() {
-    entityType.call(this, chainTriggerType);
+    chainTriggerType.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }

@@ -6,6 +6,6 @@ function AURA_ATTACHMENT() {
 }
 
 function AURA_ATTACHMENTObj() {
-    entityType.call(this, AURA_ATTACHMENT);
+    AURA_ATTACHMENT.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }

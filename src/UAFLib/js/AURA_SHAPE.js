@@ -5,6 +5,6 @@ function AURA_SHAPE() {
 }
 
 function AURA_SHAPEObj() {
-    entityType.call(this, AURA_SHAPE);
+    AURA_SHAPE.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }

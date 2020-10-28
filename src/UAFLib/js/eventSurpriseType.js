@@ -6,6 +6,6 @@ function eventSurpriseType() {
 };
 
 function eventSurpriseTypeObj() {
-    entityType.call(this, eventSurpriseType);
+    eventSurpriseType.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }

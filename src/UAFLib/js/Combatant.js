@@ -527,3 +527,11 @@ COMBATANT.prototype.GetAdjHitPoints = function (flags) {
     if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
     return this.m_pCharacter.GetAdjHitPoints(flags);
 };
+
+COMBATANT.prototype.GetMorale = function () {
+    return this.m_pCharacter.GetMorale();
+}
+
+COMBATANT.prototype.SetMorale = function (val) {
+    return this.m_pCharacter.SetMorale(val);
+}

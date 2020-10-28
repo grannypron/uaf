@@ -45,51 +45,51 @@ function eventType() {
    //               RandomEvent
    //
                            // Dlg? Game? ChainIds
-   NoEvent = 0;            //  -     -     -
-   AddNpc = 1;             //  x     x     -
-   Camp = 2;               //  x     x     -
-   ChainEventType = 3;     //  x     x     x
-   Combat = 4;             //  x     x     -
-   CombatTreasure = 5;     //  x     x     - <--- CombatTreasure=GiveTreasure
-   Damage = 6;             //  x     x     -
-   EncounterEvent = 7;     //  x     x     x
-   EnterPassword = 8;      //  x     x     x
-   GainExperience = 9;     //  x     x     -
-   GiveTreasure = 10;      //  x     x     - <--- CombatTreasure=GiveTreasure
-   GuidedTour = 11;        //  x     x     -
-   InnEvent = 12;          //  -     -     - <--- obsoleted = ; WhoPays+CampEvent
-   NPCSays = 13;           //  x     x     -
-   PassTime = 14;          //  x     x     -
-   PickOneCombat = 15;     //  -     -     - <--- obsoleted = ; use option in Combat event
-   QuestStage = 16;        //  x     x     x
-   QuestionButton = 17;    //  x     x     x
-   QuestionList = 18;      //  x     x     x
-   QuestionYesNo = 19;     //  x     x     x
-   RemoveNPCEvent = 20;    //  x     x     - 
-   ShopEvent = 21;         //  x     x     -
-   SmallTown = 22;         //  x     x     x
-   Sounds = 23;            //  x     x     -
-   SpecialItem = 24;       //  x     x     -
-   Stairs = 25;            //  x     x     - <--- Stairs=Teleporter=TransferModule
-   TavernEvent = 26;       //  x     x     x
-   TavernTales = 27;       //  -     -     - <--- obsoleted = ; included in TavernEvent
-   Teleporter = 28;        //  x     x     - <--- Stairs=Teleporter=TransferModule
-   TempleEvent = 29;       //  x     x     x
-   TextStatement = 30;     //  x     x     - 
-   TrainingHallEvent = 31; //  x     x     -
-   TransferModule = 32;    //  x     x     - <--- Stairs=Teleporter=TransferModule
-   Utilities = 33;         //  x     x     -
-   Vault = 34;             //  x     x     -
-   WhoPays = 35;           //  x     x     x
-   WhoTries = 36;          //  x     x     x
-   TakePartyItems = 37;    //  x     x     -
-   HealParty = 38;         //  x     x     -
-   LogicBlock = 39;        //  x     x     x
-   GPDLEvent = 40;         //        x     -
-   RandomEvent = 41;       //  x     x     x
-   PlayMovieEvent = 42;    //  x     x     -
-   JournalEvent = 43;      //  x     x     -
-   FlowControl = 44;       //  x     x     -
+   this.NoEvent = 0;            //  -     -     -
+   this.AddNpc = 1;             //  x     x     -
+   this.Camp = 2;               //  x     x     -
+   this.ChainEventType = 3;     //  x     x     x
+   this.Combat = 4;             //  x     x     -
+   this.CombatTreasure = 5;     //  x     x     - <--- CombatTreasure=GiveTreasure
+   this.Damage = 6;             //  x     x     -
+   this.EncounterEvent = 7;     //  x     x     x
+   this.EnterPassword = 8;      //  x     x     x
+   this.GainExperience = 9;     //  x     x     -
+   this.GiveTreasure = 10;      //  x     x     - <--- CombatTreasure=GiveTreasure
+   this.GuidedTour = 11;        //  x     x     -
+   this.InnEvent = 12;          //  -     -     - <--- obsoleted = ; WhoPays+CampEvent
+   this.NPCSays = 13;           //  x     x     -
+   this.PassTime = 14;          //  x     x     -
+   this.PickOneCombat = 15;     //  -     -     - <--- obsoleted = ; use option in Combat event
+   this.QuestStage = 16;        //  x     x     x
+   this.QuestionButton = 17;    //  x     x     x
+   this.QuestionList = 18;      //  x     x     x
+   this.QuestionYesNo = 19;     //  x     x     x
+   this.RemoveNPCEvent = 20;    //  x     x     - 
+   this.ShopEvent = 21;         //  x     x     -
+   this.SmallTown = 22;         //  x     x     x
+   this.Sounds = 23;            //  x     x     -
+   this.SpecialItem = 24;       //  x     x     -
+   this.Stairs = 25;            //  x     x     - <--- Stairs=Teleporter=TransferModule
+   this.TavernEvent = 26;       //  x     x     x
+   this.TavernTales = 27;       //  -     -     - <--- obsoleted = ; included in TavernEvent
+   this.Teleporter = 28;        //  x     x     - <--- Stairs=Teleporter=TransferModule
+   this.TempleEvent = 29;       //  x     x     x
+   this.TextStatement = 30;     //  x     x     - 
+   this.TrainingHallEvent = 31; //  x     x     -
+   this.TransferModule = 32;    //  x     x     - <--- Stairs=Teleporter=TransferModule
+   this.Utilities = 33;         //  x     x     -
+   this.Vault = 34;             //  x     x     -
+   this.WhoPays = 35;           //  x     x     x
+   this.WhoTries = 36;          //  x     x     x
+   this.TakePartyItems = 37;    //  x     x     -
+   this.HealParty = 38;         //  x     x     -
+   this.LogicBlock = 39;        //  x     x     x
+   this.GPDLEvent = 40;         //        x     -
+   this.RandomEvent = 41;       //  x     x     x
+   this.PlayMovieEvent = 42;    //  x     x     -
+   this.JournalEvent = 43;      //  x     x     -
+   this.FlowControl = 44;       //  x     x     -
 
    // The rest are runtime-generated 'fake' events for control purposes
    // These values are in save files and must not change.
@@ -179,6 +179,6 @@ function eventType() {
 
 
 function eventTypeObj() {
-    entityType.call(this, eventType);
+    eventType.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
 }

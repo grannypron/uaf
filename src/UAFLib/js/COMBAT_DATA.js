@@ -248,7 +248,7 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
             if (!this.m_aCombatants[i].IsPartyMember()) {
                 var hPath;
                 if ((this.m_aCombatants[i].x < 0)
-                    || (hPath = pathMgr.GetPath(this.m_aCombatants[i].x, this.m_aCombatants[i].y,
+                    || (hPath = pathMgr.GetPathIntIntIntInt(this.m_aCombatants[i].x, this.m_aCombatants[i].y,
                         this.m_iPartyStartX, this.m_iPartyStartY,
                         this.m_iPartyStartX, this.m_iPartyStartY,
                         false, null, false)) < 0) {
@@ -299,7 +299,7 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
             else {
                 var pSaveCharPointer;
                 var pSaveCombatantPointer;
-                pSaveCombatantPointer = m_aCombatants[i];
+                pSaveCombatantPointer = this.m_aCombatants[i];
                 pSaveCharPointer = pSaveCombatantPointer.m_pCharacter;
                 if (pSaveCharPointer.m_pCombatant != pSaveCombatantPointer) {
                     Globals.die(0x3334d);
@@ -414,12 +414,12 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
                     actor = this.m_aCombatants[i].GetContextActor();
                     RunTimeIF.SetCharContext(actor);
                     scriptContext.SetCharacterContext(this.m_aCombatants[i].m_pCharacter);
-                    this.m_aCombatants[i].RunCombatantScripts(ON_START_COMBAT,
+                    this.m_aCombatants[i].RunCombatantScripts(SPECAB.ON_START_COMBAT,
                         SPECAB.ScriptCallback_RunAllScripts,
                         null,
                         "Initializing new combat");
                     scriptContext.Clear();
-                    this.ClearCharContext();
+                    RunTimeIF.ClearCharContext();
                 }
                 else {
                     if ((this.m_aCombatants[i].scriptPriority < highPri)
@@ -1090,7 +1090,6 @@ COMBAT_DATA.prototype.determineInitCombatPos = function () {
     //WriteDebugString("DEBUG - Initial Party position = (%d, %d)\n", m_iPartyOriginX, m_iPartyOriginY);
 
 
-
     partyArrangement = partyIndoorCombatArrangement;
     {
         var hookParameters = new HOOK_PARAMETERS();
@@ -1232,17 +1231,30 @@ COMBAT_DATA.prototype.determineInitCombatPos = function () {
             monsterArrangement.turtleY = 0;
             monsterArrangement.distance = -1;
             // 31 July 2014 PRS switch (m_pEvent->distance) 
-            switch (monsterDistance) {
-                case UpClose:
-                    SPECAB.RunGlobalScript("CombatPlacement", "PlaceMonsterClose", true);  // Callback function immediately below.
+            switch (this.monsterDistance) {
+
+                /**TODO: This should actually call the CombatPlacement script once we get GDPL compilation working 
+                 $IF($GET_PARTY_FACING() =#2){$MonsterPlacement("FbPV500E");}
+                    -$ELSE{$MonsterPlacement("bPV500E");};
+                 $IF($GET_PARTY_FACING() =#2){$MonsterPlacement("17FbPV500E");}
+                    -$ELSE{$MonsterPlacement("16FbPV500E");};
+                 $IF($GET_PARTY_FACING() =#2){$MonsterPlacement("10FbPV500E");}
+                   -$ELSE{$MonsterPlacement("9FbPV500E");};
+                 */
+                case eventDistType.UpClose:
+                    this.MonsterPlacementCallback("FbPV500E");
+                    //SPECAB.RunGlobalScript("CombatPlacement", "PlaceMonsterClose", true);  // Callback function immediately below.
                     break;
-                case Nearby:
-                    SPECAB.RunGlobalScript("CombatPlacement", "PlaceMonsterNear", true);  // Callback function immediately below.
+                case eventDistType.Nearby:
+                    this.MonsterPlacementCallback("17FbPV500E");
+                    //SPECAB.RunGlobalScript("CombatPlacement", "PlaceMonsterNear", true);  // Callback function immediately below.
                     break;
-                case FarAway:
-                    SPECAB.RunGlobalScript("CombatPlacement", "PlaceMonsterFar", true);  // Callback function immediately below.
+                case eventDistType.FarAway:
+                    this.MonsterPlacementCallback("10FbPV500E");
+                    //SPECAB.RunGlobalScript("CombatPlacement", "PlaceMonsterFar", true);  // Callback function immediately below.
             };
         };
+
     };
 
     monsterArrangement.deActivate();
@@ -1341,9 +1353,6 @@ COMBAT_DATA.prototype.determineInitCombatPosCombatant = function(pCombatant, i, 
             reset,
             ignoreCurrentCombatant,
             partyArrangement + partyArrangementIndex);
-        //#else
-        //     getNextCharCombatPos(pCombatant, reset, ignoreCurrentCombatant);
-        //#endif
         if (pCombatant.x >= 0) {
             Drawtile.placeCombatant(pCombatant.x,
                 pCombatant.y,
@@ -1404,7 +1413,7 @@ COMBAT_DATA.prototype.getNextCharCombatPos = function(pDude,  pReset, ignoreCurr
         for (; dir < 4; dir++) {
             for (; i < 2 * delta; i++) {
                 if (this.PlaceCharacter(pDude, x, y, ignoreCurrentCombatant)) {
-                    if (OBSTICAL_TYPE.OBSTICAL_none != OBSTICAL_TYPE.ObsticalType(pDude.x, pDude.y, pDude.width, pDude.height, true, ignoreCurrentCombatant, null))
+                    if (OBSTICAL_TYPE.OBSTICAL_none != Drawtile.ObsticalType(pDude.x, pDude.y, pDude.width, pDude.height, true, ignoreCurrentCombatant, null))
                         Globals.WriteDebugString("getNextCharCombatPos() returns a cell containing a wall\n");
                     else
                         Globals.TRACE("Placing char at combat pos " + pDude.x + "," + pDude.y + "\n");
@@ -1422,7 +1431,7 @@ COMBAT_DATA.prototype.getNextCharCombatPos = function(pDude,  pReset, ignoreCurr
         dir = 0;
     };
 
-    if (OBSTICAL_TYPE.OBSTICAL_none != OBSTICAL_TYPE.ObsticalType(pDude.x, pDude.y, pDude.width, pDude.height, true, ignoreCurrentCombatant, null))
+    if (OBSTICAL_TYPE.OBSTICAL_none != Drawtile.ObsticalType(pDude.x, pDude.y, pDude.width, pDude.height, true, ignoreCurrentCombatant, null))
         Globals.WriteDebugString("getNextCharCombatPos() returns a cell containing a wall\n");
     else
         Globals.TRACE("Placing char at combat pos " + pDude.x + "," + pDude.y + "\n");
@@ -1430,7 +1439,7 @@ COMBAT_DATA.prototype.getNextCharCombatPos = function(pDude,  pReset, ignoreCurr
 
 
 COMBAT_DATA.prototype.PlaceCharacter = function(pDude, x, y, ignoreCurrentCombatant) {
-    if (OBSTICAL_TYPE.OBSTICAL_none == OBSTICAL_TYPE.ObsticalType(x, y, pDude.width, pDude.height, true, ignoreCurrentCombatant, null)) {
+    if (OBSTICAL_TYPE.OBSTICAL_none == Drawtile.ObsticalType(x, y, pDude.width, pDude.height, true, ignoreCurrentCombatant, null)) {
         pDude.x = x;
         pDude.y = y;
         return true;
@@ -1456,3 +1465,642 @@ COMBAT_DATA.prototype.GetCombatant = function (dude) {
 COMBAT_DATA.prototype.IsValidDude = function(dude) {
     return (dude >= 0) && (dude < this.NumCombatants());
 }
+
+  
+
+var COMBAT_DATA_currDir = null; // PORT NOTE: originally a static int variable
+
+COMBAT_DATA.prototype.getNextMonsterCombatDirection = function(i, reset) {
+  // monsterPartyX is postion of party as seen by the monsters.
+  // dir is direction of party from first monster.
+
+    if (COMBAT_DATA_currDir == null) { COMBAT_DATA_currDir = eventDirType.Any; }  // PORT NOTE:  Initializing static - could not do it in declaration outside of this method because eventDirType is not defined yet
+    var currDir = COMBAT_DATA_currDir;
+
+    lastDir = eventDirType.getByNumber(0);
+
+    if (reset) {
+        reset = false;
+        currDir = eventDirType.Any;
+    };
+
+    var facing;
+    lastDir = currDir;
+    var obj = this.GetNextDirection(currDir, facing); currDir = obj.pCurrDir;  facing = obj.pFacing;   //PORT NOTE:  Dealing with C++ pass by reference parameters
+
+    var dir = -1;
+
+
+    // calling findEmptyCell() will search for empty cell
+    // in expanding circle.
+    // try to find something in direction away from party first
+    switch (currDir) {
+        case eventDirType.North: dir = 0; monsterArrangement.numMonster[0]++; break;
+        case eventDirType.East: dir = 1; monsterArrangement.numMonster[1]++; break;
+        case eventDirType.South: dir = 2; monsterArrangement.numMonster[2]++; break;
+        case eventDirType.West: dir = 3; monsterArrangement.numMonster[3]++; break;
+        default:
+            Globals.ASSERT(true);
+            dir = PATH_DIR.PathNorth;
+            // PORT NOTE:  Might be a bug in here that monsterArrangement.numMonster[0] needs to go upsomehow
+    };
+    monsterArrangement.monsterPlacement[i].directionFromParty = dir;
+    monsterArrangement.monsterPlacement[i].facing = facing;
+
+}
+
+
+
+COMBAT_DATA.prototype.GetNextDirection = function(pCurrDir, pFacing) {
+    // Get the next direction to place monsters in
+    switch (this.m_pEvent.direction) {
+        case eventDirType.Any:
+            switch (pCurrDir) {
+                case eventDirType.North:
+        pCurrDir = eventDirType.East;
+                    break;
+                case eventDirType.East:
+        pCurrDir = eventDirType.South;
+                    break;
+                case eventDirType.South:
+        pCurrDir = eventDirType.West;
+                    break;
+                case eventDirType.West:
+        pCurrDir = eventDirType.North;
+                    break;
+                default:
+                    switch (party.GetPartyFacing()) {
+                        case PATH_DIR.FACE_NORTH:
+          pCurrDir = eventDirType.North;
+                            break;
+                        case PATH_DIR.FACE_EAST:
+          pCurrDir = eventDirType.East;
+                            break;
+                        case PATH_DIR.FACE_SOUTH:
+          pCurrDir = eventDirType.South;
+                            break;
+                        case PATH_DIR.FACE_WEST:
+          pCurrDir = eventDirType.West;
+                            break;
+                    }
+                    break;
+            }
+            break;
+
+        case eventDirType.InFront:
+            switch (party.GetPartyFacing()) {
+                case PATH_DIR.FACE_NORTH:
+        pCurrDir = eventDirType.North;
+                    break;
+                case PATH_DIR.FACE_EAST:
+        pCurrDir = eventDirType.East;
+                    break;
+                case PATH_DIR.FACE_SOUTH:
+        pCurrDir = eventDirType.South;
+                    break;
+                case PATH_DIR.FACE_WEST:
+        pCurrDir = eventDirType.West;
+                    break;
+            }
+            break;
+
+        case eventDirType.N_W_E:
+            if (pCurrDir == eventDirType.West)
+         pCurrDir = eventDirType.North;
+      else if (pCurrDir == eventDirType.North)
+         pCurrDir = eventDirType.East;
+      else
+         pCurrDir = eventDirType.West;
+            break;
+        case eventDirType.North:
+      pCurrDir = eventDirType.North;
+            break;
+        case eventDirType.W_S_E:
+            if (pCurrDir == eventDirType.East)
+         pCurrDir = eventDirType.South;
+      else if (pCurrDir == eventDirType.South)
+         pCurrDir = eventDirType.West;
+      else
+         pCurrDir = eventDirType.East;
+            break;
+        case eventDirType.South:
+      pCurrDir = eventDirType.South;
+            break;
+        case eventDirType.N_S_E:
+            if (pCurrDir == eventDirType.North)
+         pCurrDir = eventDirType.East;
+      else if (pCurrDir == eventDirType.East)
+         pCurrDir = eventDirType.South;
+      else
+         pCurrDir = eventDirType.North;
+            break;
+        case eventDirType.East:
+      pCurrDir = eventDirType.East;
+            break;
+        case eventDirType.N_S_W:
+            if (pCurrDir == eventDirType.South)
+         pCurrDir = eventDirType.West;
+      else if (pCurrDir == eventDirType.West)
+         pCurrDir = eventDirType.North;
+      else
+         pCurrDir = eventDirType.South;
+            break;
+        case eventDirType.West:
+      pCurrDir = eventDirType.West;
+            break;
+        case eventDirType.N_S:
+            if (pCurrDir == eventDirType.North)
+         pCurrDir = eventDirType.South;
+      else
+         pCurrDir = eventDirType.North;
+            break;
+        case eventDirType.N_E:
+            if (pCurrDir == eventDirType.North)
+         pCurrDir = eventDirType.East;
+      else
+         pCurrDir = eventDirType.North;
+            break;
+        case eventDirType.N_W:
+            if (pCurrDir == eventDirType.West)
+         pCurrDir = eventDirType.North;
+      else
+         pCurrDir = eventDirType.West;
+            break;
+        case eventDirType.S_E:
+            if (pCurrDir == eventDirType.East)
+         pCurrDir = eventDirType.South;
+      else
+         pCurrDir = eventDirType.East;
+            break;
+        case eventDirType.S_W:
+            if (pCurrDir == eventDirType.South)
+         pCurrDir = eventDirType.West;
+      else
+         pCurrDir = eventDirType.South;
+            break;
+        case eventDirType.E_W:
+            if (pCurrDir == eventDirType.East)
+         pCurrDir = eventDirType.West;
+      else
+         pCurrDir = eventDirType.East;
+            break;
+    }
+
+    switch (pCurrDir) {
+        case eventDirType.North:
+     pFacing = PATH_DIR.FACE_WEST;
+            Globals.TRACE("Placing monster NORTH of party\n");
+            break;
+        case eventDirType.East:
+     pFacing = PATH_DIR.FACE_WEST;
+            Globals.TRACE("Placing monster EAST of party\n");
+            break;
+
+        case eventDirType.South:
+     pFacing = PATH_DIR.FACE_EAST;
+            Globals.TRACE("Placing monster SOUTH of party\n");
+            break;
+        case eventDirType.West:
+     pFacing = PATH_DIR.FACE_EAST;
+            Globals.TRACE("Placing monster WEST of party\n");
+            break;
+    }
+
+    // PORT NOTE:  Dealing with C++ pass by reference parameters
+    var returnObj = {};
+    returnObj.pCurrDir = pCurrDir;
+    returnObj.pFacing = pFacing;
+    return returnObj;
+}
+
+
+var COMBAT_DATA_errorMessage = false;
+var COMBAT_DATA_activeMessage = false;
+COMBAT_DATA.prototype.MonsterPlacementCallback = function(turtlecode) {
+    var result = "";
+
+    var errorMessage = COMBAT_DATA_errorMessage;  // PORT NOTE:  Originally a static variable
+    var i = 0, n = 0, repeat = 0;
+    var activeMessage = COMBAT_DATA_activeMessage; // PORT NOTE:  Originally a static variable;
+    if (!monsterArrangement.active) {
+        if (!activeMessage) {
+            activeMessage = true;
+            Globals.WriteDebugString("GPDL function $MonsterPlacement() called other than in response to MonsterPlacement hook\n");
+        };
+        return "0";
+    };
+    n = turtlecode.length;
+    for (i = 0; i < n; i++) {
+        var c = turtlecode.charAt(i);
+        switch (c) {
+            case 'V':
+                monsterArrangement.lineOfSight = true;
+                repeat = 0;
+                break;
+            case 'S':
+                {
+                    if (monsterArrangement.currentMonster < 0) this.FindCurrentMonsterToPlace();
+                    if (monsterArrangement.currentMonster >= 0) {
+                        var pCombatant;
+                        pCombatant = combatData.GetCombatant(monsterArrangement.currentMonster);
+                        monsterArrangement.turtleWidth = pCombatant.width;
+                        monsterArrangement.turtleHeight = pCombatant.height;
+                    };
+                };
+                repeat = 0;
+                break;
+            case '?':
+                {
+                    var ot = new OBSTICAL_TYPE();
+                    if (monsterArrangement.currentMonster < 0) this.FindCurrentMonsterToPlace();
+                    if (monsterArrangement.currentMonster < 0) {
+                        result += '0';
+                    }
+                    else {
+                        var oc;
+                        ot = ObsticalType(monsterArrangement.turtleX + monsterArrangement.partyX,
+                            monsterArrangement.turtleY + monsterArrangement.partyY,
+                            monsterArrangement.turtleWidth,
+                            monsterArrangement.turtleHeight,
+                            TRUE,
+                            TRUE,
+                            null);
+                        switch (ot) {
+                            case OBSTACLE_TYPE.OBSTICAL_wall: oc = 'w'; break;
+                            case OBSTACLE_TYPE.OBSTICAL_lingeringSpell: oc = 's'; break;
+                            case OBSTACLE_TYPE.OBSTICAL_occupied: oc = 'o'; break;
+                            case OBSTACLE_TYPE.OBSTICAL_offMap: oc = 'i'; break;
+                            default: oc = 'n'; break;
+                        };
+                        result += oc;
+                    };
+                };
+                repeat = 0;
+                break;
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                repeat = 10 * repeat + c - '0';
+                break;
+            case 'L':
+            case 'F':
+            case 'R':
+            case 'B':
+                if (repeat == 0) repeat = 1;
+                monsterArrangement.turtleX += repeat * monsterArrangement.dx[c - 'A'];
+                monsterArrangement.turtleY += repeat * monsterArrangement.dy[c - 'A'];
+                repeat = 0;
+                break;
+            case 'P':
+                {
+                    // Is there an unplaced monster in this direction?
+                    var m;
+                    m = monsterArrangement.currentMonster;
+                    if (m < 0) this.FindCurrentMonsterToPlace();
+                    m = monsterArrangement.currentMonster;
+                    if (m < 0) {
+                        result += '0';
+                    }
+                    else {
+                        this.PlantCombatant(monsterArrangement.turtleX, monsterArrangement.turtleY);
+                    };
+                };
+                repeat = 0;
+                break;
+            case 'b':
+                {
+                    switch (monsterArrangement.curDirFromParty) {
+                        case 0: // North
+                            monsterArrangement.limitMaxY = monsterArrangement.turtleY;
+                            break;
+                        case 1: // East
+                            monsterArrangement.limitMinX = monsterArrangement.turtleX - monsterArrangement.turtleY;
+                            break;
+                        case 2: // South
+                            monsterArrangement.limitMinY = monsterArrangement.turtleY;
+                            break;
+                        case 3: // West
+                            monsterArrangement.limitMaxX = monsterArrangement.turtleX - monsterArrangement.turtleY;
+                            break;
+                    };
+                };
+                repeat = 0;
+                break;
+            case 'f':
+                {
+                    switch (monsterArrangement.curDirFromParty) {
+                        case 0: // North
+                            monsterArrangement.limitMinY = monsterArrangement.turtleY;
+                            break;
+                        case 1: // East
+                            monsterArrangement.limitMaxX = monsterArrangement.turtleX - monsterArrangement.turtleY;
+                            break;
+                        case 2: // South
+                            monsterArrangement.limitMaxY = monsterArrangement.turtleY;
+                            break;
+                        case 3: // West
+                            monsterArrangement.limitMinX = monsterArrangement.turtleX - monsterArrangement.turtleY;
+                            break;
+                    };
+                };
+                repeat = 0;
+                break;
+            case 'l':  // 
+                {
+                    switch (monsterArrangement.curDirFromParty) {
+                        case 0: // North
+                            monsterArrangement.limitMinX = monsterArrangement.turtleX - monsterArrangement.turtleY;
+                            break;
+                        case 1: // East
+                            monsterArrangement.limitMinY = monsterArrangement.turtleY;
+                            break;
+                        case 2: // South
+                            monsterArrangement.limitMaxX = monsterArrangement.turtleX - monsterArrangement.turtleY;
+                            break;
+                        case 3: // West
+                            monsterArrangement.limitMaxY = monsterArrangement.turtleY;
+                            break;
+                    };
+                };
+                repeat = 0;
+                break;
+            case 'r':
+                {
+                    switch (monsterArrangement.curDirFromParty) {
+                        case 0: // North
+                            monsterArrangement.limitMaxX = monsterArrangement.turtleX - monsterArrangement.turtleY;
+                            break;
+                        case 1: // East
+                            monsterArrangement.limitMaxY = monsterArrangement.turtleY;
+                            break;
+                        case 2: // South
+                            monsterArrangement.limitMinX = monsterArrangement.turtleX - monsterArrangement.turtleY;
+                            break;
+                        case 3: // West
+                            monsterArrangement.limitMinY = monsterArrangement.turtleY;
+                            break;
+                    };
+                };
+                repeat = 0;
+                break;
+            case 'd':
+                {
+                    var j = 0, dx = 0, dy = 0, d2 = 0;
+                    monsterArrangement.distance = UAFUtil.ByteFromHexString("0x7fffffff");
+                    for (j = 0; j < monsterArrangement.numParty; j++) {
+                        dx = monsterArrangement.turtleX - monsterArrangement.partyPositions[j].x;
+                        dy = monsterArrangement.turtleY - monsterArrangement.partyPositions[j].x;
+                        d2 = dx * dx + dy * dy;
+                        if (d2 < monsterArrangement.distance) {
+                            monsterArrangement.distance = d2;
+                        };
+                    };
+                };
+                repeat = 0;
+                break;
+            case 'E':
+                {
+                    var radius = 0, maxRadius = 0;
+                    var cellsAttempted;
+                    var cellAttIndx = 0, maxCells = 0;
+                    maxRadius = Drawtile.MAX_TERRAIN_WIDTH;
+                    if (maxRadius > Drawtile.MAX_TERRAIN_HEIGHT) maxRadius = Drawtile.MAX_TERRAIN_HEIGHT;
+                    maxRadius = maxRadius / 4;
+                    maxCells = (2 * maxRadius + 1) * (2 * maxRadius + 1);
+                    cellsAttempted = [maxCells];
+                    cellAttIndx = 2 * maxRadius * (maxRadius + 1);
+                    if (cellsAttempted == null) {
+                        Globals.die(0x439805);
+                    };
+                    for (var idx = 0; idx < maxCells; idx++) { cellsAttempted[idx] = 0; } // PORT NOTE: takes the place of memset(cellsAttempted,0,maxCells);
+                    this.FindCurrentMonsterToPlace();
+                    if (repeat == 0) repeat = 1;
+                    if (monsterArrangement.currentMonster >= 0) {
+                        for (radius = 0;
+                            radius <= maxRadius;
+                            cellAttIndx -= (2 * radius + 2) * (2 * maxRadius + 1) + 1, radius++)  // Gotta impose some limit!
+                        {
+                            cellAttIndx = Math.floor(cellAttIndx); // PORT NOTE:  C++ just cast to an int, floor works as JS equivalent as long as we stay on positive integers
+                            var x = 0, y = 0, left = 0, right = 0, top = 0, bottom = 0;
+                            left = monsterArrangement.turtleX - radius;
+                            right = monsterArrangement.turtleX + radius;
+                            top = monsterArrangement.turtleY - radius;
+                            bottom = monsterArrangement.turtleY + radius;
+                            for (x = left; x <= right; x++, cellAttIndx += 2 * (maxRadius - radius)) {
+                                for (y = top; y <= bottom; y++, cellAttIndx++) {
+                                    var dx = 0, dy = 0;
+                                    if (monsterArrangement.currentMonster < 0) break;
+                                    if (repeat <= 0) break;
+                                    dx = x - monsterArrangement.turtleX;
+                                    dy = y - monsterArrangement.turtleY;
+                                    if (dx * dx + dy * dy > radius * radius) continue;
+                                    if (cellsAttempted[cellAttIndx] != 0) continue;
+                                    cellsAttempted[cellAttIndx] = 1;
+                                    if (this.PlantCombatant(x, y)) {
+                                        repeat--;
+                                        this.FindCurrentMonsterToPlace(); // See if there is another.
+                                    };
+                                };
+                            };
+                        };
+                    };
+                    delete cellsAttempted;
+                };
+                repeat = 0;
+                break;
+            case 'w':
+                switch (monsterArrangement.curDirFromParty) {
+                    case 0:
+                        MoveTurtleY(monsterArrangement.partyMinY); break;
+                        break;
+                    case 1:
+                        MoveTurtleX(monsterArrangement.partyMaxX); break;
+                        break;
+                    case 2:
+                        MoveTurtleY(monsterArrangement.partyMaxY); break;
+                        break;
+                    case 3:
+                        MoveTurtleX(monsterArrangement.partyMinX); break;
+                        break;
+                }
+                break;
+            case 'n':
+                switch (monsterArrangement.curDirFromParty) {
+                    case 0:
+                        MoveTurtleX(monsterArrangement.partyMaxY); break;
+                        break;
+                    case 1:
+                        MoveTurtleX(monsterArrangement.partyMinX); break;
+                        break;
+                    case 2:
+                        MoveTurtleY(monsterArrangement.partyMinY); break;
+                        break;
+                    case 3:
+                        MoveTurtleX(monsterArrangement.partyMaxX); break;
+                        break;
+                }
+                break;
+            case 'p':
+                switch (monsterArrangement.curDirFromParty) {
+                    case 0:
+                        MoveTurtleX(monsterArrangement.partyMinX); break;
+                        break;
+                    case 1:
+                        MoveTurtleY(monsterArrangement.partyMinY); break;
+                        break;
+                    case 2:
+                        MoveTurtleX(monsterArrangement.partyMaxX); break;
+                        break;
+                    case 3:
+                        MoveTurtleY(monsterArrangement.partyMaxY); break;
+                        break;
+                }
+                break;
+            case 's':
+                switch (monsterArrangement.curDirFromParty) {
+                    case 0:
+                        MoveTurtleX(monsterArrangement.partyMaxX); break;
+                        break;
+                    case 1:
+                        MoveTurtleY(monsterArrangement.partyMaxY); break;
+                        break;
+                    case 2:
+                        MoveTurtleX(monsterArrangement.partyMinX); break;
+                        break;
+                    case 3:
+                        MoveTurtleY(monsterArrangement.partyMinY); break;
+                        break;
+                }
+                break;
+            case 'u':
+                monsterArrangement.turtleStack[3] = monsterArrangement.turtleStack[1];
+                monsterArrangement.turtleStack[2] = monsterArrangement.turtleStack[0];
+                monsterArrangement.turtleStack[0] = monsterArrangement.turtleX;
+                monsterArrangement.turtleStack[1] = monsterArrangement.turtleY;
+                break;
+            case 'o':
+                monsterArrangement.turtleX = monsterArrangement.turtleStack[0];
+                monsterArrangement.turtleY = monsterArrangement.turtleStack[1];
+                monsterArrangement.turtleStack[0] = monsterArrangement.turtleStack[2];
+                monsterArrangement.turtleStack[1] = monsterArrangement.turtleStack[3];
+                monsterArrangement.turtleStack[3] = 0;
+                monsterArrangement.turtleStack[2] = 0;
+                break;
+            default:
+                if (!errorMessage) {
+                    WriteDebugString("Illegal command byte in $MonsterPlacement() code = %s\n", turtlecode);
+                    errorMessage = true;
+                };
+                result += 'e';
+                repeat = 0;
+                break;
+        };
+    };
+
+    return result;
+
+}
+
+COMBAT_DATA.prototype.FindCurrentMonsterToPlace = function () {
+    var i = 0, n = 0;
+    n = combatData.NumCombatants();
+    monsterArrangement.turtleWidth = 1;
+    monsterArrangement.turtleHeight = 1;
+    for (i = 0; i < n; i++) {
+        if ((monsterArrangement.monsterPlacement[i].directionFromParty == monsterArrangement.curDirFromParty)
+            && (monsterArrangement.monsterPlacement[i].placeX < 0)) {
+            monsterArrangement.currentMonster = i;
+            return;
+        };
+    };
+    monsterArrangement.currentMonster = -1;
+}
+
+COMBAT_DATA.prototype.PlantCombatant = function(partyRelativeX, partyRelativeY) {
+    var n;
+    var pCombatant;
+    n = monsterArrangement.currentMonster;
+    pCombatant = combatData.GetCombatant(n);
+
+    if (!this.CanPlaceMonsterHere(partyRelativeX + monsterArrangement.partyX,
+        partyRelativeY + monsterArrangement.partyY,
+        pCombatant.width,
+        pCombatant.height)) {
+        return false;
+    };
+
+    //Globals.debug("PlantCombatant1:" + partyRelativeX + " / " + partyRelativeY);
+    //Globals.debug("PlantCombatant2:" + monsterArrangement.limitMinX);
+    if (partyRelativeX - partyRelativeY < monsterArrangement.limitMinX) return false;
+    if (partyRelativeX - partyRelativeY > monsterArrangement.limitMaxX) return false;
+    //Globals.debug("PlantCombatant3:" + partyRelativeX + " / " + partyRelativeY);
+    if (partyRelativeY < monsterArrangement.limitMinY) return false;
+    if (partyRelativeY > monsterArrangement.limitMaxY) return false;
+    if (monsterArrangement.distance >= 0) {
+        var i = 0, dx = 0, dy = 0;
+        for (i = 0; i < monsterArrangement.numParty; i++) {
+            dx = partyRelativeX - monsterArrangement.partyPositions[i].x;
+            dy = partyRelativeY - monsterArrangement.partyPositions[i].y;
+            if (dx * dx + dy * dy < monsterArrangement.distance) {
+                return false;
+            };
+        };
+    };
+    if (monsterArrangement.lineOfSight) {
+        if (!this.WithinSight(partyRelativeX, partyRelativeY)) {
+            return false;
+        };
+    };
+    pCombatant.x = partyRelativeX + monsterArrangement.partyX;
+    pCombatant.y = partyRelativeY + monsterArrangement.partyY;
+    Drawtile.placeCombatant(partyRelativeX + monsterArrangement.partyX,
+        partyRelativeY + monsterArrangement.partyY,
+        n,
+        pCombatant.width,
+        pCombatant.height);
+    monsterArrangement.monsterPlacement[n].placeX = partyRelativeX + monsterArrangement.partyX;
+    monsterArrangement.monsterPlacement[n].placeY = partyRelativeY + monsterArrangement.partyY;
+    monsterArrangement.currentMonster = -1;
+    return true;
+}
+
+COMBAT_DATA.prototype.CanPlaceMonsterHere = function(x, y, w, h)
+    // See 'findEmptyCell' for the source of this algorithm
+{
+    if (OBSTICAL_TYPE.OBSTICAL_none != Drawtile.ObsticalType(x, y, w, h, true, true, null)) {
+        return false;
+    };
+    return true;  // For now......no additional checks for distance, etc.
+}
+
+
+COMBAT_DATA.prototype.WithinSight = function(partyRelativeX, partyRelativeY)
+{
+    //Is the turtle within sight of any party member or previously placed monster?
+    var tx = 0, ty = 0;  //Turtle position.  Save some typing.
+    var i = 0, n = 0;
+    tx = monsterArrangement.partyX + partyRelativeX;
+    ty = monsterArrangement.partyY + partyRelativeY;
+    n = combatData.NumCombatants();
+    for (i = 0; i < n; i++) {
+        var pMP;
+        pMP = monsterArrangement.monsterPlacement[i];
+        if (pMP.placeX > 0) {
+            if (Drawtile.IsLineOfSight(tx,
+                ty,
+                pMP.placeX,
+                pMP.placeY)) {
+                return true;
+            };
+        };
+    };
+    return false;
+}
+

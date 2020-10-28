@@ -25,7 +25,7 @@ PATH_MANAGER.prototype.Clear = function() {
     this.pathHeight = 1;
     this.OccupantsBlock = true;
     for (var i = 0; i < this.MaxPaths; i++)
-        this.Path[i] = null;
+        this.Path[i] = new CPathFinder();
     this.Tags.Clear();
     this.CurrPath = 0;
     this.StartX = 0;
@@ -39,6 +39,139 @@ PATH_MANAGER.prototype.Clear = function() {
 PATH_MANAGER.prototype.SetPathSize = function (w, h) {
     this.pathWidth = w;
     this.pathHeight = h;
+}
+
+PATH_MANAGER.prototype.GetPathIntIntIntInt = function(startx, starty, destLeft, destTop, destRight, destBottom, occupantsBlock, pCombatantLinger,
+    moveOriginPoint)     // 'moveOriginPoint' means that the point (startX,startY)
+// must be moved into the destinatiomn rectangle.
+// Otherwise, any part of the path rectangle being moved into
+// destination rectangle will suffice. 
+{
+    var OccupantsBlock = occupantsBlock;
+
+    if ((!moveOriginPoint &&
+        ((startx + this.pathWidth - 1 < destLeft)
+        || (starty + this.pathHeight - 1 < destTop)
+            || (startx > destRight)
+            || (starty > destBottom)
+        )
+    )
+        ||
+        (moveOriginPoint &&
+            ((startx < destLeft)
+                || (starty < destTop)
+                || (startx > destRight)
+                || (starty > destBottom)
+            )
+        )
+    ) {
+        this.StartX = startx;
+        this.StartY = starty;
+        this.DestLeft = destLeft;
+        this.DestTop = destTop;
+        this.DestRight = destRight;
+        this.DestBottom = destBottom;
+
+        if (this.FindPath(pCombatantLinger, moveOriginPoint)) {
+            return this.CurrPath;
+        }
+        else {
+            return 1;
+            //**TODO*** Stub to make sure I get things on the battlefield
+            //return -1;
+        }
+    }
+    else {
+        return -1;// we are already there
+    };
+}
+
+
+PATH_MANAGER.prototype.FindPath = function(pCombatantLinger, moveOriginPoint) {
+    this.CurrPath = this.GetAvailablePath();
+    if (this.CurrPath == -1) return false;
+    this.Path[this.CurrPath].Clear();
+
+    this.Path[this.CurrPath].SetData(null);
+    this.Path[this.CurrPath].SetValid(this.GetValid());
+    this.Path[this.CurrPath].SetCost(this.GetCost());
+    this.Path[this.CurrPath].SetSize(Drawtile.MAX_TERRAIN_WIDTH, Drawtile.MAX_TERRAIN_HEIGHT);
+
+
+    var Found = false;
+    /** TODO** - Stub 
+    var Found = this.Path[this.CurrPath].GeneratePath(this.StartX, this.StartY, this.pathWidth, this.pathHeight,
+        this.DestLeft, this.DestTop,
+        this.DestRight, this.DestBottom,
+        pCombatantLinger,
+        moveOriginPoint);
+        **/
+
+    if (!Found) {
+        this.Tags.Clear(this.CurrPath);
+        this.Path[this.CurrPath].Clear();
+    }
+    else
+        this.Tags.Set(this.CurrPath);
+
+    return Found;
+}
+
+PATH_MANAGER.prototype.GetAvailablePath = function()
+{
+    var val = this.Tags.FindOpenTag();
+    if (val > -1) return val;
+
+    for (var i = 0; i < this.MaxPaths; i++)
+    {
+        if (!this.Path[i].InUse()) {
+            this.Tags.Clear(i);
+            return i;
+        }
+    }
+    return -1;
+}
+
+
+PATH_MANAGER.prototype.GetValid = function(x, y, ud, pCombatantLinger) {
+    //**TODO** Stub
+    return true;
+
+    var checkIfOccupied = pathMgr.GetOccBlock();
+
+    if (!this.ValidCoords(y, x))
+        return false;
+
+    /* ****************************** *****************************
+     * This made no sense to me.  Perhaps it was meant to not check blocking
+     * at the destination itself.  But this code seems incomplete and backward!
+     *
+     *
+     * if ((x < pathMgr.DestLeft) || (y < pathMgr.DestTop))
+     * { 
+     *   checkIfOccupied = FALSE;
+     * }
+     * *******************************************************************
+     */
+    var valid = (OBSTICAL_TYPE.OBSTICAL_none == Drawtile.ObsticalType(x, y,
+        pathMgr.GetPathWidth(), pathMgr.GetPathHeight(),
+        checkIfOccupied,
+        true,
+        pCombatantLinger));
+    return valid;
+}
+
+PATH_MANAGER.prototype.GetCost = function(sx, sy, dx, dy, ud) {
+    return 1;//GetDist(GetDir(sx, sy, dx, dy));
+    /**TODO** Stub above
+    var d2;
+    d2 = (sx - dx) * (sx - dx) + (sy - dy) * (sy - dy);
+    return 5 * d2 + 5; */
+}
+
+
+PATH_MANAGER.prototype.FreePath = function (which) {
+    /**TODO** - Stub */
 }
 
 /**TODO
@@ -75,16 +208,9 @@ void Clear();
  *               BOOL occupantsBlock,
  *               COMBATANT *pCombatantLinger);
  *
-int  GetPath(int startx, int starty,
-    int destLeft, int destTop,
-    int destRight, int destBottom,
-    BOOL occupantsBlock,
-    COMBATANT * pCombatantLinger,
-    BOOL moveOriginPoint);
 
 
 
-void FreePath(int which);
 
 CPathFinder * GetPath(int which);  
 
