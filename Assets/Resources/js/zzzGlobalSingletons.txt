@@ -39,7 +39,6 @@ var Drawtile = new Drawtile();
 var SoundMgr = new SoundMgrObj();
 var party = new PARTY();
 var GameRules = new GameRules();
-
 var combatSummary = new COMBAT_SUMMARY();
 var PATH_DIR = new PATH_DIRObj();
 var monsterArrangement = new MonsterArrangement();
