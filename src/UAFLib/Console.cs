@@ -17,9 +17,6 @@ namespace UAFLib
         public void helloWorld()
         {
 
-            Engine engine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly));
-            LoadFilesFromGitHub("https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/UAFLib.csproj", engine);
-
             try
             {
                 //**TODO: go back through the C++ source and find all instances of "delete" and re-insert them back with calls to a MemoryManager() class.  Apparently jint responds to delete statements, although all engines might not
@@ -54,7 +51,7 @@ namespace UAFLib
             Engine engine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly));
             if (mJSUrls != null)
             {
-                LibraryInfo lib = LoadFiles(this.mJSUrls, engine);
+                LibraryInfo lib = LoadFilesFromGitHub(this.mJSUrls, engine);
             } else {
                 LibraryInfo lib = LoadFiles(this.mJSPath, engine);
             }
@@ -89,22 +86,33 @@ namespace UAFLib
         {
 
             XmlDocument doc = new XmlDocument();
-            doc.Load(mJSUrls);
+            WebRequest.DefaultCachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.Revalidate);
+            doc.Load(mJSUrls + "?x=123");
             XmlNodeList nodes = doc.SelectNodes("//node()[local-name() = 'ItemGroup']/node()[local-name() = 'Content']/@Include");
             LibraryInfo lib = new LibraryInfo();
+            List<String> ghUrls = new List<string>();
+            // Save in list to alphabetize
             foreach (XmlNode node in nodes)
             {
                 if (node.InnerText != null && node.InnerText.StartsWith("js\\")) {
                     string ghUrl = "https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/" + node.InnerText.Replace("\\", "/");
-                    using (var client = new WebClient())
-                    {
-                        String fileContents = client.DownloadString(ghUrl);
-                        int lineCount = fileContents.Split('\n').Length;
-                        engine.Execute(fileContents);
-                        lib.Add(new LibraryFile(ghUrl, lineCount));
-                    }
+                        ghUrls.Add(ghUrl);
                 }
             }
+
+            ghUrls.Sort();
+            using (var client = new WebClient())
+            {
+                foreach (string ghUrl in ghUrls)
+                {
+                    String fileContents = client.DownloadString(ghUrl);
+                    int lineCount = fileContents.Split('\n').Length;
+                    engine.Execute(fileContents);
+                    lib.Add(new LibraryFile(ghUrl, lineCount));
+                }
+            }
+
+
             return lib;
         }
     }
