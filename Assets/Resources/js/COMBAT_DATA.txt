@@ -803,7 +803,7 @@ COMBAT_DATA.prototype.AddMonstersToCombatants = function () {
             count = Globals.RollDice(this.m_pEvent.monsters.monsters[result].qtyDiceSides,
                 this.m_pEvent.monsters.monsters[result].qtyDiceQty,
                 this.m_pEvent.monsters.monsters[result].qtyBonus);
-            GlobalsWriteDebugString("Random quantity of combat monster: " + count + "\n");
+            Globals.WriteDebugString("Random quantity of combat monster: " + count + "\n");
         }
 
         var mod = Globals.GetMonsterQtyMod();
@@ -814,7 +814,7 @@ COMBAT_DATA.prototype.AddMonstersToCombatants = function () {
         {
             temp.Clear();                                                                        
             temp.self = this.m_iNumCombatants; // init relies on self index                           
-            m_aCombatants.SetAt(this.m_iNumCombatants, temp);                                         
+            this.m_aCombatants[this.m_iNumCombatants] = temp;                                         
             pCombatant = this.m_aCombatants[this.m_iNumCombatants];
             this.m_iNumCombatants++;                                                                  
             

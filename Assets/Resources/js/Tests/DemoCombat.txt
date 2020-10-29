@@ -123,10 +123,18 @@ var combatEventData = new COMBAT_EVENT_DATA();
 combatEventData.monsters = new MONSTER_EVENT_DATA();
 var monsterEvent = new MONSTER_EVENT();
 monsterEvent.UseQty = MONSTER_EVENT.meUseQty;
+monsterEvent.UseQty = MONSTER_EVENT.meUsePercent;
+monsterEvent.qtyDiceSides = 10;
+monsterEvent.qtyDiceQty = 1;
+monsterEvent.qtyBonus = 2;
+monsterEvent.qty = 10;
 monsterEvent.qty = 3;
 monsterEvent.monsterID = "Kobold";
 monsterEvent.m_type = MONSTER_TYPE;
+combatEventData.distance = eventDistType.Nearby;
 combatEventData.monsters.Add(monsterEvent);
+//combatEventData.randomMonster = true;   // This seems to cause an NPE at Line 306 of COMBAT_DATA - "pSaveCharPointer is null"
+combatEventData.UseQty = MONSTER_EVENT.meUsePercent;
 
 var combatData = new COMBAT_DATA();    // This is pretty much the combat "map" and all data on it
 party.Posx = 10;

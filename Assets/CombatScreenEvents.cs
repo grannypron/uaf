@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UAFLib;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -67,7 +68,7 @@ public class CombatScreenEvents : MonoBehaviour
                     placePlayer(translatedCoords[0], translatedCoords[1]);
                 } else if (cellValue > 0)
                 {
-                    placeMonster(translatedCoords[0], translatedCoords[1], "monster" + cellValue, "Kobold");
+                    placeMonster(translatedCoords[0], translatedCoords[1], "monster" + cellValue, RandoMonsterID());
                 }
             }
         }
@@ -101,6 +102,18 @@ public class CombatScreenEvents : MonoBehaviour
     void Update()
     {
 
+    }
+
+    string RandoMonsterID()
+    {
+        string[] monsters = getMonsters();
+        return monsters[UnityEngine.Random.Range(0, monsters.Length)];
+    }
+
+    string[] getMonsters()
+    {
+        return new string[] { "FireGiant", "GnomeWarrior", "Kobold", "Lich", "Mummy", "Myconid", "PC_ThiefMale", "PurpleWorm" };
+        //"CopperDragon", "GiantCrocodile", 
     }
 
     string getJSFile(string path)
@@ -240,7 +253,7 @@ public class CombatScreenEvents : MonoBehaviour
     void loadJSFile(Engine engine, string path)
             {
                 try {
-                    Debug.Log("8Loading " + path);
+                    Debug.Log("Loading " + path);
                     //Get-ChildItem *.js | Rename-Item -NewName { $_.name -Replace '\.js$', '.txt' }
                     TextAsset textAsset = Resources.Load<TextAsset>(path);
                     engine.Execute(textAsset.text);
