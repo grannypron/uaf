@@ -17,10 +17,10 @@ public class CombatScreenEvents : MonoBehaviour
         Tilemap terrainTilemap = GameObject.Find("TerrainTilemap").GetComponent<Tilemap>();
         Tilemap monsterTilemap = GameObject.Find("MonsterTilemap").GetComponent<Tilemap>();
         Tile groundTile = (Tile)terrainTilemap.GetTile(new Vector3Int(-30, 11, 0));
-
+        
         UAFLib.Console console = new UAFLib.Console();
-        console.mJSPath = @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\js";
-        UAFLib.ConsoleResults results = console.runTest(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\Tests\TestSimpleCombat.js");
+        console.mJSUrls = "https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/UAFLib.csproj";
+        UAFLib.ConsoleResults results = console.runTestFromUrl("https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/Tests/TestSimpleCombat.js");
         object[] mapData = (object[])results.payload;
 
         int combatMinX = -25;

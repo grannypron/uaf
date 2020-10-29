@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ClickNext : MonoBehaviour
 {
@@ -15,9 +16,7 @@ public class ClickNext : MonoBehaviour
     {
         if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1) || Input.GetMouseButtonUp(2))
         {
-            GameObject.Find("Title").SetActive(false);
-            GameObject.Find("MenuScreenFrame").SetActive(true);
-            Cursor.SetCursor((Texture2D)Resources.Load("cursor_Sword.png"), Vector2.zero, CursorMode.Auto);
+            SceneManager.LoadScene("CombatScene");
         }
     }
 }
