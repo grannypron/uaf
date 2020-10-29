@@ -2,30 +2,23 @@
 using Jint.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Net;
+using System.Xml;
 
 namespace UAFLib
 {
     public class Console
     {
         public string mJSPath = @"..\..\..\UAFLib\js\";
-        
+        public string mJSUrls = "https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/UAFLib.csproj";//null;
+
         public void helloWorld()
         {
 
-            /*
-            unsafe
-            {
-                fixed (char* p = @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\specialAbilities.dat")
-                {
-                    CARWrapper cFileWrapper = new CARWrapper(p, 13);   // 12 for the string header and one for the compression type (which is 02)
-                    int i = cFileWrapper.decompressInt(4);
-                    sbyte* s = cFileWrapper.decompressString();
-                    System.Console.WriteLine(i);
-                }
-            }
-            //c.decompress
-            */
+            Engine engine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly));
+            LoadFilesFromGitHub("https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/UAFLib.csproj", engine);
 
             try
             {
@@ -59,7 +52,13 @@ namespace UAFLib
         {
             ConsoleResults results = new ConsoleResults();
             Engine engine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly));
-            LibraryInfo lib = LoadFiles(this.mJSPath, engine);
+            if (mJSUrls != null)
+            {
+                LibraryInfo lib = LoadFiles(this.mJSUrls, engine);
+            } else {
+                LibraryInfo lib = LoadFiles(this.mJSPath, engine);
+            }
+
             engine.SetValue("consoleResults", results).Execute(LoadFileFromString(path));
             return results;
         }
@@ -86,5 +85,27 @@ namespace UAFLib
             return lib;
         }
 
+        private LibraryInfo LoadFilesFromGitHub(string url, Engine engine)
+        {
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(mJSUrls);
+            XmlNodeList nodes = doc.SelectNodes("//node()[local-name() = 'ItemGroup']/node()[local-name() = 'Content']/@Include");
+            LibraryInfo lib = new LibraryInfo();
+            foreach (XmlNode node in nodes)
+            {
+                if (node.InnerText != null && node.InnerText.StartsWith("js\\")) {
+                    string ghUrl = "https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/" + node.InnerText.Replace("\\", "/");
+                    using (var client = new WebClient())
+                    {
+                        String fileContents = client.DownloadString(ghUrl);
+                        int lineCount = fileContents.Split('\n').Length;
+                        engine.Execute(fileContents);
+                        lib.Add(new LibraryFile(ghUrl, lineCount));
+                    }
+                }
+            }
+            return lib;
+        }
     }
 }

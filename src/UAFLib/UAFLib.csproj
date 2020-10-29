@@ -149,7 +149,7 @@
     <Content Include="js\eventDistType.js" />
     <Content Include="js\LASTACTION.js" />
     <Content Include="js\individualCombatantState.js" />
-    <Content Include="js\COMBATANT.js" />
+    <Content Include="js\Combatant.js" />
     <Content Include="js\ASLENTRY.js" />
     <Content Include="js\A_CStringPAIR_L.js" />
     <Content Include="js\COIN_TYPE.js" />
