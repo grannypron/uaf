@@ -12,7 +12,7 @@ namespace UAFLib
     public class Console
     {
         public string mJSPath = @"..\..\..\UAFLib\js\";
-        public string mJSUrls = "https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/UAFLib.csproj";//null;
+        public string mJSUrls = null;//"https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/UAFLib.csproj";//null;
 
         public void helloWorld()
         {
@@ -47,6 +47,19 @@ namespace UAFLib
 
         public ConsoleResults runTest(string path)
         {
+            return runTestFromString(LoadFileFromString(path));
+        }
+
+        public ConsoleResults runTestFromUrl(string url)
+        {
+            using (var client = new WebClient())
+            {
+                return runTestFromString(client.DownloadString(url));
+            }
+        }
+
+        public ConsoleResults runTestFromString(string testStr)
+        {
             ConsoleResults results = new ConsoleResults();
             Engine engine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly));
             if (mJSUrls != null)
@@ -56,7 +69,7 @@ namespace UAFLib
                 LibraryInfo lib = LoadFiles(this.mJSPath, engine);
             }
 
-            engine.SetValue("consoleResults", results).Execute(LoadFileFromString(path));
+            engine.SetValue("consoleResults", results).Execute(testStr);
             return results;
         }
 
