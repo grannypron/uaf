@@ -394,6 +394,7 @@
 #define IDC_SEEMONSTER                  1140
 #define IDC_SELECTCOMBATHBORDER         1140
 #define IDC_SELECTCOMBATVBORDER         1141
+#define IDC_SELECTCHARFRAME             1142
 #define IDC_DIRECTION                   1143
 #define IDC_SURPRISE                    1144
 #define IDC_ScrollPicture               1144

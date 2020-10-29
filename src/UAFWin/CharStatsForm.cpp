@@ -2056,7 +2056,7 @@ int handleChooseStatsInput(CHAR_STATS_INPUT_MESSAGE_TYPE msg,
   {
     GraphicsMgr.ClearAdventureBackground(BACKBUFFERNUM);   
     drawBorder();
-    drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset);
+    drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset, &FrameVPArt);
     StatsForm.Display(0);
   };
   return result|(flip?1:0);

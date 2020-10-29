@@ -3470,6 +3470,7 @@ void clearDesign(BOOL FillDefaults)
    CombatDeathIconArt.name    = /*ede.DesignCombatArtDir() + */DEFAULT_CDI;
    CombatPetrifiedIconArt.name= /*ede.DesignCombatArtDir() + */DEFAULT_CPI;
    CombatDeathArt.name        = /*ede.DesignCombatArtDir() + */DEFAULT_CD;
+   CharViewFrameVPArt.name    = /*ede.EditorWindowArtDir() + */DEFAULT_FR;
    CursorArt.filename         = /*ede.DesignCursorArtDir() + */DEFAULT_CURSOR;
    CursorArt.FrameHeight = 32;
    CursorArt.FrameWidth = 32;

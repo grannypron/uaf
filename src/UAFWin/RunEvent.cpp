@@ -3762,7 +3762,7 @@ void GETCHARNAME_MENU_DATA::OnDraw(void)
   GraphicsMgr.ClearAdventureBackground(BACKBUFFERNUM);
   drawBorder();
 
-  drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset);
+  drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset, &CharViewFrameVPArt);
   if (currPic.key > 0)
   {
     if (currPic.picType == SmallPicDib)
@@ -4093,7 +4093,7 @@ void CHOOSESTATS_MENU_DATA::OnDraw(void)
 {
   GraphicsMgr.ClearAdventureBackground(BACKBUFFERNUM);
   drawBorder();
-  drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset);
+  drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset, &CharViewFrameVPArt);
   if (currPic.key > 0)
   {
     if (currPic.picType == SmallPicDib)

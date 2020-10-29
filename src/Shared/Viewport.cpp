@@ -4157,7 +4157,7 @@ void drawViewport(BOOL drawMiddleVertBar, BOOL drawFrame, BOOL drawViewportPic, 
     GraphicsMgr.BlitImage(VertBarMidX,VertBarMidY, VBarVPArt.surface, &VertBarSrcShort);
 
   if (drawFrame && drawViewportPic)
-    drawViewportFrame(VPFrameX,VPFrameY);
+    drawViewportFrame(VPFrameX,VPFrameY, &FrameVPArt);
 
   if (drawMiddleHorzBar)
   {
@@ -4195,9 +4195,9 @@ void drawBorder(void)
 // PURPOSE: 
 //
 //*****************************************************************************
-void drawViewportFrame(int x, int y)
+void drawViewportFrame(int x, int y, PicDataType* pic)
 {
-  GraphicsMgr.BlitImage(x,y, FrameVPArt.surface, &ViewportFrameSrc);
+  GraphicsMgr.BlitImage(x,y, pic->surface, &ViewportFrameSrc);
 }
 
 #ifdef UAFEngine

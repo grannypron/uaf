@@ -1176,6 +1176,22 @@ BOOL LoadOffscreenCombatSurfaces(BOOL UseOutdoor)
     }
   }  
 
+  CharViewFrameVPArt.surface = GraphicsMgr.AddFileSurface(CharViewFrameVPArt.name, CommonDib, rte.WallArtDir());
+
+  if (CharViewFrameVPArt.surface < 0)
+  {
+      WriteDebugString("Character View Frame Art %s not found\n", CharViewFrameVPArt.name);
+      //if (FrameVPArt.name.Find(DEFAULT_FR)<0)
+      if (CharViewFrameVPArt.name.CompareNoCase(DEFAULT_FR) != 0)
+      {
+          CharViewFrameVPArt.name = DEFAULT_FR;
+          WriteDebugString("Character View Frame Art now trying default %s\n", CharViewFrameVPArt.name);
+          CharViewFrameVPArt.surface = GraphicsMgr.AddFileSurface(CharViewFrameVPArt.name, CommonDib, rte.WindowArtDir());
+          if (CharViewFrameVPArt.surface < 0)
+              WriteDebugString("Character View Character View Frame Art default also failed\n");
+      }
+  }
+
   CombatCursorArt.surface = GraphicsMgr.AddFileSurface(CombatCursorArt.name, CommonDib, rte.CursorArtDir());
   if (CombatCursorArt.surface < 0)
   {    
@@ -1317,7 +1333,7 @@ BOOL LoadOffscreenCombatSurfaces(BOOL UseOutdoor)
     success = FALSE;
   }
     
-  if ((FrameVPArt.surface < 0) || (HBarVPArt.surface < 0) || (VBarVPArt.surface < 0))
+  if ((FrameVPArt.surface < 0) || (HBarVPArt.surface < 0) || (VBarVPArt.surface < 0) || (CharViewFrameVPArt.surface < 0))
   {
     debugSeverity = 5;
     WriteDebugString("Failed to load all combat viewport art\n");
@@ -1468,8 +1484,23 @@ BOOL LoadOffscreenWalkingSurfaces()
     }
   }  
 
+  CharViewFrameVPArt.surface = GraphicsMgr.AddFileSurface(CharViewFrameVPArt.name, CommonDib, rte.WindowArtDir());
+
+  if (CharViewFrameVPArt.surface < 0)
+  {
+      WriteDebugString("Character View Frame Art %s not found\n", CharViewFrameVPArt.name);
+      if (CharViewFrameVPArt.name.CompareNoCase(DEFAULT_FR) != 0)
+      {
+          CharViewFrameVPArt.name = DEFAULT_FR;
+          WriteDebugString("Character ViewFrame Art now trying default %s\n", CharViewFrameVPArt.name);
+          CharViewFrameVPArt.surface = GraphicsMgr.AddFileSurface(CharViewFrameVPArt.name, CommonDib, rte.WindowArtDir());
+          if (CharViewFrameVPArt.surface < 0)
+              WriteDebugString("Character ViewFrame Art default also failed\n");
+      }
+  }
   if (   (FrameVPArt.surface < 0) || (HBarVPArt.surface < 0) 
-      || (VBarVPArt.surface < 0)  || (globalData.MapArtSurf < 0))
+      || (VBarVPArt.surface < 0)  || (globalData.MapArtSurf < 0)
+      || (CharViewFrameVPArt.surface < 0))
   {
     debugSeverity = 6;
     WriteDebugString("Failed to load all viewport art\n");
