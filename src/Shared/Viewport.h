@@ -149,7 +149,7 @@ struct point_type
 void ConfigureArtCoords();
 void drawBorder();
 void drawViewport(BOOL drawMiddleVertBar, BOOL drawFrame, BOOL drawViewportPic, BOOL drawMiddleHorzBar);
-void drawViewportFrame( int x, int y, PicDataType* pic);
+void drawViewportFrame( int x, int y, PicDataType* pic, RECT * rect);
 void DetermineView(int facing,int x, int y);
 void updateViewport(int plyrX, int plyrY, int facing, long int dstSurface, BOOL force3Dview);
 void updateAreaView(int plyrX, int plyrY, int facing, long int dstSurface=BACKBUFFERNUM);

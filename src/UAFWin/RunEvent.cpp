@@ -101,6 +101,7 @@ public:
 
 TALES tavernTales;
 
+extern RECT CharViewViewportFrameSrc;
 
 #pragma warning(disable:4189)
 
@@ -3762,7 +3763,7 @@ void GETCHARNAME_MENU_DATA::OnDraw(void)
   GraphicsMgr.ClearAdventureBackground(BACKBUFFERNUM);
   drawBorder();
 
-  drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset, &CharViewFrameVPArt);
+  drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset, &CharViewFrameVPArt, &CharViewViewportFrameSrc);
   if (currPic.key > 0)
   {
     if (currPic.picType == SmallPicDib)
@@ -4093,7 +4094,7 @@ void CHOOSESTATS_MENU_DATA::OnDraw(void)
 {
   GraphicsMgr.ClearAdventureBackground(BACKBUFFERNUM);
   drawBorder();
-  drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset, &CharViewFrameVPArt);
+  drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset, &CharViewFrameVPArt, &CharViewViewportFrameSrc);
   if (currPic.key > 0)
   {
     if (currPic.picType == SmallPicDib)

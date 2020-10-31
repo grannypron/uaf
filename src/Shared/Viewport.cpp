@@ -85,6 +85,7 @@ int VertBarCombatMidY = 2;
 int VPFrameX = 34;
 int VPFrameY = 40;
 RECT ViewportFrameSrc = { 40,36,244,281 };
+RECT CharViewViewportFrameSrc = { 40,36,244,281 };
 
 int VPFrameXOffset = 417;
 int VPFrameYOffset = -19;
@@ -943,6 +944,11 @@ void ConfigureArtCoords()
   if (ConfigFile.FindTokens("VIEWPORT_FRAME_SRC", x1,y1,x2,y2))
   {
     InitRect(ViewportFrameSrc, x1,y1,x2,y2);
+  }
+
+  if (ConfigFile.FindTokens("CHARVIEWVIEWPORT_FRAME_SRC", x1, y1, x2, y2))
+  {
+    InitRect(CharViewViewportFrameSrc, x1, y1, x2, y2);
   }
 
   //InitRect(ViewportBkgrnd, 0,0,BackgroundWidth,BackgroundHeight );
@@ -4157,7 +4163,7 @@ void drawViewport(BOOL drawMiddleVertBar, BOOL drawFrame, BOOL drawViewportPic, 
     GraphicsMgr.BlitImage(VertBarMidX,VertBarMidY, VBarVPArt.surface, &VertBarSrcShort);
 
   if (drawFrame && drawViewportPic)
-    drawViewportFrame(VPFrameX,VPFrameY, &FrameVPArt);
+    drawViewportFrame(VPFrameX,VPFrameY, &FrameVPArt, &ViewportFrameSrc);
 
   if (drawMiddleHorzBar)
   {
@@ -4195,9 +4201,9 @@ void drawBorder(void)
 // PURPOSE: 
 //
 //*****************************************************************************
-void drawViewportFrame(int x, int y, PicDataType* pic)
+void drawViewportFrame(int x, int y, PicDataType* pic, RECT *rect)
 {
-  GraphicsMgr.BlitImage(x,y, pic->surface, &ViewportFrameSrc);
+  GraphicsMgr.BlitImage(x,y, pic->surface, rect);
 }
 
 #ifdef UAFEngine

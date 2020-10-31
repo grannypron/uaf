@@ -49,6 +49,7 @@ extern const CString Ability_Charisma;
 extern const CString Ability_Wisdom;
 
 
+extern RECT CharViewViewportFrameSrc;
 
 char *CharStatusTypeText[] =
 {
@@ -2056,7 +2057,7 @@ int handleChooseStatsInput(CHAR_STATS_INPUT_MESSAGE_TYPE msg,
   {
     GraphicsMgr.ClearAdventureBackground(BACKBUFFERNUM);   
     drawBorder();
-    drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset, &FrameVPArt);
+    drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset, &CharViewFrameVPArt, &CharViewViewportFrameSrc);
     StatsForm.Display(0);
   };
   return result|(flip?1:0);
