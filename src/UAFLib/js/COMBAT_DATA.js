@@ -236,7 +236,7 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
         this.determineInitCombatPos();
 
         for (i = 0; i < this.m_iNumCombatants; i++) {
-            Globals.WriteDebugString("DEBUG - Combatant " + i + " starts at (" + this.m_aCombatants[i].x + "," + this.m_aCombatants[i].y + ")\n");
+            //Globals.WriteDebugString("DEBUG - Combatant " + i + " starts at (" + this.m_aCombatants[i].x + "," + this.m_aCombatants[i].y + ")\n");
         };
         if (Globals.logDebuggingInfo) {
             Globals.WriteDebugString("Finished placing combatants on map\n");
@@ -803,7 +803,7 @@ COMBAT_DATA.prototype.AddMonstersToCombatants = function () {
             count = Globals.RollDice(this.m_pEvent.monsters.monsters[result].qtyDiceSides,
                 this.m_pEvent.monsters.monsters[result].qtyDiceQty,
                 this.m_pEvent.monsters.monsters[result].qtyBonus);
-            GlobalsWriteDebugString("Random quantity of combat monster: " + count + "\n");
+            Globals.WriteDebugString("Random quantity of combat monster: " + count + "\n");
         }
 
         var mod = Globals.GetMonsterQtyMod();
@@ -814,7 +814,7 @@ COMBAT_DATA.prototype.AddMonstersToCombatants = function () {
         {
             temp.Clear();                                                                        
             temp.self = this.m_iNumCombatants; // init relies on self index                           
-            m_aCombatants.SetAt(this.m_iNumCombatants, temp);                                         
+            this.m_aCombatants[this.m_iNumCombatants] = temp;                                         
             pCombatant = this.m_aCombatants[this.m_iNumCombatants];
             this.m_iNumCombatants++;                                                                  
             
@@ -1722,8 +1722,8 @@ COMBAT_DATA.prototype.MonsterPlacementCallback = function(turtlecode) {
                             monsterArrangement.turtleY + monsterArrangement.partyY,
                             monsterArrangement.turtleWidth,
                             monsterArrangement.turtleHeight,
-                            TRUE,
-                            TRUE,
+                            true,
+                            true,
                             null);
                         switch (ot) {
                             case OBSTACLE_TYPE.OBSTICAL_wall: oc = 'w'; break;
@@ -2104,3 +2104,58 @@ COMBAT_DATA.prototype.WithinSight = function(partyRelativeX, partyRelativeY)
     return false;
 }
 
+COMBAT_DATA.prototype.PlayCombatMove = function()
+{
+    if (!Globals.PlaySoundEffects) return;
+    if (!SoundMgr.ValidSound(this.m_hCharMoveSound))
+        this.m_hCharMoveSound = SoundMgr.LoadSound(this.m_pEvent.MoveSound);
+    if (!SoundMgr.PlaySound(this.m_hCharMoveSound))
+        this.m_hCharMoveSound = -1;
+}
+
+COMBAT_DATA.prototype.PlaceCursorOnCurrentDude = function (ForceCenter) {
+    var dude = this.GetCurrCombatant();
+    if ((dude < 0) || (dude >= this.m_iNumCombatants)) return;
+    if ((this.m_iCursorX != this.m_aCombatants[dude].x)
+        || (this.m_iCursorY != this.m_aCombatants[dude].y)
+    ) {
+        this.m_iCursorX = this.m_aCombatants[dude].x;
+        this.m_iCursorY = this.m_aCombatants[dude].y;
+        this.EnsureVisibleTarget(dude, ForceCenter);
+    };
+}
+
+COMBAT_DATA.prototype.getCombatantPtr = function(index) {
+    if ((index < 0) || (index >= this.m_iNumCombatants)) {
+        return null;
+    }
+    return this.m_aCombatants[index];
+}
+
+
+COMBAT_DATA.prototype.IsValidTarget = function(pAttacker, pTarget, targetValidity) {
+    var hookParameters = new HOOK_PARAMETERS();
+    var scriptContext = new SCRIPT_CONTEXT();
+    var result = "";
+    var answer = 0;
+    if (pTarget == null) return false;
+    if ((targetValidity != false)
+        && targetValidity >= 0) return pAttacker.targetValidity == 1;
+
+
+    scriptContext.SetCombatantContext(pTarget);
+    scriptContext.SetAttackerContext(pAttacker);
+    scriptContext.SetTargetContext(pTarget);
+
+    result = pTarget.RunCombatantScripts(
+        SPECAB.IS_VALID_TARGET,
+        SPECAB.ScriptCallback_LookForChar,
+        "YN",
+        "Determine if valid target");
+    answer = 1;
+    if (!(result == null || result == "")) {
+        if (result[0] == 'N') answer = 0;
+    }
+    if (targetValidity != null) targetValidity = answer;
+    return { answer: (answer == 1), targetValidity: targetValidity };
+}

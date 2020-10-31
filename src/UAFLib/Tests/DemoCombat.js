@@ -97,8 +97,18 @@ function loadAbility(abilityName) {
 
 
 
-var Warrior = Deserialize("Warrior.chr");
-var Rogue = Deserialize("Rogue.chr");
+var Warrior = new CHARACTER();
+Warrior.classID = "Fighter";
+Warrior.hitPoints = 10;
+Warrior.maxHitPoints = 20;
+Warrior.age = 20;
+Warrior.maxAge = 100;
+Warrior.alignment = 0;
+Warrior.encumbrance = 10;
+
+
+
+
 
 var cWarrior = new COMBATANT();
 cWarrior.m_pCharacter = Warrior;
@@ -106,17 +116,24 @@ cWarrior.m_pCharacter = Warrior;
 //cWarrior.StartAttack(1);
 
 loadLibraryStub();
-SPECAB.loadData(specialAbilitiesData, "C:\\Users\\Shadow\\Downloads\\Full_Release_191031\\TutorialDesign.dsn\\Data\\specialAbilities.dat");
+//SPECAB.loadData(specialAbilitiesData, "C:\\Users\\Shadow\\Downloads\\Full_Release_191031\\TutorialDesign.dsn\\Data\\specialAbilities.dat");
 Globals.logDebuggingInfo = true;
 
 var combatEventData = new COMBAT_EVENT_DATA();
 combatEventData.monsters = new MONSTER_EVENT_DATA();
 var monsterEvent = new MONSTER_EVENT();
 monsterEvent.UseQty = MONSTER_EVENT.meUseQty;
+monsterEvent.UseQty = MONSTER_EVENT.meUsePercent;
+monsterEvent.qtyDiceSides = 10;
+monsterEvent.qtyDiceQty = 1;
+monsterEvent.qtyBonus = 2;    // I'm going to make sure there are at least 2 because the first one doesn't get counted because of the 0 ambiguity on the terrain map
+monsterEvent.qty = 10;
 monsterEvent.qty = 3;
 monsterEvent.monsterID = "Kobold";
 monsterEvent.m_type = MONSTER_TYPE;
 combatEventData.monsters.Add(monsterEvent);
+//combatEventData.randomMonster = true;   // This seems to cause an NPE at Line 306 of COMBAT_DATA - "pSaveCharPointer is null"
+combatEventData.UseQty = MONSTER_EVENT.meUsePercent;
 
 var combatData = new COMBAT_DATA();    // This is pretty much the combat "map" and all data on it
 party.Posx = 10;
@@ -132,18 +149,31 @@ combatEventData.direction = eventDirType.North;
 combatData.InitCombatData(combatEventData);
 
 var dataStr = "";
-var data = [];
+var terrainData = [];
 for (i = 0; i < Drawtile.MAX_TERRAIN_HEIGHT; i++) {
     dataStr += "[";
-    data[i] = [];
+    terrainData[i] = [];
     for (j = 0; j < Drawtile.MAX_TERRAIN_WIDTH; j++) {
         dataStr += Drawtile.terrain[i][j].tileIndex + ",";
-        data[i][j] = Drawtile.terrain[i][j].tileIndex;
+        terrainData[i][j] = Drawtile.terrain[i][j].tileIndex;
     }
     dataStr += "]\n";
 }
 
-Globals.debug(dataStr);
+var monsterData = [];
+for (var i = 0; i < combatData.m_aCombatants.length; i++) {
+    var char = combatData.m_aCombatants[i].m_pCharacter;
+    var monsterID = null;
+    if (char != null) {
+        monsterID = char.monsterID;
+    }
+    if (monsterID != null) {
+        monsterData.push(monsterID);
+    }
+}
+var data = [monsterData, terrainData];
+
+//Globals.debug(dataStr);
 
 
 //consoleResults.payload = dataStr;

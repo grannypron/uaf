@@ -1,13 +1,5 @@
 function ITEM_DATA() {
     /**TODO
-    item_asl(),
-        temp_asl(),
-        hHitSound(-1),
-        hMissSound(-1),
-        hLaunchSound(-1),
-        m_useEvent(0),
-        ExamineEvent(0),
-        specAbs(true)
     {
         Clear(TRUE);
     }
@@ -76,7 +68,7 @@ function ITEM_DATA() {
     this.attackMsg = "";
     this.Recharge_Rate = 0;
     this.IsNonLethal = false;
-    this.specAbs = new SPECIAL_ABILITIES();
+    this.specAbs = new SPECIAL_ABILITIES(true);
     this.MissileArt = new PIC_DATA (); // in-route sprite
     this.HitArt = new PIC_DATA();     // target hit sprite
     this.item_asl = new A_ASLENTRY_L();

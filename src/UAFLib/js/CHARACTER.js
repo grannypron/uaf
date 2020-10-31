@@ -1773,7 +1773,7 @@ CHARACTER.prototype.removeCharMoney = function (itype, qty) {
 };
 
 CHARACTER.prototype.CanCastSpells = function () {
-    if (GetType() == MONSTER_TYPE) return FALSE;
+    if (GetType() == MONSTER_TYPE) return false;
 
     // Search through the character's special abilities
     // to see if we can find a CanCastSpells script.

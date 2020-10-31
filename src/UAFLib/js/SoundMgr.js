@@ -1,5 +1,6 @@
 ﻿function SoundMgrObj() {
     this.pSndMgr = null;
+    this.PlaySoundEffects
 }
 
 SoundMgrObj.prototype.ClearSound = function (sound) {
@@ -19,4 +20,14 @@ SoundMgrObj.prototype.LoadSound = function(file) {
     //WriteDebugString("LoadSound %u (%s)\n", key, file);
     return key;
     **/
+}
+
+SoundMgrObj.prototype.ValidSound = function (sound) {
+/**TODO** Stub */
+    return true;
+}
+
+SoundMgrObj.prototype.PlaySound = function (file) {
+    /**TODO** Stub */
+    return true;
 }

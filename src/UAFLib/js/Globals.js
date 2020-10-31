@@ -4,6 +4,8 @@ function Globals() {
     this.version = 6.0;
     this.debugSeverity = 0;
 
+    this.PlaySoundEffects = true;
+
     this.miscError = 0;
     this.miscErrorText = [miscErrorType.MAX_MISC_ERROR_MSGS];
 
@@ -163,4 +165,24 @@ Globals.prototype.SetMiscError = function (error) {
 
 Globals.prototype.GetConfigMonsterNoMove = function () {
     return combatData.m_bMonsterNoMove;
+}
+
+Globals.prototype.PlayCombatMove = function () {
+    combatData.PlayCombatMove();
+}
+
+Globals.prototype.GetQueuedCombatants = function () {
+    return combatData.QComb;
+}
+
+Globals.prototype.PlaceCursorOnCurrentDude = function () {
+    combatData.PlaceCursorOnCurrentDude();
+}
+
+Globals.prototype.GetCombatantPtr = function (index) {
+    return (combatData.getCombatantPtr(index));;
+}
+
+Globals.prototype.GetCurrentRound = function () {
+    return combatData.m_iCurrRound;
 }

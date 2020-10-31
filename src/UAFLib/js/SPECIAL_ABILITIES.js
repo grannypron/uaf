@@ -126,7 +126,7 @@ SPECIAL_ABILITIES.prototype.RunScripts = function(scriptName, fnc, pkt, comment,
             //SPECAB.p_hook_parameters[0] = gpdlStack.activeGPDL().ExecuteScript(scripts[i].Value(), 1, null, 0);
             //gpdlStack.Pop();
              **/
-            SPECAB.p_hook_parameters[0] = 1;
+            SPECAB.p_hook_parameters[0] = "1";
             pScriptContext.ClearAbility();
             callbackResult = fnc(CBFUNC.CBF_EXAMINESCRIPT, SPECAB.p_hook_parameters[0], pkt);
             /**TODO
@@ -494,8 +494,33 @@ SPECAB.prototype.ScriptCallback_MinMax = function (func, scriptResult, pkt) {
         };
         return CBRESULT.CBR_CONTINUE;
     };
+
+
+
 }
 
 
+SPECAB.prototype.ScriptCallback_LookForChar = function(func, scriptResult, pkt)
+{
+    var lookFor = "" + pkt;   // PORT NOTE:  Was  char *lookFor = (char *)pkt;
+    var indx = 0;
+    switch (func) {
+        case CBFUNC.CBF_EXAMINESCRIPT:
+            indx = scriptResult.indexOf(lookFor);
+            if (indx < 0) {
+                return CBRESULT.CBR_CONTINUE;
+            };
+            break;
+        case CBFUNC.CBF_ENDOFSCRIPTS:
+            scriptResult = "";
+            return CBRESULT.CBR_STOP;
+        default:
+            return CBRESULT.CBR_CONTINUE;
+    };
+    {
+    scriptResult = scriptResult.substr(indx, 1);
+    };
+    return CBRESULT.CBR_STOP;
+}
 
 var SPECAB = new SPECAB();

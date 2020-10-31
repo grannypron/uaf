@@ -79,6 +79,7 @@
   <ItemGroup>
     <Content Include="js\ABILITY_DATA.js" />
     <Content Include="js\ABILITY_DATA_TYPE.js" />
+    <Content Include="js\ACTIVE_SPELL_LIST.js" />
     <Content Include="js\BASECLASS_LIST.js" />
     <Content Include="js\CLASS_DATA.js" />
     <Content Include="js\CPathFinder.js" />
@@ -99,6 +100,7 @@
     <Content Include="js\MONSTER_DATA.js" />
     <Content Include="js\MONSTER_EVENT.js" />
     <Content Include="js\MONSTER_EVENT_DATA.js" />
+    <Content Include="js\MOVE_DATA.js" />
     <Content Include="js\PARTY_POSITIONS.js" />
     <Content Include="js\RACE_DATA.js" />
     <Content Include="js\RNG.js" />
@@ -202,7 +204,11 @@
     <Content Include="js\DICEPLUS.js" />
     <Content Include="Tests\TestRollDice.js" />
     <Content Include="Tests\TestLoadSAs.js" />
-    <Content Include="Tests\TestSimpleCombat.js" />
+    <Content Include="Tests\DemoCombat.js" />
+    <Content Include="Tests\TestFreeAttacks.js" />
+    <Content Include="Tests\TestSimpleCombatMovement.js" />
+    <Content Include="Tests\TestCombatMovementAttack.js" />
+    <Content Include="Tests\TestSetupCombat.js" />
     <Content Include="Tests\TestGlobalStats.js" />
     <Content Include="Tests\TestStripFilenamePath.js" />
     <Content Include="Tests\TestPathManager.js" />
@@ -211,6 +217,7 @@
     <Content Include="Tests\TestCharacterSerialize.js" />
     <Content Include="js\aaaaa_UAFUtil.js" />
     <Content Include="js\CHARACTER.js" />
+    <Content Include="todo.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

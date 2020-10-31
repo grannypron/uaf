@@ -993,3 +993,205 @@ Drawtile.prototype.TestLineOfSight = function(x0, y0, dx1, dy1, dx2, dy2, c, dc)
     };
     return flags;
 }
+
+Drawtile.prototype.ForceMapToMoveAlong = function(x, y, dir, MoveSize) {
+    var force = false;
+    switch (dir) {
+        case PATH_DIR.PathNorth:
+            force = (y <= combatData.m_iStartTerrainY + MoveSize);
+            break;
+        case PATH_DIR.PathEast:
+            force = (x >= combatData.m_iStartTerrainX + Globals.TILES_HORZ - (MoveSize + 1));
+            break;
+        case PATH_DIR.PathSouth:
+            force = (y >= combatData.m_iStartTerrainY + Globals.TILES_VERT - (MoveSize + 1));
+            break;
+        case PATH_DIR.PathWest:
+            force = (x <= combatData.m_iStartTerrainX + MoveSize);
+            break;
+        case PATH_DIR.PathNW:
+            force = ((y <= combatData.m_iStartTerrainY + MoveSize) || (x <= combatData.m_iStartTerrainX + MoveSize));
+            break;
+        case PATH_DIR.PathNE:
+            force = ((y <= combatData.m_iStartTerrainY + MoveSize) || (x >= combatData.m_iStartTerrainX + Globals.TILES_HORZ - (MoveSize + 1)));
+            break;
+        case PATH_DIR.PathSW:
+            force = ((y >= combatData.m_iStartTerrainY + Globals.TILES_VERT - (MoveSize + 1)) || (x <= combatData.m_iStartTerrainX + MoveSize));
+            break;
+        case PATH_DIR.PathSE:
+            force = ((y >= combatData.m_iStartTerrainY + Globals.TILES_VERT - (MoveSize + 1)) || (x >= combatData.m_iStartTerrainX + Globals.TILES_HORZ - (MoveSize + 1)));
+            break;
+    }
+
+    if (force)
+        this.moveMap(dir, MoveSize);
+
+    return force;
+}
+
+
+Drawtile.prototype.Distance6 = function(attacker, sX, sY, attackee, dX, dY) {
+    var tmpSrcX = sX, tmpSrcY = sY;
+    var tmpDstX = dX, tmpDstY = dY;
+    var origSX = sX;
+    var origDX = dX;
+
+    // for icons bigger than 1x1, we need to adjust the
+    // src and dst x,y to be the closest possible for computing
+    // distance between icons.
+    //
+    // the starting x,y for each icon is the upper left corner
+    //
+    if (sX != dX) {
+        if (sX < dX) {
+            sX++;
+            while ((sX != dX)
+                && (Drawtile.ValidCoords(sY, sX))
+                && (Drawtile.getCombatantInCell(sX, sY, 1, 1) == attacker)) {
+                sX++;
+            }
+
+            tmpSrcX = sX - 1;
+
+            dX--;
+            while ((tmpSrcX != dX)
+                && (Drawtile.ValidCoords(dY, dX))
+                && (Drawtile.getCombatantInCell(dX, dY, 1, 1) == attackee)) {
+                dX--;
+            }
+
+            tmpDstX = dX + 1;
+        }
+        else {
+            sX--;
+            while ((sX != dX)
+                && (Drawtile.ValidCoords(sY, sX))
+                && (Drawtile.getCombatantInCell(sX, sY, 1, 1) == attacker)) {
+                sX--;
+            }
+
+            tmpSrcX = sX + 1;
+
+            dX++;
+            while ((tmpSrcX != dX)
+                && (Drawtile.ValidCoords(dY, dX))
+                && (Drawtile.getCombatantInCell(dX, dY, 1, 1) == attackee)) {
+                dX++;
+            }
+
+            tmpDstX = dX - 1;
+        }
+    }
+
+    sX = origSX;
+    dX = origDX;
+
+    if (sY != dY) {
+        if (sY < dY) {
+            sY++;
+            while ((sY != dY)
+                && (Drawtile.ValidCoords(sY, sX))
+                && (Drawtile.getCombatantInCell(sX, sY, 1, 1) == attacker)) {
+                sY++;
+            }
+
+            tmpSrcY = sY - 1;
+
+            dY--;
+            while ((tmpSrcY != dY)
+                && (Drawtile.ValidCoords(dY, dX))
+                && (Drawtile.getCombatantInCell(dX, dY, 1, 1) == attackee)) {
+                dY--;
+            }
+
+            tmpDstY = dY + 1;
+        }
+        else {
+            sY--;
+            while ((sY != dY)
+                && (Drawtile.ValidCoords(sY, sX))
+                && (Drawtile.getCombatantInCell(sX, sY, 1, 1) == attacker)) {
+                sY--;
+            }
+
+            tmpSrcY = sY + 1;
+
+            dY++;
+            while ((tmpSrcY != dY)
+                && (Drawtile.ValidCoords(dY, dX))
+                && (Drawtile.getCombatantInCell(dX, dY, 1, 1) == attackee)) {
+                dY++;
+            }
+
+            tmpDstY = dY - 1;
+        }
+    }
+
+    return Drawtile.Distance4(tmpSrcX, tmpSrcY, tmpDstX, tmpDstY);
+}
+
+
+Drawtile.prototype.Distance4 = function(sx, sy, dx, dy)
+{
+    var x = sx - dx;
+    var y = sy - dy;
+
+    var temp = Math.sqrt(((x * x) + (y * y)));
+
+    var result = Math.floor(temp + 0.5);
+    return result;
+}
+
+Drawtile.prototype.HaveLineOfSight = function(x0, y0, x1, y1, reflects) {
+    // starting point of line
+    var x = x0, y = y0;
+
+    // direction of line
+    var dx = x1 - x0, dy = y1 - y0;
+
+    // increment or decrement depending on direction of line
+    var sx = (dx > 0 ? 1 : (dx < 0 ? -1 : 0));
+    var sy = (dy > 0 ? 1 : (dy < 0 ? -1 : 0));
+
+    // decision parameters for voxel selection
+    if (dx < 0) dx = -dx;
+    if (dy < 0) dy = -dy;
+    var ax = 2 * dx, ay = 2 * dy;
+    var decx, decy;
+
+    // determine largest direction component, single-step related variable
+    var max = dx, _var = 0;    //PORT NOTE:  Had to rename variable called var
+    if (dy > max) { _var = 1; }
+
+    // traverse Bresenham line
+    switch ( _var ) {
+        case 0:  // single-step in x-direction
+            for (decy = ay - dx; ; x += sx, decy += ay) {
+                // process pixel
+                if (!(x == x0 && y == y0) && !(x == x1 && y == y1)) {
+                    if (!Drawtile.HaveVisibility(y, x, reflects))
+                        return false;
+                }
+
+                // take Bresenham step
+                if (x == x1) break;
+                if (decy >= 0) { decy -= ax; y += sy; }
+            }
+            break;
+        case 1:  // single-step in y-direction
+            for (decx = ax - dy; ; y += sy, decx += ax) {
+                // process pixel
+                if (!(x == x0 && y == y0) && !(x == x1 && y == y1)) {
+                    if (!Drawtile.HaveVisibility(y, x, reflects))
+                        return FALSE;
+                }
+
+                // take Bresenham step
+                if (y == y1) break;
+                if (decx >= 0) { decx -= ay; x += sx; }
+            }
+            break;
+    }
+
+    return true;
+}

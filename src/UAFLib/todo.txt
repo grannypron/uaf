@@ -1,0 +1,8 @@
+﻿- Make the status frame on the combat scene!
+- Make a unit test that moves the character on an empty battlefield in a line 5 squares
+- Make a unit test that sets an enemy next to a character and makes an attack
+- Figure out how we are going to load resources in Unity.  Make a ResourceLoader interface in UAFLib that a Unity class will implement
+- Make a monster library loader, class library loader, etc.
+- Figure out how to handle their compression algorithm
+- go back through the C++ source and find all instances of "delete" and re-insert them back with calls to a MemoryManager() class.  Apparently jint responds to delete statements, although all engines might not
+- Get GenerateIndoorCombatMap() working

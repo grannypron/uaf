@@ -49,7 +49,7 @@ var baseclassData = new BASE_CLASS_DATA_TYPE();
 var classData = new CLASS_DATA_TYPE();
 var specialAbilitiesData = new A_SPECABILITY_DEF_L();
 var pScriptContext = new SCRIPT_CONTEXT();
-
+var activeSpellList = new ACTIVE_SPELL_LIST();
 
 var pathMgr = new PATH_MANAGER(1000);
 

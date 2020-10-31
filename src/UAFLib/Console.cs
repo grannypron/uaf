@@ -14,24 +14,26 @@ namespace UAFLib
         public string mJSPath = @"..\..\..\UAFLib\js\";
         public string mJSUrls = null;//"https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/UAFLib.csproj";//null;
 
+
         public void helloWorld()
         {
 
             try
             {
-                //**TODO: go back through the C++ source and find all instances of "delete" and re-insert them back with calls to a MemoryManager() class.  Apparently jint responds to delete statements, although all engines might not
-                runTest(@"..\..\..\UAFLib\Tests\TestUtilHex.js");
-                runTest(@"..\..\..\UAFLib\Tests\TestStripFilenamePath.js");
-                runTest(@"..\..\..\UAFLib\Tests\TestCharacterSerialize.js");
-                runTest(@"..\..\..\UAFLib\Tests\TestTagList.js");
-                runTest(@"..\..\..\UAFLib\Tests\TestPathManager.js");
-                runTest(@"..\..\..\UAFLib\Tests\TestRollDice.js");
-                runTest(@"..\..\..\UAFLib\Tests\TestGlobalStats.js");
-                runTest(@"..\..\..\UAFLib\Tests\TestLoadSAs.js");
-                ConsoleResults results = runTest(@"..\..\..\UAFLib\Tests\TestSimpleCombat.js");
-                System.Console.WriteLine(results.payload);
-                // Next: make a test case where the monsters get added - see COMBAT_DATA.prototype.AddMonstersToCombatants and implement COMBAT_DATA.prototype.determineInitCombatPos
-                // Next: Get GenerateIndoorCombatMap() working
+                //runTest(@"..\..\..\UAFLib\Tests\DemoCombat.js");
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestUtilHex.js"});
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestStripFilenamePath.js"});
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestCharacterSerialize.js"});
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestTagList.js"});
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestPathManager.js"});
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestRollDice.js"});
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestGlobalStats.js"});
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadSAs.js"});
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js"});
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestSimpleCombatMovement.js" });
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestFreeAttacks.js" });
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js" });
+                System.Console.WriteLine("Tests complete!  Press Any key.");
             }
             catch (JavaScriptException ex)
             {
@@ -45,20 +47,25 @@ namespace UAFLib
 
         }
 
-        public ConsoleResults runTest(string path)
+        public ConsoleResults runTest(string[] paths)
         {
-            return runTestFromString(LoadFileFromString(path));
+            List<string> strs = new List<string>();
+            for (int idx = 0; idx < paths.Length; idx++) {
+                string path = paths[idx];
+                strs.Add(LoadFileFromString(path));
+            }
+            return runTestFromStrings(strs.ToArray());
         }
 
         public ConsoleResults runTestFromUrl(string url)
         {
             using (var client = new WebClient())
             {
-                return runTestFromString(client.DownloadString(url));
+                return runTestFromStrings(new string[] { client.DownloadString(url) });
             }
         }
 
-        public ConsoleResults runTestFromString(string testStr)
+        public ConsoleResults runTestFromStrings(string[] testStrs)
         {
             ConsoleResults results = new ConsoleResults();
             Engine engine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly));
@@ -68,8 +75,9 @@ namespace UAFLib
             } else {
                 LibraryInfo lib = LoadFiles(this.mJSPath, engine);
             }
-
-            engine.SetValue("consoleResults", results).Execute(testStr);
+            foreach (string testStr in testStrs) { 
+                engine.SetValue("consoleResults", results).Execute(testStr);
+            }
             return results;
         }
 
