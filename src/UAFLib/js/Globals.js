@@ -7,7 +7,7 @@ function Globals() {
     this.PlaySoundEffects = true;
 
     this.miscError = 0;
-    this.miscErrorText = [miscErrorType.MAX_MISC_ERROR_MSGS];
+    this.miscErrorText = [];
 
     this.MIN_INTELLIGENCE = 3;
     this.MAX_INTELLIGENCE = 25;

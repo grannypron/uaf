@@ -20,9 +20,9 @@ UAFUtil.prototype.StringToBase38 = function (str) {
         if (len <= i) c = ' ';
         else c = str.indexOf(i);
         if (c == ' ') c = 1;
-        else if ((c >= '0') && (c <= '9')) c = c - '0' + 2;
-        else if ((c >= 'A') && (c <= 'Z')) c = c - 'A' + 12;
-        else if ((c >= 'a') && (c <= 'z')) c = c - 'a' + 12;
+        else if ((c >= '0') && (c <= '9')) c = c.charCodeAt(0) - '0'.charCodeAt(0) + 2;
+        else if ((c >= 'A') && (c <= 'Z')) c = c.charCodeAt(0) - 'A'.charCodeAt(0) + 12;
+        else if ((c >= 'a') && (c <= 'z')) c = c.charCodeAt(0) - 'a'.charCodeAt(0) + 12;
         else c = 0;
         result = result * 38 + c;
     };

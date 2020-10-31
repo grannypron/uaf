@@ -102,3 +102,19 @@ SCRIPT_CONTEXT.prototype.SetMonsterTypeContext = function(pMonster)
 {
     this.pMonstertypeContext = pMonster;
 }
+
+
+SCRIPT_CONTEXT.prototype.SetAttackerContext = function(pCombatant)
+{
+    var actor;
+    actor = pCombatant.GetContextActor();
+    this.attackerContext = actor.ToString();
+}
+
+
+SCRIPT_CONTEXT.prototype.SetTargetContextCombatant = function(pCombatant)
+{
+    var actor;
+    actor = pCombatant.GetContextActor();
+    targetContext = actor.ToString();
+}

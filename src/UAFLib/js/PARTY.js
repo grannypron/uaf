@@ -44,13 +44,13 @@ function PARTY() {
     this.visitData = null;//new VISIT_DATA();
     this.blockageData = new BLOCKAGE_STATUS();
     this.journal = null;//JOURNAL_DATA();
-    this.characters = [MAX_PARTY_MEMBERS];
+    this.characters = [];
     this.party_asl = A_ASLENTRY_L;
 }
 
 PARTY.prototype.GetNextUniquePartyID = function () {
     var i;
-    var used = [MAX_PARTY_MEMBERS];
+    var used = [];
     //memset(used, MAX_PARTY_MEMBERS + 1, sizeof(used)); // set to impossible value  // PORT NOTE: Ignored
 
     // collect current uniquePartyID values

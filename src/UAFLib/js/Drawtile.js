@@ -88,7 +88,7 @@ function Drawtile() {
     this.terrain = [];            // PORT NOTE:  Moved this global variable into the scope of this singleton 
     this.MAX_TILES = Math.max(WILDERNESS_TILE_COUNT, DUNGEON_TILE_COUNT);
     this.CurrentTileCount = 0;      // PORT NOTE:  Moved this global variable into the scope of this singleton 
-    this.CurrentTileData = [this.MAX_TILES + 1]; // PORT NOTE:  Moved this global variable into the scope of this singleton 
+    this.CurrentTileData = []; // PORT NOTE:  Moved this global variable into the scope of this singleton 
 }
 
 Drawtile.prototype.ClearEmptyCellSearch = function () {
@@ -153,7 +153,7 @@ Drawtile.prototype.FaceDirToPathDir = function(dir) {
 
 
 
-Drawtile.prototype.GenerateIndoorCombatMap = function () {
+Drawtile.prototype.GenerateIndoorCombatMap = function (partyX, partyY, dir) {
     //STUB:
 
     for (i = 0; i < this.MAX_TERRAIN_HEIGHT; i++) {
@@ -173,6 +173,7 @@ Drawtile.prototype.GenerateIndoorCombatMap = function () {
 
         }
     }
+    return { partyX: Math.floor(this.MAX_TERRAIN_WIDTH/2), partyY: Math.floor(this.MAX_TERRAIN_HEIGHT / 2) };    // PORT NOTE:  Dealing with pass-by-reference parameters
 
 
 /*****************************************************************************
@@ -800,7 +801,7 @@ void GenerateOutdoorCombatMap(int & partyX, int & partyY, PATH_DIR dir)
 
 Drawtile.prototype.ObsticalType = function(x, y, w, h, CheckOccupants, ignoreCurrentCombatant, pCombatantLinger) {
     var i, j, dude;
-    
+
     for (i = 0; i < h; i++) {
         for (j = 0; j < w; j++) {
             if (!this.coordsOnMap(x + j, y + i, 1, 1)) return OBSTICAL_TYPE.OBSTICAL_offMap;

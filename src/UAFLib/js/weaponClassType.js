@@ -1,4 +1,4 @@
-var weaponClassType = function() {
+function weaponClassType() {
     // CanAttack?   AttackAdjacent?   AttackRanged?   NeedsAmmoReadied?  ConsumesAmmo?
     //
     this.NotWeapon = 0,       //   No              No               No                N/A              N/A

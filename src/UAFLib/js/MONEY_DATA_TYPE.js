@@ -1,7 +1,7 @@
 /** TODO **/
 function MONEY_DATA_TYPE() {
 
-    this.Coins = [this.MAX_COIN_TYPES];
+    this.Coins = [];
     this.Gems = new GEM_CONFIG();
     this.Jewelry = new GEM_CONFIG();
     this.HighestRate = 0;

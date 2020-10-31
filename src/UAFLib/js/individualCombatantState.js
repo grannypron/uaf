@@ -1,4 +1,4 @@
-var individualCombatantState = function() {
+function individualCombatantState() {
 
     this.ICS_None = 0;
     this.ICS_Casting = 1;

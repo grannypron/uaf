@@ -2,11 +2,11 @@
 
 function TAG_LIST(num) {
     this.numItems = num;
-    this.items = [num];
+    this.items = [];
 }
 
 TAG_LIST.prototype.Clear = function() {
-    this.items = [this.numItems];
+    this.items = [];
 }
 
 TAG_LIST.prototype.Set = function (i) {

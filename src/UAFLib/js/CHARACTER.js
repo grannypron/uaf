@@ -2113,7 +2113,7 @@ CHARACTER.prototype.GetAdjMaxMovement = function (flags, comment) {
             var actor;
             var hookParameters = new HOOK_PARAMETERS();
             var scriptContext = new SCRIPT_CONTEXT();
-            var minmax = [2];
+            var minmax = [];
             var pCombatant;
             minmax[0] = -1;
             minmax[1] = UAFUtil.ByteFromHexString("0x7fffffff");

@@ -3,7 +3,7 @@ function GEM_CONFIG() {
     this.MAX_NAME = 10;
     this.minValue = 0;
     this.maxValue = 0;
-    this.name = [this.MAX_NAME + 1]; 
+    this.name = []; 
     this.Clear();
 }
 

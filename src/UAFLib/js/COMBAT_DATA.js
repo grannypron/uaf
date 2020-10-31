@@ -121,8 +121,8 @@ COMBAT_DATA.prototype.Clear = function() {
     this.m_iCurrCaster = -1;
     this.m_iRedirectedSpellTarget = -1;
     this.QComb.Clear();
-    this.m_aCombatants = [Globals.MAX_COMBATANTS]; for (var idx = 0; idx < Globals.MAX_COMBATANTS; idx++) { this.m_aCombatants[idx] = new COMBATANT(); } // PORT NOTE:  C++ initializes this, and so I do here
-    this.m_aTempCOMBATANTS = [Globals.MAX_COMBATANTS]; for (var idx = 0; idx < Globals.MAX_COMBATANTS; idx++) { this.m_aTempCOMBATANTS[idx] = new COMBATANT(); } // PORT NOTE:  C++ initializes this, and so I do here
+    this.m_aCombatants = []; //for (var idx = 0; idx < Globals.MAX_COMBATANTS; idx++) { this.m_aCombatants[idx] = new COMBATANT(); }
+    this.m_aTempCOMBATANTS = []; //for (var idx = 0; idx < Globals.MAX_COMBATANTS; idx++) { this.m_aTempCOMBATANTS[idx] = new COMBATANT(); }
     this.hurledWeapons.Clear();
     this.turningSummary.Clear();
 }
@@ -199,10 +199,13 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
 
     // this function adjusts the start x,y to reflect
     // x,y in combat terrain map
-    if (!this.m_bIsWilderness)
-        Drawtile.GenerateIndoorCombatMap(this.m_iPartyStartX, this.m_iPartyStartY, Drawtile.EventDirToPathDir(event.direction));
-    else
-        Drawtile.GenerateOutdoorCombatMap(this.m_iPartyStartX, this.m_iPartyStartY, Drawtile.EventDirToPathDir(event.direction));
+    if (!this.m_bIsWilderness) {
+        var xy = Drawtile.GenerateIndoorCombatMap(this.m_iPartyStartX, this.m_iPartyStartY, Drawtile.EventDirToPathDir(event.direction));
+        this.m_iPartyStartX = xy.partyX; this.m_iPartyStartY = xy.partyY;    // PORT NOTE: Dealing with pass-by-reference parameters
+    } else {
+        var xy = Drawtile.GenerateOutdoorCombatMap(this.m_iPartyStartX, this.m_iPartyStartY, Drawtile.EventDirToPathDir(event.direction));
+        this.m_iPartyStartX = xy.partyX; this.m_iPartyStartY = xy.partyY;    // PORT NOTE: Dealing with pass-by-reference parameters
+    }
 
     this.m_iStartTerrainX = 0;
     this.m_iStartTerrainY = 0;
@@ -511,7 +514,7 @@ COMBAT_DATA.prototype.CheckAuraPlacement = function(pAURA, pMoveData) {
     };
     if (recomputeAura) {
         if (pAURA.cells == null) {
-            pAURA.cells = [Drawtile.MAX_TERRAIN_WIDTH * Drawtile.MAX_TERRAIN_HEIGHT];
+            pAURA.cells = [];
         };
         pAURA.attachment[0]      = pAURA.attachment[1];
         pAURA.shape[0]           = pAURA.shape[1];
@@ -732,7 +735,7 @@ COMBAT_DATA.prototype.AddCombatants = function () {
     var i;
     this.m_iNumCombatants = 0;
     this.AddCharsToCombatants();
-    this.AddMonstersToCombatants();
+    this.AddMonstersToCombatants();         // PORT NOTE:  x and y of Combatants are set to -1 at this point
 
     /*  This has been moved to AFTER the combatants have been placed on the map.
      *    Otherwise we run the scripts for monsters who did not fit on the map and
@@ -762,6 +765,7 @@ COMBAT_DATA.prototype.AddCharsToCombatants = function() {
 
             // Add new combatant to array of combatants.
             //temp.InitFromCharData(i);
+            
             this.m_aCombatants[this.m_iNumCombatants] = temp;
             this.m_iNumCombatants++;
             {
@@ -1161,6 +1165,7 @@ COMBAT_DATA.prototype.determineInitCombatPos = function () {
         var hookParameters = new HOOK_PARAMETERS();
         monsterArrangement.partyX = this.m_iPartyOriginX;
         monsterArrangement.partyY = this.m_iPartyOriginY;
+
         for (i = 0; i < monsterArrangement.numParty; i++) {
             monsterArrangement.partyPositions[i].x =
                 this.m_aCombatants[i].x - monsterArrangement.partyX;
@@ -1182,45 +1187,46 @@ COMBAT_DATA.prototype.determineInitCombatPos = function () {
             monsterArrangement.limitMaxY = UAFUtil.ByteFromHexString("0x7fffffff");
             monsterArrangement.limitMaxX = UAFUtil.ByteFromHexString("0x7fffffff");
             switch (i) {
+                // PORT NOTE: I think F = Front, R = Right, L = Left, B = Back
                 case 0: // Headed North
-                    monsterArrangement.dx['F' - 'A'] = -1;
-                    monsterArrangement.dx['R' - 'A'] = 1;
-                    monsterArrangement.dx['L' - 'A'] = -1;
-                    monsterArrangement.dx['B' - 'A'] = 1;
-                    monsterArrangement.dy['F' - 'A'] = -1;
-                    monsterArrangement.dy['R' - 'A'] = 0;
-                    monsterArrangement.dy['L' - 'A'] = 0;
-                    monsterArrangement.dy['B' - 'A'] = 1;
+                    monsterArrangement.dx['F'.charCodeAt(0) - 'A'.charCodeAt(0)] = -1;
+                    monsterArrangement.dx['R'.charCodeAt(0) - 'A'.charCodeAt(0)] = 1;
+                    monsterArrangement.dx['L'.charCodeAt(0) - 'A'.charCodeAt(0)] = -1;
+                    monsterArrangement.dx['B'.charCodeAt(0) - 'A'.charCodeAt(0)] = 1;
+                    monsterArrangement.dy['F'.charCodeAt(0) - 'A'.charCodeAt(0)] = -1;
+                    monsterArrangement.dy['R'.charCodeAt(0) - 'A'.charCodeAt(0)] = 0;
+                    monsterArrangement.dy['L'.charCodeAt(0) - 'A'.charCodeAt(0)] = 0;
+                    monsterArrangement.dy['B'.charCodeAt(0) - 'A'.charCodeAt(0)] = 1;
                     break;
                 case 1: // Headed East
-                    monsterArrangement.dx['F' - 'A'] = 1;
-                    monsterArrangement.dx['R' - 'A'] = 1;
-                    monsterArrangement.dx['L' - 'A'] = -1;
-                    monsterArrangement.dx['B' - 'A'] = -1;
-                    monsterArrangement.dy['F' - 'A'] = 0;
-                    monsterArrangement.dy['R' - 'A'] = 1;
-                    monsterArrangement.dy['L' - 'A'] = -1;
-                    monsterArrangement.dy['B' - 'A'] = 0;
+                    monsterArrangement.dx['F'.charCodeAt(0) - 'A'.charCodeAt(0)] = 1;
+                    monsterArrangement.dx['R'.charCodeAt(0) - 'A'.charCodeAt(0)] = 1;
+                    monsterArrangement.dx['L'.charCodeAt(0) - 'A'.charCodeAt(0)] = -1;
+                    monsterArrangement.dx['B'.charCodeAt(0) - 'A'.charCodeAt(0)] = -1;
+                    monsterArrangement.dy['F'.charCodeAt(0) - 'A'.charCodeAt(0)] = 0;
+                    monsterArrangement.dy['R'.charCodeAt(0) - 'A'.charCodeAt(0)] = 1;
+                    monsterArrangement.dy['L'.charCodeAt(0) - 'A'.charCodeAt(0)] = -1;
+                    monsterArrangement.dy['B'.charCodeAt(0) - 'A'.charCodeAt(0)] = 0;
                     break;
                 case 2: // Headed south
-                    monsterArrangement.dx['F' - 'A'] = 1;
-                    monsterArrangement.dx['R' - 'A'] = -1;
-                    monsterArrangement.dx['L' - 'A'] = 1;
-                    monsterArrangement.dx['B' - 'A'] = -1;
-                    monsterArrangement.dy['F' - 'A'] = 1;
-                    monsterArrangement.dy['R' - 'A'] = 0;
-                    monsterArrangement.dy['L' - 'A'] = 0;
-                    monsterArrangement.dy['B' - 'A'] = -1;
+                    monsterArrangement.dx['F'.charCodeAt(0) - 'A'.charCodeAt(0)] = 1;
+                    monsterArrangement.dx['R'.charCodeAt(0) - 'A'.charCodeAt(0)] = -1;
+                    monsterArrangement.dx['L'.charCodeAt(0) - 'A'.charCodeAt(0)] = 1;
+                    monsterArrangement.dx['B'.charCodeAt(0) - 'A'.charCodeAt(0)] = -1;
+                    monsterArrangement.dy['F'.charCodeAt(0) - 'A'.charCodeAt(0)] = 1;
+                    monsterArrangement.dy['R'.charCodeAt(0) - 'A'.charCodeAt(0)] = 0;
+                    monsterArrangement.dy['L'.charCodeAt(0) - 'A'.charCodeAt(0)] = 0;
+                    monsterArrangement.dy['B'.charCodeAt(0) - 'A'.charCodeAt(0)] = -1;
                     break;
                 case 3: // Headed West
-                    monsterArrangement.dx['F' - 'A'] = -1;
-                    monsterArrangement.dx['R' - 'A'] = -1;
-                    monsterArrangement.dx['L' - 'A'] = 1;
-                    monsterArrangement.dx['B' - 'A'] = 1;
-                    monsterArrangement.dy['F' - 'A'] = 0;
-                    monsterArrangement.dy['R' - 'A'] = -1;
-                    monsterArrangement.dy['L' - 'A'] = 1;
-                    monsterArrangement.dy['B' - 'A'] = 0;
+                    monsterArrangement.dx['F'.charCodeAt(0) - 'A'.charCodeAt(0)] = -1;
+                    monsterArrangement.dx['R'.charCodeAt(0) - 'A'.charCodeAt(0)] = -1;
+                    monsterArrangement.dx['L'.charCodeAt(0) - 'A'.charCodeAt(0)] = 1;
+                    monsterArrangement.dx['B'.charCodeAt(0) - 'A'.charCodeAt(0)] = 1;
+                    monsterArrangement.dy['F'.charCodeAt(0) - 'A'.charCodeAt(0)] = 0;
+                    monsterArrangement.dy['R'.charCodeAt(0) - 'A'.charCodeAt(0)] = -1;
+                    monsterArrangement.dy['L'.charCodeAt(0) - 'A'.charCodeAt(0)] = 1;
+                    monsterArrangement.dy['B'.charCodeAt(0) - 'A'.charCodeAt(0)] = 0;
                     break;
             };
             monsterArrangement.turtleX = 0;
@@ -1266,8 +1272,8 @@ COMBAT_DATA.prototype.ComputeDistanceFromParty = function() {
     var queue;
     var queueStart;
     var queueLen;
-    queue = [Drawtile.MAX_TERRAIN_WIDTH * Drawtile.MAX_TERRAIN_HEIGHT];
-    monsterArrangement.distanceFromParty = [Drawtile.MAX_TERRAIN_WIDTH * Drawtile.MAX_TERRAIN_HEIGHT];
+    queue = []; for (var idx = 0; idx < Drawtile.MAX_TERRAIN_WIDTH * Drawtile.MAX_TERRAIN_HEIGHT; idx++) { queue[idx] = 0; }
+    monsterArrangement.distanceFromParty = []; for (var idx = 0; idx < Drawtile.MAX_TERRAIN_WIDTH * Drawtile.MAX_TERRAIN_HEIGHT; idx++) { queue[idx] = 0; }
     // 254 represents cells whose distance is unknown.
     // 255 represents a cell that is inaccessible.
     // 0 --> 253 represents a cell the party can reach.
@@ -1682,6 +1688,7 @@ COMBAT_DATA.prototype.MonsterPlacementCallback = function(turtlecode) {
     var errorMessage = COMBAT_DATA_errorMessage;  // PORT NOTE:  Originally a static variable
     var i = 0, n = 0, repeat = 0;
     var activeMessage = COMBAT_DATA_activeMessage; // PORT NOTE:  Originally a static variable;
+
     if (!monsterArrangement.active) {
         if (!activeMessage) {
             activeMessage = true;
@@ -1747,15 +1754,15 @@ COMBAT_DATA.prototype.MonsterPlacementCallback = function(turtlecode) {
             case '7':
             case '8':
             case '9':
-                repeat = 10 * repeat + c - '0';
+                repeat = 10 * repeat + (c.charCodeAt(0) - '0'.charCodeAt(0));
                 break;
             case 'L':
             case 'F':
             case 'R':
             case 'B':
                 if (repeat == 0) repeat = 1;
-                monsterArrangement.turtleX += repeat * monsterArrangement.dx[c - 'A'];
-                monsterArrangement.turtleY += repeat * monsterArrangement.dy[c - 'A'];
+                monsterArrangement.turtleX += repeat * monsterArrangement.dx[c.charCodeAt(0) - 'A'.charCodeAt(0)];
+                monsterArrangement.turtleY += repeat * monsterArrangement.dy[c.charCodeAt(0) - 'A'.charCodeAt(0)];
                 repeat = 0;
                 break;
             case 'P':
@@ -1874,7 +1881,7 @@ COMBAT_DATA.prototype.MonsterPlacementCallback = function(turtlecode) {
                     if (maxRadius > Drawtile.MAX_TERRAIN_HEIGHT) maxRadius = Drawtile.MAX_TERRAIN_HEIGHT;
                     maxRadius = maxRadius / 4;
                     maxCells = (2 * maxRadius + 1) * (2 * maxRadius + 1);
-                    cellsAttempted = [maxCells];
+                    cellsAttempted = [];
                     cellAttIndx = 2 * maxRadius * (maxRadius + 1);
                     if (cellsAttempted == null) {
                         Globals.die(0x439805);
@@ -2002,6 +2009,7 @@ COMBAT_DATA.prototype.MonsterPlacementCallback = function(turtlecode) {
                 repeat = 0;
                 break;
         };
+
     };
 
     return result;
@@ -2138,14 +2146,12 @@ COMBAT_DATA.prototype.IsValidTarget = function(pAttacker, pTarget, targetValidit
     var scriptContext = new SCRIPT_CONTEXT();
     var result = "";
     var answer = 0;
-    if (pTarget == null) return false;
-    if ((targetValidity != false)
+    if ((targetValidity != null)
         && targetValidity >= 0) return pAttacker.targetValidity == 1;
-
 
     scriptContext.SetCombatantContext(pTarget);
     scriptContext.SetAttackerContext(pAttacker);
-    scriptContext.SetTargetContext(pTarget);
+    scriptContext.SetTargetContextCombatant(pTarget);
 
     result = pTarget.RunCombatantScripts(
         SPECAB.IS_VALID_TARGET,

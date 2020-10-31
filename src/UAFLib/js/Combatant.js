@@ -1,87 +1,74 @@
 /** TODO **/
 function COMBATANT() {
+    this.self = 0;
+    this.x = 0, this.y = 0;  // During creation x is the newMonsters index!
+    this.hPath = 0;
+    this.m_iInitiative = 0; //
+    this.scriptPriority = 0;
+    this.m_target = 0; // index of target
+    this.targetValidity = 0; //-1=unknown; 0=notValid; 1=valid
+    this.m_iFacing = 0;
+    this.m_iMovement = 0;
+    this.m_iMoveDir = 0;
+    this.m_iNumDiagonalMoves = 0;  // In this round.
+    this.moveX = 0;
+    this.moveY = 0;
+    this.lastAttackRound = 0;
+    this.availAttacks = 0.0;  // double
+    this.continueAttack = false; // interrupt a series of multiple attacks?
+    this.iFleeingFlags = 0;  // See FLEEING_FLAGS
+    this.iAutoFlags = 0;     // See AUTO_FLAGS
+    this.isTurned =  false;  // this guy has been turned and is fleeing from the cleric that did it
+    this.hasTurnedUndead = false; // only get to turn undead once per combat
+    this.m_iLastAttacker = 0; // who tried to hit us most recently?
+    this.m_iLastAttacked = 0; // who did we try to hit most recently?
+    this.m_eLastAction = 0; // PORT NOTE:  enum type - setting to default of 0
+    this.turnIsDone = false;
+    this.isBandaged = false;
+    this.bandageWho = 0;
+    this.didMove = false;
+    this.m_ICS = 0; // PORT NOTE:  enum type - setting to default of 0
+    this.friendly = false;
+    this.m_adjFriendly = 0; // 0=leave alone; 1=friendly; 2=not friendly; 3=toggle friendly
+    this.blitDeathTile = 0;
+    this.m_spellIDBeingCast = "";
+    this.m_secondarySpellIDBeingCast = "";
+    this.m_itemSpellIDBeingCast = "";
+    this.Wpn_Type = 0; // Not serializedUsed during item spell casting process. // PORT NOTE:  enum type - setting to default of 0
+    this.width = 0;
+    this.height = 0;
+    this.targetPos = 0;  // PORT NOTE:  POSITION, but that is really just a list index
+    this.origKey = 0;
+    this.combatant_pendingSpellKey = 0;
+    this.combatant_activeSpellKey = 0; // -1 in idle state
+    this.combatant_spellCastingLevel = 0; //level at which combatant_activeSpellKey was cast
+    this.forceAttackPose = false;
+    this.m_isCombatReady = 0;
+    this.m_spellDamageHP = 0;
+    // *******************************
+    this.m_useTempHP = false; // During combat spell processing adjustments are made here
+    this.m_tempHP = 0;     // rather than to the character's HP.  At the end of spell
+    // processing, we transfer the temp value to the character.
+    // *******************************
+    this.m_specialActionName = "";
+    this.m_specialActionIndex = 0;
+
     if (this.m_pCharacter != null) {
         Globals.die(0xffd21c);
     };
     this.combatantSA = new SPECIAL_ABILITIES();
     this.combatantSA.Clear();
     this.combattargets = new CList();
-    this.Clear();
     this.m_preCombatMorale = 0;
+    this.targeters = new CList();
+    this.Clear();
     /*
-int self;
-int x, y;  // During creation x is the newMonsters index!
-int hPath;
 enum INITIATIVE {
     INITIATIVE_AlwaysFirst = 1,
     INITIATIVE_FirstDefault = 9,
     INITIATIVE_LastDefault = 18,
     INITIATIVE_Never = 23,
-};
-int m_iInitiative; //
-int scriptPriority;
-int m_target; // index of target
-int targetValidity; //-1=unknown; 0=notValid; 1=valid
-int m_iFacing;
-int m_iMovement;
-int m_iMoveDir;
-int m_iNumDiagonalMoves;  // In this round.
-int moveX;
-int moveY;
-int lastAttackRound;
-double availAttacks;
-BOOL continueAttack; // interrupt a series of multiple attacks?
-int  iFleeingFlags;  // See FLEEING_FLAGS
-int  iAutoFlags;     // See AUTO_FLAGS
-BOOL isTurned;  // this guy has been turned and is fleeing from the cleric that did it
-BOOL hasTurnedUndead; // only get to turn undead once per combat
-int  m_iLastAttacker; // who tried to hit us most recently?
-int  m_iLastAttacked; // who did we try to hit most recently?
-LASTACTION m_eLastAction; //
-BOOL turnIsDone;
-BOOL isBandaged;
-int  bandageWho;
-BOOL didMove;
-individualCombatantState m_ICS;
-BOOL friendly;
-int  m_adjFriendly; // 0=leave alone; 1=friendly; 2=not friendly; 3=toggle friendly
-BOOL blitDeathTile;
-SPELL_ID m_spellIDBeingCast;
-SPELL_ID m_secondarySpellIDBeingCast;
-SPELL_ID m_itemSpellIDBeingCast;
-weaponClassType Wpn_Type; // Not serializedUsed during item spell casting process.
-int width;
-int height;
-POSITION targetPos;
-int origKey;
-int combatant_pendingSpellKey;
-int combatant_activeSpellKey; // -1 in idle state
-#ifdef SpellInitiationScript
-                                // -2 means the SpellInitiationScript has been executed
-                                // positive value is index into activeSpellList
-#endif
-int combatant_spellCastingLevel; //level at which combatant_activeSpellKey was cast
-BOOL forceAttackPose;
-// Only referenced in one function 20101017 PRS   int m_iAttDiceSides;
-// Only referenced in one function 20101017 PRS   int m_iAttDiceNum;
-// Only computed and used in one function 20101017 PRS   int m_iAttDiceRoll;
-int m_isCombatReady;
-int m_spellDamageHP;
-// *******************************
-bool m_useTempHP; // During combat spell processing adjustments are made here
-int m_tempHP;     // rather than to the character's HP.  At the end of spell
-// processing, we transfer the temp value to the character.
-// *******************************
-CString m_specialActionName;
-int m_specialActionIndex;
-
-SPECIAL_ABILITIES combatantSA;
-OrderedQueue < int, MAX_COMBAT_TARGETS > combattargets; // who am I targeting?
-// temp list to check perimeter of self for attackers.
-CList < int, int > targeters;
-void ComputeCombatViewValues(void);
-
-     */ 
+};*/
 }
 
 COMBATANT.prototype.Clear = function () {
@@ -144,6 +131,7 @@ COMBATANT.prototype.State = function (ICS) {
         //WriteDebugString("DEBUG - COMBATANT(%s)::State(%d)\n", m_pCharacter->GetName(),ICS);
     };
     if ((this.m_ICS != individualCombatantState.ICS_Guarding) && (ICS == individualCombatantState.ICS_Guarding)) {
+        Globals.debug(this.m_ICS + " / " + ICS);
         this.EnterGuardingState();
     };
 /*
@@ -165,7 +153,7 @@ COMBATANT.prototype.EnterGuardingState = function () {
     var hookParameters = new HOOK_PARAMETERS();
     var scriptContext = new SCRIPT_CONTEXT();
     scriptContext.SetCombatantContext(this);
-    RunCombatantScripts(SPECAB.GUARDING_GUARD,
+    this.RunCombatantScripts(SPECAB.GUARDING_GUARD,
         SPECAB.ScriptCallback_RunAllScripts,
         null,
         "Combatant entering guarding state");
@@ -896,6 +884,7 @@ COMBATANT.prototype.charPetrified = function() {
 
 struct COMBATANT //: public CHARACTER
 {
+void ComputeCombatViewValues(void);
 /* Here we put functions that are needed to access the
  * underlying character.  We used to derive COMBATANT 
  * from character and so the character variables were
@@ -1023,7 +1012,6 @@ void blitDeadSprite();
 void blitDyingSprite();
 void blitPetrifiedSprite();
 BOOL CanAddTarget(int target);
-void AddTarget(int newTarget, bool freeAttack);
 BOOL C_AddTarget(COMBATANT & dude, int range = 0);
 BOOL AddMapTarget(int mapx, int mapy, PATH_DIR dir, int dirX, int dirY);
 BOOL AddTargetSelf();
@@ -1034,7 +1022,6 @@ int  GetNextTarget();
 int  GetMaxTargets();
 int  GetNumTargets() const { return combattargets.GetCount(); }
 BOOL HaveTarget(int target);
-void RemoveTarget(int target);
 BOOL IsAttackPossible(void);
 int  makeAttack(int target, int extraAttacksAvailable, int * pDeathIndex);
 BOOL DetermineIfBackStab(int wpn, int targ) const ;
@@ -1983,7 +1970,7 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
     if (!Drawtile.HaveLineOfSight(this.GetCenterX(), this.GetCenterY(), targetX, targetY, null))
         return false;
 
-    if (!(combatData.IsValidTarget(this, targCOMBATANT, null).answer)) { Globals.debug("----!!!!invalid target"); return false;}
+    if (!(combatData.IsValidTarget(this, targCOMBATANT, null).answer)) return false;
     
     if (dis > 1) {
         if (!this.GetAdjDetectingInvisible()) {
@@ -2004,4 +1991,46 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
     }
 
     return true;
+}
+
+
+COMBATANT.prototype.AddTarget = function (newTarget, freeAttack) {
+
+    if (newTarget == NO_DUDE)
+        return;
+
+    this.RemoveTarget(newTarget);
+
+    if (this.CanTarget(freeAttack)) {
+        // if using weapon, change to new target (only one allowed)
+
+        var targCOMBATANT;
+        targCOMBATANT = Globals.GetCombatantPtr(newTarget);
+        Globals.ASSERT(targCOMBATANT != null);
+        if (targCOMBATANT == null) return;
+
+        var dist = Drawtile.Distance6(this.self, this.x, this.y,
+            targCOMBATANT.self, targCOMBATANT.x, targCOMBATANT.y);
+
+        this.combattargets.Insert(newTarget,
+            this.MakeTargetKey(newTarget, dist));
+    }
+
+    this.SetCurrTarget();
+}
+
+
+COMBATANT.prototype.RemoveTarget = function (target) {
+    if (this.combattargets.GetCount() == 0)
+        return;
+
+    var pos = combattargets.GetHeadPosition();
+    while (pos != null) {
+        if (combattargets.PeekAtPos(pos) == targ) {
+            combattargets.RemoveAt(pos);
+            return;
+        }
+        else
+            combattargets.GetNext(pos);
+    }
 }

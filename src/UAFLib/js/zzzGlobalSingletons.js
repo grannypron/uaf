@@ -8,6 +8,7 @@ var surfaceType = new surfaceTypeObj();
 var charStatusType = new charStatusTypeObj(charStatusType);
 var combatVictorType = new combatVictorTypeObj();
 var creatureSizeType = new creatureSizeTypeObj(creatureSizeType);
+var individualCombatantState = new individualCombatantState();
 var eventDirType = new eventDirTypeObj();
 var eventDistType = new eventDistTypeObj();
 var ActorInstanceType = new ActorInstanceTypeObj();

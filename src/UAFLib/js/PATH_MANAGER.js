@@ -10,7 +10,7 @@ function PATH_MANAGER(num) {
     this.DestBottom = 0;
     this.StartX = 0;
     this.StartY = 0;
-    this.Path = [num]; //CPathFinder *;
+    this.Path = []; //CPathFinder *;
     this.Tags = new TAG_LIST(num);  //TAGptr  // for determining which paths are already taken
     this.MaxPaths = num;
     this.CurrPath = 0;

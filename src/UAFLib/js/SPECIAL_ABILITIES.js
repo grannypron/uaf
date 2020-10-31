@@ -71,8 +71,8 @@ SPECIAL_ABILITIES.prototype.GetCount = function (){
 }
 
 SPECIAL_ABILITIES.prototype.RunScripts = function(scriptName, fnc, pkt, comment, sourceType, sourceName) {
-    var scripts = [SPECAB.MAX_SPEC_AB];
-    var saAbility = [SPECAB.MAX_SPEC_AB];
+    var scripts = [];
+    var saAbility = [];
     var binScript = "";
     var numScript = 0;
     var i;

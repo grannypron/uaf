@@ -1,4 +1,4 @@
-var charStatusType = function() {
+function charStatusType() {
     this.Unconscious = 1; // 1  less than one hp, but not losing hp (dying)
     this.Dead = 2;        // 2  <= -10 hp
     this.Fled = 3;        // 3 
