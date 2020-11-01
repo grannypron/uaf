@@ -2201,3 +2201,292 @@ COMBATANT.prototype.StopCasting = function(EndYourTurn, canFinishCasting) {
     if (EndYourTurn)
         this.EndTurn(State());
 }
+
+
+COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathIndex)
+{
+    var wpnConsumesSelfAsAmmo = false; // Assign value to make compiler happy!
+    if (targ == 0) {
+        Globals.ASSERT(true);
+    };
+    var toHitComputation = new ToHitComputation();
+    Globals.ASSERT(self != NO_DUDE);
+    if (this.IsDone(false, "Can combatant make attack")) return 1;
+    toHitComputation.BeginSpellScriptFailure(0);
+    CombatMsg = "";
+    FormattedText.ClearFormattedText(combatTextData);
+
+    if (targ == NO_DUDE) return 1;
+    if (availAttacks + extraAttacksAvailable <= 0) return 1;
+
+    {
+        var msg = "";
+        var nbrattacks = this.GetNbrAttacks();
+        var availattacks = this.availAttacks;
+        var currAttack = nbrattacks - availattacks;
+
+        if ((currAttack < 0) || (currAttack >= nbrattacks)) currAttack = 0;
+        monsterData.GetMonsterAttackMsg(m_pCharacter.monsterID, currAttack, msg);
+        if (msg == "*NoAttack*") return 1;
+    };
+
+    Drawtile.EnsureVisibleTargetTargetForceCenter(targ, false);
+
+    this.lastAttackRound = Globals.GetCurrentRound();
+    this.State(individualCombatantState.ICS_Attacking);
+    this.StopCasting(false, false);
+
+    var targCOMBATANT;
+    targCOMBATANT = Globals.GetCombatantPtr(targ);
+    Globals.ASSERT(targCOMBATANT != null);
+    if (targCOMBATANT == null) return 1;
+    if (targCOMBATANT.GetStatus() == individualCombatantState.Dead) return 1; // not on the map anymore
+
+
+    var decQty = false;
+    var wpn = 0;
+    wpn = m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0);
+    var itemID = "";
+    itemID = "";
+
+    if (wpn != NO_READY_ITEM) {
+        itemID = m_pCharacter.myItems.GetItem(wpn);
+        var dist = Drawtile.Distance6(this.self, this.x, this.y,
+            targCOMBATANT.self, targCOMBATANT.x, targCOMBATANT.y);
+        decQty = Items.WpnConsumesAmmoAtRange(itemID, dist);
+
+        // do we decrement weapon qty or ammo qty?
+        wpnConsumesSelfAsAmmo = Items.WpnConsumesSelfAsAmmo(itemID);
+        if (decQty && !wpnConsumesSelfAsAmmo) {
+            // ammo is readied and must be decremented
+            wpn = m_pCharacter.myItems.GetReadiedItem(Items.AmmoQuiver, 0);
+            itemID = m_pCharacter.myItems.GetItem(wpn);
+        }
+    }
+
+    {
+        var actor;
+        this.GetContextActor();
+        RunTimeIF.SetCharContext();
+        actor = targCOMBATANT.GetContextActor();
+        RunTimeIF.SetTargetContext(actor);
+    };
+    var pWeapon = null;
+    if (!itemID.IsNoItem()) {
+        pWeapon = itemData.GetItem(itemID);
+    };
+
+
+    toHitComputation.Compute(this, targ, targCOMBATANT, wpn);
+
+    if (toHitComputation.DidHit())
+    {
+        toHitComputation.Successful(1);
+/*#ifdef TraceFreeAttacks      //PORT NOTE: This was off
+        {
+            WriteDebugString("TFA - %s succeeds in hitting %s; numberAttacks=%d; availAttacks=%d\n",
+                GetName(), targCOMBATANT -> GetName(), int(GetNbrAttacks()), int(availAttacks));
+        };
+#endif */
+
+        var damageComputation = new DamageComputation();
+
+        var attackSpellID = "", itemSpellID = "";    //SPELL_ID 
+        if (wpn != Items.NO_READY_ITEM) {
+            var pSpell;
+            itemSpellID = pWeapon.SpellID();
+            if (!(itemSpellID == "" || itemSpellID == null)) {
+                pSpell = spellData.PeekSpell(itemSpellID);
+                if (itemSpellID.IsValidSpell()) {
+                    //Not Implemented(0x551c, false);
+                }
+                else {
+                    var msg = "";
+                    if (!debugStrings.AlreadyNoted("WNHUSN")) {
+                        msg = "A Weapon named:\n" + pWeapon.UniqueName() + "\nhas an undefined spell named\n" + pWeapon.SpellID();
+                        Globals.MsgBoxInfo(msg, "Warning");
+                    };
+                };
+            };
+        }
+        else {
+            if (this.GetType() == MONSTER_TYPE) {
+                var nbrAttacks = this.GetNbrAttacks();
+                var currAttack = nbrAttacks - this.availAttacks;
+                //20130829 PRS  ASSERT( (currAttack>=0) && (currAttack<nbrAttacks) );
+                if ((currAttack < 0) || (currAttack >= nbrAttacks)) currAttack = 0;
+
+                var pMonster = monsterData.PeekMonster(m_pCharacter.monsterID);
+                Globals.ASSERT(pMonster != null);
+
+                attackSpellID = pMonster.attackData.PeekMonsterAttackDetails(currAttack).spellID;
+            };
+        };
+
+
+
+
+        this.InstantSpellActivate(attackSpellID, itemSpellID, toHitComputation);
+        if ((attackSpellID.IsEmpty() && itemSpellID.IsEmpty())
+            || (toHitComputation.BeginSpellScriptFailure() == 0)) {
+            damageComputation.Compute(this,
+                targCOMBATANT,
+                wpn,
+                toHitComputation.Rolled(),
+                toHitComputation.IsBackStab(),
+                toHitComputation.BackstabMultiplier());
+            {
+                if (!(itemID == null || itemID == "")) {                   // PORT NOTE:   Was if (!itemID.IsNoItem()), but this just checked to see if it was empty
+                    // done above....pWeapon = itemData.GetItem(itemID);
+                    var noSpell = "";
+                    if (pWeapon.IsUsable() && (pWeapon.Wpn_Type == weaponClassType.SpellCaster)) {
+                        this.InstantSpellActivate(pWeapon.spellID, noSpell, targ, toHitComputation);
+                    };
+                    if (pWeapon.IsUsable() && (pWeapon.Wpn_Type == weaponClassType.SpellLikeAbility)) {
+                        InstantSpellActivate(pWeapon.spellID, noSpell, targ, toHitComputation);
+                    };
+                };
+            };
+
+            targCOMBATANT.UpdateSpellForAttacks(1);
+
+            this.PlayHit();
+
+            {
+                targCOMBATANT.TakeDamage(damageComputation.Damage(),
+                    damageComputation.IsNonLethal(),
+                    null,
+                    targCOMBATANT == this,
+                    pDeathIndex);
+
+                if (targCOMBATANT.GetStatus() == charStatusType.Dead) {
+                    // no longer a valid target
+                    this.RemoveCurrTarget();
+                }
+            };
+            {
+                if (damageComputation.SpellID().IsValidSpell()) {
+                    var samsg = "";
+                    var pSpell = spellData.GetSpell(damageComputation.SpellID());
+                    Globals.ASSERT(pSpell != null);
+                    if (pSpell != null) {
+                        samsg = pSpell.CastMsg;
+                        samsg.ReplaceAll("/s", pSpell.Name);
+                        samsg.ReplaceAll("/c", this.GetName());
+                        if (targCOMBATANT != null)
+                            samsg.ReplaceAll("/t", targCOMBATANT.GetName());
+                        else
+                            samsg.ReplaceAll("/t", "");
+
+                        DispText.CombatMsg = samsg;
+                    }
+                };
+                if (DispText.CombatMsg == null || DispText.CombatMsg == "") {
+                    if (damageComputation.Message() == null || damageComputation.Message() == "") {
+                        if (toHitComputation.IsBackStab()) {
+                            DispText.CombatMsg = "Rolls " + toHitComputation.Rolled() + " and BackStabs for " + damageComputation.Damage() + " dmg";
+                        }
+                        else {
+                            DispText.CombatMsg = "Rolls " + toHitComputation.Rolled() + " and hits for " + damageComputation.Damage() + " dmg";
+                        }
+                    }
+                    else {
+                        DispText.CombatMsg = damageComputation.Message();
+                    };
+                }
+            };
+            // Condition added 20110413 PRS......
+            // Manikus said that auto combatants should get multiple attacks even after a successful hit.
+            //continueAttack=FALSE;
+
+            // Changed again 20110522.
+            // Manikus tells me that multiple attacks should ALWAYS be possible
+            // if (!OnAuto(false)) continueAttack=FALSE; else continueAttack=TRUE;
+        }
+        else {
+            toHitComputation.Successful(0);
+        };
+    }
+    else {
+        toHitComputation.Successful(0);
+    };
+    if (!toHitComputation.Successful()) {
+/*#ifdef TraceFreeAttacks
+        {
+            WriteDebugString("TFA - %s failed to hit %s; numberAttacks=%d; availAttacks=%d\n",
+                GetName(), targCOMBATANT -> GetName(), int(GetNbrAttacks()), int(availAttacks));
+        };
+#endif*/
+        this.PlayMiss();
+        if (toHitComputation.IsBackStab()) {
+            DispText.CombatMsg = "Rolls " + toHitComputation.Rolled() + " amd fails BackStab";
+        }
+        else {
+            DispText.CombatMsg = "Rolls " + toHitComputation.Rolled() + " and misses";
+        };
+        continueAttack = true;
+    }
+
+
+
+
+    if (toHitComputation.Successful()) {
+    }
+    else {
+    };
+    FormattedText.FormatCombatText(FormattedText.combatTextData, DispText.CombatMsg);
+
+    if (decQty)  // wpn and giID refer to either the weapon or the ammo consumed by the weapon
+    {
+        // dec item qty by 1, item won't show up in post-combat treasure list
+        if (wpn != Items.NO_READY_ITEM) {
+            if (wpnConsumesSelfAsAmmo) {
+                var myItem = new ITEM();
+                myItem = m_pCharacter.myItems.GetItem(wpn);
+                myItem.qty = 1;
+                combatData.hurledWeapons.AddItem(myItem);
+            };
+            m_pCharacter.myItems.AdjustQty(wpn, -1);
+            if (!m_pCharacter.myItems.HaveItem(itemID)) // if deleted because of zero quantity
+            // 20110519 PRS  if (!myItems.HaveItem(*(GLOBAL_ITEM_ID*)&wpn)) // if deleted because of zero quantity
+            {
+                // item removed, disable special abilities granted by it (if any)
+                var pItem = itemData.GetItem(itemID);
+                if (pItem != null) {
+                    var actor;
+                    var hookParameters = new HOOK_PARAMETERS();
+                    var scriptContext = new SCRIPT_CONTEXT();
+                    actor = GetContextActor();
+                    RunTimeIF.SetCharContext(actor);
+                    scriptContext.SetCharacterContext(this.m_pCharacter);
+                    m_pCharacter.RunCharacterScripts(
+                        SPECAB.ON_USE_LAST_WEAPON,
+                        SPECAB.ScriptCallback_RunAllScripts,
+                        null,
+                        "Decrement weapon or ammo count");
+                    RunTimeIF.ClearCharContext();
+                };
+            };
+
+            // re-calculate movement/encumbrance
+            this.SetEncumbrance(this.determineEffectiveEncumbrance());
+            this.determineMaxMovement();
+        }
+    }
+
+
+    // make sure combatants are facing towards each other
+    this.FaceOpponent(targ);
+    if (!toHitComputation.IsBackStab()) targCOMBATANT.FaceOpponent(this.self);
+
+
+    targCOMBATANT.m_iLastAttacker = self;
+    targCOMBATANT.m_eLastAction = LA_Defend;
+    m_iLastAttacked = targCOMBATANT.self;
+    m_eLastAction = LASTACTION.LA_Attack;
+
+
+    RunTimeIF.ClearTargetContext();
+    RunTimeIF.ClearCharContext();
+    return -1;
+}

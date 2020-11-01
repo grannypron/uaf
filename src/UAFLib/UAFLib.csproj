@@ -209,8 +209,8 @@
     <Content Include="Tests\TestLoadSAs.js" />
     <Content Include="Tests\DemoCombat.js" />
     <Content Include="Tests\TestFreeAttacks.js" />
+    <Content Include="Tests\TestSimpleAttack.js" />
     <Content Include="Tests\TestSimpleCombatMovement.js" />
-    <Content Include="Tests\TestCombatMovementAttack.js" />
     <Content Include="Tests\TestSetupCombat.js" />
     <Content Include="Tests\TestGlobalStats.js" />
     <Content Include="Tests\TestStripFilenamePath.js" />
