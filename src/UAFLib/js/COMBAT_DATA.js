@@ -279,7 +279,6 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
 
         // transfer valid combatants to temp
         var count = 0;
-
         for (i = 0; i < this.NumCombatants()/*m_aCombatants.GetSize()*/; i++) {
             //WriteDebugString("DEBUG - Compatant %d starts at (%d,%d)\n", i, m_aCombatants[i].x, m_aCombatants[i].y);
             if (this.m_aCombatants[i].x >= 0) {
@@ -759,7 +758,7 @@ COMBAT_DATA.prototype.AddCharsToCombatants = function() {
         var stype = party.characters[i].GetAdjStatus();
         if (((stype == charStatusType.Okay) || (stype == charStatusType.Dying))
             && (party.characters[i].GetAllowInCombat())) {
-            temp.Clear();
+            temp = new COMBATANT();   // PORT NOTE:  I don't know how this was only temp.Clear() here, but it was.  Should have had multiple copies of the same combatant object in the m_aCombatants array...
             temp.self = this.m_iNumCombatants;
             //temp.InitFromCharData(i); 
 
@@ -816,7 +815,7 @@ COMBAT_DATA.prototype.AddMonstersToCombatants = function () {
         if (count <= 0) count = 1;
         for (var j = 0; j < count; j++)
         {
-            temp.Clear();                                                                        
+            temp = new COMBATANT();    // PORT NOTE:  I don't know how this was only temp.Clear() here, but it was.  Should have had multiple copies of the same combatant object in the m_aCombatants array...
             temp.self = this.m_iNumCombatants; // init relies on self index                           
             this.m_aCombatants[this.m_iNumCombatants] = temp;                                         
             pCombatant = this.m_aCombatants[this.m_iNumCombatants];
@@ -886,7 +885,7 @@ COMBAT_DATA.prototype.AddMonstersToCombatants = function () {
                 // All of this is a duplicate of code above so that we add the combatant to the combat      
                 // before updating its properties.  This is so that any scripts that reference              
                 // the combatant will find him actually a part of the combat.                               
-                temp.Clear();                                                                          
+                temp = new COMBATANT();     // PORT NOTE:  I don't know how this was only temp.Clear() here, but it was.  Should have had multiple copies of the same combatant object in the m_aCombatants array...                                                                     
                 temp.self = this.m_iNumCombatants; // init relies on self index                             
                 
                 if (this.NumCombatants() < MaxMonstersAllowed)                                               
@@ -1252,7 +1251,7 @@ COMBAT_DATA.prototype.determineInitCombatPos = function () {
                     //SPECAB.RunGlobalScript("CombatPlacement", "PlaceMonsterClose", true);  // Callback function immediately below.
                     break;
                 case eventDistType.Nearby:
-                    this.MonsterPlacementCallback("17FbPV500E");
+                    this.MonsterPlacementCallback("10FbPV500E");
                     //SPECAB.RunGlobalScript("CombatPlacement", "PlaceMonsterNear", true);  // Callback function immediately below.
                     break;
                 case eventDistType.FarAway:
@@ -1262,6 +1261,7 @@ COMBAT_DATA.prototype.determineInitCombatPos = function () {
         };
 
     };
+
 
     monsterArrangement.deActivate();
 }
@@ -2036,7 +2036,6 @@ COMBAT_DATA.prototype.PlantCombatant = function(partyRelativeX, partyRelativeY) 
     var pCombatant;
     n = monsterArrangement.currentMonster;
     pCombatant = combatData.GetCombatant(n);
-
     if (!this.CanPlaceMonsterHere(partyRelativeX + monsterArrangement.partyX,
         partyRelativeY + monsterArrangement.partyY,
         pCombatant.width,
@@ -2044,11 +2043,8 @@ COMBAT_DATA.prototype.PlantCombatant = function(partyRelativeX, partyRelativeY) 
         return false;
     };
 
-    //Globals.debug("PlantCombatant1:" + partyRelativeX + " / " + partyRelativeY);
-    //Globals.debug("PlantCombatant2:" + monsterArrangement.limitMinX);
     if (partyRelativeX - partyRelativeY < monsterArrangement.limitMinX) return false;
     if (partyRelativeX - partyRelativeY > monsterArrangement.limitMaxX) return false;
-    //Globals.debug("PlantCombatant3:" + partyRelativeX + " / " + partyRelativeY);
     if (partyRelativeY < monsterArrangement.limitMinY) return false;
     if (partyRelativeY > monsterArrangement.limitMaxY) return false;
     if (monsterArrangement.distance >= 0) {
@@ -2066,8 +2062,8 @@ COMBAT_DATA.prototype.PlantCombatant = function(partyRelativeX, partyRelativeY) 
             return false;
         };
     };
-    pCombatant.x = partyRelativeX + monsterArrangement.partyX;
-    pCombatant.y = partyRelativeY + monsterArrangement.partyY;
+    pCombatant.x = combatData.m_aCombatants[n].x = partyRelativeX + monsterArrangement.partyX;   // PORT NOTE:  pCombatant is a pointer to the entry in the m_aCombatants array, so I have to set it here in JS - original code was pCombatant.x 
+    pCombatant.y = combatData.m_aCombatants[n].y = partyRelativeY + monsterArrangement.partyY;
     Drawtile.placeCombatant(partyRelativeX + monsterArrangement.partyX,
         partyRelativeY + monsterArrangement.partyY,
         n,

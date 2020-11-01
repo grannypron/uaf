@@ -3,23 +3,26 @@ cWarrior = combatData.GetCombatant(0);
 Globals.debug("cWarrior.x / cWarrior.y: " + cWarrior.x + " / " + cWarrior.y);
 
 // Move nowhere
-cWarrior.MoveCombatant(9, 10, false);
-Globals.ASSERT(cWarrior.x == 9);
-Globals.ASSERT(cWarrior.y == 10);
+cWarrior.MoveCombatant(cWarrior.x, cWarrior.y, false);
+Globals.ASSERT(cWarrior.x == cWarrior.x);
+Globals.ASSERT(cWarrior.y == cWarrior.y);
 
 // One step movement a few times
-cWarrior.MoveCombatant(10, 11, false);
-Globals.ASSERT(cWarrior.x == 10);
-Globals.ASSERT(cWarrior.y == 11);
+var origX = cWarrior.x; var origY = cWarrior.y;
+cWarrior.MoveCombatant(cWarrior.x + 1, cWarrior.y, false);
+Globals.ASSERT(cWarrior.x == (origX + 1));
+Globals.ASSERT(cWarrior.y == origY);
 
-cWarrior.MoveCombatant(10, 12, false);
-Globals.ASSERT(cWarrior.x == 10);
-Globals.ASSERT(cWarrior.y == 12);
+var origX = cWarrior.x; var origY = cWarrior.y;
+cWarrior.MoveCombatant(cWarrior.x + 1, cWarrior.y, false);
+Globals.ASSERT(cWarrior.x == (origX + 1));
+Globals.ASSERT(cWarrior.y == origY);
 
 // Diagonal movement
-cWarrior.MoveCombatant(9, 13, false);
-Globals.ASSERT(cWarrior.x == 9);
-Globals.ASSERT(cWarrior.y == 13);
+var origX = cWarrior.x; var origY = cWarrior.y;
+cWarrior.MoveCombatant(cWarrior.x + 1, cWarrior.y + 1, false);
+Globals.ASSERT(cWarrior.x == (origX + 1));
+Globals.ASSERT(cWarrior.y == (origY + 1));
 
 // Jump over some squares (this is allowed by the engine)
 cWarrior.MoveCombatant(15, 2, false);

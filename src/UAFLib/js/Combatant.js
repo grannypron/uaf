@@ -127,6 +127,9 @@ COMBATANT.prototype.GetName = function () {
 };
 
 COMBATANT.prototype.State = function (ICS) {
+    if (ICS == null || ICS == undefined) {          // PORT NOTE:  Handling overloaded name of accessor/mutator
+        return this.m_ICS;
+    }
     if (this.m_pCharacter != null) {
         //WriteDebugString("DEBUG - COMBATANT(%s)::State(%d)\n", m_pCharacter->GetName(),ICS);
     };
@@ -214,15 +217,15 @@ COMBATANT.prototype.StartAttack = function(targ, additionalAttacks) {
     }
     {
         var pTarget;
-        pTarget = this.GetCombatantPtr(targ);
+        pTarget = Globals.GetCombatantPtr(targ);
 
         if (!pTarget.charOnCombatMap(false, true)) {
             return false;
         };
     };
-    this.State(ICS_Attacking);
+    this.State(individualCombatantState.ICS_Attacking);
     this.StopCasting(false, false);
-    this.EnsureVisibleTarget(targ);
+    Drawtile.EnsureVisibleTargetTargetForceCenter(targ, false);   // PORT NOTE:  Only one parameter provided in this call.  I guess C++ provides default parmeter values, idk
     this.continueAttack = true;
     return true;
 }
@@ -562,7 +565,7 @@ COMBATANT.prototype.ReadyBestWpn = function(targ) {
     }
     else {
         var targCOMBATANT;
-        targCOMBATANT = this.GetCombatantPtr(targ);
+        targCOMBATANT = Globals.GetCombatantPtr(targ);
         Globals.ASSERT(targCOMBATANT != null);
         if (targCOMBATANT != null) {
             isLargeTarget = targCOMBATANT.isLargeDude();
@@ -877,6 +880,92 @@ COMBATANT.prototype.charPetrified = function() {
 }
 
 
+COMBATANT.prototype.AttacksRemaining = function () {
+    return this.availAttacks;
+}
+
+COMBATANT.prototype.OnAuto = function (callAutoActionHook) {
+    // We want to call the hook only at those points in
+    // the combat where it makes sense for 'auto action' to have changed.
+    // Otherwise we call the hook hundreds of times (for example from OnIdle).
+
+    if (callAutoActionHook) {
+        var actor;
+        var hookParameters = new HOOK_PARAMETERS();
+        var scriptContext = new SCRIPT_CONTEXT();
+        this.GetContextActor();
+        RunTimeIF.SetCharContext(actor);
+        scriptContext.SetCombatantContext(this);
+
+//#ifdef newCombatant                   // PORT NOTE:   I think this is on
+        RunCombatantScripts(SPECAB.AUTO_ACTION,
+            SPECAB.ScriptCallback_RunAllScripts,
+            null,
+            "Combatant Auto-action may have changed");
+//#else
+//        combatantSA.RunScripts(AUTO_ACTION, ScriptCallback_RunAllScripts, NULL, "OnAuto", name);
+//#endif
+        RunTimeIF.ClearCharContext();
+        //if (hookParameters[0].IsEmpty()) return FALSE;
+
+
+
+
+        while (!(hookParameters[0] == null || hookParameters[0] == "")) {
+            var col = 0;
+            this.iFleeingFlags &= ~FLEEING_FLAGS.fleeAutoActionScript;
+            this.iAutoFlags &= ~FLEEING_FLAGS.forceAutoScript;
+            this.iAutoFlags &= ~FLEEING_FLAGS.forcePlayerScript;
+            switch (hookParameters[0][0]) {
+                case 'F':
+                    // We probably need to clear 'fleeAutoActionScript' when we 'GetNextCombatant'
+                    // so that the fleeing can be terminated when a spell effect ends.
+                    this.iFleeingFlags |= FLEEING_FLAGS.fleeAutoActionScript;
+                    if (hookParameters[0].GetLength() > 1) {
+                        var attacker = 0;
+                        /** TODO - i have to be real careful about what (LPCSTR)hookParameters[0] + 1 is.  +1 to a pointer to a character string?
+                        if (sscanf((LPCSTR)hookParameters[0] + 1, "%d", & attacker) == 1) {
+                            if ((attacker >= 0) && (attacker < combatData.NumCombatants())) {
+                                if (attacker != this -> self) {
+                                    this.m_iLastAttacker = attacker;
+                                };
+                            };
+                        }; **/
+                    };
+                    break;
+                case 'C':
+                    if (hookParameters[0].GetLength() > 1) {
+                        if (hookParameters[0][1] == 'P') iAutoFlags |= forcePlayerScript;
+                        if (hookParameters[0][1] == 'A') iAutoFlags |= forceAutoScript;
+                    };
+                    break;
+            };
+            col = hookParameters[0].Find(',');
+            if (col < 0) hookParameters[0] = "";
+            else hookParameters[0] = hookParameters[0].Right(hookParameters[0].GetLength() - col);
+        };
+    };
+
+
+    if (this.iFleeingFlags != 0) return true;
+    if (this.iAutoFlags & FLEEING_FLAGS.forceAutoScript) return true;
+    if (this.iAutoFlags & FLEEING_FLAGS.forcePlayerScript) return false;
+
+    if ((this.friendly && (this.m_adjFriendly == 2))
+        || (this.m_adjFriendly == 3)
+    ) {
+        return true;
+    };
+
+
+    if (this.GetAdjAutomatic()) {
+        return true;
+    };
+
+    return false;
+
+}
+
 
 /*
  * 
@@ -1027,7 +1116,6 @@ int  makeAttack(int target, int extraAttacksAvailable, int * pDeathIndex);
 BOOL DetermineIfBackStab(int wpn, int targ) const ;
 void AttackOver();
 void StopAttack();
-double AttacksRemaining() const { return availAttacks; }
 BOOL UseAttackPose();
 BOOL NeedMissileAnimation();
 void InitMissileAnimation();
@@ -1045,7 +1133,6 @@ void InitSpellHitAnimation(int targ);
 BOOL NeedSpellLingerAnimation();
 void InitSpellLingerAnimation(/*int mapx, int mapy* /);
 void InitSpellLingerAnimation(int targ);
-BOOL CanTarget(bool freeAttack);
 BOOL CanMove(BOOL allowZeroMove);
 BOOL CanCast();
 BOOL CanUse();
@@ -1064,7 +1151,6 @@ void TurnUndead();
 void StartInitialSpellCasting(const SPELL_ID& spellName, const SPELL_ID& secondarySpellName);
 void StartInitialItemSpellCasting(const SPELL_ID& spellID);
 void EndInitialSpellCasting();
-BOOL IsDone(bool freeAttack, LPCSTR comment);
 BOOL IsAttacking() const { return (State() == ICS_Attacking); }
 BOOL IsGuarding() const { return (State() == ICS_Guarding); }
 BOOL IsCasting();
@@ -1088,7 +1174,6 @@ void SetSpellIDBeingCast(const SPELL_ID& spellID, const SPELL_ID& secondarySpell
 void SetItemSpellIDBeingCast(const SPELL_ID& spellID) { m_itemSpellIDBeingCast = spellID; };
 BOOL FetchSpellBeingCast(CHARACTER_SPELL * pCharSp=NULL);
 CString RunPSScripts(const CString& scriptName, LPCSTR comment);
-BOOL OnAuto(bool callAutoActionHook);
 void StopMoving() { State(ICS_None); moveX = -1; moveY = -1; }
 void moveLeft();
 void moveRight();
@@ -1155,8 +1240,6 @@ BOOL ModifyACAsTarget
 enum SPECIAL_SELF {
     SELF_NewCombatant = -3,
 };
-inline individualCombatantState State(void) const { return m_ICS;};
-void State(individualCombatantState ICS);
 
 };
  */
@@ -1642,7 +1725,7 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
                     hookParameters[6] = tempCOMBATANT.IsPartyMember() ? "Y" : "N";
                     hookParameters[7] = tempCOMBATANT.OnAuto(false) ? "Y" : "N";
                     scriptContext.SetAttackerContext(tempCOMBATANT);
-                    scriptContext.SetTargetContext(this);
+                    scriptContext.SetTargetContextCombatant(this);
 
                     {
                         var performGuardAttack = false;
@@ -1650,7 +1733,7 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
                         if (tempCOMBATANT.canAttack(this.self,
                             newX, newY,
                             tempCOMBATANT.GetNbrAttacks(),
-                            this.FreeAttackDistance(),
+                            this.FreeAttackDistance,
                             false)) {
 /*#ifdef TraceFreeAttacks
                             WriteDebugString("TFA - Call script 'Guarding-CanGuardAttack(%s,%s,%s)'\n",
@@ -1667,7 +1750,7 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
 //                            WriteDebugString("TFA - script 'Guarding-CanGuardAttack' returned \"%s\"\n", result);
 //#endif
                             scriptContext.Clear();
-                            if (!result.IsEmpty()) {
+                            if (!(result == null || result == "")) {
                                 if (result[0] == 'Y') {
                                     performGuardAttack = true;
                                 };
@@ -1751,13 +1834,12 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
                     scriptContext.SetTargetContext(this);
 
                     {
-
                         var freeAttackCount = 0;
                         freeAttackCount = 0;
                         if (tempCOMBATANT.canAttack(this.self,
                             oldX, oldY,
                             tempCOMBATANT.m_pCharacter.GetNbrAttacks(),
-                            this.FreeAttackDistance(),
+                            this.FreeAttackDistance,
                             false)) {
 /*#ifdef TraceFreeAttacks
                             WriteDebugString("TFA - Call script 'FreeAttack-CanFreeAttack(%s,%s,%s,%s)\n",
@@ -2033,4 +2115,89 @@ COMBATANT.prototype.RemoveTarget = function (target) {
         else
             combattargets.GetNext(pos);
     }
+}
+
+COMBATANT.prototype.CanTarget = function(freeAttack) {
+    if (!freeAttack && this.IsDone(freeAttack, "Can combatant choose target")) return false;
+
+    if ((this.State() == individualCombatantState.ICS_Casting) || (this.State() == individualCombatantState.ICS_Using)) {
+        Globals.die(0xab4c9); // spell targeting uses different data structures
+        return false;
+    }
+    else
+        return true;
+}
+
+COMBATANT.prototype.IsDone = function(freeAttack, comment) {
+    switch (this.GetStatus()) {
+        case individualCombatantState.Petrified:
+            return true;
+        default:
+            break;
+    };
+
+    if (this.m_isCombatReady < 0) {
+        var actor;
+        var hookParameters = new HOOK_PARAMETERS();
+        var scriptContext = new SCRIPT_CONTEXT();
+        if (this.m_isCombatReady == -1) hookParameters[5] = "Round";
+        if (this.m_isCombatReady == -2) hookParameters[5] = "Action";
+        this.m_isCombatReady = 1;
+        actor = this.GetContextActor();
+        RunTimeIF.SetCharContext(actor);
+        scriptContext.SetCharacterContext(this.m_pCharacter);
+        scriptContext.SetCombatantContext(this);
+        var result = this.m_pCharacter.RunCharacterScripts(
+            SPECAB.IS_COMBAT_READY,
+            SPECAB.ScriptCallback_LookForChar,
+            "N",
+            comment);
+        if (!(result == null || result == "")) {
+            this.m_isCombatReady = 0;
+        }
+        else {
+            result = this.RunCombatantScripts(
+                SPECAB.IS_COMBAT_READY,
+                SPECAB.ScriptCallback_LookForChar,
+                "N",
+                comment);
+            if (!(result == null || result == "")) {
+                this.m_isCombatReady = 0;
+            }
+        };
+        RunTimeIF.ClearCharContext();
+    };
+
+    if (this.m_isCombatReady == 0) return true;
+
+    if (!this.charOnCombatMap(false, false))
+        turnIsDone = true;
+    if (freeAttack) {
+        if (this.m_target == NO_DUDE) {
+            turnIsDone = true;
+        };
+    };
+
+    return turnIsDone;
+}
+
+COMBATANT.prototype.StopCasting = function(EndYourTurn, canFinishCasting) {
+    if (canFinishCasting) return;
+    //WriteDebugString("StopCasting() for %i, EndYourTurn %i\n", self,EndYourTurn);
+    this.m_pCharacter.targets.Clear();
+    this.m_spellIDBeingCast = "";
+    this.m_itemSpellIDBeingCast = "";
+    this.Wpn_Type = weaponClassType.NotWeapon;
+
+    if (this.State() == individualCombatantState.ICS_Casting)
+        this.State(individualCombatantState.ICS_None);
+
+    if (this.combatant_pendingSpellKey >= 0) {
+        this.pendingSpellList.Remove(combatant_pendingSpellKey);
+        this.combatant_pendingSpellKey = -1;
+    }
+    this.combatant_activeSpellKey = -1;
+    this.forceAttackPose = false;
+    if (EndYourTurn)
+        this.EndTurn(State());
 }

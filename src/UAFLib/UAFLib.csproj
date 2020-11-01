@@ -81,10 +81,12 @@
     <Content Include="js\ABILITY_DATA_TYPE.js" />
     <Content Include="js\ACTIVE_SPELL_LIST.js" />
     <Content Include="js\BASECLASS_LIST.js" />
+    <Content Include="js\TargetingType.js" />
     <Content Include="js\CLASS_DATA.js" />
     <Content Include="js\CPathFinder.js" />
     <Content Include="js\DIFFICULTY_DATA.js" />
     <Content Include="js\DIFFICULTY_LEVEL_DATA.js" />
+    <Content Include="js\FLEEING_FLAGS.js" />
     <Content Include="js\miscErrorType.js" />
     <Content Include="js\eventTriggerType.js" />
     <Content Include="js\chainTriggerType.js" />
@@ -118,6 +120,7 @@
     <Content Include="js\BASE_CLASS_DATA_TYPE.js" />
     <Content Include="js\CBRESULT.js" />
     <Content Include="js\EVENT_TRIGGER_DATA.js" />
+    <Content Include="js\SPELL_TARGETING_DATA.js" />
     <Content Include="js\TASK_STATE_DATA.js" />
     <Content Include="js\DEFAULT_GLOBAL_SCRIPT.js" />
     <Content Include="js\CBFUNC.js" />

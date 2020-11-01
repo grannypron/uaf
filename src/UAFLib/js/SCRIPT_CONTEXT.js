@@ -52,7 +52,13 @@ SCRIPT_CONTEXT.prototype.SetClassContext = function (classID) {
 }
 
 
-SCRIPT_CONTEXT.prototype.SetAbilitySpecAbCStrPair = function(pSpecAb, pAb) {
+SCRIPT_CONTEXT.prototype.SetTargetContextCombatant = function(pCombatant) {
+    var actor;
+    this.pCombatant.GetContextActor();
+    this.targetContext = actor.ToString();
+}
+
+SCRIPT_CONTEXT.prototype.SetAbilitySpecAbCStrPair = function (pSpecAb, pAb) {
     this.contextASL = null;
     this.context = pSpecAb;
     if (pAb != null) specAb = pAb;

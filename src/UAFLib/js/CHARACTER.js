@@ -26,7 +26,7 @@ function CHARACTER(character) {
     this.m_spellbook = new spellBookType();
     this.myItems = new ITEM_LIST();
     this.char_asl = new A_ASLENTRY_L();
-
+    this.targets = new SPELL_TARGETING_DATA();
     this.Clear(true);
 };
 

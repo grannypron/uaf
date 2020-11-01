@@ -20,6 +20,7 @@ var eventSurpriseType = new eventSurpriseTypeObj();
 var chainTriggerType = new chainTriggerTypeObj();
 var eventTriggerType = new eventTriggerTypeObj();
 var weaponClassType = new weaponClassTypeObj();
+var TargetingType = new TargetingTypeObj();
 var itemData = new ITEM_DATA_TYPE();
 var spellData = new SPELL_DATA_TYPE();
 var monsterData = new MONSTER_DATA_TYPE();
@@ -51,6 +52,7 @@ var classData = new CLASS_DATA_TYPE();
 var specialAbilitiesData = new A_SPECABILITY_DEF_L();
 var pScriptContext = new SCRIPT_CONTEXT();
 var activeSpellList = new ACTIVE_SPELL_LIST();
+var FLEEING_FLAGS = new FLEEING_FLAGS();
 
 var pathMgr = new PATH_MANAGER(1000);
 

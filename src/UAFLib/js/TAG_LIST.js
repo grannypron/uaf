@@ -6,7 +6,7 @@ function TAG_LIST(num) {
 }
 
 TAG_LIST.prototype.Clear = function() {
-    this.items = [];
+    this.items = []; for (var idx = 0; idx < this.numItems; idx++) { this.items[idx] = 0; }
 }
 
 TAG_LIST.prototype.Set = function (i) {
@@ -18,6 +18,7 @@ TAG_LIST.prototype.ClearItem = function (i) {
 }
 
 TAG_LIST.prototype.FindOpenTag = function () {
+
     for (var i = 0; i < this.items.length; i++) {
         if (this.items[i] != 1) {
             return i;

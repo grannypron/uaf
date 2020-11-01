@@ -55,3 +55,9 @@ CPathFinder.prototype.SetCost = function (sc) {
 CPathFinder.prototype.SetSize = function (r) {
 	this.m_iRows = r;
 }
+
+CPathFinder.prototype.InUse = function()
+{
+	Globals.MsgBoxError("Not Implemented");
+	return true;
+}
