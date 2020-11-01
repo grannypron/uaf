@@ -1,0 +1,4 @@
+<config>
+  <jsLibraryIndex>https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/UAFLib.csproj</jsLibraryIndex>
+  <setupScript>https://raw.githubusercontent.com/grannypron/uaf/unity/setup.js</setupScript>
+</config>
