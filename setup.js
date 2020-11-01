@@ -131,7 +131,7 @@ monsterEvent.qty = 10;
 monsterEvent.qty = 3;
 monsterEvent.monsterID = "Kobold";
 monsterEvent.m_type = MONSTER_TYPE;
-combatEventData.distance = eventDistType.Nearby;
+combatEventData.distance = eventDistType.UpClose;
 combatEventData.monsters.Add(monsterEvent);
 //combatEventData.randomMonster = true;   // This seems to cause an NPE at Line 306 of COMBAT_DATA - "pSaveCharPointer is null"
 combatEventData.UseQty = MONSTER_EVENT.meUsePercent;
