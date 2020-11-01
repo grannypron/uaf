@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UAFLib;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.Tilemaps;
 
 public class CombatScreenEvents : MonoBehaviour
@@ -12,8 +13,28 @@ public class CombatScreenEvents : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        paintMap();
+        StartCoroutine(DoRequest());
     }
+
+    IEnumerator DoRequest()
+    {
+
+        //paintMap();
+        UnityWebRequest www = UnityWebRequest.Get("https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/UAFLib.csproj");
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError || www.isHttpError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            // Show results as text
+            Debug.Log(www.downloadHandler.text);
+        }
+    }
+
+
     ConsoleResults loadTest(string testPath)
     {
         Engine engine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly));
@@ -46,7 +67,7 @@ public class CombatScreenEvents : MonoBehaviour
         {
             for (int y = combatMinY; y <= combatMaxY; y++)
             {
-                terrainTilemap.SetTile(new Vector3Int(x, y, 0), groundTile);
+                //terrainTilemap.SetTile(new Vector3Int(x, y, 0), groundTile);// for now, just leave what I have painted on the map
             }
         }
         ConsoleResults results = loadTest("js/Tests/DemoCombat");
@@ -62,7 +83,7 @@ public class CombatScreenEvents : MonoBehaviour
                 int[] translatedCoords = new int[] { x + combatMinX, y + combatMinY };
                 if (cellValue < 0)
                 {
-                    terrainTilemap.SetTile(new Vector3Int(translatedCoords[0], translatedCoords[1], zIndex), groundTile);
+                    //terrainTilemap.SetTile(new Vector3Int(translatedCoords[0], translatedCoords[1], zIndex), groundTile);// for now, just leave what I have painted on the map
                 } else if (cellValue == 0)
                 {
                     placePlayer(translatedCoords[0], translatedCoords[1]);
