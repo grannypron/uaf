@@ -144,7 +144,7 @@ globalData.SetMinPCs(2);
 globalData.SetMaxPartySize(2);
 
 party.addTempToParty(Warrior);
-combatEventData.distance = eventDistType.Nearby;
+combatEventData.distance = eventDistType.UpClose;
 combatEventData.m_UseOutdoorMap = false; // only outdoor stub is in place right now
 combatEventData.direction = eventDirType.North;
 combatData.InitCombatData(combatEventData);
