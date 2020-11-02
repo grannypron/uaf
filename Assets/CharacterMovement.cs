@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
 {
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,9 +31,9 @@ public class CharacterMovement : MonoBehaviour
         float inverseMoveTime = 1f / moveTime;
         Rigidbody2D player = GetComponent<Rigidbody2D>();
         Vector2 start = transform.position;
-        Vector2 end = start + new Vector2(xDir, yDir);
-        Vector3 newPostion = Vector3.MoveTowards(player.position, end, 1);
-        UnityEngine.Debug.Log(xDir + "/" + yDir);
+        Vector2 end = start + new Vector2(40 * (xDir), 40 * (yDir));
+        Vector3 newPostion = Vector3.MoveTowards(player.position, end, 20);
+        UnityEngine.Debug.Log(xDir + " / " + yDir);
         //Call MovePosition on attached Rigidbody2D and move it to the calculated position.
         player.MovePosition(newPostion);
 
