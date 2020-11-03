@@ -55,6 +55,8 @@ function Globals() {
     this.Baseclass_ranger = "ranger";
     this.Baseclass_druid = "druid";
 
+    this.Skill_BackstabMultiplier = "BackstabMultiplier";
+
     this.NoSkill = UAFUtil.ByteFromHexString("0x80000000");
 }
 
@@ -185,4 +187,20 @@ Globals.prototype.GetCombatantPtr = function (index) {
 
 Globals.prototype.GetCurrentRound = function () {
     return combatData.m_iCurrRound;
+}
+
+Globals.prototype.GetConfigPartyAlwaysMiss = function () {
+    return combatData.m_bPartyAlwaysMiss;
+}
+
+Globals.prototype.GetConfigPartyAlwaysHit = function () {
+    return combatData.m_bPartyAlwaysHit;
+}
+
+Globals.prototype.GetConfigMonsterAlwaysMiss = function () {
+    return combatData.m_bMonsterAlwaysMiss;
+}
+
+Globals.prototype.GetConfigMonsterAlwaysHit = function () {
+    return combatData.m_bMonsterAlwaysHit;
 }

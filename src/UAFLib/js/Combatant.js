@@ -58,7 +58,7 @@ function COMBATANT() {
     };
     this.combatantSA = new SPECIAL_ABILITIES();
     this.combatantSA.Clear();
-    this.combattargets = new CList();
+    this.combattargets = new OrderedQueue();
     this.m_preCombatMorale = 0;
     this.targeters = new CList();
     this.Clear();
@@ -1202,7 +1202,6 @@ BOOL TakeNextStep(BOOL allowZeroMoveAttack);
 BOOL toggleReadyItem(int item);
 BOOL delCharacterItem(int index, int qty);
 void CheckMorale();
-DWORD MakeTargetKey(int dude, int dist) { return ((((DWORD)dist) << 16) | ((DWORD)dude)); }
 int   GetTargetKeyDude(DWORD k) const { return (k & 0x0000FFFF); }
 int   GetTargetKeyDist(DWORD k) const { return ((k >> 16) & 0x0000FFFF); }
 void OnStartCombatantAction();
@@ -1721,9 +1720,9 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
                     var hookParameters = new HOOK_PARAMETERS();
                     var scriptContext = new SCRIPT_CONTEXT();
                     var result = "";
-                    hookParameters[5] = parseInt(tempCOMBATANT.AttacksRemaining());
-                    hookParameters[6] = tempCOMBATANT.IsPartyMember() ? "Y" : "N";
-                    hookParameters[7] = tempCOMBATANT.OnAuto(false) ? "Y" : "N";
+                    hookParameters[5] = "" + parseInt(tempCOMBATANT.AttacksRemaining());
+                    hookParameters[6] = "" + tempCOMBATANT.IsPartyMember() ? "Y" : "N";
+                    hookParameters[7] = "" + tempCOMBATANT.OnAuto(false) ? "Y" : "N";
                     scriptContext.SetAttackerContext(tempCOMBATANT);
                     scriptContext.SetTargetContextCombatant(this);
 
@@ -2152,6 +2151,7 @@ COMBATANT.prototype.IsDone = function(freeAttack, comment) {
             SPECAB.ScriptCallback_LookForChar,
             "N",
             comment);
+        Globals.debug("----Combatant.IsDone: " + result);
         if (!(result == null || result == "")) {
             this.m_isCombatReady = 0;
         }
@@ -2171,14 +2171,14 @@ COMBATANT.prototype.IsDone = function(freeAttack, comment) {
     if (this.m_isCombatReady == 0) return true;
 
     if (!this.charOnCombatMap(false, false))
-        turnIsDone = true;
+        this.turnIsDone = true;
     if (freeAttack) {
         if (this.m_target == NO_DUDE) {
-            turnIsDone = true;
+            this.turnIsDone = true;
         };
     };
 
-    return turnIsDone;
+    return this.turnIsDone;
 }
 
 COMBATANT.prototype.StopCasting = function(EndYourTurn, canFinishCasting) {
@@ -2210,14 +2210,13 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         Globals.ASSERT(true);
     };
     var toHitComputation = new ToHitComputation();
-    Globals.ASSERT(self != NO_DUDE);
+    Globals.ASSERT(this.self != NO_DUDE);
     if (this.IsDone(false, "Can combatant make attack")) return 1;
     toHitComputation.BeginSpellScriptFailure(0);
     CombatMsg = "";
-    FormattedText.ClearFormattedText(combatTextData);
-
+    FormattedText.ClearFormattedText(FormattedText.combatTextData);
     if (targ == NO_DUDE) return 1;
-    if (availAttacks + extraAttacksAvailable <= 0) return 1;
+    if (this.availAttacks + extraAttacksAvailable <= 0) return 1;
 
     {
         var msg = "";
@@ -2226,7 +2225,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         var currAttack = nbrattacks - availattacks;
 
         if ((currAttack < 0) || (currAttack >= nbrattacks)) currAttack = 0;
-        monsterData.GetMonsterAttackMsg(m_pCharacter.monsterID, currAttack, msg);
+        monsterData.GetMonsterAttackMsg(this.m_pCharacter.monsterID, currAttack, msg);
         if (msg == "*NoAttack*") return 1;
     };
 
@@ -2245,22 +2244,22 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
 
     var decQty = false;
     var wpn = 0;
-    wpn = m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0);
+    wpn = this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0);
     var itemID = "";
     itemID = "";
 
     if (wpn != NO_READY_ITEM) {
-        itemID = m_pCharacter.myItems.GetItem(wpn);
+        itemID = this.m_pCharacter.myItems.GetItem(wpn);
         var dist = Drawtile.Distance6(this.self, this.x, this.y,
             targCOMBATANT.self, targCOMBATANT.x, targCOMBATANT.y);
-        decQty = Items.WpnConsumesAmmoAtRange(itemID, dist);
+        decQty = itemData.WpnConsumesAmmoAtRange(itemID, dist);
 
         // do we decrement weapon qty or ammo qty?
-        wpnConsumesSelfAsAmmo = Items.WpnConsumesSelfAsAmmo(itemID);
+        wpnConsumesSelfAsAmmo = itemData.WpnConsumesSelfAsAmmo(itemID);
         if (decQty && !wpnConsumesSelfAsAmmo) {
             // ammo is readied and must be decremented
-            wpn = m_pCharacter.myItems.GetReadiedItem(Items.AmmoQuiver, 0);
-            itemID = m_pCharacter.myItems.GetItem(wpn);
+            wpn = this.m_pCharacter.myItems.GetReadiedItem(Items.AmmoQuiver, 0);
+            itemID = this.m_pCharacter.myItems.GetItem(wpn);
         }
     }
 
@@ -2272,12 +2271,12 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         RunTimeIF.SetTargetContext(actor);
     };
     var pWeapon = null;
-    if (!itemID.IsNoItem()) {
+    if (!(itemID == null || itemID == "")) {         //PORT NOTE:  This was itemID.IsNoItem
         pWeapon = itemData.GetItem(itemID);
     };
 
 
-    toHitComputation.Compute(this, targ, targCOMBATANT, wpn);
+    toHitComputation.Compute4(this, targ, targCOMBATANT, wpn);
 
     if (toHitComputation.DidHit())
     {
@@ -2316,7 +2315,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                 //20130829 PRS  ASSERT( (currAttack>=0) && (currAttack<nbrAttacks) );
                 if ((currAttack < 0) || (currAttack >= nbrAttacks)) currAttack = 0;
 
-                var pMonster = monsterData.PeekMonster(m_pCharacter.monsterID);
+                var pMonster = monsterData.PeekMonster(this.m_pCharacter.monsterID);
                 Globals.ASSERT(pMonster != null);
 
                 attackSpellID = pMonster.attackData.PeekMonsterAttackDetails(currAttack).spellID;
@@ -2404,13 +2403,13 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
             // if (!OnAuto(false)) continueAttack=FALSE; else continueAttack=TRUE;
         }
         else {
-            toHitComputation.Successful(0);
+            toHitComputation.SetSuccessful(0);
         };
     }
     else {
-        toHitComputation.Successful(0);
+        toHitComputation.SetSuccessful(0);
     };
-    if (!toHitComputation.Successful()) {
+    if (!toHitComputation.GetSuccessful()) {
 /*#ifdef TraceFreeAttacks
         {
             WriteDebugString("TFA - %s failed to hit %s; numberAttacks=%d; availAttacks=%d\n",
@@ -2430,7 +2429,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
 
 
 
-    if (toHitComputation.Successful()) {
+    if (toHitComputation.GetSuccessful()) {
     }
     else {
     };
@@ -2442,12 +2441,12 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         if (wpn != Items.NO_READY_ITEM) {
             if (wpnConsumesSelfAsAmmo) {
                 var myItem = new ITEM();
-                myItem = m_pCharacter.myItems.GetItem(wpn);
+                myItem = this.m_pCharacter.myItems.GetItem(wpn);
                 myItem.qty = 1;
                 combatData.hurledWeapons.AddItem(myItem);
             };
-            m_pCharacter.myItems.AdjustQty(wpn, -1);
-            if (!m_pCharacter.myItems.HaveItem(itemID)) // if deleted because of zero quantity
+            this.m_pCharacter.myItems.AdjustQty(wpn, -1);
+            if (!this.m_pCharacter.myItems.HaveItem(itemID)) // if deleted because of zero quantity
             // 20110519 PRS  if (!myItems.HaveItem(*(GLOBAL_ITEM_ID*)&wpn)) // if deleted because of zero quantity
             {
                 // item removed, disable special abilities granted by it (if any)
@@ -2459,7 +2458,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                     actor = GetContextActor();
                     RunTimeIF.SetCharContext(actor);
                     scriptContext.SetCharacterContext(this.m_pCharacter);
-                    m_pCharacter.RunCharacterScripts(
+                    this.m_pCharacter.RunCharacterScripts(
                         SPECAB.ON_USE_LAST_WEAPON,
                         SPECAB.ScriptCallback_RunAllScripts,
                         null,
@@ -2489,4 +2488,8 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
     RunTimeIF.ClearTargetContext();
     RunTimeIF.ClearCharContext();
     return -1;
+}
+
+COMBATANT.prototype.MakeTargetKey = function (dude, dist) {
+    return ((dist << 16) | dude);
 }

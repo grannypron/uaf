@@ -1,5 +1,4 @@
 ﻿function ActorType() {
-
     this.EnemyAlly = 0;  // long
     this.Flags;  // long
     this.Instance;  // long

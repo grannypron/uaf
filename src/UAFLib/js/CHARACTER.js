@@ -2119,7 +2119,7 @@ CHARACTER.prototype.GetAdjMaxMovement = function (flags, comment) {
             minmax[1] = UAFUtil.ByteFromHexString("0x7fffffff");
             actor = this.GetContextActor();
             actor = RunTimeIF.SetCharContext(actor);
-            hookParameters[5] = this.GetMaxMovement();
+            hookParameters[5] = "" + this.GetMaxMovement();
             scriptContext.SetCharacterContext(this);
             // Removed 20101228 PRS....sometimes called outside of combat!!! Like taking treasure.
             //pCombatant = this->GetCombatant();

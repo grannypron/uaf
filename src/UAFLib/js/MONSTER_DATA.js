@@ -65,4 +65,5 @@ MONSTER_DATA.prototype.RunMonsterScripts = function (scriptName, fnc, pkt, comme
         comment,
         SCRIPT_SOURCE_TYPE.ScriptSourceType_Monster,
         this.Name);
-  };
+}
+

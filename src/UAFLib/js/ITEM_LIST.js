@@ -35,7 +35,7 @@ ITEM_LIST.prototype.CanReady = function (itemKey) {
         scriptContext.SetItemContext(pItemData);
         scriptContext.SetItemContextKey(pItem.key);
         count = GetReadiedCount(rdyLoc);
-        hookParameters[5] = count;
+        hookParameters[5] = "" + count;
         result = pItemData.RunItemScripts(SPECAB.CAN_READY,
             SPECAB.ScriptCallback_RunAllScripts,
             null,

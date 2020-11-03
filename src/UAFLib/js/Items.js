@@ -19,5 +19,3 @@ function Items() {
     this.Pack = UAFUtil.StringToBase38('PACK');
     this.Undefined = UAFUtil.StringToBase38('UNDEF');
 }
-
-var Items = new Items();

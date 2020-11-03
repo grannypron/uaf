@@ -158,3 +158,23 @@ MONSTER_DATA_TYPE.prototype.GetMonsterTHAC0 = function (monsterID) {
     else
         return 0;
 }
+
+MONSTER_DATA_TYPE.prototype.GetMonsterAttackMsg = function (monsterID, attackNum, msg) {
+    var index = 0;
+    msg = "";
+    if ((index = monsterData.LocateMonster(monsterID)) >= 0) {
+        var attackMsgCnt = this.PeekMonster(index).attackData.GetMonsterAttackDetailsCount();
+        if (attackMsgCnt == 0) // shouldn't happen if monster configured properly
+        {
+            msg = "attacks";
+            return;
+        }
+
+        // a monster can have more attacks than is natural due
+        // to readying a weapon
+        if (attackNum >= attackMsgCnt) attackNum = 0;
+        msg = this.PeekMonster(index).attackData.PeekMonsterAttackDetails(attackNum).attackMsg;
+    }
+    if (msg.length == 0) msg = "attacks";
+    return msg;
+}

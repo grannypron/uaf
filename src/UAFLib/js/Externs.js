@@ -334,3 +334,8 @@ var FLAG_FAKE_CHARACTER     = 0x400;
 var FLAG_BISHOP             = 0x800;
 
 var LEVEL_UNKNOWN           = 0xffffffff;
+
+
+
+var GemString     = "_$GEM$_";
+var JewelryString = "_$JEWELRY$_";

@@ -70,7 +70,7 @@ SPECIAL_ABILITIES.prototype.GetCount = function (){
     this.m_specialAbilities.GetCount();
 }
 
-SPECIAL_ABILITIES.prototype.RunScripts = function(scriptName, fnc, pkt, comment, sourceType, sourceName) {
+SPECIAL_ABILITIES.prototype.RunScripts = function (scriptName, fnc, pkt, comment, sourceType, sourceName) {
     var scripts = [];
     var saAbility = [];
     var binScript = "";
@@ -128,7 +128,9 @@ SPECIAL_ABILITIES.prototype.RunScripts = function(scriptName, fnc, pkt, comment,
              **/
             SPECAB.p_hook_parameters[0] = "1";
             pScriptContext.ClearAbility();
-            callbackResult = fnc(CBFUNC.CBF_EXAMINESCRIPT, SPECAB.p_hook_parameters[0], pkt);
+            callbackResultObj = fnc(CBFUNC.CBF_EXAMINESCRIPT, SPECAB.p_hook_parameters[0], pkt);
+            callbackResult = callbackResultObj.CBRESULT;                                // PORT NOTE:  Handling output parameters
+            SPECAB.p_hook_parameters[0] = callbackResultObj.scriptResult;
             /**TODO
             if ((globalLoggingFlags & 1) || (globalSA_debug.Find(saAbility[i].Key()) != NULL)) {
                 WriteDebugString("@@SA \"%s\" Script \"%s\": %s%s returned \"%s\"\n",
@@ -139,14 +141,21 @@ SPECIAL_ABILITIES.prototype.RunScripts = function(scriptName, fnc, pkt, comment,
                     SPECAB.p_hook_parameters[0]);
             };
             */
+            //**TODO: This is a hack where I can control the SA scripts for now:**/
+            if (Globals.SPECAB_HACKS != null && Globals.SPECAB_HACKS[scriptName] != null) { Globals.SPECAB_HACKS[scriptName](pkt); }
             if (callbackResult == CBRESULT.CBR_STOP) {
                 return SPECAB.p_hook_parameters[0];
             };
         };
-        fnc(CBFUNC.CBF_ENDOFSCRIPTS, SPECAB.p_hook_parameters[0], pkt);
+        var callbackResultObj = fnc(CBFUNC.CBF_ENDOFSCRIPTS, SPECAB.p_hook_parameters[0], pkt);
+        callbackResult = callbackResultObj.CBRESULT;                                // PORT NOTE:  Handling output parameters
+        SPECAB.p_hook_parameters[0] = callbackResultObj.scriptResult;
     }
     else {
-        fnc(CBFUNC.CBF_DEFAULT, SPECAB.p_hook_parameters[0], pkt);
+        var callbackResultObj = fnc(CBFUNC.CBF_DEFAULT, SPECAB.p_hook_parameters[0], pkt);
+        var callbackResult;
+        callbackResult = callbackResultObj.CBRESULT;                                // PORT NOTE:  Handling output parameters
+        SPECAB.p_hook_parameters[0] = callbackResultObj.scriptResult;
     };
     return SPECAB.p_hook_parameters[0];
 }
@@ -387,7 +396,9 @@ function SPECAB() {
             };
         }
         else {
-            SPECAB.ScriptCallback_RunAllScripts(CBFUNC.CBF_DEFAULT, this.p_hook_parameters[0], null);
+            var result = SPECAB.ScriptCallback_RunAllScripts(CBFUNC.CBF_DEFAULT, this.p_hook_parameters[0], null);
+            this.p_hook_parameters[0] = result.scriptResult;   // PORT NOTE:  Handling output parameters
+
         };
         return this.p_hook_parameters[0];
     }
@@ -395,7 +406,7 @@ function SPECAB() {
 
     this.ScriptCallback_RunAllScripts = function(func, scriptResult, pkt)
     {
-        return CBRESULT.CBR_CONTINUE;
+        return { CBRESULT: CBRESULT.CBR_CONTINUE, scriptResult: scriptResult };
     }
 
 };
@@ -463,7 +474,7 @@ SPECAB.prototype.ScriptCallback_MinMax = function (func, scriptResult, pkt) {
     var minmax = pkt;
     var n;
     var pStr;
-    if (func != CBFUNC.CBF_EXAMINESCRIPT) return CBRESULT.CBR_CONTINUE;
+    if (func != CBFUNC.CBF_EXAMINESCRIPT) return { CBRESULT: CBRESULT.CBR_CONTINUE, scriptResult: scriptResult };
     pStr = scriptResult;
     // If it starts with a number we simply move the
     // max down to that number and the min up to that number.
@@ -471,7 +482,7 @@ SPECAB.prototype.ScriptCallback_MinMax = function (func, scriptResult, pkt) {
         n = UAFUtil.ScriptAtoI(pStr, minmax[0], minmax[1]);
         if (n > minmax[0]) minmax[0] = n;
         if (n < minmax[1]) minmax[1] = n;
-        return CBRESULT.CBR_CONTINUE;
+        return { CBRESULT: CBRESULT.CBR_CONTINUE, scriptResult: scriptResult };
     };
     for (; ;) {
         if (pStr[0] == '=') {
@@ -492,7 +503,7 @@ SPECAB.prototype.ScriptCallback_MinMax = function (func, scriptResult, pkt) {
             minmax[0] = n;
             continue;
         };
-        return CBRESULT.CBR_CONTINUE;
+        return { CBRESULT: CBRESULT.CBR_CONTINUE, scriptResult: scriptResult };
     };
 
 
@@ -500,27 +511,30 @@ SPECAB.prototype.ScriptCallback_MinMax = function (func, scriptResult, pkt) {
 }
 
 
+//*** LEFT OFF HERE - the problem is that scriptResult is PBR and they are using that ***/
+
 SPECAB.prototype.ScriptCallback_LookForChar = function(func, scriptResult, pkt)
 {
     var lookFor = "" + pkt;   // PORT NOTE:  Was  char *lookFor = (char *)pkt;
     var indx = 0;
     switch (func) {
         case CBFUNC.CBF_EXAMINESCRIPT:
+            Globals.debug("SPECAB.prototype.ScriptCallback_LookForChar: " + lookFor);
             indx = scriptResult.indexOf(lookFor);
             if (indx < 0) {
-                return CBRESULT.CBR_CONTINUE;
+                return { CBRESULT: CBRESULT.CBR_CONTINUE, scriptResult: scriptResult };
             };
             break;
         case CBFUNC.CBF_ENDOFSCRIPTS:
             scriptResult = "";
-            return CBRESULT.CBR_STOP;
+            return { CBRESULT: CBRESULT.CBR_STOP, scriptResult: scriptResult };
         default:
-            return CBRESULT.CBR_CONTINUE;
+            return { CBRESULT: CBRESULT.CBR_CONTINUE, scriptResult: scriptResult };
     };
     {
     scriptResult = scriptResult.substr(indx, 1);
     };
-    return CBRESULT.CBR_STOP;
+    return { CBRESULT: CBRESULT.CBR_STOP, scriptResult: scriptResult };
 }
 
 var SPECAB = new SPECAB();

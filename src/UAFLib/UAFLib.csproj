@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.props')" />
   <Import Project="packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.props" Condition="Exists('packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.props')" />
@@ -81,6 +81,7 @@
     <Content Include="js\ABILITY_DATA_TYPE.js" />
     <Content Include="js\ACTIVE_SPELL_LIST.js" />
     <Content Include="js\BASECLASS_LIST.js" />
+    <Content Include="js\FormattedText.js" />
     <Content Include="js\TargetingType.js" />
     <Content Include="js\CLASS_DATA.js" />
     <Content Include="js\CPathFinder.js" />
@@ -135,11 +136,13 @@
     <Content Include="js\PATH_MANAGER.js" />
     <Content Include="js\SPELL_DATA_TYPE.js" />
     <Content Include="js\Drawtile.js" />
+    <Content Include="js\TEXT_DISPLAY_DATA.js" />
     <Content Include="js\TILE_DATA.js" />
     <Content Include="js\TERRAIN_CELL.js" />
     <Content Include="js\TAG_LIST.js" />
     <Content Include="js\ActorType.js" />
     <Content Include="js\EVENT_CONTROL.js" />
+    <Content Include="js\ToHitComputation.js" />
     <Content Include="js\TURNING_SUMMARY.js" />
     <Content Include="js\QueuedCombatantData.js" />
     <Content Include="js\EventSourceType.js" />
@@ -172,7 +175,7 @@
     <Content Include="js\SPELL_LIST.js" />
     <Content Include="js\surfaceType.js" />
     <Content Include="js\BASECLASS_STATS.js" />
-    <Content Include="js\aaaaa_UnorderedQueue.js" />
+    <Content Include="js\aaaaa_Queues.js" />
     <Content Include="js\RUNTIME_ENVIRONMENT.js" />
     <Content Include="js\MONEY_DATA_TYPE.js" />
     <Content Include="js\weaponClassType.js" />
