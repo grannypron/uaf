@@ -19,9 +19,13 @@ public class CombatScreenEvents : MonoBehaviour
     // Each square on the grid is 40x/y  Not sure why, but it is by eyeball
 
     private int PlayerScaleFactor = -1;
+    private int BlockScaleFactor = 40;          //**TODO** - Idk why
+    private int SCREEN_HORIZ_BLOCKS = 24;
+    private int SCREEN_VERT_BLOCKS = 16;
     private const String CONFIG_FILE_URL = "https://raw.githubusercontent.com/grannypron/uaf/unity/config.xml";
     private Engine jintEngine;
     private ConsoleResults setupResults;
+    private bool mapPainted = false;
 
     // Start is called before the first frame update
     void Start()
@@ -97,32 +101,25 @@ public class CombatScreenEvents : MonoBehaviour
         jintEngine.SetValue("consoleResults", setupResults).Execute(setupFileContents);
         Debug.Log(setupScriptUrl + " executed.");
 
-        paintMap();
         Text txtLoading = GameObject.Find("txtLoading").GetComponent<Text>();
         txtLoading.enabled = false;
     }
 
+    private void FixedUpdate()
+    {
+        if (!this.mapPainted) { 
+            paintMap();
+            this.mapPainted = true;
+        }
+
+    }
 
     void paintMap()
     {
         Rigidbody2D player = GetComponent<Rigidbody2D>();
         Tilemap terrainTilemap = GameObject.Find("TerrainTilemap").GetComponent<Tilemap>();
         Tile groundTile = (Tile)terrainTilemap.GetTile(new Vector3Int(-30, 11, 0));
-        
-        int combatMinX = 0;
-        int combatMinY = -10;  // Hacked in
-        int combatWidth = 50;
-        int combatHeight = 50;
-        int combatMaxX = combatMinX + combatWidth;
-        int combatMaxY = combatMinY + combatHeight;
 
-        for (int x = combatMinX; x <= combatMaxX; x++)
-        {
-            for (int y = combatMinY; y <= combatMaxY; y++)
-            {
-                //terrainTilemap.SetTile(new Vector3Int(x, y, 0), groundTile);// for now, just leave what I have painted on the map
-            }
-        }
         object[] mapData = (object[])setupResults.payload;
 
         for (int x = 0; x < mapData.Length; x++)
@@ -131,16 +128,16 @@ public class CombatScreenEvents : MonoBehaviour
             for (int y = 0; y < column.Length; y++)
             {
                 int cellValue = System.Int32.Parse(((object)column[y]).ToString());
-                int[] translatedCoords = new int[] { x + combatMinX, y + combatMinY };
+                int[] coords = new int[] { x , y };
                 if (cellValue < 0)
                 {
                     //terrainTilemap.SetTile(new Vector3Int(translatedCoords[0], translatedCoords[1], zIndex), groundTile);// for now, just leave what I have painted on the map
                 } else if (cellValue == 0)
                 {
-                    //placePlayer(translatedCoords[0], translatedCoords[1]);
+                    placePlayer(coords[0], coords[1]);
                 } else if (cellValue > 0)
                 {
-                    placeMonster(translatedCoords[0], translatedCoords[1], "monster" + cellValue, RandoMonsterID());
+                    placeMonster(coords[0], coords[1], "monster" + cellValue, RandoMonsterID());
                 }
             }
         }
@@ -149,15 +146,17 @@ public class CombatScreenEvents : MonoBehaviour
 
     private void placePlayer(int x, int y)
     {
-        //Hacking this in:
-        float centeringAdjustment = .5f;
+        Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         Rigidbody2D player = GameObject.Find("Player").GetComponent<Rigidbody2D>();
-        player.MovePosition(new Vector2(40 * (x + centeringAdjustment), 40 * (y + centeringAdjustment)));  // Hacked in 40
+        Transform playerTransform = player.GetComponent<Transform>();
+        playerTransform.parent = canvas.transform;
+        playerTransform.localScale = new Vector3Int(PlayerScaleFactor, PlayerScaleFactor, 1);
+        Vector2Int pos = gridToScreen(new Vector2Int(x, y));
+        playerTransform.localPosition = new Vector3Int(pos.x, pos.y, -2);
     }
 
     private void placeMonster(int x, int y, string id, string monsterType)
     {
-        float centeringAdjustment = 0;
         Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         GameObject monsterGO = new GameObject("Monster" + id);
         SpriteRenderer renderer = monsterGO.AddComponent<SpriteRenderer>();
@@ -167,10 +166,20 @@ public class CombatScreenEvents : MonoBehaviour
         Transform monsterTransform = monsterGO.GetComponent<Transform>();
         BoxCollider2D boxCollider2D = monsterGO.AddComponent<BoxCollider2D>();
         monsterTransform.parent = canvas.transform;
-        monsterR2D.MovePosition(new Vector2(40 * (x + centeringAdjustment), 40 * (y + centeringAdjustment)));  // Hacked in 40
         monsterTransform.localScale = new Vector3Int(PlayerScaleFactor, PlayerScaleFactor, 1);
+        Vector2Int pos = gridToScreen(new Vector2Int(x, y));
+        monsterTransform.localPosition = new Vector3Int(pos.x, pos.y, -2);
         monsterR2D.isKinematic = true;
         monsterR2D.mass = 5;
+    }
+
+    private Vector2Int gridToScreen(Vector2Int v)
+    {
+        // 25x25 is the center of the combat - Anyone at position 25/25 should have x/y of 0/0
+        int xOffset = -25;
+        int yOffset = -25;
+        return new Vector2Int(BlockScaleFactor * (v.x + xOffset), BlockScaleFactor * (v.y + yOffset));
+
     }
 
     // Update is called once per frame
