@@ -1,4 +1,7 @@
 
+// Override the logging function for now because System.Console is not available in WebGL - should change to use Unity.Debug
+Globals.debug = function (msg) { }
+
 function Deserialize(filename, debug) {
 var character = new CHARACTER();
 var path = "C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\Tests\\" + filename;
