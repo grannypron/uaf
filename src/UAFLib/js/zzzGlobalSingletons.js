@@ -1,10 +1,11 @@
-﻿var miscErrorType = new miscErrorTypeObj();
+﻿var TargetingType = new TargetingTypeObj();  // PORT NOTE:  This must be above the Globals() initalizer because of (at least) FakeCharacter
+
 var Globals = new Globals();
+
+var miscErrorType = new miscErrorTypeObj();
 var DEBUG_STRINGS = new DEBUG_STRINGS();
 var alignmentType = new alignmentTypeObj();
 var surfaceType = new surfaceTypeObj();
-
-
 var charStatusType = new charStatusTypeObj(charStatusType);
 var combatVictorType = new combatVictorTypeObj();
 var creatureSizeType = new creatureSizeTypeObj(creatureSizeType);
@@ -20,7 +21,6 @@ var eventSurpriseType = new eventSurpriseTypeObj();
 var chainTriggerType = new chainTriggerTypeObj();
 var eventTriggerType = new eventTriggerTypeObj();
 var weaponClassType = new weaponClassTypeObj();
-var TargetingType = new TargetingTypeObj();
 var itemData = new ITEM_DATA_TYPE();
 var spellData = new SPELL_DATA_TYPE();
 var monsterData = new MONSTER_DATA_TYPE();

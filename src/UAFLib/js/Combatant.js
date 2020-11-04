@@ -1209,12 +1209,8 @@ void OnEndTurn();
 CString FormatSpecAbMsg(DWORD sa_state);
 // These ModifyXXX functions dynamically alter character
 // values based on spell effects or special abilities.
-BOOL ModifyAttackRollDice
-    (const CHARACTER * pTarget,                        const int num, const int sides, int * pBonus) const ;
 BOOL ModifyAttackRollDiceForItem
     (const CHARACTER * pTarget,   const ITEM_ID& itemID, const int num, const int sides, int * pBonus, int distance) const ;
-BOOL ModifyAttackRollDiceAsTarget
-    (const CHARACTER * pAttacker,                      const int num, const int sides, int * pBonus) const ;
 BOOL ModifyAttackRollDiceForItemAsTarget
     (const CHARACTER * pAttacker, const ITEM_ID& itemID, const int num, const int sides, int * pBonus) const ;
 BOOL ModifyAttackDamageDice
@@ -2492,4 +2488,20 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
 
 COMBATANT.prototype.MakeTargetKey = function (dude, dist) {
     return ((dist << 16) | dude);
+}
+
+COMBATANT.prototype.ModifyAttackRollDice = function(pTarget, num, sides, pBonus) {
+    return this.m_pCharacter.ModifyAttackRollDice(pTarget, num, sides, pBonus);
+}
+
+COMBATANT.prototype.ModifyAttackRollDiceAsTarget = function(pAttacker, num, sides, pBonus) {
+  return this.m_pCharacter.ModifyAttackRollDiceAsTarget(pAttacker, num, sides, pBonus);
+}
+
+COMBATANT.prototype.ModifyAttackRollDiceForItem = function(pTarget, itemID, num, sides, pBonus, distance) {
+    return this.m_pCharacter.ModifyAttackRollDiceForItem(pTarget, itemID, num, sides, pBonus, distance);
+}
+
+COMBATANT.prototype.ModifyAttackRollDiceForItemAsTarget = function(pAttacker, itemID, num, sides, pBonus) {
+    return this.m_pCharacter.ModifyAttackRollDiceForItemAsTarget(pAttacker, itemID, num, sides, pBonus);
 }

@@ -3274,175 +3274,6 @@ CHARACTER.prototype.DetermineMaxCureDisease = function () {
     return this.m_iMaxCureDisease;
 }
 
-CHARACTER.prototype.SetLevel = function (lvl) { throw "todo"; }
-CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };
-CHARACTER.prototype.GetBestMemorizedHealingSpell = function (pSpellID) { throw "todo"; };
-CHARACTER.prototype.GetHealingPointsNeeded = function () { throw "todo"; };
-CHARACTER.prototype.giveCharacterDamage = function (eventSave, attackTHAC0, dmgDice, dmgDiceQty, dmgBonus, spellSave, saveBonus, pAttacker) { throw "todo"; };
-CHARACTER.prototype.giveCharacterDamage = function (damage) { throw "todo"; };
-CHARACTER.prototype.TakeDamage = function (dmg, IsNonLethal, invokeOptions, canFinishCasting, pDeathIndex) { throw "todo"; };
-CHARACTER.prototype.GetLevelCap = function (pBaseclass) { throw "todo"; };
-CHARACTER.prototype.CanBeModified = function() { throw "todo"; }
-CHARACTER.prototype.getAllowedAlignments = function() { throw "todo"; }
-CHARACTER.prototype.GetThiefBackstabDamageMultiplier = function() { throw "todo"; }
-CHARACTER.prototype.GetThiefBackstabAttackAdjustment = function() { throw "todo"; }
-CHARACTER.prototype.GetThiefSkillArmorAdustments = function() { throw "todo"; }
-CHARACTER.prototype.UpdateSkill = function(abilityModifier, abilityName) { throw "todo"; }
-CHARACTER.prototype.TrainCharacter = function(pTrainableBaseclasses) { throw "todo"; }
-CHARACTER.prototype.CanChangeToClass = function(pFromClass, pToClass) { throw "todo"; }
-CHARACTER.prototype.CreateChangeClassList = function(pClassArray) { throw "todo"; }
-CHARACTER.prototype.HumanChangeClass = function(classID) { throw "todo"; }
-CHARACTER.prototype.CanUseBaseclassBaseclassID = function(baseclassID) { throw "todo"; }
-CHARACTER.prototype.IsDualClass = function() { throw "todo"; }
-CHARACTER.prototype.IsUsingBaseclass = function(baseclassID) { throw "todo"; }
-CHARACTER.prototype.IsAlive = function() { throw "todo"; }
-CHARACTER.prototype.GetContext = function(pActor, baseclassID) { throw "todo"; }
-CHARACTER.prototype.GetContext = function(pActor, schoolID) { throw "todo"; }
-CHARACTER.prototype.GetContext = function(pActor, pSpell) { throw "todo"; }
-CHARACTER.prototype.EvalDiceAsClass = function(dice, baseclassID, pRollerLevel) { throw "todo"; }
-CHARACTER.prototype.EvalDiceAsClass = function(dice, schoolID, spellLevel, pRollerLevel) { throw "todo"; }
-CHARACTER.prototype.EvalDiceAsClass = function(dice, pSpell, pRollerLevel) { throw "todo"; }
-CHARACTER.prototype.WhichBaseclassCastThisSpell = function(pSpell) { throw "todo"; }
-CHARACTER.prototype.GetMaxCureDisease = function() { throw "todo"; }
-CHARACTER.prototype.SetMaxCureDisease = function(val) { throw "todo"; }
-CHARACTER.prototype.GetCureDisease = function() { throw "todo"; }
-CHARACTER.prototype.SetCureDisease = function(val) { throw "todo"; }
-CHARACTER.prototype.IncCureDisease = function() { throw "todo"; }
-CHARACTER.prototype.HaveCureDisease = function() { throw "todo"; }
-CHARACTER.prototype.GetAdjMorale = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.DetermineHitDiceBonus = function(baseclassID) { throw "todo"; }
-CHARACTER.prototype.GetNbrHD = function() { throw "todo"; }
-CHARACTER.prototype.GetCurrentLevel = function(baseclassID) { throw "todo"; }
-CHARACTER.prototype.CurrentBaseclassLevel = function(baseclassID) { throw "todo"; }
-CHARACTER.prototype.SetCurrentLevel = function(baseclassID, lvl) { throw "todo"; }
-CHARACTER.prototype.GetDmgBonus = function() { throw "todo"; }
-CHARACTER.prototype.GetAdjDmgBonus = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.ComputeCharSavingThrows = function() { throw "todo"; }
-CHARACTER.prototype.DidSaveVersus = function(type, bonus, pSpell, pAttackerr) { throw "todo"; }
-CHARACTER.prototype.GetMagicResistance = function() { throw "todo"; }
-CHARACTER.prototype.GetAdjMagicResistance = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.GetHighestLevelBaseclass = function() { throw "todo"; }
-CHARACTER.prototype.GetAdjClass = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.GetAdjAlignment = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.GetAdjStatus = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.GetAdjSize = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.SetGender = function(val) { throw "todo"; }
-CHARACTER.prototype.SetGender = function(gender) { throw "todo"; }
-CHARACTER.prototype.SetClass = function(classID) { throw "todo"; }
-CHARACTER.prototype.SetAlignment = function(val) { throw "todo"; }
-CHARACTER.prototype.SetAllowInCombat = function(allow) { throw "todo"; }
-CHARACTER.prototype.IsAlignmentEvil = function() { throw "todo"; }
-CHARACTER.prototype.IsAlignmentGood = function() { throw "todo"; }
-CHARACTER.prototype.determineEncumbrance = function() { throw "todo"; }
-CHARACTER.prototype.determineNormalEncumbrance = function() { throw "todo"; }
-CHARACTER.prototype.GetAdjMaxEncumbrance = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.GetPerm = function () { };
-CHARACTER.prototype.GetAdj = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.GetLimited = function() { throw "todo"; }
-CHARACTER.prototype.SetPerm = function(val) { throw "todo"; }
-CHARACTER.prototype.GetAbilityScore = function(abilityName) { throw "todo"; }
-CHARACTER.prototype.CreateAllowedSchoolList = function(pSchoolList) { throw "todo"; }
-CHARACTER.prototype.MatchSpellBaseclass = function(pSpell) { throw "todo"; }
-CHARACTER.prototype.GetPrimeSpellCastingScore = function(pBaseclass, schoolID) { throw "todo"; }
-CHARACTER.prototype.PrimeSpellCastingScore = function(spellSchool) { throw "todo"; }
-CHARACTER.prototype.HaveSpell = function(spellID, checkmemorized) { throw "todo"; }
-CHARACTER.prototype.GetSpellBookIndex = function(spellID, checkMemorized) { throw "todo"; }
-CHARACTER.prototype.GetAbilityLimits = function(abilityID) { throw "todo"; }
-CHARACTER.prototype.GetDetectingInvisible = function() { throw "todo"; }
-CHARACTER.prototype.SetDetectingInvisible = function(flag) { throw "todo"; }
-CHARACTER.prototype.GetAdjDetectingInvisible = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.GetDetectingTraps = function() { throw "todo"; }
-CHARACTER.prototype.SetDetectingTraps = function(flag) { throw "todo"; }
-CHARACTER.prototype.GetAdjDetectingTraps = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.PeekRaceData = function() { throw "todo"; }
-CHARACTER.prototype.SetTHAC0 = function(val) { throw "todo"; }
-CHARACTER.prototype.GetEffectiveAC = function() { throw "todo"; }
-CHARACTER.prototype.SetAC = function(val) { throw "todo"; }
-CHARACTER.prototype.SetCharAC = function() { throw "todo"; }
-CHARACTER.prototype.DetermineCharMaxHitPoints = function() { throw "todo"; }
-CHARACTER.prototype.SetHitPoints = function(val) { throw "todo"; }
-CHARACTER.prototype.SetHitPoints = function(val, int, canFinishCasting) { throw "todo"; }
-CHARACTER.prototype.RestoreMaxHitPoints = function() { throw "todo"; }
-CHARACTER.prototype.SetMaxHitPoints = function(val) { throw "todo"; }
-CHARACTER.prototype.RestoreToBestCondition = function() { throw "todo"; }
-CHARACTER.prototype.SetAge = function(val) { throw "todo"; }
-CHARACTER.prototype.GetIconIndex = function() { throw "todo"; }
-CHARACTER.prototype.SetIconIndex = function(val) { throw "todo"; }
-CHARACTER.prototype.GetBirthday = function() { throw "todo"; }
-CHARACTER.prototype.SetMaxAge = function(val) { throw "todo"; }
-CHARACTER.prototype.GetAdjMaxMovement_GPDL = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.IsReadyToTrain = function(pBaseclassStats) { throw "todo"; }
-CHARACTER.prototype.IsReadyToTrain = function() { throw "todo"; }
-CHARACTER.prototype.GetReadyToTrain = function() { throw "todo"; }
-CHARACTER.prototype.GetAdjReadyToTrain = function(flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.SetReadyToTrain = function(enable) { throw "todo"; }
-CHARACTER.prototype.IsAbleToTrade = function() { throw "todo"; }
-CHARACTER.prototype.SetAbleToTrade = function(enable) { throw "todo"; }
-CHARACTER.prototype.getCharExpWorth = function() { throw "todo"; }
-CHARACTER.prototype.giveCharacterExperience = function(exp, UseLimits) {if (UseLimits == undefined) {UseLimits = true;}};
-CHARACTER.prototype.GetCurrExp = function(baseclassID) { throw "todo"; }
-CHARACTER.prototype.SetCurrExp = function(baseclassID, exp) { throw "todo"; }
-CHARACTER.prototype.ClearLevels = function() { throw "todo"; }
-CHARACTER.prototype.GetCurrLevel = function(baseclassID) { throw "todo"; }
-CHARACTER.prototype.GetAllowedLevel = function(baseclassID) { throw "todo"; }
-CHARACTER.prototype.IncCurrExp = function(baseclassID, exp) { throw "todo"; }
-CHARACTER.prototype.GetAdjBaseclassExp = function(baseclassID, flags) {if (!flags) {flags = DEFAULT_SPELL_EFFECT_FLAGS;}};
-CHARACTER.prototype.GetBaseclassExp = function(baseclassID) { throw "todo"; }
-CHARACTER.prototype.GetAdjSpecAb = function(sa, pSource, pSpellName) { throw "todo"; }
-CHARACTER.prototype.SetSpecAb = function(sa, enable, flags) { throw "todo"; }
-CHARACTER.prototype.QueueUsedSpecAb = function(sa, src, SpellID) { throw "todo"; }
-CHARACTER.prototype.ClearQueuedSpecAb = function() { throw "todo"; }
-CHARACTER.prototype.AdjustEffectData = function(key, val) { throw "todo"; }
-CHARACTER.prototype.IsMammal = function() { throw "todo"; }
-CHARACTER.prototype.IsAnimal = function() { throw "todo"; }
-CHARACTER.prototype.IsSnake = function() { throw "todo"; }
-CHARACTER.prototype.IsGiant = function() { throw "todo"; }
-CHARACTER.prototype.IsAlwaysLarge = function() { throw "todo"; }
-CHARACTER.prototype.HasDwarfACPenalty = function() { throw "todo"; }
-CHARACTER.prototype.HasGnomeACPenalty = function() { throw "todo"; }
-CHARACTER.prototype.HasDwarfTHAC0Penalty = function() { throw "todo"; }
-CHARACTER.prototype.HasGnomeTHAC0Penalty = function() { throw "todo"; }
-CHARACTER.prototype.HasRangerDmgPenalty = function() { throw "todo"; }
-CHARACTER.prototype.HasPoisonImmunity = function() { throw "todo"; }
-CHARACTER.prototype.HasDeathImmunity = function() { throw "todo"; }
-CHARACTER.prototype.HasConfusionImmunity = function() { throw "todo"; }
-CHARACTER.prototype.HasVorpalImmunity = function() { throw "todo"; }
-CHARACTER.prototype.CanBeHeldOrCharmed = function() { throw "todo"; }
-CHARACTER.prototype.AffectedByDispelEvil = function() { throw "todo"; }
-CHARACTER.prototype.CharacterID = function(id) { throw "todo"; }
-CHARACTER.prototype.ProcessLingeringSpellEffects = function() { throw "todo"; }
-CHARACTER.prototype.GetSpellCount = function() { throw "todo"; }
-CHARACTER.prototype.ClearSpellbook = function() { throw "todo"; }
-CHARACTER.prototype.FetchCharacterSpell = function(spellID, pCharSp) { throw "todo"; }
-CHARACTER.prototype.LocateCharacterSpell = function(spellID) { throw "todo"; }
-CHARACTER.prototype.PeekCharacterSpell = function(index) { throw "todo"; }
-CHARACTER.prototype.GetCharacterSpell = function(index) { throw "todo"; }
-CHARACTER.prototype.DecMemorized = function(spellID, count) { throw "todo"; }
-CHARACTER.prototype.SpellsKnown = function() { throw "todo"; }
-CHARACTER.prototype.IsMemorized = function(spellID) { throw "todo"; }
-CHARACTER.prototype.IncAllMemorizedTime = function(minuteInc, all) { throw "todo"; }
-CHARACTER.prototype.KnowSpell = function(baseclassID, spellSchoolID, spellID, level, known) { throw "todo"; }
-CHARACTER.prototype.KnowSpellyyy = function(pSpell, know) { throw "todo"; }
-CHARACTER.prototype.CopySpellbook = function(b) { throw "todo"; }
-CHARACTER.prototype.UnselectIfNotMemorized = function() { throw "todo"; }
-CHARACTER.prototype.CanKnowSpell = function(schoolID, spellLevel) { throw "todo"; }
-CHARACTER.prototype.HasKnowableSpell = function(uniqueName) { throw "todo"; }
-CHARACTER.prototype.AddKnowableSpell = function(uniqueName) { throw "todo"; }
-CHARACTER.prototype.DelKnowableSpell = function(uniqueName) { throw "todo"; }
-CHARACTER.prototype.ClrKnowableSpell = function() { throw "todo"; }
-CHARACTER.prototype.ComputeAIBaseclass = function() { throw "todo"; }
-// 	DEFINE_mCARRAY_ACCESS_FUNCTIONS (SkillAdj, SKILL_ID, skillID, skillAdjustments, SKILL_ADJ, CHARACTER) void DeleteSkillAdj(indx) { throw "todo"; }
-CHARACTER.prototype.LocateSkillAdj = function(skillName, adjName) { throw "todo"; }
-CHARACTER.prototype.ApplyTempSkillAdjustments = function(SC) { throw "todo"; }
-CHARACTER.prototype.InsertSkillAdj = function(skillName, adjName, type, value) { throw "todo"; }
-CHARACTER.prototype.GetAdjSkillValue = function(skillName, minimize, includeTempAdj) { throw "todo"; }
-CHARACTER.prototype.GetBaseclassLevel = function(baseclassID) { throw "todo"; }
-CHARACTER.prototype.GetBaseclassPrevLevel = function(baseclassID) { throw "todo"; }
-CHARACTER.prototype.GetBaseclassPreDrainLevel = function(baseclassID) { throw "todo"; }
-CHARACTER.prototype.SetBaseclassLevel = function(baseclassID, level) { throw "todo"; }
-CHARACTER.prototype.ComputeCharacterViewValues = function() { throw "todo"; }
-//virtual CHARACTER.prototype.ComputeCombatViewValues () { throw "todo"; }
-//DEFINE_mCARRAY_ACCESS_FUNCTIONS (SpellAdj, SCHOOL_ID, schoolID, spellAdjustments, SPELL_ADJ, CHARACTER) CString SpellAdjustment(schoolID
 
 CHARACTER.prototype.ApplySpellEffectAdjustments = function(flags, key, val) {
 
@@ -3481,3 +3312,398 @@ CHARACTER.prototype.SetPartyMember = function (flag) {
     else this.type &= (~IN_PARTY_TYPE);
 
 }
+
+
+// give this character a chance to modify the attack dice roll used against
+// a target during combat
+//*****************************************************************************
+//    NAME: CHARACTER::ModifyAttackRollDice
+//
+// PURPOSE: 
+//
+//*****************************************************************************
+CHARACTER.prototype.ModifyAttackRollDice = function (pTarget, num, sides, pBonus) {
+    var modify = false;
+    var src = 0;   //DWORD
+    var spellID = "";
+    var result = this.GetAdjSpecAb(SPECAB.SA_Bless, src, spellID); src = result.src; spellID = result.spellID;   // PORT NOTE:  Dealing with output parameters
+    if (result.returnVal) {
+        this.QueueUsedSpecAb(SPECAB.SA_Bless, src, spellID);
+        pBonus++;
+        modify = true;
+    }
+
+    result = this.GetAdjSpecAb(SPECAB.SA_Curse, src, spellID); src = result.src; spellID = result.spellID;   // PORT NOTE:  Dealing with output parameters
+    if (result.returnVal) {
+        this.QueueUsedSpecAb(SPECAB.SA_Curse, src, spellID);
+        pBonus--;
+        modify = true;
+    }
+
+    // I'm invisible, so give +2 to dice roll
+    if (!pTarget.GetAdjDetectingInvisible()) {
+        result = this.GetAdjSpecAb(SPECAB.SA_Invisible, src, spellID); src = result.src; spellID = result.spellID;   // PORT NOTE:  Dealing with output parameters
+        if (result.returnVal) {
+            pBonus += 2;
+            this.QueueUsedSpecAb(SPECAB.SA_Invisible, src, spellID);
+            modify = true;
+        }
+        else {
+            result = this.GetAdjSpecAb(SPECAB.SA_InvisibleToAnimals, src, spellID); src = result.src; spellID = result.spellID;   // PORT NOTE:  Dealing with output parameters
+            if (result.returnVal) {
+                if (pTarget.IsAnimal()) {
+                    pBonus += 2;
+                    this.QueueUsedSpecAb(SPECAB.SA_InvisibleToAnimals, src, spellID);
+                    modify = true;
+                }
+            }
+            else {
+                result = this.GetAdjSpecAb(SPECAB.SA_InvisibleToUndead, src, spellID); src = result.src; spellID = result.spellID;   // PORT NOTE:  Dealing with output parameters
+                if (result.returnVal) {
+                    if (!(pTarget.GetUndeadType() == null || pTarget.GetUndeadType() == "")) {
+                        pBonus += 2;
+                        this.QueueUsedSpecAb(SPECAB.SA_InvisibleToUndead, src, spellID);
+                        modify = true;
+                    }
+                }
+            }
+        }
+
+    }
+
+    // Target is invisible, so give -4 to dice roll
+    if (!this.GetAdjDetectingInvisible()) {
+        result = pTarget.GetAdjSpecAb(SPECAB.SA_Invisible, src, spellID); src = result.src; spellID = result.spellID;   // PORT NOTE:  Dealing with output parameters
+        if (result.returnVal) {
+            pBonus -= 4;
+            pTarget.QueueUsedSpecAb(SPECAB.SA_Invisible, src, spellID);
+            modify = true;
+        }
+        else {
+            result = pTarget.GetAdjSpecAb(SPECAB.SA_InvisibleToAnimals, src, spellID); src = result.src; spellID = result.spellID;   // PORT NOTE:  Dealing with output parameters
+            if (result.returnVal) {
+                if (this.IsAnimal()) {
+                    pBonus -= 4;
+                    pTarget.QueueUsedSpecAb(SPECAB.SA_InvisibleToAnimals, src, spellID);
+                    modify = true;
+                }
+            }
+            else {
+                result = pTarget.GetAdjSpecAb(SPECAB.SA_InvisibleToUndead, src, spellID); src = result.src; spellID = result.spellID;   // PORT NOTE:  Dealing with output parameters
+                if (result.returnVal) {
+                    if (!(this.GetUndeadType() == null || this.GetUndeadType() == "")) {
+                        pBonus -= 4;
+                        pTarget.QueueUsedSpecAb(SPECAB.SA_InvisibleToUndead, src, spellID);
+                        modify = true;
+                    }
+                }
+            }
+        }
+    }
+    return { modify: modify, pBonus: pBonus };
+}
+
+CHARACTER.prototype.GetAdjSpecAb = function (sa, pSource, pSpellName) {
+    if (pSource != null) pSource = 0;
+    if (pSpellName != null) pSpellName = "";
+
+    if (this.specAbs.FindAbility(sa) == null) {
+        return { returnVal: 0, pSource: pSource, pSpellName: pSpellName };
+    }
+
+    var akey;
+    akey = SPECAB.ConvertSpecAbToRuntimeIfText(sa);
+    if (akey.length == 0) return { returnVal: 0, pSource: pSource, pSpellName: pSpellName };
+
+    var val = 0.0;
+    Globals.die("Not Needed?"); //Not Implemented(0x4f6da8, FALSE);
+    return { returnVal: val, pSource: pSource, pSpellName: pSpellName };
+}
+
+CHARACTER.prototype.QueueUsedSpecAb = function (sa, src, SpellID) {
+    Globals.die("Not Needed?"); //Not Implemented(0xdaf754,FALSE);
+}
+
+CHARACTER.prototype.ModifyAttackDamageDiceForItem = function (pTarget, itemID, num, sides, pBonus, pNonLethal, distance) {
+    var weaponType;
+    var modify = false;
+    weaponType = itemData.GetWpnType(itemID);
+    switch (weaponType) {
+        case weaponClassType.NotWeapon:
+        case weaponClassType.HandBlunt:
+        case weaponClassType.HandCutting:
+            break;
+        case weaponClassType.HandThrow:
+            if (distance > 0) pBonus = 0;
+            break;
+        case weaponClassType.SlingNoAmmo:
+        case weaponClassType.Bow:
+        case weaponClassType.Crossbow:
+        case weaponClassType.Throw:
+            pBonus = 0;
+            break;
+        case weaponClassType.Ammo:
+            pBonus = 0;
+            break;
+        case weaponClassType.SpellCaster:
+        case weaponClassType.SpellLikeAbility:
+            break;
+    }
+    return { returnVal: modify, pBonus: pBonus };
+}
+
+CHARACTER.prototype.ModifyAttackRollDiceAsTarget = function(pAttacker, num, sides, pBonus) {
+    var src = 0;  // DWORD
+    var spellID = "";
+    var modify = false;
+    if (pAttacker.IsAlignmentEvil()) {
+        var result = this.GetAdjSpecAb(SPECAB.SA_ProtFromEvil, src, spellID);
+        if (result.returnVal) {
+            pBonus -= 2;
+            this.QueueUsedSpecAb(SPECAB.SA_ProtFromEvil, src, spellID);
+            modify = true;
+        }
+    }
+    else if (pAttacker.IsAlignmentGood()) {
+        var result = this.GetAdjSpecAb(SPECAB.SA_ProtFromGood, src, spellID);
+        if (result.returnVal) {
+            pBonus -= 2;
+            this.QueueUsedSpecAb(SPECAB.SA_ProtFromGood, src, spellID);
+            modify = TRUE;
+        }
+    }
+
+    var result = this.GetAdjSpecAb(SPECAB.SA_Enfeebled, src, spellID);
+    if (result.returnVal) {
+        pBonus -= 2;
+        this.QueueUsedSpecAb(SPECAB.SA_Enfeebled, src, spellID);
+        modify = true;
+    }
+    return { returnVal: modify, pBonus: pBonus };
+}
+
+CHARACTER.prototype.ModifyAttackRollDiceForItem = function(pTarget, itemID, num, sides, pBonus, distance) {
+    // PORT NOTE:  This method was pretty much commented out
+    var modify = false;            
+    return { returnVal: modify, pBonus: pBonus };
+}
+
+CHARACTER.prototype.IsAlignmentEvil = function() {
+    switch (this.GetAdjAlignment())
+    {
+        case alignmentType.LawfulEvil:
+        case alignmentType.NeutralEvil:
+        case alignmentType.ChaoticEvil:
+            return true;
+    }
+    return false;
+}
+
+CHARACTER.prototype.IsAlignmentGood = function() {
+    switch (this.GetAdjAlignment())
+    {
+        case alignmentType.LawfulGood:
+        case alignmentType.NeutralGood:
+        case alignmentType.ChaoticGood:
+            return true;
+    }
+    return false;
+}
+
+CHARACTER.prototype.ModifyAttackRollDiceForItemAsTarget = function(pAttacker, itemID, num, sides, pBonus) {
+    return { returnVal: false, pBonus: pBonus };
+}
+
+CHARACTER.prototype.GetAdjSkillValue = function (skillName, minimize, includeTempAdj) {
+    var SC = new SKILL_COMPUTATION(this, skillName, minimize, includeTempAdj);
+    Globals.GetAdjSkillValue(SC);
+    return SC.finalAdjustedValue == Globals.NoSkillAdj ? Globals.NoSkill : SC.finalAdjustedValue + 0.5;
+}
+
+CHARACTER.prototype.PeekRaceData = function () {
+    var pRace;
+    pRace = raceData.PeekRace(race);
+    if (pRace != null) return pRace;
+    if (this == Globals.FakeCharacter) return raceData.PeekRace(0);
+    if (!Globals.debugStrings.AlreadyNoted("CHARPRD")) {
+        var msg = "";
+        var i = 0, n = 0;
+        n = raceData.GetCount();
+        msg = "Character '" + name + "' has an illegal race.\nRace : " + race + "\nAvailable races are:\n";
+        for (i = 0; i < n; i++) {
+            if (i >= 12) {
+                msg += ". . . .etc.";
+                break;
+            };
+            msg += raceData.PeekRace(i).Name();
+            if (i < n - 1) msg += ",\n";
+        };
+        Globals.MsgBoxInfo(msg, "ALERT");
+    };
+    return null;
+}
+
+
+CHARACTER.prototype.SetLevel = function (lvl) { throw "todo"; }
+CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };
+CHARACTER.prototype.GetBestMemorizedHealingSpell = function (pSpellID) { throw "todo"; };
+CHARACTER.prototype.GetHealingPointsNeeded = function () { throw "todo"; };
+CHARACTER.prototype.giveCharacterDamage = function (eventSave, attackTHAC0, dmgDice, dmgDiceQty, dmgBonus, spellSave, saveBonus, pAttacker) { throw "todo"; };
+CHARACTER.prototype.giveCharacterDamage = function (damage) { throw "todo"; };
+CHARACTER.prototype.TakeDamage = function (dmg, IsNonLethal, invokeOptions, canFinishCasting, pDeathIndex) { throw "todo"; };
+CHARACTER.prototype.GetLevelCap = function (pBaseclass) { throw "todo"; };
+CHARACTER.prototype.CanBeModified = function () { throw "todo"; }
+CHARACTER.prototype.getAllowedAlignments = function () { throw "todo"; }
+CHARACTER.prototype.GetThiefBackstabDamageMultiplier = function () { throw "todo"; }
+CHARACTER.prototype.GetThiefBackstabAttackAdjustment = function () { throw "todo"; }
+CHARACTER.prototype.GetThiefSkillArmorAdustments = function () { throw "todo"; }
+CHARACTER.prototype.UpdateSkill = function (abilityModifier, abilityName) { throw "todo"; }
+CHARACTER.prototype.TrainCharacter = function (pTrainableBaseclasses) { throw "todo"; }
+CHARACTER.prototype.CanChangeToClass = function (pFromClass, pToClass) { throw "todo"; }
+CHARACTER.prototype.CreateChangeClassList = function (pClassArray) { throw "todo"; }
+CHARACTER.prototype.HumanChangeClass = function (classID) { throw "todo"; }
+CHARACTER.prototype.CanUseBaseclassBaseclassID = function (baseclassID) { throw "todo"; }
+CHARACTER.prototype.IsDualClass = function () { throw "todo"; }
+CHARACTER.prototype.IsUsingBaseclass = function (baseclassID) { throw "todo"; }
+CHARACTER.prototype.IsAlive = function () { throw "todo"; }
+CHARACTER.prototype.GetContext = function (pActor, baseclassID) { throw "todo"; }
+CHARACTER.prototype.GetContext = function (pActor, schoolID) { throw "todo"; }
+CHARACTER.prototype.GetContext = function (pActor, pSpell) { throw "todo"; }
+CHARACTER.prototype.EvalDiceAsClass = function (dice, baseclassID, pRollerLevel) { throw "todo"; }
+CHARACTER.prototype.EvalDiceAsClass = function (dice, schoolID, spellLevel, pRollerLevel) { throw "todo"; }
+CHARACTER.prototype.EvalDiceAsClass = function (dice, pSpell, pRollerLevel) { throw "todo"; }
+CHARACTER.prototype.WhichBaseclassCastThisSpell = function (pSpell) { throw "todo"; }
+CHARACTER.prototype.GetMaxCureDisease = function () { throw "todo"; }
+CHARACTER.prototype.SetMaxCureDisease = function (val) { throw "todo"; }
+CHARACTER.prototype.GetCureDisease = function () { throw "todo"; }
+CHARACTER.prototype.SetCureDisease = function (val) { throw "todo"; }
+CHARACTER.prototype.IncCureDisease = function () { throw "todo"; }
+CHARACTER.prototype.HaveCureDisease = function () { throw "todo"; }
+CHARACTER.prototype.GetAdjMorale = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.DetermineHitDiceBonus = function (baseclassID) { throw "todo"; }
+CHARACTER.prototype.GetNbrHD = function () { throw "todo"; }
+CHARACTER.prototype.GetCurrentLevel = function (baseclassID) { throw "todo"; }
+CHARACTER.prototype.CurrentBaseclassLevel = function (baseclassID) { throw "todo"; }
+CHARACTER.prototype.SetCurrentLevel = function (baseclassID, lvl) { throw "todo"; }
+CHARACTER.prototype.GetDmgBonus = function () { throw "todo"; }
+CHARACTER.prototype.GetAdjDmgBonus = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.ComputeCharSavingThrows = function () { throw "todo"; }
+CHARACTER.prototype.DidSaveVersus = function (type, bonus, pSpell, pAttackerr) { throw "todo"; }
+CHARACTER.prototype.GetMagicResistance = function () { throw "todo"; }
+CHARACTER.prototype.GetAdjMagicResistance = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetHighestLevelBaseclass = function () { throw "todo"; }
+CHARACTER.prototype.GetAdjClass = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetAdjAlignment = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetAdjStatus = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetAdjSize = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.SetGender = function (val) { throw "todo"; }
+CHARACTER.prototype.SetGender = function (gender) { throw "todo"; }
+CHARACTER.prototype.SetClass = function (classID) { throw "todo"; }
+CHARACTER.prototype.SetAlignment = function (val) { throw "todo"; }
+CHARACTER.prototype.SetAllowInCombat = function (allow) { throw "todo"; }
+CHARACTER.prototype.determineEncumbrance = function () { throw "todo"; }
+CHARACTER.prototype.determineNormalEncumbrance = function () { throw "todo"; }
+CHARACTER.prototype.GetAdjMaxEncumbrance = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetPerm = function () { };
+CHARACTER.prototype.GetAdj = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetLimited = function () { throw "todo"; }
+CHARACTER.prototype.SetPerm = function (val) { throw "todo"; }
+CHARACTER.prototype.GetAbilityScore = function (abilityName) { throw "todo"; }
+CHARACTER.prototype.CreateAllowedSchoolList = function (pSchoolList) { throw "todo"; }
+CHARACTER.prototype.MatchSpellBaseclass = function (pSpell) { throw "todo"; }
+CHARACTER.prototype.GetPrimeSpellCastingScore = function (pBaseclass, schoolID) { throw "todo"; }
+CHARACTER.prototype.PrimeSpellCastingScore = function (spellSchool) { throw "todo"; }
+CHARACTER.prototype.HaveSpell = function (spellID, checkmemorized) { throw "todo"; }
+CHARACTER.prototype.GetSpellBookIndex = function (spellID, checkMemorized) { throw "todo"; }
+CHARACTER.prototype.GetAbilityLimits = function (abilityID) { throw "todo"; }
+CHARACTER.prototype.GetDetectingInvisible = function () { throw "todo"; }
+CHARACTER.prototype.SetDetectingInvisible = function (flag) { throw "todo"; }
+CHARACTER.prototype.GetAdjDetectingInvisible = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetDetectingTraps = function () { throw "todo"; }
+CHARACTER.prototype.SetDetectingTraps = function (flag) { throw "todo"; }
+CHARACTER.prototype.GetAdjDetectingTraps = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.SetTHAC0 = function (val) { throw "todo"; }
+CHARACTER.prototype.GetEffectiveAC = function () { throw "todo"; }
+CHARACTER.prototype.SetAC = function (val) { throw "todo"; }
+CHARACTER.prototype.SetCharAC = function () { throw "todo"; }
+CHARACTER.prototype.DetermineCharMaxHitPoints = function () { throw "todo"; }
+CHARACTER.prototype.SetHitPoints = function (val) { throw "todo"; }
+CHARACTER.prototype.SetHitPoints = function (val, int, canFinishCasting) { throw "todo"; }
+CHARACTER.prototype.RestoreMaxHitPoints = function () { throw "todo"; }
+CHARACTER.prototype.SetMaxHitPoints = function (val) { throw "todo"; }
+CHARACTER.prototype.RestoreToBestCondition = function () { throw "todo"; }
+CHARACTER.prototype.SetAge = function (val) { throw "todo"; }
+CHARACTER.prototype.GetIconIndex = function () { throw "todo"; }
+CHARACTER.prototype.SetIconIndex = function (val) { throw "todo"; }
+CHARACTER.prototype.GetBirthday = function () { throw "todo"; }
+CHARACTER.prototype.SetMaxAge = function (val) { throw "todo"; }
+CHARACTER.prototype.GetAdjMaxMovement_GPDL = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.IsReadyToTrain = function (pBaseclassStats) { throw "todo"; }
+CHARACTER.prototype.IsReadyToTrain = function () { throw "todo"; }
+CHARACTER.prototype.GetReadyToTrain = function () { throw "todo"; }
+CHARACTER.prototype.GetAdjReadyToTrain = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.SetReadyToTrain = function (enable) { throw "todo"; }
+CHARACTER.prototype.IsAbleToTrade = function () { throw "todo"; }
+CHARACTER.prototype.SetAbleToTrade = function (enable) { throw "todo"; }
+CHARACTER.prototype.getCharExpWorth = function () { throw "todo"; }
+CHARACTER.prototype.giveCharacterExperience = function (exp, UseLimits) { if (UseLimits == undefined) { UseLimits = true; } };
+CHARACTER.prototype.GetCurrExp = function (baseclassID) { throw "todo"; }
+CHARACTER.prototype.SetCurrExp = function (baseclassID, exp) { throw "todo"; }
+CHARACTER.prototype.ClearLevels = function () { throw "todo"; }
+CHARACTER.prototype.GetCurrLevel = function (baseclassID) { throw "todo"; }
+CHARACTER.prototype.GetAllowedLevel = function (baseclassID) { throw "todo"; }
+CHARACTER.prototype.IncCurrExp = function (baseclassID, exp) { throw "todo"; }
+CHARACTER.prototype.GetAdjBaseclassExp = function (baseclassID, flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetBaseclassExp = function (baseclassID) { throw "todo"; }
+CHARACTER.prototype.SetSpecAb = function (sa, enable, flags) { throw "todo"; }
+CHARACTER.prototype.ClearQueuedSpecAb = function () { throw "todo"; }
+CHARACTER.prototype.AdjustEffectData = function (key, val) { throw "todo"; }
+CHARACTER.prototype.IsMammal = function () { throw "todo"; }
+CHARACTER.prototype.IsAnimal = function () { throw "todo"; }
+CHARACTER.prototype.IsSnake = function () { throw "todo"; }
+CHARACTER.prototype.IsGiant = function () { throw "todo"; }
+CHARACTER.prototype.IsAlwaysLarge = function () { throw "todo"; }
+CHARACTER.prototype.HasDwarfACPenalty = function () { throw "todo"; }
+CHARACTER.prototype.HasGnomeACPenalty = function () { throw "todo"; }
+CHARACTER.prototype.HasDwarfTHAC0Penalty = function () { throw "todo"; }
+CHARACTER.prototype.HasGnomeTHAC0Penalty = function () { throw "todo"; }
+CHARACTER.prototype.HasRangerDmgPenalty = function () { throw "todo"; }
+CHARACTER.prototype.HasPoisonImmunity = function () { throw "todo"; }
+CHARACTER.prototype.HasDeathImmunity = function () { throw "todo"; }
+CHARACTER.prototype.HasConfusionImmunity = function () { throw "todo"; }
+CHARACTER.prototype.HasVorpalImmunity = function () { throw "todo"; }
+CHARACTER.prototype.CanBeHeldOrCharmed = function () { throw "todo"; }
+CHARACTER.prototype.AffectedByDispelEvil = function () { throw "todo"; }
+CHARACTER.prototype.CharacterID = function (id) { throw "todo"; }
+CHARACTER.prototype.ProcessLingeringSpellEffects = function () { throw "todo"; }
+CHARACTER.prototype.GetSpellCount = function () { throw "todo"; }
+CHARACTER.prototype.ClearSpellbook = function () { throw "todo"; }
+CHARACTER.prototype.FetchCharacterSpell = function (spellID, pCharSp) { throw "todo"; }
+CHARACTER.prototype.LocateCharacterSpell = function (spellID) { throw "todo"; }
+CHARACTER.prototype.PeekCharacterSpell = function (index) { throw "todo"; }
+CHARACTER.prototype.GetCharacterSpell = function (index) { throw "todo"; }
+CHARACTER.prototype.DecMemorized = function (spellID, count) { throw "todo"; }
+CHARACTER.prototype.SpellsKnown = function () { throw "todo"; }
+CHARACTER.prototype.IsMemorized = function (spellID) { throw "todo"; }
+CHARACTER.prototype.IncAllMemorizedTime = function (minuteInc, all) { throw "todo"; }
+CHARACTER.prototype.KnowSpell = function (baseclassID, spellSchoolID, spellID, level, known) { throw "todo"; }
+CHARACTER.prototype.KnowSpellyyy = function (pSpell, know) { throw "todo"; }
+CHARACTER.prototype.CopySpellbook = function (b) { throw "todo"; }
+CHARACTER.prototype.UnselectIfNotMemorized = function () { throw "todo"; }
+CHARACTER.prototype.CanKnowSpell = function (schoolID, spellLevel) { throw "todo"; }
+CHARACTER.prototype.HasKnowableSpell = function (uniqueName) { throw "todo"; }
+CHARACTER.prototype.AddKnowableSpell = function (uniqueName) { throw "todo"; }
+CHARACTER.prototype.DelKnowableSpell = function (uniqueName) { throw "todo"; }
+CHARACTER.prototype.ClrKnowableSpell = function () { throw "todo"; }
+CHARACTER.prototype.ComputeAIBaseclass = function () { throw "todo"; }
+// 	DEFINE_mCARRAY_ACCESS_FUNCTIONS (SkillAdj, SKILL_ID, skillID, skillAdjustments, SKILL_ADJ, CHARACTER) void DeleteSkillAdj(indx) { throw "todo"; }
+CHARACTER.prototype.LocateSkillAdj = function (skillName, adjName) { throw "todo"; }
+CHARACTER.prototype.ApplyTempSkillAdjustments = function (SC) { throw "todo"; }
+CHARACTER.prototype.InsertSkillAdj = function (skillName, adjName, type, value) { throw "todo"; }
+CHARACTER.prototype.GetBaseclassLevel = function (baseclassID) { throw "todo"; }
+CHARACTER.prototype.GetBaseclassPrevLevel = function (baseclassID) { throw "todo"; }
+CHARACTER.prototype.GetBaseclassPreDrainLevel = function (baseclassID) { throw "todo"; }
+CHARACTER.prototype.SetBaseclassLevel = function (baseclassID, level) { throw "todo"; }
+CHARACTER.prototype.ComputeCharacterViewValues = function () { throw "todo"; }
+//virtual CHARACTER.prototype.ComputeCombatViewValues () { throw "todo"; }
+//DEFINE_mCARRAY_ACCESS_FUNCTIONS (SpellAdj, SCHOOL_ID, schoolID, spellAdjustments, SPELL_ADJ, CHARACTER) CString SpellAdjustment(schoolID

@@ -58,6 +58,9 @@ function Globals() {
     this.Skill_BackstabMultiplier = "BackstabMultiplier";
 
     this.NoSkill = UAFUtil.ByteFromHexString("0x80000000");
+    this.NoSkillAdj = -987656789.0;
+
+    this.FakeCharacter = new CHARACTER();
 }
 
 Globals.prototype.die = function (message) {

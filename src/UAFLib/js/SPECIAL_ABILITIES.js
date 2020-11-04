@@ -19,6 +19,7 @@ SPECIAL_ABILITIES.prototype.FindAbility = function (key) {
             return this.m_specialAbilities[i];
         }
     }
+    return null;
 }
 
 SPECIAL_ABILITIES.prototype.GetNextData = function(pos) {
@@ -536,5 +537,10 @@ SPECAB.prototype.ScriptCallback_LookForChar = function(func, scriptResult, pkt)
     };
     return { CBRESULT: CBRESULT.CBR_STOP, scriptResult: scriptResult };
 }
+
+SPECAB.prototype.ConvertSpecAbToRuntimeIfText = function(sa) {
+    return sa;      // PORT NOTE:  This seems to not have a definition in the C++ source
+}
+
 
 var SPECAB = new SPECAB();

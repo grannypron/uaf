@@ -82,6 +82,7 @@
     <Content Include="js\ACTIVE_SPELL_LIST.js" />
     <Content Include="js\BASECLASS_LIST.js" />
     <Content Include="js\FormattedText.js" />
+    <Content Include="js\SKILL_COMPUTATION.js" />
     <Content Include="js\TargetingType.js" />
     <Content Include="js\CLASS_DATA.js" />
     <Content Include="js\CPathFinder.js" />

@@ -63,7 +63,7 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
     var backstabSkillID = "";
 
 
-    distance = Distance6(pAttacker.self, pAttacker.x, pAttacker.y,
+    distance = Drawtile.Distance6(pAttacker.self, pAttacker.x, pAttacker.y,
         pTarget.self, pTarget.x, pTarget.y);
 
     attDiceSides = 20;
@@ -80,7 +80,7 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
         pTarget.m_pCharacter,
         attDiceNum,
         attDiceSides,
-        this.m_attDiceBonus);
+        this.m_attDiceBonus).pBonus;
 
     this.m_attDiceBonus = pAttacker.ModifyAttackRollDiceForItem(
         pTarget.m_pCharacter,
@@ -88,25 +88,25 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
         attDiceNum,
         attDiceSides,
         this.m_attDiceBonus,
-        distance);
+        distance).pBonus;
 
     this.m_attDiceBonus = pTarget.ModifyAttackRollDiceAsTarget(
         pAttacker.m_pCharacter,
         attDiceNum,
         attDiceSides,
-        this.m_attDiceBonus);
+        this.m_attDiceBonus).pBonus;
 
     this.m_attDiceBonus = pTarget.ModifyAttackRollDiceForItemAsTarget(
         pAttacker.m_pCharacter,
         itemID,  //Investigate this!!
         attDiceNum,
         attDiceSides,
-        m_attDiceBonus);
+        this.m_attDiceBonus).pBonus;
 
 
     this.m_toHitDiceRoll = Globals.RollDice(attDiceSides,
         attDiceNum,
-        m_attDiceBonus);
+        this.m_attDiceBonus).pBonus;
 
 
     bsm = pAttacker.m_pCharacter.GetAdjSkillValue(Globals.Skill_BackstabMultiplier, false, true);
@@ -177,110 +177,99 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
         if (itemData.IsValidItem(itemID)) {
             pItem = itemData.GetItem(itemID);
             if (pItem != null) {
-                result = pItem -> RunItemScripts
-                    (DOES_ATTACK_SUCCEED,
-                        ScriptCallback_RunAllScripts,
+                result = pItem.RunItemScripts
+                    (SPECAB.DOES_ATTACK_SUCCEED,
+                        SPECAB.ScriptCallback_RunAllScripts,
                         "YN",
                         "To-Hit versus THAC0");
-                if (!result.IsEmpty()) finalResult = result;
-                if (scriptContext.pSpellContext != NULL) {
-                    result = scriptContext.GetSpellContext(NULL) -> RunSpellScripts
-                        (DOES_ATTACK_SUCCEED,
-                            ScriptCallback_RunAllScripts,
+                if (!(result == null || result == "")) finalResult = result;
+                if (scriptContext.pSpellContext != null) {
+                    result = scriptContext.GetSpellContext(null).RunSpellScripts
+                        (SPECAB.DOES_ATTACK_SUCCEED,
+                            SPECAB.ScriptCallback_RunAllScripts,
                             "YN",
                             "To-Hit versus THAC0");
-                    if (!result.IsEmpty()) finalResult = result;
+                    if (!(result == null || result == "")) finalResult = result;
                 };
             };
         };
-        const CLASS_DATA * pClass;
-        //pClass = classData.GetClassData(pAttacker->GetClass());
-        pClass = classData.PeekClass(pAttacker -> GetClass());
-        if (pClass != NULL) {
-            result = pClass -> RunClassScripts
-                (DOES_ATTACK_SUCCEED,
-                    ScriptCallback_RunAllScripts,
+        var pClass;
+        pClass = classData.PeekClass(pAttacker.GetClass());
+        if (pClass != null) {
+            result = pClass.RunClassScripts
+                (SPECAB.DOES_ATTACK_SUCCEED,
+                    SPECAB.ScriptCallback_RunAllScripts,
                     "YN",
                     "To-Hit versus THAC0");
         }
         else {
-            result.Empty();
+            result = "";
         };
-        if (!result.IsEmpty()) finalResult = result;
+        if (!(result == null || result == "")) finalResult = result;
         {
-            const RACE_DATA * pRace;
-            //pRace = raceData.GetRaceData(pAttacker->race());
-            //pRace = raceData.PeekRace(pAttacker->race());
-            pRace = pAttacker -> m_pCharacter -> PeekRaceData();
-            result.Empty();
-            if (pRace != NULL) {
-                result = pRace -> RunRaceScripts
-                    (DOES_ATTACK_SUCCEED,
-                        ScriptCallback_RunAllScripts,
+            var pRace;
+            pRace = pAttacker.m_pCharacter.PeekRaceData();
+            result = "";
+            if (pRace != null) {
+                result = pRace.RunRaceScripts
+                    (SPECAB.DOES_ATTACK_SUCCEED,
+                        SPECAB.ScriptCallback_RunAllScripts,
                         "YN",
                         "To-Hit versus THAC0");
-                if (!result.IsEmpty()) finalResult = result;
+                if (!(result == null || result == "")) finalResult = result;
             };
         };
         {
-            const CLASS_DATA * pTargClass;
-            //pTargClass = classData.GetClassData(pTarget->GetClass());
-            pTargClass = classData.PeekClass(pTarget -> GetClass());
-            result.Empty();
-            if (pTargClass != NULL) {
-                result = pTargClass -> RunClassScripts
-                    (DOES_ATTACK_SUCCEED,
-                        ScriptCallback_RunAllScripts,
+            var pTargClass;
+            pTargClass = classData.PeekClass(pTarget.GetClass());
+            result = "";
+            if (pTargClass != null) {
+                result = pTargClass.RunClassScripts
+                    (SPECAB.DOES_ATTACK_SUCCEED,
+                        SPECAB.ScriptCallback_RunAllScripts,
                         "YN",
                         "To-Hit versus THAC0");
-                if (!result.IsEmpty()) finalResult = result;
+                if (!(result == null || result == "")) finalResult = result;
             };
         }
         {
-            const RACE_DATA * pRace;
-            //pRace = raceData.GetRaceData(pTarget->race());
-            //pRace = raceData.PeekRace(pTarget->race());
-            pRace = pTarget -> m_pCharacter -> PeekRaceData();
-            result.Empty();
-            if (pRace != NULL) {
-                result = pRace -> RunRaceScripts
-                    (DOES_ATTACK_SUCCEED,
-                        ScriptCallback_RunAllScripts,
+            var pRace;
+            pRace = pTarget.m_pCharacter.PeekRaceData();
+            result = "";
+            if (pRace != null) {
+                result = pRace.RunRaceScripts
+                    (SPECAB.DOES_ATTACK_SUCCEED,
+                        SPECAB.ScriptCallback_RunAllScripts,
                         "YN",
                         "To-Hit versus THAC0");
-                if (!result.IsEmpty()) finalResult = result;
+                if (!(result == null || result == "")) finalResult = result;
             };
         };
         {
-            if (pTarget -> GetType() == MONSTER_TYPE) {
-                //int monsterIndex;
-                //monsterIndex = pTarget->origKey;
-                MONSTER_ID monsterID;
-                monsterID = pTarget -> m_pCharacter -> monsterID;
+            if (pTarget.GetType() == MONSTER_TYPE) {
+                var monsterID;
+                monsterID = pTarget.m_pCharacter.monsterID;
                 {
-                    //MONSTER_DATA *pMonsterData;
-                    const MONSTER_DATA * pMonsterData;
-                    //pMonsterData = monsterData.GetMonsterData(monsterIndex);
+                    var pMonsterData;
                     pMonsterData = monsterData.PeekMonster(monsterID);
-                    result.Empty();
-                    if (pMonsterData != NULL) {
-                        result = pMonsterData -> RunMonsterScripts(
-                            DOES_ATTACK_SUCCEED,
-                            ScriptCallback_RunAllScripts,
-                            NULL,
+                    result = "";
+                    if (pMonsterData != null) {
+                        result = pMonsterData.RunMonsterScripts(
+                            SPECAB.DOES_ATTACK_SUCCEED,
+                            SPECAB.ScriptCallback_RunAllScripts,
+                            null,
                             "To-Hit versus THAC0");
-                        if (!result.IsEmpty()) finalResult = result;
+                        if (!(result == null || result == "")) finalResult = result;
                     };
                 };
             };
 
         };
-        //ClearItemContext();
         {
-            if (finalResult.Find('N') >= 0) m_didHit = 0;
-            else if (finalResult.Find('Y') >= 0) m_didHit = 1;
+            if (finalResult.indexOf('N') >= 0) this.m_didHit = 0;
+            else if (finalResult.indexOf('Y') >= 0) this.m_didHit = 1;
         };
     };
 
-    if (m_didHit < 0) m_didHit = (m_toHitDiceRoll >= m_effectiveTHAC0);
+    if (this.m_didHit < 0) this.m_didHit = (this.m_toHitDiceRoll >= this.m_effectiveTHAC0);
 }
