@@ -72,7 +72,7 @@ public class CombatScreenEvents : MonoBehaviour
             }
         }
 
-        jsURLs.Sort();
+        jsURLs.Sort(new CaseInsensitiveStringComparer());
 
 
         foreach (string jsUrl in jsURLs)
@@ -191,5 +191,12 @@ public class CombatScreenEvents : MonoBehaviour
         //"CopperDragon", "GiantCrocodile", 
     }
 
-        
+    public class CaseInsensitiveStringComparer : IComparer<string>
+    {
+        public int Compare(string x, string y)
+        {
+            return String.Compare(x.ToLower(), y.ToLower());
+        }
     }
+
+}

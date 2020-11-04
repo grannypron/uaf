@@ -18961,8 +18961,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 130}
-  m_SizeDelta: {x: 80, y: 30}
+  m_AnchoredPosition: {x: 0, y: 113.6}
+  m_SizeDelta: {x: 80, y: 62.894592}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1033362223
 MonoBehaviour:
@@ -18996,7 +18996,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Loading.  \nPlease wait..."
+  m_Text: "Loading.  \nPlease wait...\nThe monsters\nwill join you \nsoon."
 --- !u!222 &1033362224
 CanvasRenderer:
   m_ObjectHideFlags: 0
