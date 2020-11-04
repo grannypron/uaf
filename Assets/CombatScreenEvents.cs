@@ -54,7 +54,12 @@ public class CombatScreenEvents : MonoBehaviour
         yield return jsIndexReq.SendWebRequest();
 
         XmlDocument indexDoc = new XmlDocument();
-        indexDoc.LoadXml(jsIndexReq.downloadHandler.text);
+        String indexAsStr = jsIndexReq.downloadHandler.text;
+        if (indexAsStr[0] > 1000)
+        {
+            indexAsStr = indexAsStr.Substring(1);
+        }
+        indexDoc.LoadXml(indexAsStr);
         XmlNodeList nodes = indexDoc.SelectNodes("//node()[local-name() = 'ItemGroup']/node()[local-name() = 'Content']/@Include");
         List<String> jsURLs = new List<string>();
         // Save in list to alphabetize
