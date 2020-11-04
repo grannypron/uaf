@@ -62,7 +62,7 @@ public class CombatScreenEvents : MonoBehaviour
         {
             if (node.InnerText != null && node.InnerText.StartsWith("js\\"))
             {
-                string jaUrl = "https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/" + node.InnerText.Replace("\\", "/");
+                string jaUrl = "http://htmlpreview.github.io/?https://github.com/grannypron/uaf/blob/port/src/UAFLib/" + node.InnerText.Replace("\\", "/");
                 jsURLs.Add(jaUrl);
             }
         }
