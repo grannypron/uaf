@@ -19,7 +19,7 @@ public class CombatScreenEvents : MonoBehaviour
     // Each square on the grid is 40x/y  Not sure why, but it is by eyeball
 
     private int PlayerScaleFactor = -1;
-    private const String CONFIG_FILE_URL = "https://raw.githubusercontent.com/grannypron/uaf/unity/config.xml";
+    private const String CONFIG_FILE_URL = "http://htmlpreview.github.io/?https://github.com/grannypron/uaf/blob/unity/config.xml";
     private Engine jintEngine;
     private ConsoleResults setupResults;
 
