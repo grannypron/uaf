@@ -6,10 +6,10 @@
 	this.m_memory = [];  // char *
 
 	// User-defined callback pointers
-	var m_pCBData;			 // Data passed back to following two functions. 
-	var  m_fValid;	 // The user-defined validity function
-	var m_fCost;	 // The user-defined cost function
-	var PATH = [];
+	this.m_pCBData;			 // Data passed back to following two functions. 
+	this.m_fValid;	 // The user-defined validity function
+	this.m_fCost;	 // The user-defined cost function
+	this.PATH = [];
 
 	/**TODO
 	void Clear(void);

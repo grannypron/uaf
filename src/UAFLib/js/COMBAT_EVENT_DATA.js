@@ -34,7 +34,7 @@ COMBAT_EVENT_DATA.prototype.Clear = function ()
 
     this.m_stoppedSounds = false;
     this.m_UseOutdoorMap = false;
-    this.distance = eventDistType.FarAway; eventDirType.direction = Any; m_eSurprise = eventSurpriseType.Neither;
+    this.distance = eventDistType.FarAway; eventDirType.direction = Any; this.m_eSurprise = eventSurpriseType.Neither;
     this.autoApproach = false; this.outdoors = false; this.noMonsterTreasure = false;
     this.partyNeverDies = false; this.noMagic = false; this.monsterMorale = 50;
     this.partyNoExperience = false;

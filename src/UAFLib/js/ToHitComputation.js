@@ -103,10 +103,11 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
         attDiceSides,
         this.m_attDiceBonus).pBonus;
 
-
+    Globals.debug("---- THIS IS JUST FOR TESTING !!! REMOVE!!!");
     this.m_toHitDiceRoll = Globals.RollDice(attDiceSides,
         attDiceNum,
-        this.m_attDiceBonus).pBonus;
+        20);
+    //    this.m_attDiceBonus);
 
 
     bsm = pAttacker.m_pCharacter.GetAdjSkillValue(Globals.Skill_BackstabMultiplier, false, true);
@@ -140,7 +141,8 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
         scriptContext.SetItemContextKey(wpn);
         scriptContext.SetTargetContextCOMBATANT(pTarget);
         scriptContext.SetAttackerContext(pAttacker);
-        if (itemID.IsValidItem()) {
+
+        if (itemData.IsValidItem(itemID)) {
             itemName = scriptContext.GetItemContext("Bogus Item Context").UniqueName();
         }
         else {
@@ -318,7 +320,7 @@ ToHitComputation.prototype.ComputeEffectiveTHAC0 = function(pAttacker, pTarget, 
     var effectiveTargetAC = 0;
 
     var pWeapon = null;
-    if (Items.IsValidItem(weaponID)) {                  // PORT NOTE:  Changed IsValidItem a bit
+    if (itemData.IsValidItem(weaponID)) {                  // PORT NOTE:  Changed IsValidItem a bit
         pWeapon = itemData.GetItem(weaponID);
     };
 
@@ -339,4 +341,3 @@ ToHitComputation.prototype.ComputeEffectiveTHAC0 = function(pAttacker, pTarget, 
 
     return effectiveTHAC0;
 }
-

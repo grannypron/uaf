@@ -54,5 +54,9 @@ UAFUtil.prototype.Decode = function(c) {
     return 0;
 }
 
+UAFUtil.prototype.IsEmpty = function (s) {
+    return s == "" || s == null;
+}
+
 
 var UAFUtil = new UAFUtil();

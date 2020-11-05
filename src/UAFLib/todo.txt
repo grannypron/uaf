@@ -1,4 +1,4 @@
-﻿- Make the status frame on the combat scene!
+﻿- Go back and find all the == "" || == null entries and change them to use UAFUtil.IsEmpty()
 - Make a unit test that sets an enemy next to a character and makes an attack - check out makeAttack called from COMBATANT.HandleTimeDelayMsgBegin (ew)
 - Figure out how we are going to load resources in Unity.  Make a ResourceLoader interface in UAFLib that a Unity class will implement
 - Make a monster library loader, class library loader, etc.

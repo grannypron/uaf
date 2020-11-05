@@ -458,10 +458,10 @@ CHARACTER.prototype.Serialize = function (ar, version) {
         // Make a note of any spells that the character has but which are
         // missing from the spell database.
         var i, n;
-        n = m_spellbook.GetCount();
+        n = this.m_spellbook.GetCount();
         for (i = 0; i < n; i++) {
             var pCharSp;
-            pCharSp = m_spellbook.PeekCharacterSpell(i);
+            pCharSp = this.m_spellbook.PeekCharacterSpell(i);
             if (!pCharSp.spellID.IsValidSpell()) {
                 UAFUtil.WriteDebugString("Character " + GetName() + " is missing spell " + pCharSp.spellID.UniqueName() + "\n");
             };
@@ -2572,14 +2572,14 @@ CHARACTER.prototype.GetAdjAllowPlayerControl = function (flags) {
     if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
     var key = IF_KEYWORD_INDEX.CHAR_ALLOWPLAYERCONTROL;
     var val = this.GetAllowPlayerControl();
-    this.ApplySpellEffectAdjustments(flags, key, val);
+    val = this.ApplySpellEffectAdjustments(flags, key, val);
     val = Math.max(0, val);
     val = Math.min(1, val);
     return val;
 };
 
 CHARACTER.prototype.GetIsFriendly = function () {
-    return (this.m_pCombatant == null) ? true : m_pCombatant.GetIsFriendly();
+    return (this.m_pCombatant == null) ? true : this.m_pCombatant.GetIsFriendly();
 }
 
 CHARACTER.prototype.SetType = function (flag) {
@@ -3403,21 +3403,21 @@ CHARACTER.prototype.ModifyAttackRollDice = function (pTarget, num, sides, pBonus
     return { modify: modify, pBonus: pBonus };
 }
 
-CHARACTER.prototype.GetAdjSpecAb = function (sa, pSource, pSpellName) {
-    if (pSource != null) pSource = 0;
-    if (pSpellName != null) pSpellName = "";
+CHARACTER.prototype.GetAdjSpecAb = function (sa, src, spellID) {
+    if (src != null) src = 0;
+    if (spellID != null) spellID = "";
 
     if (this.specAbs.FindAbility(sa) == null) {
-        return { returnVal: 0, pSource: pSource, pSpellName: pSpellName };
+        return { returnVal: 0, pSource: src, pSpellName: spellID };
     }
 
     var akey;
     akey = SPECAB.ConvertSpecAbToRuntimeIfText(sa);
-    if (akey.length == 0) return { returnVal: 0, pSource: pSource, pSpellName: pSpellName };
+    if (akey.length == 0) return { returnVal: 0, pSource: src, pSpellName: spellID };
 
     var val = 0.0;
     Globals.die("Not Needed?"); //Not Implemented(0x4f6da8, FALSE);
-    return { returnVal: val, pSource: pSource, pSpellName: pSpellName };
+    return { returnVal: val, src: src, spellID: spellID };
 }
 
 CHARACTER.prototype.QueueUsedSpecAb = function (sa, src, SpellID) {
@@ -3639,6 +3639,152 @@ CHARACTER.prototype.HasGnomeACPenalty = function () {
     return false;
 }
 
+CHARACTER.prototype.IsAlwaysLarge = function () {
+    if (this.GetType() == MONSTER_TYPE) {
+        return ((monsterData.GetMonsterFormFlags(monsterID) & FormLarge) == MonsterFormType.FormLarge);
+    }
+
+    return true;  
+}
+
+CHARACTER.prototype.GetAdjStatus = function (flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    var key = IF_KEYWORD_INDEX.CHAR_STATUS;
+    var val = this.GetStatus();
+    val = this.ApplySpellEffectAdjustments(flags, key, val);
+    if ((val < 0) || (val >= GameRules.NUM_CHAR_STATUS_TYPES))
+        val = this.GetStatus();
+    return charStatusType.getByNumber(val);
+}
+
+
+CHARACTER.prototype.GetAdjDetectingInvisible = function (flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    var key = IF_KEYWORD_INDEX.CHAR_DETECTINVISIBLE;
+    var val = this.GetDetectingInvisible();
+    val = this.ApplySpellEffectAdjustments(flags, key, val);
+    val = Math.max(0, val);
+    val = Math.min(1, val);
+    return val;
+}
+
+CHARACTER.prototype.GetDetectingInvisible = function () {
+    return this.detectingInvisible;
+}
+
+CHARACTER.prototype.GetAdjAlignment = function (flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    var key = IF_KEYWORD_INDEX.CHAR_ALIGNMENT;
+    var val = this.GetAlignment();
+    val = this.ApplySpellEffectAdjustments(flags, key, val);
+    if ((val < 0) || (val >= GameRules.NUM_ALIGNMENT_TYPES))
+        val = this.GetAlignment();
+    return alignmentType.getByNumber(val);
+}
+
+
+CHARACTER.prototype.GetAdjSize = function (flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    var key = IF_KEYWORD_INDEX.CHAR_SIZE;
+    var val = this.GetSize();
+    val = this.ApplySpellEffectAdjustments(flags, key, val);
+    if ((val < 0) || (val >= GameRules.NUM_SIZE_TYPES))
+        val = this.GetSize();
+    // lookup sa's Enlarge and Reduce
+    if (this.GetAdjSpecAb(SPECAB.SA_Enlarge))
+        val++;
+    if (this.GetAdjSpecAb(SPECAB.SA_Reduce))
+        val--;
+
+    if (val < creatureSizeType.Small) val = creatureSizeType.Small;
+    if (val > creatureSizeType.Large) val = creatureSizeType.Large;
+
+    return creatureSizeType.getByNumber(val);
+}
+
+CHARACTER.prototype.GetAdjDmgBonus = function (flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    var key = IF_KEYWORD_INDEX.CHAR_DAMAGEBONUS;
+    var val = this.GetDmgBonus();
+    val = this.ApplySpellEffectAdjustments(flags, key, val);
+    return val;
+};
+
+CHARACTER.prototype.GetDmgBonus = function () {
+    return this.dmgBonus;
+}
+
+CHARACTER.prototype.ModifyAttackDamageDice = function(pTarget, num, sides, pBonus, pNonLethal)  {
+    var src = "";
+    var spellID = "";
+    var modify = false;
+    var result = this.GetAdjSpecAb(SPECAB.SA_Enlarge, src, spellID); src = result.src; spellID = result.spellID;   // PORT NOTE:  Dealing with output parameters
+    if (result.returnVal) {
+        var maxdmg = num * sides;
+        var bonusdmg = Math.ceil(maxdmg * 0.33);
+        if (bonusdmg < 1.0) bonusdmg = 1.0;
+        pBonus += bonusdmg;
+        this.QueueUsedSpecAb(SPECAB.SA_Enlarge, src, spellID);
+        modify = true;
+    }
+    var result = this.GetAdjSpecAb(SPECAB.SA_Reduce, src, spellID); src = result.src; spellID = result.spellID;   // PORT NOTE:  Dealing with output parameters
+    if (result.returnVal) {
+        var maxdmg = num * sides;
+        var bonusdmg = ceil(maxdmg * 0.33);
+        if (bonusdmg < 1.0) bonusdmg = 1.0;
+        pBonus -= bonusdmg;
+        QueueUsedSpecAb(SPECAB.SA_Reduce, src, spellID);
+        modify = true;
+    }
+
+    if (pTarget.HasRangerDmgPenalty()) {
+        var pBaseclass;
+        var adjClassID;
+        adjClassID = this.GetAdjClass();
+        var pClass;
+
+        var rangerBonus = 0;
+        pClass = classData.PeekClass(adjClassID);
+        rangerBonus = this.GetAdjSkillValue(Skill_RangerBonusLevel, false, true);
+        if ((rangerBonus != Globals.NoSkill) && (pClass != null)) {
+            var numBaseclass = 0, i = 0;
+            var scriptContext = new SCRIPT_CONTEXT();
+            var hookParameters = new HOOK_PARAMETERS();
+            scriptContext.SetAttackerContext(this);
+            scriptContext.SetTargetContext(pTarget);
+            hookParameters[5] = "" + rangerBonus;
+            numBaseclass = pClass.GetCount();
+            for (i = 0; i < numBaseclass; i++) {
+                var skillID = "";
+                skillID = Globals.Skill_RangerBonusLevel;
+                pBaseclass = baseclassData.PeekBaseclass(pClass.PeekBaseclassID(i));
+                if ((pBaseclass != null) && (pBaseclass.PeekSkill(skillID) != null)) {
+                    scriptContext.SetBaseClassContext(pBaseclass);
+                    pBaseclass.RunBaseClassScripts(SPECAB.RANGER_DAMAGE_BONUS,
+                        SPECAB.ScriptCallback_RunAllScripts,
+                        null,
+                        "ModifyAttackDamageDice");
+                }
+            }
+            rangerBonus = parseInt(hookParameters[5]);
+        };
+        if (rangerBonus != Globals.NoSkill) {
+          pBonus += rangerBonus;
+        };
+
+    };
+
+
+    var result = this.GetAdjSpecAb(SPECAB.SA_Enfeebled, src, spellID); src = result.src; spellID = result.spellID;   // PORT NOTE:  Dealing with output parameters
+    if (result.returnVal) {
+        pBonus -= 1;
+        this.QueueUsedSpecAb(SA_Enfeebled, src, spellID);
+        modify = true;
+    }
+
+    
+    return { returnVal: modify, pBonus: pBonus, pNonLethal: pNonLethal };
+}
 
 CHARACTER.prototype.SetLevel = function (lvl) { throw "todo"; }
 CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };
@@ -3675,23 +3821,18 @@ CHARACTER.prototype.GetCureDisease = function () { throw "todo"; }
 CHARACTER.prototype.SetCureDisease = function (val) { throw "todo"; }
 CHARACTER.prototype.IncCureDisease = function () { throw "todo"; }
 CHARACTER.prototype.HaveCureDisease = function () { throw "todo"; }
-CHARACTER.prototype.GetAdjMorale = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetAdjMorale = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.DetermineHitDiceBonus = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.GetNbrHD = function () { throw "todo"; }
 CHARACTER.prototype.GetCurrentLevel = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.CurrentBaseclassLevel = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.SetCurrentLevel = function (baseclassID, lvl) { throw "todo"; }
-CHARACTER.prototype.GetDmgBonus = function () { throw "todo"; }
-CHARACTER.prototype.GetAdjDmgBonus = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
 CHARACTER.prototype.ComputeCharSavingThrows = function () { throw "todo"; }
 CHARACTER.prototype.DidSaveVersus = function (type, bonus, pSpell, pAttackerr) { throw "todo"; }
 CHARACTER.prototype.GetMagicResistance = function () { throw "todo"; }
-CHARACTER.prototype.GetAdjMagicResistance = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetAdjMagicResistance = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.GetHighestLevelBaseclass = function () { throw "todo"; }
-CHARACTER.prototype.GetAdjClass = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
-CHARACTER.prototype.GetAdjAlignment = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
-CHARACTER.prototype.GetAdjStatus = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
-CHARACTER.prototype.GetAdjSize = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetAdjClass = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.SetGender = function (val) { throw "todo"; }
 CHARACTER.prototype.SetGender = function (gender) { throw "todo"; }
 CHARACTER.prototype.SetClass = function (classID) { throw "todo"; }
@@ -3699,9 +3840,9 @@ CHARACTER.prototype.SetAlignment = function (val) { throw "todo"; }
 CHARACTER.prototype.SetAllowInCombat = function (allow) { throw "todo"; }
 CHARACTER.prototype.determineEncumbrance = function () { throw "todo"; }
 CHARACTER.prototype.determineNormalEncumbrance = function () { throw "todo"; }
-CHARACTER.prototype.GetAdjMaxEncumbrance = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetAdjMaxEncumbrance = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.GetPerm = function () { };
-CHARACTER.prototype.GetAdj = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetAdj = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.GetLimited = function () { throw "todo"; }
 CHARACTER.prototype.SetPerm = function (val) { throw "todo"; }
 CHARACTER.prototype.GetAbilityScore = function (abilityName) { throw "todo"; }
@@ -3712,12 +3853,10 @@ CHARACTER.prototype.PrimeSpellCastingScore = function (spellSchool) { throw "tod
 CHARACTER.prototype.HaveSpell = function (spellID, checkmemorized) { throw "todo"; }
 CHARACTER.prototype.GetSpellBookIndex = function (spellID, checkMemorized) { throw "todo"; }
 CHARACTER.prototype.GetAbilityLimits = function (abilityID) { throw "todo"; }
-CHARACTER.prototype.GetDetectingInvisible = function () { throw "todo"; }
 CHARACTER.prototype.SetDetectingInvisible = function (flag) { throw "todo"; }
-CHARACTER.prototype.GetAdjDetectingInvisible = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
 CHARACTER.prototype.GetDetectingTraps = function () { throw "todo"; }
 CHARACTER.prototype.SetDetectingTraps = function (flag) { throw "todo"; }
-CHARACTER.prototype.GetAdjDetectingTraps = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetAdjDetectingTraps = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.SetTHAC0 = function (val) { throw "todo"; }
 CHARACTER.prototype.GetEffectiveAC = function () { throw "todo"; }
 CHARACTER.prototype.SetAC = function (val) { throw "todo"; }
@@ -3733,11 +3872,11 @@ CHARACTER.prototype.GetIconIndex = function () { throw "todo"; }
 CHARACTER.prototype.SetIconIndex = function (val) { throw "todo"; }
 CHARACTER.prototype.GetBirthday = function () { throw "todo"; }
 CHARACTER.prototype.SetMaxAge = function (val) { throw "todo"; }
-CHARACTER.prototype.GetAdjMaxMovement_GPDL = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetAdjMaxMovement_GPDL = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.IsReadyToTrain = function (pBaseclassStats) { throw "todo"; }
 CHARACTER.prototype.IsReadyToTrain = function () { throw "todo"; }
 CHARACTER.prototype.GetReadyToTrain = function () { throw "todo"; }
-CHARACTER.prototype.GetAdjReadyToTrain = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetAdjReadyToTrain = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.SetReadyToTrain = function (enable) { throw "todo"; }
 CHARACTER.prototype.IsAbleToTrade = function () { throw "todo"; }
 CHARACTER.prototype.SetAbleToTrade = function (enable) { throw "todo"; }
@@ -3749,7 +3888,7 @@ CHARACTER.prototype.ClearLevels = function () { throw "todo"; }
 CHARACTER.prototype.GetCurrLevel = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.GetAllowedLevel = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.IncCurrExp = function (baseclassID, exp) { throw "todo"; }
-CHARACTER.prototype.GetAdjBaseclassExp = function (baseclassID, flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } };
+CHARACTER.prototype.GetAdjBaseclassExp = function (baseclassID, flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.GetBaseclassExp = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.SetSpecAb = function (sa, enable, flags) { throw "todo"; }
 CHARACTER.prototype.ClearQueuedSpecAb = function () { throw "todo"; }
@@ -3758,7 +3897,6 @@ CHARACTER.prototype.IsMammal = function () { throw "todo"; }
 CHARACTER.prototype.IsAnimal = function () { throw "todo"; }
 CHARACTER.prototype.IsSnake = function () { throw "todo"; }
 CHARACTER.prototype.IsGiant = function () { throw "todo"; }
-CHARACTER.prototype.IsAlwaysLarge = function () { throw "todo"; }
 CHARACTER.prototype.HasDwarfTHAC0Penalty = function () { throw "todo"; }
 CHARACTER.prototype.HasGnomeTHAC0Penalty = function () { throw "todo"; }
 CHARACTER.prototype.HasRangerDmgPenalty = function () { throw "todo"; }

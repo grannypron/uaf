@@ -19,7 +19,3 @@ function Items() {
     this.Pack = UAFUtil.StringToBase38('PACK');
     this.Undefined = UAFUtil.StringToBase38('UNDEF');
 }
-
-Items.prototype.IsValidItem = function (weaponID) {
-    return itemData.LocateItem(weaponID) >= 0;
-}

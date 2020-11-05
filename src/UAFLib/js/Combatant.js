@@ -1035,26 +1035,12 @@ inline void ComputeCharacterViewValues(void) { m_pCharacter -> ComputeCharacterV
 inline BYTE GetAdjInt(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjInt(flags);};
 inline int GetAdjTHAC0(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjTHAC0(flags);};
 inline BOOL GetAdjAllowPlayerControl(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) { return m_pCharacter -> GetAdjAllowPlayerControl(flags); };
-inline int  GetAdjDmgBonus(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjDmgBonus(flags); };
-inline int  GetAdjHitBonus(const ITEM_ID& weaponID, int distance, DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const
-    {
-        return m_pCharacter-> GetAdjHitBonus(weaponID, distance, flags);
-  };
 inline BOOL GetAdjDetectingInvisible(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjDetectingInvisible(flags);};
-inline creatureSizeType GetAdjSize(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjSize(flags);};
 enum { MAX_COMBAT_TARGETS = 100 };
 int GetUniqueId() { return self; }
 void InitFromNPCData(const CHARACTER_ID& characterID, BOOL IsFriendly, const ITEM_LIST & items, const MONEY_SACK & msack);
-BOOL isLargeDude() const ;
 void RollInitiative(eventSurpriseType surprise);
 BOOL charCanTakeAction();
-void GetDamageDice(int wpn,
-    int * pNum,
-    int * pSides,
-    int * pBonus,
-    BOOL * pNonLethal,
-    BOOL IsLarge,
-    CString * pSpellName) const ;
 void GetContext(ActorType * pActor, const BASECLASS_ID& baseclassID) const ;
 void GetContext(ActorType * pActor, const SCHOOL_ID& schoolID) const ;
 void GetContext(ActorType * pActor, const SPELL_ID& spellID) const ;
@@ -1068,14 +1054,11 @@ void InstantSpellActivate(const SPELL_ID& attackSpellID,
     int target,
         ToHitComputation * pToHitComputation);
 BOOL IsSpellPending();
-void FaceOpponent(int opponent);
 void FaceLocation(int x, int y);
-void FaceDirection(PATH_DIR dir);
 BOOL CheckForGuardingEnemy();
 BOOL CheckOpponentFreeAttack(int oldX, int oldY, int newX, int newY);
 void FillTargeterList(PATH_DIR dir);
 void PlayHit() const ;
-void PlayMiss() const ;
 void PlayLaunch() const ;
 void PlayCombatDeath() const ;
 void PlayCombatTurnUndead() const ;
@@ -1210,8 +1193,6 @@ BOOL ModifyAttackRollDiceForItem
     (const CHARACTER * pTarget,   const ITEM_ID& itemID, const int num, const int sides, int * pBonus, int distance) const ;
 BOOL ModifyAttackRollDiceForItemAsTarget
     (const CHARACTER * pAttacker, const ITEM_ID& itemID, const int num, const int sides, int * pBonus) const ;
-BOOL ModifyAttackDamageDice
-    (const CHARACTER * pTarget,                        const int num, const int sides, int * pBonus, BOOL * pNonLethal) const ;
 BOOL ModifyAttackDamageDiceForItem
     (const CHARACTER * pTarget,   const ITEM_ID& itemID, const int num, const int sides, int * pBonus, BOOL * pNonLethal, int distance) const ;
 BOOL ModifyAttackDamageDiceAsTarget
@@ -2270,7 +2251,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
 
     if (toHitComputation.DidHit())
     {
-        toHitComputation.Successful(1);
+        toHitComputation.SetSuccessful(1);
 /*#ifdef TraceFreeAttacks      //PORT NOTE: This was off
         {
             WriteDebugString("TFA - %s succeeds in hitting %s; numberAttacks=%d; availAttacks=%d\n",
@@ -2316,7 +2297,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
 
 
         this.InstantSpellActivate(attackSpellID, itemSpellID, toHitComputation);
-        if ((attackSpellID.IsEmpty() && itemSpellID.IsEmpty())
+        if ((UAFUtil.IsEmpty(attackSpellID) && UAFUtil.IsEmpty(itemSpellID))
             || (toHitComputation.BeginSpellScriptFailure() == 0)) {
             damageComputation.Compute(this,
                 targCOMBATANT,
@@ -2326,13 +2307,12 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                 toHitComputation.BackstabMultiplier());
             {
                 if (!(itemID == null || itemID == "")) {                   // PORT NOTE:   Was if (!itemID.IsNoItem()), but this just checked to see if it was empty
-                    // done above....pWeapon = itemData.GetItem(itemID);
                     var noSpell = "";
                     if (pWeapon.IsUsable() && (pWeapon.Wpn_Type == weaponClassType.SpellCaster)) {
                         this.InstantSpellActivate(pWeapon.spellID, noSpell, targ, toHitComputation);
                     };
                     if (pWeapon.IsUsable() && (pWeapon.Wpn_Type == weaponClassType.SpellLikeAbility)) {
-                        InstantSpellActivate(pWeapon.spellID, noSpell, targ, toHitComputation);
+                        this.InstantSpellActivate(pWeapon.spellID, noSpell, targ, toHitComputation);
                     };
                 };
             };
@@ -2423,7 +2403,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
     }
     else {
     };
-    FormattedText.FormatCombatText(FormattedText.combatTextData, DispText.CombatMsg);
+    FormattedText.combatTextData = FormattedText.FormatCombatText(FormattedText.combatTextData, DispText.CombatMsg);
 
     if (decQty)  // wpn and giID refer to either the weapon or the ammo consumed by the weapon
     {
@@ -2469,10 +2449,10 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
     if (!toHitComputation.IsBackStab()) targCOMBATANT.FaceOpponent(this.self);
 
 
-    targCOMBATANT.m_iLastAttacker = self;
-    targCOMBATANT.m_eLastAction = LA_Defend;
-    m_iLastAttacked = targCOMBATANT.self;
-    m_eLastAction = LASTACTION.LA_Attack;
+    targCOMBATANT.m_iLastAttacker = this.self;
+    targCOMBATANT.m_eLastAction = LASTACTION.LA_Defend;
+    this.m_iLastAttacked = targCOMBATANT.self;
+    this.m_eLastAction = LASTACTION.LA_Attack;
 
 
     RunTimeIF.ClearTargetContext();
@@ -2538,7 +2518,7 @@ COMBATANT.prototype.ModifyACAsTarget = function(pAttacker, pAC, itemID) {
     result = this.GetAdjSpecAb(SPECAB.SA_Displacement, src, spellID); src = result.pSource, spellID = result.pSpellName;
     if (result.returnVal) {
         var pa = pAttacker.m_pCombatant;
-        m_pCharacter.QueueUsedSpecAb(SPECAB.SA_Displacement, src, spellID);
+        this.m_pCharacter.QueueUsedSpecAb(SPECAB.SA_Displacement, src, spellID);
         modify = true;
         if (pa.self != this.m_iLastAttacker) // if first attack on me
           pAC = 21; // force a miss
@@ -2548,7 +2528,7 @@ COMBATANT.prototype.ModifyACAsTarget = function(pAttacker, pAC, itemID) {
 
     var result = this.GetAdjSpecAb(SPECAB.SA_MirrorImage, src, spellID); src = result.pSource, spellID = result.pSpellName;
     if (result.returnVal) {
-        m_pCharacter.QueueUsedSpecAb(SPECAB.SA_MirrorImage, src, spellID);
+        this.m_pCharacter.QueueUsedSpecAb(SPECAB.SA_MirrorImage, src, spellID);
         modify = true;
         pAC = 21; // force a miss
     }
@@ -2573,4 +2553,230 @@ COMBATANT.prototype.GetAdjSpecAb = function (sa, pSource, pSpellName) {
     if (!pSource) { pSource = null; }
     if (!pSpellName) { pSpellName = null; }
     return this.m_pCharacter.GetAdjSpecAb(sa, pSource, pSpellName);
+}
+
+COMBATANT.prototype.PlayMiss = function() {
+//#ifdef newCombatant                                   // PORT NOTE:  I believe this is on
+    if (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM) {
+        itemData.PlayMiss(this.m_pCharacter.myItems.GetItem(m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)));
+    }
+//#else
+//    if (myItems.GetReadiedItem(WeaponHand, 0) != NO_READY_ITEM) {
+//        //itemData.PlayMiss(myItems.GetItem(myItems.GetReady(WeaponHand)));
+//        itemData.PlayMiss(myItems.GetItem(myItems.GetReadiedItem(WeaponHand, 0)));
+//    }
+//#endif
+  else
+    {
+        if (this.GetType() == MONSTER_TYPE)
+            monsterData.PlayMiss(m_pCharacter.monsterID);
+        else
+            Globals.PlayCharMiss();
+    }
+}
+
+COMBATANT.prototype.FaceOpponent = function(opponent) {
+    var pOpponent;
+    pOpponent = Globals.GetCombatantPtr(opponent);
+    Globals.ASSERT(pOpponent != null);
+    if (pOpponent == null) return;
+    var ax = pOpponent.x;
+    var ay = pOpponent.y;
+    var dir;
+
+    // get direction to attacker
+    if (this.x > ax) // nw, w, sw
+    {
+        if (this.y > ay) dir = PATH_DIR.PathNW;
+        else if (this.y < ay) dir = PATH_DIR.PathSW;
+        else dir = PATH_DIR.PathWest;
+    }
+    else if (this.x < ax) // ne, e, se
+    {
+        if (this.y > ay) dir = PATH_DIR.PathNE;
+        else if (this.y < ay) dir = PATH_DIR.PathSE;
+        else dir = PATH_DIR.PathEast;
+    }
+    else // x == ax
+    {
+        if (this.y > ay) dir = PATH_DIR.PathNorth;
+        else if (this.y < ay) dir = PATH_DIR.PathSouth;
+        else dir = PATH_DIR.PathBAD; // curr == dest
+    }
+
+    // if backstabbing, don't face attacker
+    this.FaceDirection(dir);
+}
+
+COMBATANT.prototype.FaceDirection = function(dir)
+{
+    // translate attacker direction into
+    // east/west icon facing
+    switch (dir) {
+        case PATH_DIR.PathNW:
+            this.m_iMoveDir = FACE_NW;
+            this.m_iFacing = FACE_WEST;
+            break;
+        case PATH_DIR.PathWest:
+            this.m_iMoveDir = FACE_WEST;
+            this.m_iFacing = FACE_WEST;
+            break;
+        case PATH_DIR.PathSW:
+            this.m_iMoveDir = FACE_SW;
+            this.m_iFacing = FACE_WEST;
+            break;
+        case PATH_DIR.PathNE:
+            this.m_iMoveDir = FACE_NE;
+            this.m_iFacing = FACE_EAST;
+            break;
+        case PATH_DIR.PathEast:
+            this.m_iMoveDir = FACE_EAST;
+            this.m_iFacing = FACE_EAST;
+            break;
+        case PATH_DIR.PathSE:
+            this.m_iMoveDir = FACE_SE;
+            this.m_iFacing = FACE_EAST;
+            break;
+
+        default:
+            // if north/south attacker, no need to change facing.
+            break;
+    }
+}
+
+
+COMBATANT.prototype.InstantSpellActivate = function (attackSpellID, itemSpellID, target, pToHitComputation) {
+    if (UAFUtil.IsEmpty(attackSpellID) && UAFUtil.IsEmpty(itemSpellID)) return;
+    if (!UAFUtil.IsEmpty(attackSpellID) && !UAFUtil.IsEmpty(attackSpellID)) return;
+    if (!UAFUtil.IsEmpty(itemSpellID) && !UAFUtil.IsEmpty(itemSpellID)) return;
+    if (target == NO_DUDE) return;
+
+    var pTarget = Globals.GetCombatantPtr(target);
+    if (pTarget == null) {
+        Globals.die(0xab4c2);
+        return;
+    }
+
+    var pSdata = null;
+    if (!UAFUtil.IsEmpty(attackSpellID)) pSdata = spellData.GetSpell(attackSpellID);
+    if (!UAFUtil.IsEmpty(itemSpellID)) pSdata = spellData.GetSpell(itemSpellID);
+    if (pSdata == null) {
+        Globals.die(0xab4c3);
+        return;
+    }
+
+    this.m_spellIDBeingCast = attackSpellID;
+    this.m_itemSpellIDBeingCast = itemSpellID;
+    this.Wpn_Type = weaponClassType.NotWeapon;
+    {
+        var result = 0;
+        result = this.InvokeSpellOnCombatant(self, target, -1, pToHitComputation);
+    }
+}
+
+
+COMBATANT.prototype.GetDamageDice = function(wpn, pNum, pSides, pBonus, pNonLethal, IsLarge, pSpellName)  {
+    pNonLethal = false;
+    pSpellName = "";
+    if (wpn != NO_READY_ITEM) {
+        var idata = itemData.GetItem(this.m_pCharacter.myItems.GetItem(wpn));
+
+        if (idata != null) {      
+            pNonLethal = idata.IsNonLethal;
+
+            if (IsLarge) {
+               pNum = idata.Nbr_Dice_Lg;
+               pSides = idata.Dmg_Dice_Lg;
+               pBonus = idata.Dmg_Bonus_Lg + this.GetAdjDmgBonus() + idata.Attack_Bonus;
+            }
+            else {
+               pNum = idata.Nbr_Dice_Sm;
+               pSides = idata.Dmg_Dice_Sm;
+               pBonus = idata.Dmg_Bonus_Sm + this.GetAdjDmgBonus() + idata.Attack_Bonus;
+            }
+        }
+        else {
+            Globals.WriteDebugString("Bogus item num in GetDamageDice()\n");
+        }
+    }
+    else {
+        if (this.GetType() == MONSTER_TYPE) {
+            var nbrAttacks = this.GetNbrAttacks();
+            var currAttack = nbrAttacks - this.availAttacks;
+            if ((currAttack < 0) || (currAttack >= nbrAttacks)) currAttack = 0;
+
+            pMonster = monsterData.PeekMonster(this.m_pCharacter.monsterID);
+            Globals.ASSERT(pMonster != NULL);
+
+            if (pMonster == null) {
+                pNum   = this.m_pCharacter.unarmedNbrDieL;
+                pSides = this.m_pCharacter.unarmedDieL;
+                pBonus = this.GetAdjDmgBonus();
+                return;
+            }
+
+            if (pMonster.attackData.GetMonsterAttackDetailsCount() == 0) {
+                Globals.WriteDebugString("Monster " + pMonster.Name + " has zero attacks defined\n");
+                pNum   = this.m_pCharacter.unarmedNbrDieL;
+                pSides = this.m_pCharacter.unarmedDieL;
+                pBonus = this.GetAdjDmgBonus();
+                return;
+            }
+
+            if ((currAttack < 0) || (currAttack >= pMonster.attackData.GetMonsterAttackDetailsCount()))
+                currAttack = 0;
+
+            pNum = pMonster.attackData.PeekMonsterAttackDetails(currAttack).nbr;
+            pSides = pMonster.attackData.PeekMonsterAttackDetails(currAttack).sides;
+            pBonus = pMonster.attackData.PeekMonsterAttackDetails(currAttack).bonus;
+            pSpellName = pMonster.attackData.PeekMonsterAttackDetails(currAttack).spellID;
+        }
+        else {
+            if (IsLarge) {
+                pNum   = this.m_pCharacter.unarmedNbrDieL;
+                pSides = this.m_pCharacter.unarmedDieL;
+                pBonus = this.GetAdjDmgBonus();
+            }
+            else {
+                pNum   = this.m_pCharacter.unarmedNbrDieS;
+                pSides = this.m_pCharacter.unarmedDieS;
+                pBonus = this.m_pCharacter.unarmedBonus + GetAdjDmgBonus();
+            }
+        }
+    }
+    return {
+        pNum: pNum,
+        pSides: pSides,
+        pBonus: pBonus,
+        pNonLethal: pNonLethal,
+        pSpellName: pSpellName
+    };
+
+}
+
+COMBATANT.prototype.ModifyAttackDamageDice = function (pTarget, num, sides, pBonus, pNonLethal) {
+    return this.m_pCharacter.ModifyAttackDamageDice(pTarget, num, sides, pBonus, pNonLethal);
+}
+
+COMBATANT.prototype.isLargeDude = function() {
+    var ctype = this.GetAdjSize();
+    if (ctype == creatureSizeType.Large) return true;
+    if ((this.width > 1) || (this.height > 1)) return true;
+    if (this.IsAlwaysLarge()) return true;
+    return false;
+}
+
+COMBATANT.prototype.GetAdjSize = function(flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    return this.m_pCharacter.GetAdjSize(flags);
+}
+
+
+COMBATANT.prototype.IsAlwaysLarge = function() {
+    return this.m_pCharacter.IsAlwaysLarge();
+}
+
+COMBATANT.prototype.GetAdjDmgBonus = function(flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    return this.m_pCharacter.GetAdjDmgBonus(flags);
 }

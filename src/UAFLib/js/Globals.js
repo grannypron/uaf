@@ -40,6 +40,18 @@ function Globals() {
     this.MAX_CHARS_IN_ROW = 3; // how many chars wide the battle line can be
     this.MAX_COMBAT_IDLE_ROUNDS = 20;
 
+    this.Skill_PickPockets = "PickPockets";
+    this.Skill_OpenLocks = "OpenLocks";
+    this.Skill_FindTraps = "FindTraps";
+    this.Skill_MoveSilent = "MoveSilent";
+    this.Skill_HideInShadows = "HideInShadows";
+    this.Skill_HearNoise = "HearNoise";
+    this.Skill_ClimbWalls = "ClimbWalls";
+    this.Skill_ReadLanguages = "ReadLanguages";
+    this.Skill_Turn = "Turn";
+    this.Skill_BackstabMultiplier = "BackstabMultiplier";
+    this.Skill_RangerBonusLevel = "RangerBonusLevel";
+
     this.Ability_Dexterity = "Dexterity";
     this.Ability_Constitution = "Constitution";
     this.Ability_Strength = "Strength";
@@ -362,4 +374,17 @@ Globals.prototype.GetEffectiveTargetAC = function(pTarget, pAttacker, itemID) {
     pTarget.ModifyACAsTarget(pAttacker.m_pCharacter, effectiveTargetAC, itemID);
     effectiveTargetAC += pTarget.m_pCharacter.myItems.GetProtectModForRdyItems();
     return effectiveTargetAC;
+}
+
+
+Globals.prototype.PlayCharMiss = function (play) {
+    if (play && SoundMgr.PlaySoundEffects) {
+        if (!SoundMgr.ValidSound(globalData.sounds.hCharMiss))
+            globalData.sounds.hCharMiss = SoundMgr.LoadSound(globalData.sounds.CharMiss);
+        if (!SoundMgr.PlaySound(globalData.sounds.hCharMiss))
+            globalData.sounds.hCharMiss = -1;
+    }
+    else
+        SoundMgr.StopSound(globalData.sounds.hCharMiss);
+
 }

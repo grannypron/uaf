@@ -520,7 +520,6 @@ SPECAB.prototype.ScriptCallback_LookForChar = function(func, scriptResult, pkt)
     var indx = 0;
     switch (func) {
         case CBFUNC.CBF_EXAMINESCRIPT:
-            Globals.debug("SPECAB.prototype.ScriptCallback_LookForChar: " + lookFor);
             indx = scriptResult.indexOf(lookFor);
             if (indx < 0) {
                 return { CBRESULT: CBRESULT.CBR_CONTINUE, scriptResult: scriptResult };

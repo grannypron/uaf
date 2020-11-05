@@ -13,6 +13,15 @@ CLASS_DATA.prototype.GetCount = function () {
     return this.m_baseclasses.length;
 }
 
+CLASS_DATA.prototype.RunClassScripts = function(scriptName, fnc, pkt, comment) {
+            return this.m_specialAbilities.RunScripts(scriptName,
+                fnc,
+                pkt,
+                comment,
+                SPECAB.ScriptSourceType_Class,
+                this.m_name);
+ }
+
 /** TODO
 
   friend class CLASS_DATA_TYPE;
@@ -20,18 +29,7 @@ CLASS_DATA.prototype.GetCount = function () {
   friend static void DclassHitDiceBonus(CONFIG_PKT *pkt);
   friend static void DclassHitDiceLevelBonus(CONFIG_PKT *pkt);
   int DetermineCharHitDice(const CHARACTER *pChar) const;
-CString RunClassScripts(LPCSTR     scriptName,
-    CBRESULT(* fnc)(CBFUNC func, CString * scriptResult, void * pkt),
-    void      * pkt,
-    LPCSTR     comment) const
-        {
-            return m_specialAbilities.RunScripts(scriptName,
-                fnc,
-                pkt,
-                comment,
-                ScriptSourceType_Class,
-                m_name);
-  };
+
 public:
 CLASS_DATA(void);
 ~CLASS_DATA(void);

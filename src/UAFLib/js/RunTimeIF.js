@@ -23,3 +23,7 @@ RunTimeIF.prototype.SetCharContext = function(data)
 RunTimeIF.prototype.SetTargetContext = function (data) {
     targetContext = data;
 }
+
+RunTimeIF.prototype.ClearTargetContext = function () {
+    this.targetContext = this.NULL_ACTOR;
+}

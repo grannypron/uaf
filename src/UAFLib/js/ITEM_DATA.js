@@ -283,11 +283,9 @@ ITEM_DATA.prototype.SerializeCAR = function (ar, ver) {
 }
 
 
-
 /**TODO
     CString IdName(void)const { return m_idName; }
     ITEM_DATA(ITEM_DATA & src) :
-    BOOL IsValidItem(void) const ;
     void Serialize(CArchive & ar, double ver);
     void Save(CAR & car) const ;
     void PrepareForRestore(void);

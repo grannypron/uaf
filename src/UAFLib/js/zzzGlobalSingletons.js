@@ -22,6 +22,7 @@ var chainTriggerType = new chainTriggerTypeObj();
 var eventTriggerType = new eventTriggerTypeObj();
 var weaponClassType = new weaponClassTypeObj();
 var MonsterPenaltyType = new MonsterPenaltyTypeObj();
+var MonsterFormType = new MonsterFormTypeObj();
 var itemData = new ITEM_DATA_TYPE();
 var spellData = new SPELL_DATA_TYPE();
 var monsterData = new MONSTER_DATA_TYPE();
@@ -43,6 +44,7 @@ var SoundMgr = new SoundMgrObj();
 var party = new PARTY();
 var GameRules = new GameRules();
 var FormattedText = new FormattedText();
+var DispText = new DispText();
 
 var combatSummary = new COMBAT_SUMMARY();
 var PATH_DIR = new PATH_DIRObj();

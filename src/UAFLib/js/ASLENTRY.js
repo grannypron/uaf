@@ -19,8 +19,8 @@ ASLENTRY.prototype.Clear = function () {
 
 ASLENTRY.prototype.DeSerialize = function (car) {
     var i, n;
-    m_key = car.readString();
-    n = m_key.length;
+    this.m_key = car.readString();
+    n = this.m_key.length;
     var x20 = UAFUtil.ByteFromHexString("0x20");
     for (i = 0; i < n; i++) {
         if (this.m_key.charCodeAt(i) < x20) {

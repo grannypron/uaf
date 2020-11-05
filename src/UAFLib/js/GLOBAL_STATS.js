@@ -5,6 +5,7 @@ function GLOBAL_STATS() {
     this.minPCs = 1;           // PORT NOTE: Defaulting to a value here because I don't see (yet) where it gets set
     this.maxParty_maxPCs = 0;  // Upper 16 bits = maxPartySize; Lower = maxNumPCs
     this.m_diffLvlData = new DIFFICULTY_LEVEL_DATA();
+    this.sounds = new GLOBAL_SOUND_DATA();
 }
 
 GLOBAL_STATS.prototype.GetMaxPartyMembers = function () {

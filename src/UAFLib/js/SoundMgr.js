@@ -1,6 +1,6 @@
 ﻿function SoundMgrObj() {
     this.pSndMgr = null;
-    this.PlaySoundEffects
+    this.PlaySoundEffects = true;
 }
 
 SoundMgrObj.prototype.ClearSound = function (sound) {
@@ -29,5 +29,12 @@ SoundMgrObj.prototype.ValidSound = function (sound) {
 
 SoundMgrObj.prototype.PlaySound = function (file) {
     /**TODO** Stub */
+    Globals.debug("Playing sound " + file);
     return true;
+}
+
+SoundMgrObj.prototype.StopSound = function(sound)
+{
+    if (this.pSndMgr == null) return;
+    this.pSndMgr.StopSample(sound);
 }

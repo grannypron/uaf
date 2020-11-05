@@ -529,9 +529,9 @@ COMBAT_DATA.prototype.CheckAuraPlacement = function(pAURA, pMoveData) {
         if ((pAURA.attachment[0] == AURA_ATTACH_COMBATANT)
             || (pAURA.attachment[0] == AURA_ATTACH_COMBATANT_FACING)
         ) {
-            pAURA.x[0]      = m_aCombatants[pAURA.combatantIndex[0]].x;
-            pAURA.y[0]      = m_aCombatants[pAURA.combatantIndex[0]].y;
-            pAURA.facing    = m_aCombatants[pAURA.combatantIndex[0]].m_iMoveDir;
+            pAURA.x[0]      = this.m_aCombatants[pAURA.combatantIndex[0]].x;
+            pAURA.y[0]      = this.m_aCombatants[pAURA.combatantIndex[0]].y;
+            pAURA.facing    = this.m_aCombatants[pAURA.combatantIndex[0]].m_iMoveDir;
         };
         switch (pAURA.shape[0]) {
             // cells[] <= 1 where AURA has effect.
