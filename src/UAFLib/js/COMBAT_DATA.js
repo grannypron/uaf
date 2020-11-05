@@ -1116,7 +1116,7 @@ COMBAT_DATA.prototype.determineInitCombatPos = function () {
             }
       else
             {
-                if (!DEBUG_STRINGS.debugStrings.AlreadyNoted(CString("PASWS"))) {
+                if (!debugStrings.AlreadyNoted(CString("PASWS"))) {
                     DEBUG_STRINGS.debugSeverity = 9;
                     Globals.WriteDebugString("Party arrangement string is wrong size\n");
                     Globals.MsgBoxInfo("Party arrangement string is wrong size");

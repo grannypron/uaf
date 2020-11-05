@@ -75,6 +75,11 @@ function ITEM_DATA() {
     this.temp_asl = new A_ASLENTRY_L();
 }
 
+ITEM_DATA.prototype.SpellID = function () {
+    return this.spellID;
+}
+
+
 ITEM_DATA.prototype.SerializeCAR = function (ar, ver) {
     var temp;  // Long
 
@@ -278,6 +283,7 @@ ITEM_DATA.prototype.SerializeCAR = function (ar, ver) {
 }
 
 
+
 /**TODO
     CString IdName(void)const { return m_idName; }
     ITEM_DATA(ITEM_DATA & src) :
@@ -314,7 +320,6 @@ CString  CommonName(void)const { return m_commonName;}; //Not serialized.//     
 inline   CString  UniqueName(void)const { return m_uniqueName;};         //        **
 void SetUniqueName(const CString& name);                           //        **
 ITEM_ID  ItemID(void)  const { ITEM_ID x; x = m_uniqueName; return x;};    //        **
-SPELL_ID SpellID(void) const { return spellID;};                        //        **
 void SpellID(const SPELL_ID& s) { spellID = s; };                     //        **
 BOOL IsUsableByClass(const CHARACTER * pChar) const ;
 BOOL IsUsableByBaseclass(const BASECLASS_ID& baseclassID) const ;

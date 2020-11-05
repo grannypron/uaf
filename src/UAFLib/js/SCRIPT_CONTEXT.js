@@ -16,6 +16,7 @@
 
     this.context = null;          // The context of RunScripts()
     this.pItemContext = null;
+    this.itemKey = 0;          // The key in the character's 'myItems' inventory
     this.pBaseclassContext = null;
     this.pClassContext = null;
     this.pSpellContext = null;
@@ -123,4 +124,30 @@ SCRIPT_CONTEXT.prototype.SetTargetContextCombatant = function(pCombatant)
     var actor;
     actor = pCombatant.GetContextActor();
     targetContext = actor.ToString();
+}
+
+SCRIPT_CONTEXT.prototype.SetItemContext = function(pItem)
+{
+    this.pItemContext = pItem;
+    if (pItem != null) {
+        this.SetSpellContext(pItem.SpellID());
+    }
+}
+
+SCRIPT_CONTEXT.prototype.SetItemContextKey = function (key) {
+    this.itemKey = key;
+}
+
+
+SCRIPT_CONTEXT.prototype.SetTargetContextCOMBATANT = function(pCombatant) {
+    var actor;
+    actor = pCombatant.GetContextActor();
+    this.targetContext = actor.ToString();
+}
+
+SCRIPT_CONTEXT.prototype.SetAttackerContext = function(pCombatant)
+{
+    var actor;
+    actor = pCombatant.GetContextActor();
+    this.attackerContext = actor.ToString();
 }

@@ -161,7 +161,7 @@ Globals.prototype.SetMiscError = function (error) {
     if ((error >= 0) && (error < MAX_MISC_ERROR_MSGS)) {
         miscError = error;
         if (error != miscErrorType.NoError) {
-            if (!this.debugStrings.AlreadyNoted("SME01" + miscErrorText[error])) {
+            if (!debugStrings.AlreadyNoted("SME01" + miscErrorText[error])) {
                 this.WriteDebugString("MISC ERROR: " + miscErrorText[error] + "\n");
             };
         };
@@ -206,4 +206,160 @@ Globals.prototype.GetConfigMonsterAlwaysMiss = function () {
 
 Globals.prototype.GetConfigMonsterAlwaysHit = function () {
     return combatData.m_bMonsterAlwaysHit;
+}
+
+Globals.prototype.GetAdjSkillValue = function(SC)
+{
+    // Determined the base value for the skill
+    SC = this.GetSkillValue(SC);
+    // Now we compute the adjustments.
+    SC = this.UpdateSkillValue(SC);
+    SC.abilityAdj = abilityData.TotalAdjustments(Globals.NoSkillAdj);
+    if (SC.includeTempAdj) {
+        SC = SC.pChar.ApplyTempSkillAdjustments(SC);
+    };
+    if ((SC.baseVal == Globals.NoSkill)
+        && (SC.bestRaceAdj == Globals.NoSkillAdj)
+        && (SC.bestBaseclassAdj == Globals.NoSkillAdj)
+        && (SC.abilityAdj == Globals.NoSkillAdj)
+        && (SC.tempAdj == Globals.NoSkillAdj)) return SC;
+    SC.finalAdjustedValue = 0.0;
+    if (SC.baseVal != Globals.NoSkill) SC.finalAdjustedValue = SC.baseVal;
+    if (SC.bestRaceAdj != Globals.NoSkillAdj) SC.finalAdjustedValue += SC.bestRaceAdj;
+    if (SC.bestBaseclassAdj != Globals.NoSkillAdj) SC.finalAdjustedValue += SC.bestBaseclassAdj;
+    if (SC.abilityAdj != Globals.NoSkillAdj) SC.finalAdjustedValue += SC.abilityAdj;
+    if (SC.includeTempAdj) {
+        if (SC.tempAdj != Globals.NoSkillAdj) SC.finalAdjustedValue += SC.tempAdj;
+    };
+    return SC;
+}
+
+
+Globals.prototype.GetSkillValue = function(SC)
+{
+    // First we will find the largest value of the skill
+    // in the baseclass and race databases.
+    var baseclassID = "";
+    var pBaseclass;
+    if (SC.ppBestBaseclass != null) SC.ppBestBaseclass = null;
+    // Find the largest skill value among the baseclasses
+    {
+        var j = 0, m = 0;
+        if (SC.pClass != null) {
+            m = SC.pClass.GetCount();
+            for (j = 0; j < m; j++) {
+                baseclassID = SC.pClass.PeekBaseclassID(j);
+                if ((SC.baseclassID == null || SC.baseclassID == "") || (SC.baseclassID == baseclassID)) {
+                    pBaseclass = baseclassData.PeekBaseclass(baseclassID);
+                    if (pBaseclass == null) continue;
+                    SC = pBaseclass.GetSkillValue(SC);
+                }
+            }
+        }
+    }
+    // Find the largest skill value in the race.
+    if (SC.pRace != null) {
+        SC = SC.pRace.GetSkillValue(SC);
+    };
+    // Now find the best starting value (baseclass or race)  
+    SC.baseVal = SC.baseclassValue;
+    if (SC.raceValue != Globals.NoSkill) {
+        if (SC.baseVal == Globals.NoSkill) SC.baseVal = SC.raceValue;
+        else {
+            if (SC.minimize) {
+                if (SC.raceValue < SC.baseVal) SC.baseVal = SC.raceValue;
+            }
+            else {
+                if (SC.raceValue > SC.baseVal) SC.baseVal = SC.raceValue;
+            }
+        }
+    }
+    return SC;
+}
+
+
+
+Globals.prototype.UpdateSkillValue = function(SC) {
+    abilityData.ClearAdjustments(Globals.NoSkillAdj);
+    if (SC.pRace != null) {
+        SC.pRace.UpdateSkillValue(SC);
+    }
+    {
+        var i = 0, n = 0;
+        n = SC.pClass.GetCount();
+        for (i = 0; i < n; i++) {
+            var baseclassID = "";
+            var pBaseclass;
+            SC.pClass.PeekBaseclassID(i);
+            if (SC.baseclassID.IsEmpty() || (SC.baseclassID == baseclassID)) {
+                pBaseclass = baseclassData.PeekBaseclass(baseclassID);
+                if (pBaseclass == null) continue;
+                if ((SC.baseclassID == null || SC.baseclassID == "") || (SC.baseclassID == pBaseclass.BaseclassID())) {
+                    SC = pBaseclass.UpdateSkillValue(SC)
+                }
+            }
+        }
+    }
+    return SC;
+}
+
+
+Globals.prototype.GetAttackerTHAC0 = function(pAttacker) {
+    return pAttacker.m_pCharacter.GetTHAC0();
+}
+
+Globals.prototype.GetWeaponToHitBonus = function(pWeapon) {
+    if (pWeapon != null) {
+        return pWeapon.Attack_Bonus;
+    }
+    else {
+        return 0;
+    }
+}
+
+
+Globals.prototype.GetEnvironmentalBonusTHAC0 = function(pAttacker, pWeapon, distance) {
+    var environmentalBonusTHAC0 = 0;
+    if (pWeapon != null) {
+        var weaponType;
+        weaponType = pWeapon.Wpn_Type;
+        switch (weaponType) {
+            case weaponClassType.NotWeapon:
+            case weaponClassType.HandBlunt:
+            case weaponClassType.HandCutting:
+                environmentalBonusTHAC0 = pAttacker.m_pCharacter.GetHitBonus();
+                break;
+            case weaponClassType.HandThrow:
+                environmentalBonusTHAC0 = (distance == 0) ? pAttacker.m_pCharacter.GetHitBonus() : 0;
+                break;
+            case weaponClassType.SlingNoAmmo:
+            case weaponClassType.Bow:
+            case weaponClassType.Crossbow:
+            case weaponClassType.Throw:
+                environmentalBonusTHAC0 = 0;
+                break;
+            case weaponClassType.Ammo:
+                environmentalBonusTHAC0 = 0;
+                break;
+            case weaponClassType.SpellCaster:
+            case weaponClassType.SpellLikeAbility:
+                environmentalBonusTHAC0 = 0;
+                break;
+            default:
+                environmentalBonusTHAC0 = 0;
+                break;
+        };
+    }
+    else {
+        environmentalBonusTHAC0 = 0;
+    }
+    return environmentalBonusTHAC0;
+}
+
+Globals.prototype.GetEffectiveTargetAC = function(pTarget, pAttacker, itemID) {
+    var effectiveTargetAC = 0;
+    effectiveTargetAC = pTarget.GetAdjAC();
+    pTarget.ModifyACAsTarget(pAttacker.m_pCharacter, effectiveTargetAC, itemID);
+    effectiveTargetAC += pTarget.m_pCharacter.myItems.GetProtectModForRdyItems();
+    return effectiveTargetAC;
 }

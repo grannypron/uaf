@@ -128,8 +128,8 @@ CHARACTER.prototype.Clear = function(isConstructor) {
     this.m_spellCastingLevel = -1;
     this.AIBaseclass = -1;
     this.m_spellEffects = new CList();
-    this.spellAdjustments = {};
-    this.skillAdjustments = {};
+    this.spellAdjustments = [];
+    this.skillAdjustments = [];
     this.m_pCombatant = null;
 
 };
@@ -883,7 +883,7 @@ CHARACTER.prototype.getCharWeaponText = function (wpn, dmg) {
 
     var wpnHand = this.myItems.GetReadiedItem(Items.WeaponHand, 0);
 
-    if (wpnHand != Items.NO_READY_ITEM) {
+    if (wpnHand != NO_READY_ITEM) {
         var itemID = new ITEM_ID();
         itemID = this.myItems.GetItem(wpnHand);
 
@@ -913,7 +913,7 @@ CHARACTER.prototype.getCharWeaponText = function (wpn, dmg) {
             // if using bow or crossbow, use ammo damage
             if ((data.Wpn_Type == Bow) || (data.Wpn_Type == Crossbow)) {
                 var ammoHand = this.myItems.GetReadiedItem(AmmoQuiver, 0);
-                if (ammoHand != Items.NO_READY_ITEM) {
+                if (ammoHand != NO_READY_ITEM) {
                     var itemName;
                     itemName = this.myItems.GetItem(ammoHand);
                     data = this.itemData.GetItem(itemID);
@@ -964,7 +964,7 @@ CHARACTER.prototype.getCharWeaponText = function (wpn, dmg) {
 CHARACTER.prototype.getCharArmorText = function () {
     var index = this.myItems.GetReadiedItem(this.BodyArmor, 0); // dude's ready armor, if any
 
-    if (index != Items.NO_READY_ITEM) {
+    if (index != NO_READY_ITEM) {
         var itemData = this.itemData.GetItem(itemID);
         if ((Items.isMagical(this.myItems.GetItem(index))) && (this.myItems.GetId(index)))
             armor = itemData.GetItemIdName(myItems.GetItem(index));
@@ -1162,7 +1162,7 @@ CHARACTER.prototype.IsIdentified = function (key, num) {
 };
 
 CHARACTER.prototype.CanReady = function (index) {
-    if (index != Items.NO_READY_ITEM) {
+    if (index != NO_READY_ITEM) {
         {
             var actor;
             var pItem;
@@ -1242,17 +1242,17 @@ CHARACTER.prototype.toggleReadyItem = function (item) {
 
 CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
 
-    this.ReadyWeaponScript(Items.NO_READY_ITEM);
+    this.ReadyWeaponScript(NO_READY_ITEM);
 
     // need to check for usable items
     // need to check for targets requiring magical weapons
 
-    var dmgIdx = Items.NO_READY_ITEM;
+    var dmgIdx = NO_READY_ITEM;
     var dmg = 0;
     var dmgSum = 0;
-    var defIdx = Items.NO_READY_ITEM;
+    var defIdx = NO_READY_ITEM;
     var def = 0;
-    var attIdx = Items.NO_READY_ITEM;
+    var attIdx = NO_READY_ITEM;
     var att = 0;
     var data;
 
@@ -1329,11 +1329,11 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
 
     // for now, choose item with most damage first
     var IdxToUse = dmgIdx;
-    if (IdxToUse == Items.NO_READY_ITEM)
+    if (IdxToUse == NO_READY_ITEM)
         IdxToUse = attIdx;
-    if (IdxToUse == Items.NO_READY_ITEM)
+    if (IdxToUse == NO_READY_ITEM)
         IdxToUse = defIdx;
-    if (IdxToUse == Items.NO_READY_ITEM)
+    if (IdxToUse == NO_READY_ITEM)
         return;
 
     data = this.itemData.GetItem(myItems.GetItem(IdxToUse));
@@ -1349,13 +1349,13 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
 
 CHARACTER.prototype.ReadyBestShield = function () {
     // if 2-handed weapon being used, can't ready a shield
-    if ((this.myItems.GetReadiedItem(Items.ShieldHand, 0) != Items.NO_READY_ITEM)
+    if ((this.myItems.GetReadiedItem(Items.ShieldHand, 0) != NO_READY_ITEM)
         && (this.myItems.GetReadiedItem(Items.ShieldHand, 0) == this.myItems.GetReadiedItem(Items.WeaponHand, 0)))
         return;
 
-    this.ReadyShieldScript(Items.NO_READY_ITEM);
+    this.ReadyShieldScript(NO_READY_ITEM);
 
-    var defIdx = Items.NO_READY_ITEM;
+    var defIdx = NO_READY_ITEM;
     var def = 0;
     var data;
 
@@ -1386,16 +1386,16 @@ CHARACTER.prototype.ReadyBestShield = function () {
     Globals.SetMiscError(miscErrorType.NoError);
 
     // else try for best defensive bonus item
-    if (defIdx != Items.NO_READY_ITEM) {
+    if (defIdx != NO_READY_ITEM) {
         this.ReadyShieldScript(defIdx);
         return;
     }
 };
 
 CHARACTER.prototype.ReadyBestArmor = function () {
-    this.ReadyArmorScript(Items.NO_READY_ITEM);  //Discard current Armor
+    this.ReadyArmorScript(NO_READY_ITEM);  //Discard current Armor
 
-    var defIdx = Items.NO_READY_ITEM;
+    var defIdx = NO_READY_ITEM;
     var def = 0;
     var data;
 
@@ -1427,23 +1427,23 @@ CHARACTER.prototype.ReadyBestArmor = function () {
     Globals.SetMiscError(miscErrorType.NoError);
 
     // else try for best defensive bonus item
-    if (defIdx != Items.NO_READY_ITEM) {
+    if (defIdx != NO_READY_ITEM) {
         this.ReadyArmorScript(defIdx);
         return;
     }
 };
 
 CHARACTER.prototype.ReadyBestAmmo = function (isLargeTarget) {
-    this.ReadyAmmoScript(Items.NO_READY_ITEM);
+    this.ReadyAmmoScript(NO_READY_ITEM);
 
     // need to check for targets requiring magical weapons
 
-    var dmgIdx = Items.NO_READY_ITEM;
+    var dmgIdx = NO_READY_ITEM;
     var dmg = 0;
     var dmgSum = 0;
-    var defIdx = Items.NO_READY_ITEM;
+    var defIdx = NO_READY_ITEM;
     var def = 0;
-    var attIdx = Items.NO_READY_ITEM;
+    var attIdx = NO_READY_ITEM;
     var att = 0;
     var data = null;
 
@@ -1486,26 +1486,26 @@ CHARACTER.prototype.ReadyBestAmmo = function (isLargeTarget) {
     Globals.SetMiscError(Globals.miscErrorType.NoError);
 
     // for now, choose item with most damage
-    if (dmgIdx != Items.NO_READY_ITEM) {
+    if (dmgIdx != NO_READY_ITEM) {
         this.ReadyAmmoScript(dmgIdx);
         return;
     }
 
     // else try for best attack bonus item
-    if (attIdx != Items.NO_READY_ITEM) {
+    if (attIdx != NO_READY_ITEM) {
         this.ReadyAmmoScript(attIdx);
         return;
     }
 
     // else try for best defensive bonus item
-    if (defIdx != Items.NO_READY_ITEM) {
+    if (defIdx != NO_READY_ITEM) {
         this.ReadyAmmoScript(defIdx);
         return;
     }
 };
 
 CHARACTER.prototype.ReadyItemByLocation = function (rdyLoc, index, specAbsOK) {
-    if (index == Items.NO_READY_ITEM) {
+    if (index == NO_READY_ITEM) {
         // unready all items of this type
         this.UnreadyItemByLocation(rdyLoc, specAbsOK);
         return true;
@@ -1577,7 +1577,7 @@ CHARACTER.prototype.UnreadyItemByLocation = function (rdyLoc, specAbsOK) {
 CHARACTER.prototype.ReadyXXXScript = function (rdyLoc, scriptName, index) {
 
     if (this.ReadyItemByLocation(rdyLoc, index, true)) {
-        if (index != Items.NO_READY_ITEM) {
+        if (index != NO_READY_ITEM) {
             var actor;
             var pItem;
             var hookParameters = new HOOK_PARAMETERS();
@@ -2017,7 +2017,7 @@ CHARACTER.prototype.GetAdjTHAC0 = function (flags) {
     var itemID = this.myItems.GetItem(wpn);
     val -= this.GetAdjHitBonus(itemID, 0); // subtract strength bonus from base THAC0
 
-    if (wpn != Items.NO_READY_ITEM) {
+    if (wpn != NO_READY_ITEM) {
         var pData = itemData.GetItem(itemID);
         if (pData != null)
             val -= pData.Attack_Bonus; // subtract weapon attack bonus
@@ -2430,7 +2430,7 @@ CHARACTER.prototype.determineNbrAttacks = function () {
         var wpn;
         var weaponID;
         wpn = this.myItems.GetReadiedItem(Items.WeaponHand, 0);
-        if (wpn != Items.NO_READY_ITEM) {
+        if (wpn != NO_READY_ITEM) {
             weaponID = this.myItems.GetItem(wpn);
             pWeapon = itemData.GetItem(weaponID);
             scriptContext.SetItemContext(pWeapon);
@@ -2462,7 +2462,7 @@ CHARACTER.prototype.determineNbrAttacks = function () {
     else
         this.SetNbrAttacks(monsterData.GetMonsterNbrAttacks(this.monsterID));
 
-    if (this.myItems.GetReadiedItem(Items.WeaponHand, 0) != Items.NO_READY_ITEM) {
+    if (this.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM) {
         var wpnAttacks = itemData.GetItemROF(this.myItems.GetItem(this.myItems.GetReadiedItem(Items.WeaponHand, 0)));
         if (wpnAttacks < 1.0) wpnAttacks = 1.0;
         this.SetNbrAttacks(wpnAttacks);
@@ -3516,7 +3516,7 @@ CHARACTER.prototype.ModifyAttackRollDiceForItemAsTarget = function(pAttacker, it
 
 CHARACTER.prototype.GetAdjSkillValue = function (skillName, minimize, includeTempAdj) {
     var SC = new SKILL_COMPUTATION(this, skillName, minimize, includeTempAdj);
-    Globals.GetAdjSkillValue(SC);
+    SC = Globals.GetAdjSkillValue(SC);
     return SC.finalAdjustedValue == Globals.NoSkillAdj ? Globals.NoSkill : SC.finalAdjustedValue + 0.5;
 }
 
@@ -3525,7 +3525,7 @@ CHARACTER.prototype.PeekRaceData = function () {
     pRace = raceData.PeekRace(race);
     if (pRace != null) return pRace;
     if (this == Globals.FakeCharacter) return raceData.PeekRace(0);
-    if (!Globals.debugStrings.AlreadyNoted("CHARPRD")) {
+    if (!debugStrings.AlreadyNoted("CHARPRD")) {
         var msg = "";
         var i = 0, n = 0;
         n = raceData.GetCount();
@@ -3541,6 +3541,102 @@ CHARACTER.prototype.PeekRaceData = function () {
         Globals.MsgBoxInfo(msg, "ALERT");
     };
     return null;
+}
+
+CHARACTER.prototype.ApplyTempSkillAdjustments = function (SC) {
+    var i = 0, n = 0;
+    var adjType = 0;  //Char
+    var adj = 0.0;
+    n = this.GetSkillAdjCount();
+    for (i = 0; i < n; i++) {
+        var ps;
+        ps = this.PeekSkillAdj(i);
+        if (ps.skillID == SC.skillID) {
+            adjType = ps.type;
+            switch (adjType) {
+                case '%': adj = (SC.baseVal * ps.value + 50) / 100.0 - SC.baseVal; break;
+                case '+': adj = ps.value; break;
+                case '*': adj = SC.baseVal * (ps.value - 1.0); break;
+                case '-': adj = -(ps.value); break;
+                case '=': adj = ps.value - SC.baseVal; break;
+                default:
+                    {
+                        if (!debugStrings.AlreadyNoted("CATSAIA")) {
+                            var msg = "";
+                            msg.Format("CHARACTER::ApplyTempSkillAdjustments - Illegal adjType= " + adjType);
+                            Globals.MsgBoxInfo(msg);
+                            Globals.WriteDebugString(msg);
+                        };
+                        return;
+                    };
+            };
+            if (SC.tempAdj == NoSkillAdj) SC.tempAdj = 0.0;
+            SC.tempAdj += adj;
+        }
+    }
+    return SC;
+}
+
+CHARACTER.prototype.GetSkillAdjCount = function () {
+    return this.skillAdjustments.length;
+}
+
+CHARACTER.prototype.ModifyACAsTarget = function(pAttacker, pAC, itemID) {
+    var src = 0;   // DWORD
+    var spellID = "";
+    var modify = false;
+    if (pAC > 2) {
+        var result = this.GetAdjSpecAb(SPECAB.SA_Shield, src, spellID); src = result.pSource, spellID = result.pSpellName;
+        if (result.returnVal) {
+            if (spellData.IsValidSpell(spellID)) {
+                var pItem = itemData.GetItem(itemID);
+                if (pItem != null) {
+                    switch (pItem.Wpn_Type) {
+                        case weaponClassType.NotWeapon:
+                        case weaponClassType.Bow:
+                        case weaponClassType.Crossbow:
+                            break;
+                        case weaponClassType.HandBlunt:       pAC=Math.min(pAC, 4); this.QueueUsedSpecAb(SA_Shield, src, spellID); modify = true; break;
+                        case weaponClassType.HandCutting:     pAC=Math.min(pAC, 4); this.QueueUsedSpecAb(SA_Shield, src, spellID); modify = true; break;
+                        case weaponClassType.HandThrow:       pAC=Math.min(pAC, 2); this.QueueUsedSpecAb(SA_Shield, src, spellID); modify = true; break;
+                        case weaponClassType.SlingNoAmmo:     pAC=Math.min(pAC, 3); this.QueueUsedSpecAb(SA_Shield, src, spellID); modify = true; break;
+                        case weaponClassType.SpellCaster:     pAC=Math.min(pAC, 3); this.QueueUsedSpecAb(SA_Shield, src, spellID); modify = true; break;
+                        case weaponClassType.SpellLikeAbility:pAC=Math.min(pAC, 3); this.QueueUsedSpecAb(SA_Shield, src, spellID); modify = true; break;
+                        case weaponClassType.Throw:           pAC=Math.min(pAC, 2); this.QueueUsedSpecAb(SA_Shield, src, spellID); modify = true; break;
+                        case weaponClassType.Ammo:            pAC=Math.min(pAC, 3); this.QueueUsedSpecAb(SA_Shield, src, spellID); modify = true; break;
+                    }
+                }
+                else {
+                    pAC = Math.min(pAC, 4);
+                    this.QueueUsedSpecAb(SPECAB.SA_Shield, src, spellID);
+                    modify = true;
+                }
+            }
+            else {
+                pAC = Math.min(pAC, 4);
+                this.QueueUsedSpecAb(SPECAB.SA_Shield, src, spellID);
+                modify = true;
+            }
+        }
+    }
+    return { returnVal: modify, pAC: pAC };
+}
+
+CHARACTER.prototype.HasDwarfACPenalty = function () {
+    if (this.GetType() == MONSTER_TYPE) {
+        return ((monsterData.GetMonsterPenaltyFlags(monsterID) & MonsterPenaltyType.PenaltyDwarfAC) == MonsterPenaltyType.PenaltyDwarfAC);
+    }
+
+    return false;
+}
+
+CHARACTER.prototype.HasGnomeACPenalty = function () {
+    if (this.GetType() == MONSTER_TYPE)
+    {
+        return ((monsterData.GetMonsterPenaltyFlags(monsterID) & MonsterPenaltyType.PenaltyGnomeAC) == MonsterPenaltyType.PenaltyGnomeAC);
+    }
+
+    return false;
 }
 
 
@@ -3663,8 +3759,6 @@ CHARACTER.prototype.IsAnimal = function () { throw "todo"; }
 CHARACTER.prototype.IsSnake = function () { throw "todo"; }
 CHARACTER.prototype.IsGiant = function () { throw "todo"; }
 CHARACTER.prototype.IsAlwaysLarge = function () { throw "todo"; }
-CHARACTER.prototype.HasDwarfACPenalty = function () { throw "todo"; }
-CHARACTER.prototype.HasGnomeACPenalty = function () { throw "todo"; }
 CHARACTER.prototype.HasDwarfTHAC0Penalty = function () { throw "todo"; }
 CHARACTER.prototype.HasGnomeTHAC0Penalty = function () { throw "todo"; }
 CHARACTER.prototype.HasRangerDmgPenalty = function () { throw "todo"; }
@@ -3698,7 +3792,6 @@ CHARACTER.prototype.ClrKnowableSpell = function () { throw "todo"; }
 CHARACTER.prototype.ComputeAIBaseclass = function () { throw "todo"; }
 // 	DEFINE_mCARRAY_ACCESS_FUNCTIONS (SkillAdj, SKILL_ID, skillID, skillAdjustments, SKILL_ADJ, CHARACTER) void DeleteSkillAdj(indx) { throw "todo"; }
 CHARACTER.prototype.LocateSkillAdj = function (skillName, adjName) { throw "todo"; }
-CHARACTER.prototype.ApplyTempSkillAdjustments = function (SC) { throw "todo"; }
 CHARACTER.prototype.InsertSkillAdj = function (skillName, adjName, type, value) { throw "todo"; }
 CHARACTER.prototype.GetBaseclassLevel = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.GetBaseclassPrevLevel = function (baseclassID) { throw "todo"; }

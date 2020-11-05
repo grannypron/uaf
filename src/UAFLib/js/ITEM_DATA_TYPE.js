@@ -101,16 +101,32 @@ ITEM_DATA_TYPE.prototype.WpnConsumesAmmoAtRange = function(weaponID, Range)
 // PORT NOTE:  Rewrote these a little
 ITEM_DATA_TYPE.prototype.IsMoneyItem = function (itemID) {
     return this.IsMoney(itemID);
-};
+}
 
 ITEM_DATA_TYPE.prototype.IsGemType = function(itemID) {
     return itemID == GemString;
-};
+}
 
 ITEM_DATA_TYPE.prototype.IsJewelryType = function(itemID) {
     return itemID == JewelryString;
-};
+}
 
 ITEM_DATA_TYPE.prototype.IsMoney = function(itemID) {
     return this.IsGemType(itemID) || this.IsJewelryType(itemID);
-};
+}
+
+
+ITEM_DATA_TYPE.prototype.LocateItem = function (itemID) {
+    var i = 0, n = 0;
+    n = this.GetCount();
+    if ((itemID.hint >= 0)
+        && (itemID.hint < n)
+        && (this.PeekItem(itemID.hint).m_uniqueName == itemID)) return itemID.hint;
+    for (i = 0; i < n; i++) {
+        if (this.PeekItem(i).m_uniqueName == itemID) {
+            itemID.hint = i;            // PORT NOTE:  Even though this will not be used because no PBR in JS
+            return i;
+        };
+    };
+    return -1;
+}

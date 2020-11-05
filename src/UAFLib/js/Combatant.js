@@ -577,7 +577,7 @@ COMBATANT.prototype.ReadyBestWpn = function(targ) {
 
     // if target is distant but don't have distance weapon
     // then ready hand-to-hand weapon
-    if ((dist > 1) && (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) == Items.NO_READY_ITEM))
+    if ((dist > 1) && (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) == NO_READY_ITEM))
         this.m_pCharacter.ReadyBestWpn(1, isLargeTarget);
 }
 
@@ -1027,7 +1027,6 @@ inline void SetHitPoints(int val) { m_pCharacter -> SetHitPoints(val); };
 inline int  GetHitPoints() const { return m_pCharacter-> GetHitPoints(); };
 inline BOOL HasDeathImmunity() const { return m_pCharacter-> HasDeathImmunity(); };
 inline void UpdateSpellForDamage(int DamageTaken) { m_pCharacter -> UpdateSpellForDamage(DamageTaken); };
-inline int  GetAdjSpecAb(specialAbilitiesType sa, DWORD * pSource=NULL, CString * pSpellName=NULL) const { return m_pCharacter-> GetAdjSpecAb(sa, pSource, pSpellName);};
 inline CString  GetUndeadType() const { return m_pCharacter-> GetUndeadType(); };
 inline BOOL IsAnimal() const { return m_pCharacter-> IsAnimal();};
 inline BOOL IsAlwaysLarge() const { return m_pCharacter-> IsAlwaysLarge();};
@@ -1035,7 +1034,6 @@ inline BOOL HasVorpalImmunity() const { return m_pCharacter-> HasVorpalImmunity(
 inline void ComputeCharacterViewValues(void) { m_pCharacter -> ComputeCharacterViewValues(); };
 inline BYTE GetAdjInt(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjInt(flags);};
 inline int GetAdjTHAC0(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjTHAC0(flags);};
-inline int GetAdjAC(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjAC(flags);};
 inline BOOL GetAdjAllowPlayerControl(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) { return m_pCharacter -> GetAdjAllowPlayerControl(flags); };
 inline int  GetAdjDmgBonus(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjDmgBonus(flags); };
 inline int  GetAdjHitBonus(const ITEM_ID& weaponID, int distance, DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const
@@ -1057,7 +1055,6 @@ void GetDamageDice(int wpn,
     BOOL * pNonLethal,
     BOOL IsLarge,
     CString * pSpellName) const ;
-int GetAttackBonus(const ITEM_ID& itemID, int distance) const ;
 void GetContext(ActorType * pActor, const BASECLASS_ID& baseclassID) const ;
 void GetContext(ActorType * pActor, const SCHOOL_ID& schoolID) const ;
 void GetContext(ActorType * pActor, const SPELL_ID& spellID) const ;
@@ -1229,8 +1226,6 @@ BOOL ModifySaveRoll
     (const CHARACTER * pTarget, int * pRoll) const ;
 BOOL ModifySaveRollAsTarget
     (CHARACTER * pAttacker, int * pRoll) const ;
-BOOL ModifyACAsTarget
-    (const CHARACTER * pAttacker, int * pAC, const ITEM_ID& itemID) const ;
 
 enum SPECIAL_SELF {
     SELF_NewCombatant = -3,
@@ -1963,7 +1958,7 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
     }
     var dis = DistanceFunction(this.self, this.x, this.y, targ, targetX, targetY);
     var mywpnitemidx = this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0);
-    if (mywpnitemidx != Items.NO_READY_ITEM) {
+    if (mywpnitemidx != NO_READY_ITEM) {
         // using a weapon rather than natural attack types (ie claws/jaws/fists)
         var wpn_ID;
         wpn_ID = this.m_pCharacter.myItems.GetItem(mywpnitemidx);
@@ -2002,7 +1997,7 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
                     var myammoitemidx = this.m_pCharacter.myItems.GetReadiedItem(Items.AmmoQuiver, 0);
 
                     // arrows or bolts must be readied in AmmoQuiver
-                    if (myammoitemidx == Items.NO_READY_ITEM)
+                    if (myammoitemidx == NO_READY_ITEM)
                         return false;
 
                     var ammo_ID = this.m_pCharacter.myItems.GetItem(myammoitemidx);
@@ -2271,7 +2266,6 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         pWeapon = itemData.GetItem(itemID);
     };
 
-
     toHitComputation.Compute4(this, targ, targCOMBATANT, wpn);
 
     if (toHitComputation.DidHit())
@@ -2287,7 +2281,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         var damageComputation = new DamageComputation();
 
         var attackSpellID = "", itemSpellID = "";    //SPELL_ID 
-        if (wpn != Items.NO_READY_ITEM) {
+        if (wpn != NO_READY_ITEM) {
             var pSpell;
             itemSpellID = pWeapon.SpellID();
             if (!(itemSpellID == "" || itemSpellID == null)) {
@@ -2434,7 +2428,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
     if (decQty)  // wpn and giID refer to either the weapon or the ammo consumed by the weapon
     {
         // dec item qty by 1, item won't show up in post-combat treasure list
-        if (wpn != Items.NO_READY_ITEM) {
+        if (wpn != NO_READY_ITEM) {
             if (wpnConsumesSelfAsAmmo) {
                 var myItem = new ITEM();
                 myItem = this.m_pCharacter.myItems.GetItem(wpn);
@@ -2504,4 +2498,79 @@ COMBATANT.prototype.ModifyAttackRollDiceForItem = function(pTarget, itemID, num,
 
 COMBATANT.prototype.ModifyAttackRollDiceForItemAsTarget = function(pAttacker, itemID, num, sides, pBonus) {
     return this.m_pCharacter.ModifyAttackRollDiceForItemAsTarget(pAttacker, itemID, num, sides, pBonus);
+}
+
+COMBATANT.prototype.GetAttackBonus = function (weaponID, distance) {
+    var bonus = 0;
+
+    if (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM) {
+        var idata = itemData.GetItem(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)));
+        if (idata != null) {
+            bonus += idata.Attack_Bonus;
+        }
+        else {
+            Globals.WriteDebugString("Bogus item num in GetAttackBonus()\n");
+        }
+    }
+
+    bonus += this.GetAdjHitBonus(weaponID, distance);
+
+    return bonus;
+}
+
+COMBATANT.prototype.GetAdjHitBonus = function(weaponID, distance, flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    return this.m_pCharacter.GetAdjHitBonus(weaponID, distance, flags);
+}
+
+COMBATANT.prototype.GetAdjAC = function(flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    return this.m_pCharacter.GetAdjAC(flags);
+}
+
+
+
+COMBATANT.prototype.ModifyACAsTarget = function(pAttacker, pAC, itemID) {
+    var src = 0;  // DWORD
+    var spellID = "";
+    var result = this.m_pCharacter.ModifyACAsTarget(pAttacker, pAC, itemID); var modify = result.returnVal; var pAC = result.pAC;   // PORT NOTE: Dealing with pass-by-reference parameters
+
+    result = this.GetAdjSpecAb(SPECAB.SA_Displacement, src, spellID); src = result.pSource, spellID = result.pSpellName;
+    if (result.returnVal) {
+        var pa = pAttacker.m_pCombatant;
+        m_pCharacter.QueueUsedSpecAb(SPECAB.SA_Displacement, src, spellID);
+        modify = true;
+        if (pa.self != this.m_iLastAttacker) // if first attack on me
+          pAC = 21; // force a miss
+        else
+          pAC -= 2; // +2 bonus to armor class
+    }
+
+    var result = this.GetAdjSpecAb(SPECAB.SA_MirrorImage, src, spellID); src = result.pSource, spellID = result.pSpellName;
+    if (result.returnVal) {
+        m_pCharacter.QueueUsedSpecAb(SPECAB.SA_MirrorImage, src, spellID);
+        modify = true;
+        pAC = 21; // force a miss
+    }
+
+    if (pAttacker.HasDwarfACPenalty()) {
+        if (raceData.HasDwarfResistance(this.race())) {
+            pAC -= 4; // +4 bonus to armor class
+            modify = true;
+        }
+    }
+    if (pAttacker.HasGnomeACPenalty()) {
+        if (raceData.HasGnomeResistance(this.race())) {
+            pAC -= 4; // +4 bonus to armor class    
+            modify = true;
+        }
+    }
+    return { returnVal: modify, pAC: pAC };
+}
+
+
+COMBATANT.prototype.GetAdjSpecAb = function (sa, pSource, pSpellName) {
+    if (!pSource) { pSource = null; }
+    if (!pSpellName) { pSpellName = null; }
+    return this.m_pCharacter.GetAdjSpecAb(sa, pSource, pSpellName);
 }

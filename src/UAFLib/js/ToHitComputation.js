@@ -72,7 +72,7 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
     this.m_attDiceBonus = 0;
 
     itemID = "";
-    if (wpn != Items.NO_READY_ITEM) {
+    if (wpn != NO_READY_ITEM) {
         itemID = pAttacker.m_pCharacter.myItems.GetItem(wpn);
     };
 
@@ -117,10 +117,9 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
         this.m_isBackStab = pAttacker.DetermineIfBackStab(wpn, targetIndex);
     };
 
-
     this.m_attDiceBonus += pAttacker.GetAttackBonus(itemID, distance);
-    if (m_toHitDiceRoll < 1) this.m_toHitDiceRoll = 1;
-    if (m_toHitDiceRoll > 20) this.m_toHitDiceRoll = 20;
+    if (this.m_toHitDiceRoll < 1) this.m_toHitDiceRoll = 1;
+    if (this.m_toHitDiceRoll > 20) this.m_toHitDiceRoll = 20;
 
     this.m_effectiveTHAC0 = this.ComputeEffectiveTHAC0(pAttacker, pTarget, itemID, distance);
 
@@ -137,9 +136,9 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
         var hookParameters = new HOOK_PARAMETERS();
         var scriptContext = new SCRIPT_CONTEXT();
         var pItem;
-        scriptContext.SetItemContext(itemID);  // Includes spell Context!
+        scriptContext.SetItemContext(itemID == "" ? null : itemID);  // Includes spell Context!    // PORT NOTE:  Had to modify since itemID is just a string now
         scriptContext.SetItemContextKey(wpn);
-        scriptContext.SetTargetContext(pTarget);
+        scriptContext.SetTargetContextCOMBATANT(pTarget);
         scriptContext.SetAttackerContext(pAttacker);
         if (itemID.IsValidItem()) {
             itemName = scriptContext.GetItemContext("Bogus Item Context").UniqueName();
@@ -273,3 +272,71 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
 
     if (this.m_didHit < 0) this.m_didHit = (this.m_toHitDiceRoll >= this.m_effectiveTHAC0);
 }
+
+
+ToHitComputation.prototype.ComputeEffectiveTHAC0 = function(pAttacker, pTarget, weaponID, distance) {
+    /*
+    ********************* Revised xxxxx Algorithm *******************
+    ********************* (name to be determined)
+    
+    0)AttackerTHAC0 = THAC0 from character's stats (14)
+    1)something001 = some function(weaponType-HandCutting, etc) (0)
+    2)something002 = AttackerTHAC0 - something001 (14 - 0 = 14)
+    3)WeaponToHitBonus = WeaponBonus from weapon description (5)
+    4)something003 = something002 - WeaponToHitBonus (14 - 5 = 9)
+    5)EffectiveTargetAC = some function (target and shields and etc) (9)
+    6)EffectiveTHAC0 = something003 - EffectiveTargetAC (9 - 9 = 0)
+    
+    
+    Re-writing gives:
+    6) EffectiveTHAC0 = (something002 - WeaponToHitBonus) - EffectiveTargetAC
+    6) EffectiveTHAC0 = something002 - WeaponToHitBonus - EffectiveTargetAC
+    6) EffectiveTHAC0 = (AttackerTHAC0 - somethin001) - WeaponToHitBonus - EffectiveTargetAC
+    6) EffectiveTHAC0 = AttackerTHAC0 - somethin001 - WeaponToHitBonus - EffectiveTargetAC
+    6) EffectiveTHAC0 = AttackerTHAC0 - environmentalBonusTHAC0 - WeaponToHitBonus - EffectiveTargetAC
+    
+    
+    Then use EffectiveTHAC0 as parameter[6]
+    **************** End of xxxxx Algorithm **************** 
+    
+    Eric Cone (manikus) wrote to me:
+    
+    I am officially signing off on this. :)
+    ComputerEffectiveTHAC0 seems like a good name to me.
+    
+    
+    something001 -> environmentalBonusTHAC0
+    something002 -> adjustedAttackerTHAC0
+    something003 -> RealizedTHAC0
+     
+    
+    */
+    var effectiveTHAC0 = 0;
+    var attackerTHAC0 = 0;
+    var environmentalBonusTHAC0 = 0;
+    var weaponToHitBonus = 0;
+    var effectiveTargetAC = 0;
+
+    var pWeapon = null;
+    if (Items.IsValidItem(weaponID)) {                  // PORT NOTE:  Changed IsValidItem a bit
+        pWeapon = itemData.GetItem(weaponID);
+    };
+
+    //////////////////////// attackerTHAC0
+    attackerTHAC0 = Globals.GetAttackerTHAC0(pAttacker);
+
+    /////////////////////// weaponToHitBonus
+    weaponToHitBonus = Globals.GetWeaponToHitBonus(pWeapon);
+
+    /////////////////////// environmentalBonusTHAC0
+    environmentalBonusTHAC0 = Globals.GetEnvironmentalBonusTHAC0(pAttacker, pWeapon, distance);
+
+    ///////////////////////// effectiveTargtAC
+    effectiveTargetAC = Globals.GetEffectiveTargetAC(pTarget, pAttacker, weaponID);
+
+    ///////////////////////// effectiveTHAC0
+    effectiveTHAC0 = attackerTHAC0 - environmentalBonusTHAC0 - weaponToHitBonus - effectiveTargetAC;
+
+    return effectiveTHAC0;
+}
+

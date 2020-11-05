@@ -98,7 +98,8 @@ ITEM_LIST.prototype.GetReadiedItem = function (rdyLoc, readiedItemCount) {
             }
         }
     }
-    return Items.NO_READY_ITEM;
+
+    return NO_READY_ITEM;
 }
 
 
@@ -165,5 +166,20 @@ ITEM_LIST.prototype.SerializeCAR = function(ar, version) {
     }
 
     this.rdyItems_Deprecated.SerializeCAR(ar);
+}
+
+ITEM_LIST.prototype.GetProtectModForRdyItems = function() {
+    var acMod = 0;
+    var pos;
+    pos = this.m_items.GetHeadPosition();
+    while (pos != null) {
+        if (this.PeekAtPos(pos).ReadyLocation() != Items.NotReady) {
+            var data = itemData.GetItem(PeekAtPos(pos).itemID);
+            if (data != null)
+                acMod += (data.Protection_Base + data.Protection_Bonus);
+        }
+        pos = this.NextPos(pos);
+    }
+    return acMod;
 }
 
