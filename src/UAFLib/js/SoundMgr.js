@@ -29,7 +29,7 @@ SoundMgrObj.prototype.ValidSound = function (sound) {
 
 SoundMgrObj.prototype.PlaySound = function (file) {
     /**TODO** Stub */
-    Globals.debug("Playing sound " + file);
+    UIEventManager.PlaySound(file);
     return true;
 }
 

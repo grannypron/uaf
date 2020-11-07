@@ -95,15 +95,21 @@ namespace UAFLib
         private LibraryInfo LoadFiles(string path, Engine engine)
         {
             LibraryInfo lib = new LibraryInfo();
-            foreach (string file in Directory.GetFiles(path, "*.js"))
+            foreach (string file in Directory.GetFiles(path, "*.js", SearchOption.AllDirectories))
             {
                 String fileContents = LoadFileFromString(file);
                 int lineCount = fileContents.Split('\n').Length;
-                engine.Execute(fileContents);
-                lib.Add(new LibraryFile(file, lineCount));
-                //System.Console.WriteLine(file + ":" + lineCount);
+                lib.Add(new LibraryFile(file, lineCount, fileContents));
+            }
+
+            lib.Sort(new JSLibComparer());
+
+            foreach (LibraryFile file in lib)
+            {
+                engine.Execute(file.mData);
             }
             return lib;
+
         }
 
         private LibraryInfo LoadFilesFromGitHub(string url, Engine engine)
@@ -132,12 +138,34 @@ namespace UAFLib
                     String fileContents = client.DownloadString(ghUrl);
                     int lineCount = fileContents.Split('\n').Length;
                     engine.Execute(fileContents);
-                    lib.Add(new LibraryFile(ghUrl, lineCount));
+                    lib.Add(new LibraryFile(ghUrl, lineCount, fileContents));
                 }
             }
 
 
             return lib;
+        }
+    }
+
+
+    public class JSLibComparer : IComparer<LibraryFile>
+    {
+        public int Compare(LibraryFile f1, LibraryFile f2)
+        {
+            string name1 = getFile(f1.mName);
+            string name2 = getFile(f2.mName);
+            return String.Compare(name1.ToLower(), name2.ToLower());
+        }
+
+        string getFile(string s)
+        {
+            if (s.IndexOf("/") > -1) { 
+                s = s.Substring(s.LastIndexOf("/") + 1); 
+            }
+            if (s.IndexOf("\\") > -1) {
+                s = s.Substring(s.LastIndexOf("\\") + 1);
+            }
+            return s;
         }
     }
 }

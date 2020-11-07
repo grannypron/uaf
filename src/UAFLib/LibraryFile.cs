@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 
 namespace UAFLib
 {
-    class LibraryFile
+    public class LibraryFile
     {
         public int mLines;
         public String mName;
-        public LibraryFile(String name, int lines)
+        public String mData;
+        public LibraryFile(String name, int lines, String data)
         {
             mName = name;
             mLines = lines;
+            mData = data;
         }
     }
 }

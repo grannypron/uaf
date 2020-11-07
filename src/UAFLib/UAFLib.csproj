@@ -81,6 +81,7 @@
     <Content Include="js\ABILITY_DATA_TYPE.js" />
     <Content Include="js\ACTIVE_SPELL_LIST.js" />
     <Content Include="js\BASECLASS_LIST.js" />
+    <Content Include="js\interop\UIEventManager.js" />
     <Content Include="js\spellDurationType.js" />
     <Content Include="js\WhatSprite.js" />
     <Content Include="js\DamageComputation.js" />
