@@ -24,7 +24,7 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
     distance = Drawtile.Distance6(pAttacker.self, pAttacker.x, pAttacker.y,
         pTarget.self, pTarget.x, pTarget.y);
 
-    itemID = "";
+    itemID = null;
     if (wpn != NO_READY_ITEM) {
         itemID = pAttacker.m_pCharacter.myItems.GetItem(wpn);
     }
@@ -32,11 +32,11 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
     this.m_damage = 0;
     var result = pAttacker.GetDamageDice(wpn, dmgDiceQty, dmgDiceSides, dmgDiceBonus, this.m_isNonLethal, pTarget.isLargeDude(), this.m_spellID);
     // PORT NOTE:  Handling pass-by-reference params
-    pNum = result.pNum;
-    pSides = result.pSides;
-    pBonus = result.pBonus;
-    pNonLethal = result.pNonLethal;
-    pSpellName = result.pSpellName;
+    dmgDiceQty = result.pNum;
+    dmgDiceSides = result.pSides;
+    dmgDiceBonus = result.pBonus;
+    this.m_isNonLethal = result.pNonLethal;
+    this.m_spellID = result.pSpellName;
 
     result = pAttacker.ModifyAttackDamageDice(
                     pTarget.m_pCharacter,   
@@ -44,8 +44,7 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
                     dmgDiceSides, 
                     dmgDiceBonus, 
                     this.m_isNonLethal);
-    dmgDiceBonus = result.pBonus;
-    this.m_isNonLethal = result.pNonLethal;      // PORT NOTE:  Handling pass-by-reference params
+    dmgDiceBonus = result.pBonus;        // PORT NOTE:  Handling pass-by-reference params
 
     result = pAttacker.ModifyAttackDamageDiceForItem(
                     pTarget.m_pCharacter,
@@ -53,19 +52,16 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
                     dmgDiceQty,
                     dmgDiceSides,  
                     dmgDiceBonus,  
-                    m_isNonLethal,
+                    this.m_isNonLethal,
                     distance);
-    dmgDiceBonus = result.pBonus;
-    this.m_isNonLethal = result.pNonLethal;      // PORT NOTE:  Handling pass-by-reference params
+    dmgDiceBonus = result.pBonus;       // PORT NOTE:  Handling pass-by-reference params
 
-    result = pTarget.ModifyAttackDamageDiceAsTarget(
+    pTarget.ModifyAttackDamageDiceAsTarget(         // PORT NOTE:  This method only returns false so has no effect
                     pAttacker.m_pCharacter,
                     dmgDiceQty,
                     dmgDiceSides,
                     dmgDiceBonus,
-                    m_isNonLethal);
-    dmgDiceBonus = result.pBonus;
-    this.m_isNonLethal = result.pNonLethal;      // PORT NOTE:  Handling pass-by-reference params
+                    this.m_isNonLethal);
 
     result = pTarget.ModifyAttackDamageDiceForItemAsTarget(
                     pAttacker.m_pCharacter,
@@ -73,10 +69,9 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
                     dmgDiceQty,
                     dmgDiceSides,
                     dmgDiceBonus,
-                    m_isNonLethal,
+                    this.m_isNonLethal,
                     toHitRoll);
-    dmgDiceBonus = result.pBonus;
-    this.m_isNonLethal = result.pNonLethal;      // PORT NOTE:  Handling pass-by-reference params
+    dmgDiceBonus = result.pBonus; // PORT NOTE:  Handling pass-by-reference params
 
     this.m_damage = Globals.RollDice(dmgDiceSides, dmgDiceQty, dmgDiceBonus);
 
@@ -95,7 +90,7 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
             var scriptContext = new SCRIPT_CONTEXT();
             var pWeapon = null;
             scriptContext.SetItemContext(itemID);
-            if (!itemID.IsNoItem()) {
+            if (!itemData.IsNoItem(itemID)) {
                 pWeapon = itemData.GetItem(itemID);
             };
             hookParameters[2] = "" + this.m_damage;
@@ -119,12 +114,12 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
             hookParameters[5] = "" + this.m_damage;
             hookParameters[6] = "" + this.m_isNonLethal;
             scriptContext.SetAttackerContext(pAttacker);
-            scriptContext.SetTargetContext(pTarget);
+            scriptContext.SetTargetContextCOMBATANT(pTarget);
             if (pWeapon != null) {
                 scriptContext.SetItemContext(pWeapon);
             }
             else {
-                scriptContext.SetItemContext(bogusItem);
+                scriptContext.SetItemContext(Globals.bogusItem);
             };
             scriptContext.SetItemContextKey(wpn);
             if (pWeapon != null) {
@@ -162,4 +157,20 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
         }
     }
 
+}
+
+DamageComputation.prototype.Damage = function () {
+    return this.m_damage;
+}
+
+DamageComputation.prototype.IsNonLethal = function () {
+    return this.m_isNonLethal;
+}
+
+DamageComputation.prototype.SpellID = function () {
+    return this.m_spellID;
+}
+
+DamageComputation.prototype.Message = function () {
+    return this.m_message;
 }

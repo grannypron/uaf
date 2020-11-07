@@ -103,11 +103,9 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
         attDiceSides,
         this.m_attDiceBonus).pBonus;
 
-    Globals.debug("---- THIS IS JUST FOR TESTING !!! REMOVE!!!");
     this.m_toHitDiceRoll = Globals.RollDice(attDiceSides,
         attDiceNum,
-        20);
-    //    this.m_attDiceBonus);
+        this.m_attDiceBonus);
 
 
     bsm = pAttacker.m_pCharacter.GetAdjSkillValue(Globals.Skill_BackstabMultiplier, false, true);

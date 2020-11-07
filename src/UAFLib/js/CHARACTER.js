@@ -3786,6 +3786,200 @@ CHARACTER.prototype.ModifyAttackDamageDice = function(pTarget, num, sides, pBonu
     return { returnVal: modify, pBonus: pBonus, pNonLethal: pNonLethal };
 }
 
+CHARACTER.prototype.HasRangerDmgPenalty = function () {
+    if (this.GetType() == MONSTER_TYPE) {
+        return ((monsterData.GetMonsterPenaltyFlags(monsterID) & MonsterPenaltyType.PenaltyRangerDmg) == MonsterPenaltyType.PenaltyRangerDmg);
+    }
+
+    return false;
+}
+
+
+// give this character a chance to modify the damage dice roll used against
+// it during combat
+CHARACTER.prototype.ModifyAttackDamageDiceAsTarget = function(pAttacker, num, sides, pBonus, pNonLethal) {
+    // PORT NOTE:  This method contained only "return FALSE";
+    return false;
+}
+
+CHARACTER.prototype.ModifyAttackDamageDiceForItemAsTarget = function(pAttacker, itemID, num, sides, pBonus, pNonLethal) {
+    var sName = "";
+
+    var relAbs = [];
+    relAbs[0] = 0;
+    relAbs[1] = pBonus;
+    var pItem;
+    pItem = itemData.GetItem(itemID);
+    if (pItem == null) return { pBonus: pBonus };
+    {
+        var hookParameters = new HOOK_PARAMETERS();
+        var scriptContext = new SCRIPT_CONTEXT();
+        scriptContext.SetAttackerContext(pAttacker);
+        scriptContext.SetTargetContext(this);
+        scriptContext.SetItemContext(pItem);
+        this.RunCharacterScripts(SPECAB.GET_ITEM_TARGET_HIT_BONUS, 
+                            SPECAB.ScriptCallback_RelOrAbs, 
+                            relAbs, 
+                            "Modify attack damage dice for item as target");
+        pItem.RunItemScripts(SPECAB.GET_ITEM_TARGET_HIT_BONUS,
+                                SPECAB.ScriptCallback_RelOrAbs,
+                                relAbs,
+                                "Modify attack damage dice for item as target");
+    };
+    pBonus = relAbs[1] + relAbs[0];         //***TODO:  This is not going to be working right now because it is a bass-by-reference to the scripts **/ 
+    return { pBonus: pBonus };
+   
+}
+
+
+CHARACTER.prototype.UpdateSpellForAttacks = function(AttacksTaken) {
+    // this func is only called when a successful hit is 
+    // made on this dude.
+
+    if (AttacksTaken <= 0) return;
+
+    var found = false;
+    var pos = this.m_spellEffects.GetHeadPosition();
+    while (pos != null) {
+        var spellID;
+        spellID = this.m_spellEffects.PeekAt(pos).SourceSpell_ID();
+
+        var pSpell = spellData.GetSpell(spellID);
+        if (pSpell != null) {
+            if (pSpell.Duration_Rate == byNbrAttacks) {
+                var activespellkey = m_spellEffects.PeekAt(pos).parent;
+                var pActive = activeSpellList.Get(activespellkey);
+                if (pActive != null) {
+                    found = true;
+                    pActive.CountTime += AttacksTaken;
+                    activeSpellList.Set(activespellkey, pActive);
+                }
+            }
+        }
+
+        this.m_spellEffects.GetNext(pos);
+    }
+
+    if (this.GetAdjSpecAb(SPECAB.SA_MirrorImage)) {
+        // decrement counter used to keep track of number of mirror images
+        this.AdjustEffectData(IF_KEYWORD_INDEX.CHAR_MIRRORIMAGE, -1);
+    }
+
+    if (found)
+        activeSpellList.ProcessTimeSensitiveData(0);
+}
+
+CHARACTER.prototype.AdjustEffectData = function (key, val) {
+    throw "todo";
+}
+
+CHARACTER.prototype.AdjustEffectData = function(key, val) {
+    // adjust only the first effect that matches
+    var pos = this.GetFirstEffectAttributeMod(key);
+    if (pos == null)
+        return;
+
+    var data = this.m_spellEffects.GetAt(pos);
+    Globals.WriteDebugString("Adjusting data for effect " + data.AffectedAttr() + " by " + val + " for " + name + "\n");
+
+    data.data += val;
+
+    var RemoveSpell = false;
+    Globals.die("Not Needed?"); //Not Implemented(0xcccd54,FALSE);//specialAbilitiesType sa = ConvertRuntimeIfTextToSpecAb(akey);
+
+    Globals.die("Not Needed?"); //Not Implemented(0x5c9bf6, FALSE);
+    if (RemoveSpell) {
+        var pSpell = activeSpellList.Get(data.parent);
+        if (pSpell != null) {
+            // if this is the only effect for this spell, might as well expire it
+            // otherwise, wait for normal spell duration
+            var pSpellData = spellData.GetSpell(pSpell.spellID);
+            if (pSpellData != null) {
+                Globals.WriteDebugString("Marking spell " + pSpellData.Name + " from " + name + " in AdjustEffectData() for removal\n");
+                if (pSpellData.m_EffectedAttributes.GetCount() == 1)
+                    pSpell.StopTime = 0; // force spell to expire
+            }
+            else {
+                pSpell.StopTime = 0; // force spell to expire
+                WriteDebugString("Marking spell from " + name + " in AdjustEffectData() for removal\n");
+            }
+        }
+    }
+}
+
+CHARACTER.prototype.GetFirstEffectAttributeMod = function(attr) {
+    var pos = this.m_spellEffects.GetHeadPosition();
+    while (pos != null) {
+        if (this.m_spellEffects.PeekAt(pos).affectedAttr_IFKEY == attr)
+            return pos;
+        this.m_spellEffects.PeekNext(pos);
+    }
+    return null;
+}
+
+CHARACTER.prototype.SetHitPoints = function (val) {
+    // are we healing this character?
+    if ((val > 0) && (val > this.hitPoints)) {
+        // disallow if diseased
+        if (this.GetAdjSpecAb(SA_Diseased)) {
+            if (val > 1)
+                val = 1;
+        }
+    }
+
+
+    this.hitPoints = val;
+
+    if (this.hitPoints > this.maxHitPoints)
+        this.hitPoints = this.maxHitPoints;
+    else if (this.hitPoints < -10)
+        this.hitPoints = -10;
+
+    if (this.hitPoints < 0) {
+        if (!this.IsCombatActive()) // combat takes care of setting correct status
+        {
+            if (this.hitPoints == -10) {
+                this.SetStatus(charStatusType.Dead);
+            }
+            else {
+                // if okay, set to Dead, else leave status alone
+                if (this.GetStatus() == charStatusType.Okay)
+                    this.SetStatus(charStatusType.Dead);
+            }
+        }
+    }
+}
+
+CHARACTER.prototype.UpdateSpellForDamage = function(DamageTaken) {
+    if (DamageTaken <= 0) return;
+
+    var found = false;
+    var pos = this.m_spellEffects.GetHeadPosition();
+    while (pos != null) {
+        var spellID;
+        spellID = this.m_spellEffects.PeekAt(pos).SourceSpell_ID();
+
+        var pSpell = spellData.GetSpell(spellID);
+        if (pSpell != null) {
+            if (pSpell.Duration_Rate == spellDurationType.byDamageTaken) {
+                var activespellkey = m_spellEffects.PeekAt(pos).parent;
+                var pActive = activeSpellList.Get(activespellkey);
+                if (pActive != null) {
+                    found = true;
+                    pActive.CountTime += DamageTaken;
+                    activeSpellList.Set(activespellkey, pActive);
+                }
+            }
+        }
+
+        this.m_spellEffects.GetNext(pos);
+    }
+
+    if (found)
+        activeSpellList.ProcessTimeSensitiveData(0);
+}
+
+
 CHARACTER.prototype.SetLevel = function (lvl) { throw "todo"; }
 CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };
 CHARACTER.prototype.GetBestMemorizedHealingSpell = function (pSpellID) { throw "todo"; };
@@ -3862,8 +4056,7 @@ CHARACTER.prototype.GetEffectiveAC = function () { throw "todo"; }
 CHARACTER.prototype.SetAC = function (val) { throw "todo"; }
 CHARACTER.prototype.SetCharAC = function () { throw "todo"; }
 CHARACTER.prototype.DetermineCharMaxHitPoints = function () { throw "todo"; }
-CHARACTER.prototype.SetHitPoints = function (val) { throw "todo"; }
-CHARACTER.prototype.SetHitPoints = function (val, int, canFinishCasting) { throw "todo"; }
+CHARACTER.prototype.SetHitPointsIntIntBool = function (val, int, canFinishCasting) { throw "todo"; }
 CHARACTER.prototype.RestoreMaxHitPoints = function () { throw "todo"; }
 CHARACTER.prototype.SetMaxHitPoints = function (val) { throw "todo"; }
 CHARACTER.prototype.RestoreToBestCondition = function () { throw "todo"; }
@@ -3892,14 +4085,12 @@ CHARACTER.prototype.GetAdjBaseclassExp = function (baseclassID, flags) { if (!fl
 CHARACTER.prototype.GetBaseclassExp = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.SetSpecAb = function (sa, enable, flags) { throw "todo"; }
 CHARACTER.prototype.ClearQueuedSpecAb = function () { throw "todo"; }
-CHARACTER.prototype.AdjustEffectData = function (key, val) { throw "todo"; }
 CHARACTER.prototype.IsMammal = function () { throw "todo"; }
 CHARACTER.prototype.IsAnimal = function () { throw "todo"; }
 CHARACTER.prototype.IsSnake = function () { throw "todo"; }
 CHARACTER.prototype.IsGiant = function () { throw "todo"; }
 CHARACTER.prototype.HasDwarfTHAC0Penalty = function () { throw "todo"; }
 CHARACTER.prototype.HasGnomeTHAC0Penalty = function () { throw "todo"; }
-CHARACTER.prototype.HasRangerDmgPenalty = function () { throw "todo"; }
 CHARACTER.prototype.HasPoisonImmunity = function () { throw "todo"; }
 CHARACTER.prototype.HasDeathImmunity = function () { throw "todo"; }
 CHARACTER.prototype.HasConfusionImmunity = function () { throw "todo"; }

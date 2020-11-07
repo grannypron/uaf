@@ -134,3 +134,7 @@ ITEM_DATA_TYPE.prototype.LocateItem = function (itemID) {
 ITEM_DATA_TYPE.prototype.IsValidItem = function (weaponID) {
     return itemData.LocateItem(weaponID) >= 0;
 }
+
+ITEM_DATA_TYPE.prototype.IsNoItem = function (itemID) {
+    return UAFUtil.IsEmpty(itemID);
+}

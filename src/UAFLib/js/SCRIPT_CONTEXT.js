@@ -138,6 +138,10 @@ SCRIPT_CONTEXT.prototype.SetItemContextKey = function (key) {
     this.itemKey = key;
 }
 
+SCRIPT_CONTEXT.prototype.SetSpellContext = function (pSpell) {
+    this.pSpellContext = pSpell;
+}
+
 
 SCRIPT_CONTEXT.prototype.SetTargetContextCOMBATANT = function(pCombatant) {
     var actor;

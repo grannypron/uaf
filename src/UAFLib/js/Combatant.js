@@ -986,7 +986,6 @@ inline double EvalDiceAsClass(DICEPLUS & dice, const BASECLASS_ID& baseclassID, 
 inline double EvalDiceAsClass(DICEPLUS & dice, const SCHOOL_ID& schoolID, int spellLevel, int * pRollerLevel) const
     { return m_pCharacter-> EvalDiceAsClass(dice, schoolID, spellLevel, pRollerLevel);};
 inline charStatusType GetStatus() const { return m_pCharacter-> GetStatus(); };
-inline void UpdateSpellForAttacks(int AttacksTaken) { m_pCharacter -> UpdateSpellForAttacks(AttacksTaken); };
 inline void SetEncumbrance(int val) { m_pCharacter -> SetEncumbrance(val); };
 inline int  determineEffectiveEncumbrance() { return m_pCharacter -> determineEffectiveEncumbrance(); };
 inline BOOL GetAutomatic() const { return m_pCharacter-> GetAutomatic(); };
@@ -1023,8 +1022,6 @@ inline void InitTargeting(spellTargetingType ttype,
         lingering);
 };
 inline int  GetThiefBackstabDamageMultiplier() const { return m_pCharacter-> GetThiefBackstabDamageMultiplier();};
-inline void SetHitPoints(int val) { m_pCharacter -> SetHitPoints(val); };
-inline int  GetHitPoints() const { return m_pCharacter-> GetHitPoints(); };
 inline BOOL HasDeathImmunity() const { return m_pCharacter-> HasDeathImmunity(); };
 inline void UpdateSpellForDamage(int DamageTaken) { m_pCharacter -> UpdateSpellForDamage(DamageTaken); };
 inline CString  GetUndeadType() const { return m_pCharacter-> GetUndeadType(); };
@@ -1058,15 +1055,9 @@ void FaceLocation(int x, int y);
 BOOL CheckForGuardingEnemy();
 BOOL CheckOpponentFreeAttack(int oldX, int oldY, int newX, int newY);
 void FillTargeterList(PATH_DIR dir);
-void PlayHit() const ;
 void PlayLaunch() const ;
 void PlayCombatDeath() const ;
 void PlayCombatTurnUndead() const ;
-void TakeDamage(int dmg,
-    BOOL IsNonLethal,
-    InvokeSpellOptions * invokeOptions,
-    bool canFinishCasting,
-    int * pDeathIndex);
 void RestoreToParty();
 void /* PRS July 2009 BOOL * / UpdateCombatant();
 BOOL Think();
@@ -1193,12 +1184,6 @@ BOOL ModifyAttackRollDiceForItem
     (const CHARACTER * pTarget,   const ITEM_ID& itemID, const int num, const int sides, int * pBonus, int distance) const ;
 BOOL ModifyAttackRollDiceForItemAsTarget
     (const CHARACTER * pAttacker, const ITEM_ID& itemID, const int num, const int sides, int * pBonus) const ;
-BOOL ModifyAttackDamageDiceForItem
-    (const CHARACTER * pTarget,   const ITEM_ID& itemID, const int num, const int sides, int * pBonus, BOOL * pNonLethal, int distance) const ;
-BOOL ModifyAttackDamageDiceAsTarget
-    (const CHARACTER * pAttacker,                      const int num, const int sides, int * pBonus, BOOL * pNonLethal) const ;
-void ModifyAttackDamageDiceForItemAsTarget
-    (const CHARACTER * pAttacker, const ITEM_ID& itemID, const int num, const int sides, int * pBonus, BOOL * pNonLethal, int toHitRolled) const ;
 BOOL ModifyAttackThac0
     (const CHARACTER * pTarget, int * pVal) const ;
 BOOL ModifyAttackThac0AsTarget
@@ -2123,7 +2108,7 @@ COMBATANT.prototype.IsDone = function(freeAttack, comment) {
             SPECAB.ScriptCallback_LookForChar,
             "N",
             comment);
-        Globals.debug("----Combatant.IsDone: " + result);
+
         if (!(result == null || result == "")) {
             this.m_isCombatReady = 0;
         }
@@ -2243,7 +2228,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         RunTimeIF.SetTargetContext(actor);
     };
     var pWeapon = null;
-    if (!(itemID == null || itemID == "")) {         //PORT NOTE:  This was itemID.IsNoItem
+    if (!(itemData.IsNoItem(itemID))) {
         pWeapon = itemData.GetItem(itemID);
     };
 
@@ -2322,7 +2307,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
             this.PlayHit();
 
             {
-                targCOMBATANT.TakeDamage(damageComputation.Damage(),
+                pDeathIndex = targCOMBATANT.TakeDamage(damageComputation.Damage(),
                     damageComputation.IsNonLethal(),
                     null,
                     targCOMBATANT == this,
@@ -2334,7 +2319,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                 }
             };
             {
-                if (damageComputation.SpellID().IsValidSpell()) {
+                if (spellData.IsValidSpell(damageComputation.SpellID())) {
                     var samsg = "";
                     var pSpell = spellData.GetSpell(damageComputation.SpellID());
                     Globals.ASSERT(pSpell != null);
@@ -2780,3 +2765,177 @@ COMBATANT.prototype.GetAdjDmgBonus = function(flags) {
     if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
     return this.m_pCharacter.GetAdjDmgBonus(flags);
 }
+
+COMBATANT.prototype.ModifyAttackDamageDiceForItem = function (pTarget, itemID, num, sides, pBonus, pNonLethal, distance) {
+    return this.m_pCharacter.ModifyAttackDamageDiceForItem(pTarget, itemID, num, sides, pBonus, pNonLethal, distance);
+}
+
+COMBATANT.prototype.ModifyAttackDamageDiceAsTarget = function(pAttacker, num, sides, pBonus, pNonLethal) {
+  return this.m_pCharacter.ModifyAttackDamageDiceAsTarget(pAttacker, num, sides, pBonus, pNonLethal);
+}
+
+COMBATANT.prototype.ModifyAttackDamageDiceForItemAsTarget = function(pAttacker, itemID, num, sides, pBonus, pNonLethal, toHitRolled) {
+    var pItem = itemData.GetItem(itemID);
+    if (pItem == null) return { pBonus: pBonus, pNonLethal: pNonLethal };
+
+    var src = 0;   // DWORD
+    var spellID = "";
+    var result = m_pCharacter.ModifyAttackDamageDiceForItemAsTarget(pAttacker, itemID, num, sides, pBonus, pNonLethal);
+    pBonus = result.pBonus;
+    pNonLethal = result.pNonLethal;
+
+    var pa = pAttacker.m_pCombatant;
+    // if vorpal item readied (attacker has ability enabled), and using item that confers ability
+    if ((toHitRolled == 20)
+        && (pa.GetAdjSpecAb(SA_VorpalAttack, src, spellID))
+        && (pItem.specAbs.HaveSpecAb(SPECAB.SA_VorpalAttack))) {
+        if (!this.HasVorpalImmunity()) {
+            pBonus = this.GetHitPoints() + 1; // make sure this attack kills target
+            pa.m_pCharacter.QueueUsedSpecAb(SPECAB.SA_VorpalAttack, src, spellID);
+        }
+    }
+    return { pBonus: pBonus, pNonLethal: pNonLethal };
+}
+
+COMBATANT.prototype.PlayHit = function() {
+    if (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM)
+    {
+        itemData.PlayHit(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)));
+    }
+    else
+    {
+        if (this.GetType() == MONSTER_TYPE)
+            monsterData.PlayHit(this.m_pCharacter.monsterID);
+        else
+            Globals.PlayCharHit();
+    }
+}
+
+COMBATANT.prototype.TakeDamage = function(dmg, IsNonLethal, invokeOptions, canFinishCasting, pDeathIndex)
+{
+    // don't beat a dead horse!
+    // *but!* allow dying to take 1 hp damage per turn if not yet bandaged
+    //
+    var stype = this.GetAdjStatus();
+    if ((stype == charStatusType.Fled)
+        || (stype == charStatusType.Gone)
+        || (stype == charStatusType.TempGone)
+        || (stype == charStatusType.Dead))
+        return pDeathIndex;
+
+    if (IsNonLethal) dmg = 0;
+
+    // adjust raw hitpoints
+    this.SetHitPoints(this.GetHitPoints() - dmg);
+
+    var trueHp = this.GetHitPoints();
+    var startTrueHp = trueHp;
+
+    // can't go below -10
+    // and 10 = dead
+    if (trueHp < -10)
+        trueHp = -10;
+
+    if (!this.IsPartyMember()) {
+        // monster die when hp reaches zero
+        if (trueHp <= 0)
+            trueHp = -10;
+        // unless configured to not die
+        if ((trueHp < 1) && (this.GetConfigMonsterNoDeath())) // debug flag
+            trueHp = 1;
+        if ((trueHp < 1) && (this.HasDeathImmunity())) // monster immunity flag
+            trueHp = -10;
+    }
+
+    // set to modified value if needed
+    if (trueHp != startTrueHp)
+        this.SetHitPoints(trueHp);
+
+    // now get adjusted hp value, which can
+    // magically change the current hp
+    //
+    var adjHp = this.GetAdjHitPoints();
+
+    if (!this.IsPartyMember()) {
+        // 20120605  PRS I changed this to avoid the ASSERT about 25 lines below.
+        // It also agress with the code about 21 lines above.
+        if (adjHp <= 0)
+            //if (adjHp < 0)
+            adjHp = -10;
+
+        // still can't let monsters die, even if hp is 
+        // magically below 0
+        if ((adjHp < 1) && (this.GetConfigMonsterNoDeath()))
+            adjHp = 1;
+        if ((adjHp < 1) && (this.HasDeathImmunity())) // monster immunity flag
+            adjHp = -10;
+    }
+
+    if (adjHp <= -10) {
+        this.SetStatus(Dead);
+        if (Drawtile.getCombatantInCell(this.x, this.y, 1, 1, NO_DUDE) == this.self) {
+            Drawtile.placeCombatant(this.x, this.y, NO_DUDE, this.width, this.height);
+        };
+        Drawtile.placeDyingCombatant(this.x, this.y, NO_DUDE, this.width, this.height);
+        Globals.TRACE(this.self + " takes " + dmg + " hp damage, -10 left, and is dead\n");
+        if ((invokeOptions != null) && (invokeOptions.m_supressBlitSprite & WhatSprite.DeathSprite)) {
+            invokeOptions.m_whatSpriteNeeded |= WhatSprite.DeathSprite;
+        }
+        else {
+            if (pDeathIndex != null) {
+                pDeathIndex = this.self;
+            }
+            else {
+                this.blitDeadSprite();
+            }
+        }
+    }
+    else if (adjHp <= 0) {
+        Globals.ASSERT(IsPartyMember());
+        if (Drawtile.getCombatantInCell(this.x, this.y, 1, 1, NO_DUDE) == self) {
+            Drawtile.placeCombatant(this.x, this.y, NO_DUDE, this.width, this.height);
+        };
+        this.placeDyingCombatant(this.x, this.y, this.self, this.width, this.height);
+        this.SetStatus(charStatusType.Dying);
+        this.isBandaged = false;
+        this.bandageWho = -1;
+        TRACE(this.self + " takes " + dmg + " hp damage, " + adjHp + " left, and is dying\n");
+        if ((invokeOptions != null) && (invokeOptions.m_supressBlitSprite & WhatSprite.DyingSprite)) {
+            invokeOptions.m_whatSpriteNeeded |= WhatSprite.DyingSprite;
+        }
+        else {
+            this.blitDyingSprite();
+        };
+    }
+
+    if (adjHp <= 0) {
+        // update stats used for monster morale
+        if (this.friendly)
+            this.IncNumFriendSlain();
+        else
+            this.IncNumMonsterSlain();
+
+        // if dead, this dude can't do anything else    
+        this.StopCasting(true, false); // also calls EndTurn()
+        this.m_iMovement = this.GetAdjMaxMovement(DEFAULT_SPELL_EFFECT_FLAGS, "Combatant HP < 0");
+    }
+    else if (dmg > 0) // cancel any pending spell casting if damage taken
+    {
+        this.StopCasting(false, canFinishCasting); // does not call EndTurn()
+    };
+
+    this.UpdateSpellForDamage(dmg);
+    return pDeathIndex;
+}
+
+COMBATANT.prototype.SetHitPoints = function (val) {
+    this.m_pCharacter.SetHitPoints(val);
+}
+
+COMBATANT.prototype.GetHitPoints = function () {
+    return this.m_pCharacter.GetHitPoints();
+}
+
+COMBATANT.prototype.UpdateSpellForDamage = function (DamageTaken) {
+    this.m_pCharacter.UpdateSpellForDamage(DamageTaken);
+};

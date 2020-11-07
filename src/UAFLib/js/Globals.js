@@ -73,6 +73,7 @@ function Globals() {
     this.NoSkillAdj = -987656789.0;
 
     this.FakeCharacter = new CHARACTER();
+    this.bogusItem = new ITEM_DATA();
 }
 
 Globals.prototype.die = function (message) {
@@ -387,4 +388,16 @@ Globals.prototype.PlayCharMiss = function (play) {
     else
         SoundMgr.StopSound(globalData.sounds.hCharMiss);
 
+}
+
+
+Globals.prototype.PlayCharHit = function(play) {
+    if ((play) && SoundMgr.PlaySoundEffects) {
+        if (!SoundMgr.ValidSound(globalData.sounds.hCharHit))
+            globalData.sounds.hCharHit = SoundMgr.LoadSound(globalData.sounds.CharHit);
+        if (!SoundMgr.PlaySound(globalData.sounds.hCharHit))
+            globalData.sounds.hCharHit = -1;
+    }
+    else
+        SoundMgr.StopSound(globalData.sounds.hCharHit);
 }
