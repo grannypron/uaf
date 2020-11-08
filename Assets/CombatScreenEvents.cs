@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 using UAFLib;
 using Unity.Mathematics;
@@ -15,99 +16,55 @@ public class CombatScreenEvents : MonoBehaviour
 
     // Screen fits about 16 blocks high by 24 wide
     // player is placed in the middle of the battlefield at 25/25
-    // I want draw them map such that the character starts in the center, my leftmost x index would be 25 - half of 24 = 13 and my topmost y index would be 25 - half of 16 = 17
-    // Each square on the grid is 40x/y  Not sure why, but it is by eyeball
 
+    public static int BlockScaleFactor = 40;          //**TODO** - Idk why
     private int PlayerScaleFactor = -1;
-    private int BlockScaleFactor = 40;          //**TODO** - Idk why
-    private int SCREEN_HORIZ_BLOCKS = 24;
-    private int SCREEN_VERT_BLOCKS = 16;
     private const String CONFIG_FILE_URL = "https://raw.githubusercontent.com/grannypron/uaf/unity/config.xml";
     private Engine jintEngine;
     private ConsoleResults setupResults;
     private bool mapPainted = false;
+    private bool librariesLoaded = false;
 
     // Start is called before the first frame update
     void Start()
     {
         PlayerScaleFactor = (int)Math.Floor(GameObject.Find("Player").GetComponent<Transform>().localScale.x);
-        jintEngine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly));
-        StartCoroutine(InitFromServer());
-    }
+        jintEngine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly, typeof(UnityEngine.Debug).Assembly));
 
-    IEnumerator InitFromServer()
-    {
-
+        /*
         UnityWebRequest configHttpReq = UnityWebRequest.Get(CONFIG_FILE_URL);
         yield return configHttpReq.SendWebRequest();
 
-        if (configHttpReq.isNetworkError || configHttpReq.isHttpError) {
+        if (configHttpReq.isNetworkError || configHttpReq.isHttpError)
+        {
             Debug.Log(configHttpReq.error);
-        } else {
+        }
+        else
+        {
             // Show results as text
             Debug.Log("Loaded config file from " + CONFIG_FILE_URL + ".  Length:" + configHttpReq.downloadHandler.text.Length);
         }
-
+        */
+        //XmlDocument configDoc = new XmlDocument();
+        //configDoc.LoadXml(configHttpReq.downloadHandler.text);
+        //IEngineLoader loader = new GitHubEngineLoader();
         XmlDocument configDoc = new XmlDocument();
-        configDoc.LoadXml(configHttpReq.downloadHandler.text);
+        configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js</setupScript></config>");
+        IEngineLoader loader = new LocalEngineLoader(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\");
 
-        String jsIndexUrl = configDoc.SelectNodes("//node()[local-name() = 'jsLibraryIndex']")[0].InnerText;
-        String setupScriptUrl = configDoc.SelectNodes("//node()[local-name() = 'setupScript']")[0].InnerText;
-
-        UnityWebRequest jsIndexReq = UnityWebRequest.Get(jsIndexUrl);
-        yield return jsIndexReq.SendWebRequest();
-
-        XmlDocument indexDoc = new XmlDocument();
-        String indexAsStr = jsIndexReq.downloadHandler.text;
-        if (indexAsStr[0] > 1000)
+        StartCoroutine(loader.loadEngine(configDoc, jintEngine, delegate(ConsoleResults setupResults)
         {
-            indexAsStr = indexAsStr.Substring(1);
-        }
-        indexDoc.LoadXml(indexAsStr);
-        XmlNodeList nodes = indexDoc.SelectNodes("//node()[local-name() = 'ItemGroup']/node()[local-name() = 'Content']/@Include");
-        List<String> jsURLs = new List<string>();
-        // Save in list to alphabetize
-        foreach (XmlNode node in nodes)
-        {
-            if (node.InnerText != null && node.InnerText.StartsWith("js\\"))
-            {
-                string jaUrl = "https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/" + node.InnerText.Replace("\\", "/");
-                jsURLs.Add(jaUrl);
-            }
-        }
+            Text txtLoading = GameObject.Find("txtLoading").GetComponent<Text>();
+            txtLoading.enabled = false;
+            this.setupResults = setupResults;
+            this.librariesLoaded = true;
+        }));
 
-        jsURLs.Sort(new CaseInsensitiveStringComparer());
-
-
-        foreach (string jsUrl in jsURLs)
-        {
-            Debug.Log("Loading " + jsUrl);
-            UnityWebRequest jsReq = UnityWebRequest.Get(jsUrl);
-            yield return jsReq.SendWebRequest();
-            String fileContents = jsReq.downloadHandler.text;
-            int lineCount = fileContents.Split('\n').Length;
-            Debug.Log(jsUrl + " loaded.  Length: " + jsReq.downloadHandler.text.Length + ".  Lines: " + lineCount);
-            jintEngine.Execute(fileContents);
-            Debug.Log(jsUrl + " executed.");
-        }
-
-        Debug.Log("Loading setup script " + setupScriptUrl);
-        UnityWebRequest setupScriptReq = UnityWebRequest.Get(setupScriptUrl);
-        yield return setupScriptReq.SendWebRequest();
-        String setupFileContents = setupScriptReq.downloadHandler.text;
-        int setupFileLineCount = setupFileContents.Split('\n').Length;
-        Debug.Log(setupScriptUrl + " loaded.  Length: " + setupScriptReq.downloadHandler.text.Length + ".  Lines: " + setupFileLineCount);
-        setupResults = new ConsoleResults();
-        jintEngine.SetValue("consoleResults", setupResults).Execute(setupFileContents);
-        Debug.Log(setupScriptUrl + " executed.");
-
-        Text txtLoading = GameObject.Find("txtLoading").GetComponent<Text>();
-        txtLoading.enabled = false;
     }
 
     private void FixedUpdate()
     {
-        if (!this.mapPainted) { 
+        if (!this.mapPainted & this.librariesLoaded) { 
             paintMap();
             this.mapPainted = true;
         }
@@ -120,7 +77,9 @@ public class CombatScreenEvents : MonoBehaviour
         Tilemap terrainTilemap = GameObject.Find("TerrainTilemap").GetComponent<Tilemap>();
         Tile groundTile = (Tile)terrainTilemap.GetTile(new Vector3Int(-30, 11, 0));
 
-        object[] mapData = (object[])setupResults.payload;
+        object[] returnData = (object[])setupResults.payload;
+        object[] characterData = (object[])returnData[0];
+        object[] mapData = (object[])returnData[1];
 
         for (int x = 0; x < mapData.Length; x++)
         {
@@ -142,6 +101,7 @@ public class CombatScreenEvents : MonoBehaviour
             }
         }
 
+        paintCharStatus(Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), characterData[2].ToString(), Int32.Parse(characterData[3].ToString()), Int32.Parse(characterData[4].ToString()), Int32.Parse(characterData[5].ToString()), Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), Int32.Parse(characterData[6].ToString()));
     }
 
     private void placePlayer(int x, int y)
@@ -188,6 +148,19 @@ public class CombatScreenEvents : MonoBehaviour
 
     }
 
+    public void playerModelMove(int[] xy)
+    {
+        jintEngine.Execute("cWarrior.MoveCombatant(" + xy[0] + ", " + xy[1] + ", false); consoleResults.payload = packageMapAndCombatantStatus(cWarrior);");
+        object[] data = (object[])this.setupResults.payload;
+        object[] characterData = (object[])data[0];
+        paintCharStatus(Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), characterData[2].ToString(), Int32.Parse(characterData[3].ToString()), Int32.Parse(characterData[4].ToString()), Int32.Parse(characterData[5].ToString()), Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), Int32.Parse(characterData[6].ToString()));
+        paintMap();
+    }
+
+    public void playerModelAttack(int idxEnemy)
+    {
+        jintEngine.Execute("var deathIndex = []; cWarrior.makeAttack(" + idxEnemy + ", 0, deathIndex);");
+    }
     string RandoMonsterID()
     {
         string[] monsters = getMonsters();
@@ -200,12 +173,16 @@ public class CombatScreenEvents : MonoBehaviour
         //"CopperDragon", "GiantCrocodile", 
     }
 
-    public class CaseInsensitiveStringComparer : IComparer<string>
+    void paintCharStatus(int x, int y, string name, int hp, int ac, int attacks, int cursorX, int cursorY, int movesLeft)
     {
-        public int Compare(string x, string y)
-        {
-            return String.Compare(x.ToLower(), y.ToLower());
-        }
+        Text txtCombatantInfo = GameObject.Find("txtCombatantInfo").GetComponent<Text>();
+        txtCombatantInfo.enabled = true;
+        txtCombatantInfo.text = name + " (0:" + x + "," + y + ")\n";
+        txtCombatantInfo.text += "HITPOINTS  " + hp + "\n";
+        txtCombatantInfo.text += "AC   " + ac + "\n";
+        txtCombatantInfo.text += "Attacks: " + attacks + "\n";
+        txtCombatantInfo.text += "Cursor: " + x + ", " + y + "\n";
+        txtCombatantInfo.text += "Moves Left: " + movesLeft + "\n";
     }
 
 }

@@ -1,6 +1,9 @@
 
+UnityEngine = importNamespace("UnityEngine");  // For Jint to access C# library
 // Override the logging function for now because System.Console is not available in WebGL - should change to use Unity.Debug
-Globals.debug = function (msg) { }
+Globals.debug = function (msg) {
+    UnityEngine.Debug.Log(msg);
+};
 
 function Deserialize(filename, debug) {
 var character = new CHARACTER();
@@ -71,39 +74,75 @@ Undead = none
 }
 
 function loadClasses() {
-var data = new CLASS_DATA();
-data.m_name = "Fighter";
-data.m_baseclasses.baseclasses.push("fighter");
-classData.AddClass(data);
+    var data = new CLASS_DATA();
+    data.m_name = "Fighter";
+    data.m_baseclasses.baseclasses.push("fighter");
+    classData.AddClass(data);
 
-data2 = new CLASS_DATA();
-data2.m_name = "Thief";
-data2.m_baseclasses.baseclasses.push("thief");
-classData.AddClass(data2);
+    data2 = new CLASS_DATA();
+    data2.m_name = "Thief";
+    data2.m_baseclasses.baseclasses.push("thief");
+    classData.AddClass(data2);
 }
 
 function loadAbilities() {
-loadAbility("Strength");
-loadAbility("Intelligence");
-loadAbility("Wisdom");
-loadAbility("Dexterity");
-loadAbility("Charisma");
+    loadAbility("Strength");
+    loadAbility("Intelligence");
+    loadAbility("Wisdom");
+    loadAbility("Dexterity");
+    loadAbility("Charisma");
 }
 
 function loadAbility(abilityName) {
-var data = new ABILITY_DATA();
-data.m_name = abilityName;
-data.m_abbreviation = abilityName.substr(0, 3).toUpperCase();
-data.m_roll.m_Text = ""
-abilityData.AddAbility(data);
+    var data = new ABILITY_DATA();
+    data.m_name = abilityName;
+    data.m_abbreviation = abilityName.substr(0, 3).toUpperCase();
+    data.m_roll.m_Text = ""
+    abilityData.AddAbility(data);
+}
+
+function packageCombatantStatus(c) {
+    var data = [];
+    data[0] = c.x;
+    data[1] = c.y;
+    data[2] = c.GetName();
+    data[3] = c.GetHitPoints();
+    data[4] = c.GetAdjAC();
+    data[5] = c.GetNbrAttacks();
+    data[6] = c.m_pCharacter.GetMaxMovement() - c.m_iMovement;
+    return data;
+}
+
+function packageMapAndCombatantStatus(c) {
+
+    var dataStr = "";
+    var mapData = [];
+    for (i = 0; i < Drawtile.MAX_TERRAIN_HEIGHT; i++) {
+        mapData[i] = [];
+        for (j = 0; j < Drawtile.MAX_TERRAIN_WIDTH; j++) {
+            dataStr += Drawtile.terrain[i][j].tileIndex + ",";
+            mapData[i][j] = Drawtile.terrain[i][j].tileIndex;
+        }
+        dataStr += "]\n";
+    }
+
+
+    //Globals.debug(dataStr);
+
+    var data = [];
+    data[0] = packageCombatantStatus(c);
+    data[1] = mapData;
+    return data;
 }
 
 
 
 var Warrior = new CHARACTER();
+Warrior.name = "Hardest_Ken"
 Warrior.classID = "Fighter";
 Warrior.hitPoints = 10;
 Warrior.maxHitPoints = 20;
+Warrior.maxMovement = 20;
 Warrior.age = 20;
 Warrior.maxAge = 100;
 Warrior.alignment = 0;
@@ -115,6 +154,9 @@ Warrior.encumbrance = 10;
 
 var cWarrior = new COMBATANT();
 cWarrior.m_pCharacter = Warrior;
+cWarrior.m_pCharacter.m_pCombatant = cWarrior;
+cWarrior.self = 0;
+
 
 //cWarrior.StartAttack(1);
 
@@ -127,7 +169,7 @@ combatEventData.monsters = new MONSTER_EVENT_DATA();
 var monsterEvent = new MONSTER_EVENT();
 monsterEvent.UseQty = MONSTER_EVENT.meUseQty;
 monsterEvent.UseQty = MONSTER_EVENT.meUsePercent;
-monsterEvent.qtyDiceSides = 10;
+monsterEvent.qtyDiceSides = 6;
 monsterEvent.qtyDiceQty = 1;
 monsterEvent.qtyBonus = 2;
 monsterEvent.qty = 10;
@@ -152,21 +194,5 @@ combatEventData.m_UseOutdoorMap = false; // only outdoor stub is in place right 
 combatEventData.direction = eventDirType.North;
 combatData.InitCombatData(combatEventData);
 
-var dataStr = "";
-var data = [];
-for (i = 0; i < Drawtile.MAX_TERRAIN_HEIGHT; i++) {
-    dataStr += "[";
-    data[i] = [];
-    for (j = 0; j < Drawtile.MAX_TERRAIN_WIDTH; j++) {
-        dataStr += Drawtile.terrain[i][j].tileIndex + ",";
-        data[i][j] = Drawtile.terrain[i][j].tileIndex;
-    }
-    dataStr += "]\n";
-}
 
-Globals.debug(dataStr);
-
-
-//consoleResults.payload = dataStr;
-consoleResults.payload = data;
-
+consoleResults.payload = packageMapAndCombatantStatus(cWarrior);
