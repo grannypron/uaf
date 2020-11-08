@@ -2479,7 +2479,7 @@ CHARACTER.prototype.GetContextActor = function (pActor) {               // PORT 
     {
         return this.m_pCombatant.GetContextActor();
     };
-    this.pActor.Clear();
+    pActor.Clear();
 
     if (this.IsPartyMember()) {
         pActor.SetPartySrc();

@@ -856,7 +856,7 @@ Drawtile.prototype.placeCombatant = function (x, y, dude, w, h) {
     var i, j;
 
     if ((w <= 0) || (h <= 0)) {
-         if (!DEBUG_STRINGS.AlreadyNoted("BWH01")) {
+         if (!debugStrings.AlreadyNoted("BWH01")) {
             Globals.WriteDebugString("Bogus w,h for icon in placeCombatant()\n");
             Globals.WriteDebugString("Combatant's name is " + combatData.GetCombatant(dude).GetName() + "\n");
         }
@@ -1031,6 +1031,9 @@ Drawtile.prototype.ForceMapToMoveAlong = function(x, y, dir, MoveSize) {
     return force;
 }
 
+Drawtile.prototype.moveMap = function(dir, MoveSize) {
+    UIEventManager.centerMap();
+}
 
 Drawtile.prototype.Distance6 = function(attacker, sX, sY, attackee, dX, dY) {
     var tmpSrcX = sX, tmpSrcY = sY;

@@ -599,6 +599,7 @@ COMBATANT.prototype.GetMorale = function () {
 }
 
 COMBATANT.prototype.MoveCombatant = function(newX, newY, allowZeroMoveAttack) {
+
     var dude = 0;
     var isUpdate = false;
     var moveData = new MOVE_DATA();
@@ -648,7 +649,6 @@ COMBATANT.prototype.MoveCombatant = function(newX, newY, allowZeroMoveAttack) {
                 // if moving away from an enemy that has no target,
                 // the enemy gets to make an attack at this dude's
                 // retreating backside.
-
                 var oldX = 0, oldY = 0;
 
                 this.PlayCombatMove();
@@ -670,6 +670,8 @@ COMBATANT.prototype.MoveCombatant = function(newX, newY, allowZeroMoveAttack) {
                 this.x = newX;
                 this.y = newY;
 
+                UIEventManager.CombatantMoved(newX, newY, this.width, this.height);
+
                 if (this.CheckOpponentFreeAttack(oldX, oldY, newX, newY)) {
           // This guys turn isn't over, but once the free
           // attacks are over, he will not start out in CS_Move.
@@ -685,6 +687,7 @@ COMBATANT.prototype.MoveCombatant = function(newX, newY, allowZeroMoveAttack) {
                     var hookParameters = new HOOK_PARAMETERS();
                     var scriptContext = new SCRIPT_CONTEXT();
                     actor = this.GetContextActor();
+
                     RunTimeIF.SetCharContext(actor);
 
                     scriptContext.SetCombatantContext(this);
@@ -1787,7 +1790,7 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
                     hookParameters[7] = tempCOMBATANT.OnAuto(false) ? "Y" : "N";
                     hookParameters[8] = parseInt(tempCOMBATANT.GetNbrAttacks());
                     scriptContext.SetAttackerContext(tempCOMBATANT);
-                    scriptContext.SetTargetContext(this);
+                    scriptContext.SetTargetContextCombatant(this);
 
                     {
                         var freeAttackCount = 0;
