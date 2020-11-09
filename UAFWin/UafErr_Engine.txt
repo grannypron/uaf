@@ -1,0 +1,33 @@
+Opened Error Log on Mon Nov  9 14:39:10 2020
+00844931 8669489 0000000000000000Engine Version: 5.2600000000
+00844934      3 0000000000000000 Working directory = C:\Users\Shadow\Desktop\uaf.git\uaf_00011\UAFWin\
+00844934      0 0000000000000000 Did not find config file at: "C:\Users\Shadow\Desktop\uaf.git\uaf_00011\UAFWin\Data\config.txt"
+00844934      0 0000000000000000 Unable to locate config.txt file
+00844934      0 0000000000000000 (MB) Config.txt Error: Unable to find and load config.txt file
+
+00844e63   1327 0000000000000000$Failed to load config.txt file in InitInstance()
+00844e63      0 0000000000000000 CreateEx(0,0,640,480)
+00844e78     21 0000000000000000 CreateEx ClientRect = 0 0 1366 768
+00844f89    273 0000000000000000 OS:  Workstation version 6.2  (Build 9200)
+00844f89      0 0000000000000000 DX: DirectX 8
+00844f8a      1 0000000000000000 IE: IE version 3 or less
+00844f8a      0 0000000000000000 InitGame ClientRect = 0 0 1366 768
+00844f8a      0 0000000000000000 Enter InitFullScreen
+00844f8b      1 0000000000000000 Creating pScreen
+008451f5    618 0000000000000000 Checking SysMem Flag
+008451f5      0 0000000000000000 Checking video modes
+008451f5      0 0000000000000000 Checking 640 x 480 x 24
+00845304    271 0000000000000000 Stepping down bit-depth to 16 bits
+00845304      0 0000000000000000 Checking 640 x 480 x 16
+00845371    109 0000000000000000 Using video mode 640 x 480 x 16
+00845371      0 0000000000000000 Creating full screen(2229414,640,480,16)
+0084553d    460 0000000000000000 screen created ok
+0084553d      0 0000000000000000 InitGraphics fullscreen at 640 x 480 x 16
+0084553d      0 0000000000000000 Init WallSlot image cache with size 48
+0084553d      0 0000000000000000 Init BgSlot image cache with size 32
+0084553d      0 0000000000000000 *** Error, sound lib file 'C:\Users\Shadow\Desktop\uaf.git\uaf_00011\UAFWin\Data\bass.dll' does not exist - sound disabled
+0084553d      0 0000000000000000 Failed to locate/load BASS DLL
+0084553d      0 0000000000000000*C:\Users\Shadow\Desktop\uaf.git\uaf_00011\UAFWin\Data\game.dat does not exist
+0084553d      0 0000000000000000 Creating fonts from SYSTEM
+008455a7    106 000000000000001e Can't find file in AddSurface(Credits.png)
+008455a7      0 000000000000001e:Failed to load fade-in image: 'Credits.png'
