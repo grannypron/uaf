@@ -13,7 +13,7 @@ using UnityEngine.Networking;
 
 public class GitHubEngineLoader : MonoBehaviour, IEngineLoader
 {
-    public IEnumerator loadEngine(XmlDocument configDoc, Engine engine, InitComplete initComplete)
+    public IEnumerator loadEngine(XmlDocument configDoc, Engine engine, UnityUAFEventManager unityUAFEventManager, InitComplete initComplete)
     {
 
         String jsIndexUrl = configDoc.SelectNodes("//node()[local-name() = 'jsLibraryIndex']")[0].InnerText;

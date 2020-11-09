@@ -19,7 +19,7 @@ public class LocalEngineLoader : IEngineLoader
 
     LocalEngineLoader() { }
 
-    public IEnumerator loadEngine(XmlDocument configDoc, Engine engine, InitComplete initComplete)
+    public IEnumerator loadEngine(XmlDocument configDoc, Engine engine, UnityUAFEventManager unityUAFEventManager, InitComplete initComplete)
     {
 
         String jsIndexUrl = configDoc.SelectNodes("//node()[local-name() = 'jsLibraryIndex']")[0].InnerText;
@@ -31,7 +31,7 @@ public class LocalEngineLoader : IEngineLoader
             setupFileContents = new StreamReader(fs).ReadToEnd();
         }
         ConsoleResults setupResults = new ConsoleResults();
-        engine.SetValue("consoleResults", setupResults).Execute(setupFileContents);
+        engine.SetValue("consoleResults", setupResults).SetValue("unityUAFEventManager", unityUAFEventManager).Execute(setupFileContents);
         initComplete.Invoke(setupResults);
         return null;
     }

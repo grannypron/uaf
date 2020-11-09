@@ -27,18 +27,7 @@ public class CharacterMovement : MonoBehaviour
 
     public void movePlayer(int xDir, int yDir)
     {
-        float moveTime = 0.1f;
-        float inverseMoveTime = 1f / moveTime;
-        Rigidbody2D player = GetComponent<Rigidbody2D>();
-        Vector2 start = transform.position;
-        Vector2 end = start + new Vector2(CombatScreenEvents.BlockScaleFactor * (xDir), CombatScreenEvents.BlockScaleFactor * (yDir));
-        Vector3 newPosition = Vector3.MoveTowards(player.position, end, 20);
-        player.MovePosition(newPosition);
-        // Update the JS model
-        int mapX = (int)Math.Round(this.GetComponent<Transform>().localPosition.x / CombatScreenEvents.BlockScaleFactor) + 25;
-        int mapY = (int) Math.Round(this.GetComponent<Transform>().localPosition.y / CombatScreenEvents.BlockScaleFactor) + 25;
-        GameObject.Find("EventSystem").SendMessage("playerModelMove", new int[] { mapX, mapY });
-
+        GameObject.Find("EventSystem").SendMessage("playerModelMove", new int[] { xDir, yDir });
     }
 
 }

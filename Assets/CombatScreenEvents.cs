@@ -11,7 +11,7 @@ using UnityEngine.Networking;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
-public class CombatScreenEvents : MonoBehaviour
+public class CombatScreenEvents : MonoBehaviour, IUIListener
 {
 
     // Screen fits about 16 blocks high by 24 wide
@@ -24,6 +24,7 @@ public class CombatScreenEvents : MonoBehaviour
     private ConsoleResults setupResults;
     private bool mapPainted = false;
     private bool librariesLoaded = false;
+    private Dictionary<int, String> monsters = new Dictionary<int, string>();
 
     // Start is called before the first frame update
     void Start()
@@ -48,11 +49,17 @@ public class CombatScreenEvents : MonoBehaviour
         //XmlDocument configDoc = new XmlDocument();
         //configDoc.LoadXml(configHttpReq.downloadHandler.text);
         //IEngineLoader loader = new GitHubEngineLoader();
+        //Text txtCombatMessage = GameObject.Find("txtCombatMessage").GetComponent<Text>();
+        //UnityUAFEventManager unityUAFEventManager = new UnityUAFEventManager(txtCombatMessage);
+
         XmlDocument configDoc = new XmlDocument();
         configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js</setupScript></config>");
         IEngineLoader loader = new LocalEngineLoader(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\");
 
-        StartCoroutine(loader.loadEngine(configDoc, jintEngine, delegate(ConsoleResults setupResults)
+        Text txtCombatMessage = GameObject.Find("txtCombatMessage").GetComponent<Text>();
+        UnityUAFEventManager unityUAFEventManager = new UnityUAFEventManager(this);
+
+        StartCoroutine(loader.loadEngine(configDoc, jintEngine, unityUAFEventManager, delegate (ConsoleResults setupResults)
         {
             Text txtLoading = GameObject.Find("txtLoading").GetComponent<Text>();
             txtLoading.enabled = false;
@@ -81,12 +88,12 @@ public class CombatScreenEvents : MonoBehaviour
         object[] characterData = (object[])returnData[0];
         object[] mapData = (object[])returnData[1];
 
-        for (int x = 0; x < mapData.Length; x++)
+        for (int y = 0; y < mapData.Length; y++)
         {
-            object[] column = (object[])mapData[x];
-            for (int y = 0; y < column.Length; y++)
+            object[] column = (object[])mapData[y];
+            for (int x = 0; x < column.Length; x++)
             {
-                int cellValue = System.Int32.Parse(((object)column[y]).ToString());
+                int cellValue = System.Int32.Parse(((object)column[x]).ToString());
                 int[] coords = new int[] { x , y };
                 if (cellValue < 0)
                 {
@@ -96,7 +103,13 @@ public class CombatScreenEvents : MonoBehaviour
                     placePlayer(coords[0], coords[1]);
                 } else if (cellValue > 0)
                 {
-                    placeMonster(coords[0], coords[1], "monster" + cellValue, RandoMonsterID());
+                    if (!monsters.ContainsKey(cellValue))
+                    {
+                        string monsterID = RandoMonsterID();
+                        newMonster(cellValue, monsterID);
+                        monsters.Add(cellValue, monsterID);
+                    }
+                    placeMonster(coords[0], coords[1], cellValue);
                 }
             }
         }
@@ -115,22 +128,28 @@ public class CombatScreenEvents : MonoBehaviour
         playerTransform.localPosition = new Vector3Int(pos.x, pos.y, -2);
     }
 
-    private void placeMonster(int x, int y, string id, string monsterType)
+    private void newMonster(int id, string monsterType)
     {
         Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         GameObject monsterGO = new GameObject("Monster" + id);
         SpriteRenderer renderer = monsterGO.AddComponent<SpriteRenderer>();
         Tile monsterTile = Resources.Load<Tile>("Sprites/Monsters/" + monsterType);
-        renderer.sprite = monsterTile.sprite;
-        Rigidbody2D monsterR2D = monsterGO.AddComponent<Rigidbody2D>();
         Transform monsterTransform = monsterGO.GetComponent<Transform>();
-        BoxCollider2D boxCollider2D = monsterGO.AddComponent<BoxCollider2D>();
         monsterTransform.parent = canvas.transform;
         monsterTransform.localScale = new Vector3Int(PlayerScaleFactor, PlayerScaleFactor, 1);
-        Vector2Int pos = gridToScreen(new Vector2Int(x, y));
-        monsterTransform.localPosition = new Vector3Int(pos.x, pos.y, -2);
+        renderer.sprite = monsterTile.sprite;
+        Rigidbody2D monsterR2D = monsterGO.AddComponent<Rigidbody2D>();
+        BoxCollider2D boxCollider2D = monsterGO.AddComponent<BoxCollider2D>();
         monsterR2D.isKinematic = true;
         monsterR2D.mass = 5;
+    }
+
+    void placeMonster(int x, int y, int id) {
+        Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+        GameObject monsterGO = GameObject.Find("Monster" + id);
+        Vector2Int pos = gridToScreen(new Vector2Int(x, y));
+        Transform monsterTransform = monsterGO.GetComponent<Transform>();
+        monsterTransform.localPosition = new Vector3Int(pos.x, pos.y, -2);
     }
 
     private Vector2Int gridToScreen(Vector2Int v)
@@ -150,17 +169,13 @@ public class CombatScreenEvents : MonoBehaviour
 
     public void playerModelMove(int[] xy)
     {
-        jintEngine.Execute("cWarrior.MoveCombatant(" + xy[0] + ", " + xy[1] + ", false); consoleResults.payload = packageMapAndCombatantStatus(cWarrior);");
+        jintEngine.Execute("cWarrior.MoveCombatant(cWarrior.x + " + xy[0] + ", cWarrior.y + " + xy[1] + ", false); consoleResults.payload = packageMapAndCombatantStatus(combatData.m_aCombatants[0]);");
         object[] data = (object[])this.setupResults.payload;
         object[] characterData = (object[])data[0];
-        paintCharStatus(Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), characterData[2].ToString(), Int32.Parse(characterData[3].ToString()), Int32.Parse(characterData[4].ToString()), Int32.Parse(characterData[5].ToString()), Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), Int32.Parse(characterData[6].ToString()));
         paintMap();
     }
 
-    public void playerModelAttack(int idxEnemy)
-    {
-        jintEngine.Execute("var deathIndex = []; cWarrior.makeAttack(" + idxEnemy + ", 0, deathIndex);");
-    }
+
     string RandoMonsterID()
     {
         string[] monsters = getMonsters();
@@ -183,6 +198,26 @@ public class CombatScreenEvents : MonoBehaviour
         txtCombatantInfo.text += "Attacks: " + attacks + "\n";
         txtCombatantInfo.text += "Cursor: " + x + ", " + y + "\n";
         txtCombatantInfo.text += "Moves Left: " + movesLeft + "\n";
+    }
+
+    public void OnEvent(string eventName, object data)
+    {
+        ;
+        switch (eventName) {
+            case "UpdateCombatMessage":
+               GameObject.Find("txtCombatMessage").GetComponent<Text>().text = (string)data;
+                break;
+            case "CombatantMoved":
+                object[] aMove = (object[])data;
+                paintCharStatus((int)aMove[0], (int)aMove[1], (string)aMove[2], (int)aMove[3], (int)aMove[4], (int)aMove[5], (int)aMove[0], (int)aMove[1], (int)aMove[6]);
+                break;
+            case "StartAttack":
+                int[] aAttack = (int[])data;
+                GameObject.Find("txtCombatMessage").GetComponent<Text>().text = "Combatant " + aAttack[0] + " attacks Combatant " + aAttack[1];
+                break;
+            default:
+                break;
+        }
     }
 
 }

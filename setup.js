@@ -5,6 +5,20 @@ Globals.debug = function (msg) {
     UnityEngine.Debug.Log(msg);
 };
 
+UIEventManager.UpdateCombatMessage = function (message) {
+    unityUAFEventManager.UpdateCombatMessage(message);
+}
+
+UIEventManager.CombatantMoved = function (x, y, self, w, h) {
+    var c = combatData.m_aCombatants[self];
+    unityUAFEventManager.CombatantMoved(x, y, c.GetName(), c.GetHitPoints(), c.GetAdjAC(), c.GetNbrAttacks(), c.m_pCharacter.GetMaxMovement() - c.m_iMovement);
+}
+
+UIEventManager.StartAttack = function (attacker, attacked) {
+    unityUAFEventManager.StartAttack(attacker, attacked);
+}
+
+
 function Deserialize(filename, debug) {
 var character = new CHARACTER();
 var path = "C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\Tests\\" + filename;
@@ -140,6 +154,7 @@ function packageMapAndCombatantStatus(c) {
 var Warrior = new CHARACTER();
 Warrior.name = "Hardest_Ken"
 Warrior.classID = "Fighter";
+Warrior.SetStatus(charStatusType.Okay);
 Warrior.hitPoints = 10;
 Warrior.maxHitPoints = 20;
 Warrior.maxMovement = 20;
@@ -147,6 +162,7 @@ Warrior.age = 20;
 Warrior.maxAge = 100;
 Warrior.alignment = 0;
 Warrior.encumbrance = 10;
+Warrior.SetMaxMovement(2000);
 
 
 
@@ -154,7 +170,6 @@ Warrior.encumbrance = 10;
 
 var cWarrior = new COMBATANT();
 cWarrior.m_pCharacter = Warrior;
-cWarrior.m_pCharacter.m_pCombatant = cWarrior;
 cWarrior.self = 0;
 
 
@@ -194,5 +209,7 @@ combatEventData.m_UseOutdoorMap = false; // only outdoor stub is in place right 
 combatEventData.direction = eventDirType.North;
 combatData.InitCombatData(combatEventData);
 
+cWarrior = combatData.m_aCombatants[0];
+Globals.debug("cWarrior.GetName(): " + cWarrior.GetName() + " / " + cWarrior.self);
 
 consoleResults.payload = packageMapAndCombatantStatus(cWarrior);

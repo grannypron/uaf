@@ -10,6 +10,6 @@ using UAFLib;
 public delegate void InitComplete(ConsoleResults results);
 interface IEngineLoader
 {
-    IEnumerator loadEngine(XmlDocument config, Jint.Engine engine, InitComplete complete);
+    IEnumerator loadEngine(XmlDocument config, Jint.Engine engine, UnityUAFEventManager unityUAFEventManager, InitComplete complete);
 }
 
