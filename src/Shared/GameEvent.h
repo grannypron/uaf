@@ -3522,9 +3522,20 @@ private:
 
 class EXIT_DATA : public SPLASH_DATA
 {
+    LONGLONG splashScreenStart;
 public:
-    EXIT_DATA() : SPLASH_DATA(false) {};
+    EXIT_DATA(void) : SPLASH_DATA(false) { event = CONTROL_Exit; splashScreenStart = 0; }
+    virtual ~EXIT_DATA() { }
+    bool OnIdle(void);
+    void OnDraw(void) { }
     void OnInitialEvent(void);
+    void OnKeypress(key_code key, char ascii);
+    int  OnSaveGame(unsigned int* saveArea);
+    int  OnLoadGame(unsigned int* saveArea);
+    unsigned int OnTaskMessage(TASKMESSAGE msg, TASKSTATE taskState);
+#ifdef TASKTRACE
+    const char* GetEventTypeName(void) { return "EXIT_DATA"; };
+#endif
 };
 
 

@@ -1716,7 +1716,13 @@ void DO_NOTHING_EVENT::OnInitialEvent(void)
   //ClearFormattedText(textData);
 }
 
-
+void EXIT_DATA::OnKeypress(key_code key, char ascii)
+{
+    GraphicsMgr.FadeToBlack();
+    SignalShutdown();
+    //gpdlCleanup();
+    ExitSignaled = 1;
+}
 
 void EXIT_DATA::OnInitialEvent(void)
 {
@@ -1724,6 +1730,33 @@ void EXIT_DATA::OnInitialEvent(void)
     SPLASH_DATA::OnInitialEvent();
 }
 
+bool EXIT_DATA::OnIdle(void)
+{
+    if (ExitSignaled) return true;
+    LONGLONG currTime = virtualGameTime;//timeGetTime();
+    if (((currTime - splashScreenStart) >= 7000)
+        || (currTime < splashScreenStart)) // rollover
+    {
+        simulatedKeyQueue.PushKey(VK_RETURN);
+    }
+    return true;  // Wait for input.  There should be none!  The game is over.
+}
+
+int EXIT_DATA::OnSaveGame(unsigned int* saveArea)
+{
+    return 0; // Nothing needs to be saved.
+}
+
+int EXIT_DATA::OnLoadGame(unsigned int* saveArea)
+{
+    return 0;
+}
+
+unsigned int EXIT_DATA::OnTaskMessage(TASKMESSAGE msg, TASKSTATE taskState)
+{
+    // this one stays put even after a teleport msg
+    return 0;
+}
 
 ///////////////////////////////////////////////////////////////START_MENU_DATA
 void START_MENU_DATA::OnKeypress(key_code key, char ascii)

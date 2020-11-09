@@ -8132,6 +8132,13 @@ int CLASS_DATA::Serialize(CAR &car)
     {
       m_startingEquipment.Serialize(car, globalData.version);
     };
+    // Fix for empty starting equipment.  If equipment is specified, assume that there should be at least 1
+    POSITION pos = m_startingEquipment.GetHeadPosition();
+    while (pos != NULL) {
+        ITEM i = m_startingEquipment.GetNext(pos);
+        if (i.qty == 0)
+            m_startingEquipment.SetQty(m_startingEquipment.GetListKeyByItemName(i.itemID), 1);
+    }
 #ifdef UAFEDITOR
     if (intVer < 3)
     {
