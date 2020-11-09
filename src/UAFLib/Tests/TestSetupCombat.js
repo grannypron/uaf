@@ -82,6 +82,7 @@ function loadAbility(abilityName) {
 
 
 var Warrior = Deserialize("Warrior.chr");
+Warrior.SetStatus(charStatusType.Okay);
 var Rogue = Deserialize("Rogue.chr");
 
 //var cWarrior = new COMBATANT();

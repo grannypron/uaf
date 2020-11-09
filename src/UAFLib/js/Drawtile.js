@@ -868,7 +868,6 @@ Drawtile.prototype.placeCombatant = function (x, y, dude, w, h) {
                 this.terrain[y + i][x + j].tileIndex = dude;
         }
     }
-    UIEventManager.CombatantMoved(x, y, dude, w, h);
 }
 
 

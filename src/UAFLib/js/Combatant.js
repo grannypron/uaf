@@ -227,6 +227,7 @@ COMBATANT.prototype.StartAttack = function(targ, additionalAttacks) {
     this.StopCasting(false, false);
     Drawtile.EnsureVisibleTargetTargetForceCenter(targ, false);   // PORT NOTE:  Only one parameter provided in this call.  I guess C++ provides default parmeter values, idk
     this.continueAttack = true;
+    UIEventManager.StartAttack(this.self, targ);
     return true;
 }
 
@@ -608,7 +609,7 @@ COMBATANT.prototype.MoveCombatant = function(newX, newY, allowZeroMoveAttack) {
         return false;
 
     if (this.GetType() == MONSTER_TYPE) {
-        if (this.GetConfigMonsterNoMove())
+        if (Globals.GetConfigMonsterNoMove())
             return false;
     }
 
@@ -670,7 +671,7 @@ COMBATANT.prototype.MoveCombatant = function(newX, newY, allowZeroMoveAttack) {
                 this.x = newX;
                 this.y = newY;
 
-                UIEventManager.CombatantMoved(newX, newY, this.width, this.height);
+                UIEventManager.CombatantMoved(newX, newY, this.self, this.width, this.height);
 
                 if (this.CheckOpponentFreeAttack(oldX, oldY, newX, newY)) {
           // This guys turn isn't over, but once the free
@@ -2350,6 +2351,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                     else {
                         DispText.CombatMsg = damageComputation.Message();
                     };
+                    UIEventManager.UpdateCombatMessage();
                 }
             };
             // Condition added 20110413 PRS......

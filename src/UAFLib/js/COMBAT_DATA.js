@@ -345,7 +345,7 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
             // Make sure they point at each other.
             pSaveCharPointer.m_pCombatant = this.m_aCombatants[count];
             this.m_aCombatants[count].m_pCharacter = pSaveCharPointer;
-            Globals.TRACE("Start Data for combatant " + count + ": self " +this.m_aCombatants[count].self + ", x " + this.m_aCombatants[count].x + ", y " + this.m_aCombatants[count].y + ", f " + this.m_aCombatants[count].GetIsFriendly() + "\n",);
+            Globals.TRACE("Start Data for combatant " + count + ": self " + this.m_aCombatants[count].self + ", x " + this.m_aCombatants[count].x + ", y " + this.m_aCombatants[count].y + ", f " + this.m_aCombatants[count].GetIsFriendly() + "\n",);
             count++;
         };
         if (Globals.logDebuggingInfo) {
@@ -817,6 +817,7 @@ COMBAT_DATA.prototype.AddMonstersToCombatants = function () {
         {
             temp = new COMBATANT();    // PORT NOTE:  I don't know how this was only temp.Clear() here, but it was.  Should have had multiple copies of the same combatant object in the m_aCombatants array...
             temp.self = this.m_iNumCombatants; // init relies on self index                           
+            Globals.debug("----AddMonstersToCombatants: this.m_iNumCombatants: " + this.m_iNumCombatants);
             this.m_aCombatants[this.m_iNumCombatants] = temp;                                         
             pCombatant = this.m_aCombatants[this.m_iNumCombatants];
             this.m_iNumCombatants++;                                                                  
