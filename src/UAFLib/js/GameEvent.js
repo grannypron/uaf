@@ -1,5 +1,5 @@
 function GameEvent() {
-    this.event = eventType.getByNumber(0);
+    this.event = 0;
     this.id = 0;  //DWORD
     this.x = 0;
     this.y = 0;
@@ -16,7 +16,7 @@ function GameEvent() {
     this.timerID = 0;   //UINT
 
     //BOOL IsGlobal; // member of level events, or global events?
-    this.m_source = EventSourceType.getByNumber(0);
+    this.m_source = 0;
     this.event_asl = new A_ASLENTRY_L();
     this.temp_asl = new A_ASLENTRY_L();
 }

@@ -82,6 +82,7 @@
     <Content Include="js\ACTIVE_SPELL_LIST.js" />
     <Content Include="js\BASECLASS_LIST.js" />
     <Content Include="js\interop\UIEventManager.js" />
+    <Content Include="js\MonsterImmunityType.js" />
     <Content Include="js\spellDurationType.js" />
     <Content Include="js\WhatSprite.js" />
     <Content Include="js\DamageComputation.js" />
@@ -217,10 +218,12 @@
     <Content Include="js\CHARACTER_ID.js" />
     <Content Include="SpecialAbilities.xml" />
     <Content Include="js\DICEPLUS.js" />
+    <Content Include="Tests\TestCombatMovementAttack.js" />
     <Content Include="Tests\TestRollDice.js" />
     <Content Include="Tests\TestLoadSAs.js" />
     <Content Include="Tests\DemoCombat.js" />
     <Content Include="Tests\TestFreeAttacks.js" />
+    <Content Include="Tests\TestKill.js" />
     <Content Include="Tests\TestSimpleAttack.js" />
     <Content Include="Tests\TestSimpleCombatMovement.js" />
     <Content Include="Tests\TestSetupCombat.js" />
@@ -232,6 +235,7 @@
     <Content Include="Tests\TestCharacterSerialize.js" />
     <Content Include="js\aaaaa_UAFUtil.js" />
     <Content Include="js\CHARACTER.js" />
+    <Content Include="Tests\TestEntityType.js" />
     <Content Include="todo.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

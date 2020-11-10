@@ -2,7 +2,7 @@
     this.m_prevScriptContext = null;
     this.m_prevScriptContext = SPECAB.pScriptContext;
     this.pScriptContext = this;
-    this.scriptSourceType = SCRIPT_SOURCE_TYPE.getByNumber(0);   // eg: CHARACTER or SPELL or CLASS or EVENT
+    this.scriptSourceType = 0;   // eg: CHARACTER or SPELL or CLASS or EVENT
     this.sourceName = "";            // eg: if sourcetype implies a named Special Ability
     //        then SA name: "George" or "Heal"
     //

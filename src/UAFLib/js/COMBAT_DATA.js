@@ -2,7 +2,7 @@
 function COMBAT_DATA() {
 
     this.m_pEvent = null;
-    this.monsterDistance = eventDistType.getByNumber(0); // Initially  pEvent->distance.       // PORT NOTE: Defaults to 0
+    this.monsterDistance = 0; // Initially  pEvent->distance.       // PORT NOTE: Defaults to 0
     // Reduced until some monsters are properly placed         
 
     this.m_hCharDeathSound = 0;
@@ -21,8 +21,8 @@ function COMBAT_DATA() {
     this.m_sRedirectedSpellMessage = "";
     this.m_sSpellEffectMessage = "";
 
-    this.m_eUndeadTurnModifier = eventTurnUndeadModType.getByNumber(0);
-    this.m_eCombatVictor = combatVictorType.getByNumber(0);
+    this.m_eUndeadTurnModifier = 0;
+    this.m_eCombatVictor = 0;
 
     this.m_iMoveToX = 0; this.m_iMoveToY = 0;
     this.m_iStartTerrainX = 0; this.m_iStartTerrainY = 0;
@@ -35,7 +35,7 @@ function COMBAT_DATA() {
     this.m_iCurrTurn = 0;
     this.m_iAimPos = 0;
 
-    this.m_eSurprise = eventSurpriseType.getByNumber(0);
+    this.m_eSurprise = 0;
 
     this.m_iActiveScripter = 0;
 
@@ -752,10 +752,12 @@ COMBAT_DATA.prototype.AddCombatants = function () {
 
 COMBAT_DATA.prototype.AddCharsToCombatants = function() {
     var temp = new COMBATANT();
-
+    Globals.debug("COMBAT_DATA.prototype.AddCharsToCombatants - 1");
     for (i = 0; i < party.numCharacters; i++)
     {
         var stype = party.characters[i].GetAdjStatus();
+        Globals.debug("COMBAT_DATA.prototype.AddCharsToCombatants - " + stype + " / " + party.characters[i].status);
+        Globals.debug("COMBAT_DATA.prototype.AddCharsToCombatants - " + party.characters[i].GetAllowInCombat());
         if (((stype == charStatusType.Okay) || (stype == charStatusType.Dying))
             && (party.characters[i].GetAllowInCombat())) {
             temp = new COMBATANT();   // PORT NOTE:  I don't know how this was only temp.Clear() here, but it was.  Should have had multiple copies of the same combatant object in the m_aCombatants array...
@@ -817,7 +819,6 @@ COMBAT_DATA.prototype.AddMonstersToCombatants = function () {
         {
             temp = new COMBATANT();    // PORT NOTE:  I don't know how this was only temp.Clear() here, but it was.  Should have had multiple copies of the same combatant object in the m_aCombatants array...
             temp.self = this.m_iNumCombatants; // init relies on self index                           
-            Globals.debug("----AddMonstersToCombatants: this.m_iNumCombatants: " + this.m_iNumCombatants);
             this.m_aCombatants[this.m_iNumCombatants] = temp;                                         
             pCombatant = this.m_aCombatants[this.m_iNumCombatants];
             this.m_iNumCombatants++;                                                                  
@@ -1484,7 +1485,7 @@ COMBAT_DATA.prototype.getNextMonsterCombatDirection = function(i, reset) {
     if (COMBAT_DATA_currDir == null) { COMBAT_DATA_currDir = eventDirType.Any; }  // PORT NOTE:  Initializing static - could not do it in declaration outside of this method because eventDirType is not defined yet
     var currDir = COMBAT_DATA_currDir;
 
-    lastDir = eventDirType.getByNumber(0);
+    lastDir = 0;
 
     if (reset) {
         reset = false;
@@ -1507,7 +1508,7 @@ COMBAT_DATA.prototype.getNextMonsterCombatDirection = function(i, reset) {
         case eventDirType.South: dir = 2; monsterArrangement.numMonster[2]++; break;
         case eventDirType.West: dir = 3; monsterArrangement.numMonster[3]++; break;
         default:
-            Globals.ASSERT(true);
+            Globals.ASSERT(true, "currDir not found");
             dir = PATH_DIR.PathNorth;
             // PORT NOTE:  Might be a bug in here that monsterArrangement.numMonster[0] needs to go upsomehow
     };

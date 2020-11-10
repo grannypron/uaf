@@ -11,7 +11,7 @@ RunTimeIF.prototype.HaveCharContext = function () {
     return (this.charContextStack.length > 0);
 }
 RunTimeIF.prototype.ClearCharContext = function() {
-    Globals.ASSERT(this.HaveCharContext());
+    Globals.ASSERT(this.HaveCharContext(), "this.HaveCharContext()");
     if (this.charContextStack.length > 0) this.charContextStack.pop();
 }
 

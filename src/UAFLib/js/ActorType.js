@@ -3,7 +3,7 @@
     this.Flags;  // long
     this.Instance;  // long
     this.Level;  // long
-    this.instanceType = ActorInstanceType.getByNumber(0);
+    this.instanceType = 0;
     this.m_classID = "";
     this.m_itemID = "";
     this.m_monsterID = "";

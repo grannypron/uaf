@@ -5,5 +5,6 @@
     this.HitPointsUpdated = function (combatantIdx, value) { Globals.debug("Combatant " + combatantIdx + " hit points has been updated to " + value); }
     this.UpdateCombatMessage = function () { Globals.debug(DispText.CombatMsg); }
     this.StartAttack = function (attacker, attacked) { Globals.debug("StartAttack: " + attacker + ", " + attacked); }
-
+    this.CombatantDying = function (id, x, y) { Globals.debug("CombatantDying: " + id + ", " + x + ", " + y); }
+    this.CombatantDead = function (id, x, y) { Globals.debug("CombatantDead: " + id + ", " + x + ", " + y); }
 }

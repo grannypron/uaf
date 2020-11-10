@@ -43,7 +43,7 @@ MONEY_DATA_TYPE.prototype.GetIndex = function (type) {
 
 MONEY_DATA_TYPE.prototype.IsActive = function (index) {
     var i = this.GetIndex(index);
-    Globals.ASSERT(i >= 0);
+    Globals.ASSERT(i >= 0, "i >= 0");
     return ((this.Coins[i].GetRate() > 0.0) && (strlen(this.Coins[i].GetName()) > 0));
 }
 

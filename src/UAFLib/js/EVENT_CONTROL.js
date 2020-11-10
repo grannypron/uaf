@@ -2,12 +2,12 @@
 
 	this.eventStatusUnused = 0;
 	this.eventResultUnused = 0;
-	this.chainTrigger = chainTriggerType.getByNumber(0);
-	this.eventTrigger = eventTriggerType.getByNumber(0);
-	this.facing = eventDirType.getByNumber(0);
+	this.chainTrigger = 0;
+	this.eventTrigger = 0;
+	this.facing = 0;
 	this.raceID = "";
 	this.classBaseclassID = "";
-	this.gender = genderType.getByNumber(0); // stored as attribute
+	this.gender = 0; // stored as attribute
 	this.itemID = "";
 	this.quest = 0;
 	this.chance = 0;

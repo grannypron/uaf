@@ -1,6 +1,13 @@
 ﻿function SoundMgrObj() {
     this.pSndMgr = null;
     this.PlaySoundEffects = true;
+
+    this.DEF_HIT_SOUND = "Hit.wav";       // attack successful - stored in item/moster data
+    this.DEF_MISS_SOUND = "Miss.wav";      // attack missed     - stored in item/monster data
+    this.DEF_LAUNCH_SOUND = "Launch.wav";  // played as attack is made, before hit or miss sounds
+    this.DEF_CAST_SOUND = "Cast.wav";      // spell cast        - stored in spell data
+    this.DEF_CHAR_DEATH_SOUND = "CharDeath.wav"; // character dies    - stored in global combat data
+    this.DEF_CHAR_MOVE_SOUND = "CharMove.wav";  // character moves   - stored in global combat data
 }
 
 SoundMgrObj.prototype.ClearSound = function (sound) {

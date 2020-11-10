@@ -19,7 +19,7 @@
     this.Hit_Dice_Bonus = 0;  // long
     this.THAC0 = 0;  // long
     this.Magic_Resistance = 0;  // long
-    this.Size = creatureSizeType.getByNumber(0);
+    this.Size = 0;
     this.Morale = 0;  // long
     this.XP_Value = 0;  // long
     this.specAbs = new SPECIAL_ABILITIES();
@@ -67,3 +67,16 @@ MONSTER_DATA.prototype.RunMonsterScripts = function (scriptName, fnc, pkt, comme
         this.Name);
 }
 
+
+MONSTER_DATA.prototype.PlayMove = function () {
+    if (!Globals.PlaySoundEffects) return;
+    if (!this.MoveSound.Play()) {
+        this.MoveSound = new SOUND_BYTE(SoundMgr.DEF_CHAR_MOVE_SOUND);  // PORT NOTE: Not sure how this worked with DEF_CHAR_MOVE_SOUND is a CString, so I wrapped in a SOUND_BYTE
+        if (!this.MoveSound.Play()) {                       
+            this.MoveSound = new SOUND_BYTE(globalData.sounds.PartyStep);
+            if (!this.MoveSound.Play()) {
+                this.MoveSound.TotalDisable();
+            };
+        };
+    };
+}

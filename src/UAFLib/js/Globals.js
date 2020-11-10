@@ -401,3 +401,11 @@ Globals.prototype.PlayCharHit = function(play) {
     else
         SoundMgr.StopSound(globalData.sounds.hCharHit);
 }
+
+Globals.prototype.GetConfigMonsterNoDeath = function () {
+    return combatData.m_bMonsterNoDeath;
+}
+
+Globals.prototype.IncNumMonsterSlain = function () {
+    combatData.m_iNumMonSlain++;
+}

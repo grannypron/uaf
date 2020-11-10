@@ -1199,3 +1199,21 @@ Drawtile.prototype.HaveLineOfSight = function(x0, y0, x1, y1, reflects) {
 
     return true;
 }
+
+Drawtile.prototype.placeDyingCombatant = function(x, y, dude, w, h) {
+    var i = 0, j = 0;
+
+    if ((w <= 0) || (h <= 0)) {
+        if (!debugStrings.AlreadyNoted(CString("BWH02"))) {
+            Globals.WriteDebugString("Bogus w,h for icon in placeDyingCombatant()\n");
+            Globals.WriteDebugString("Combatant's name is " + combatData.GetCombatant(dude).GetName() + "\n", );
+        };
+    }
+
+    for (i = 0; i < h; i++) {
+        for (j = 0; j < w; j++) {
+            if (this.ValidCoords(y + i, x + j))
+                this.terrain[y + i][x + j].tileIndexDead = dude;
+        }
+    }
+}

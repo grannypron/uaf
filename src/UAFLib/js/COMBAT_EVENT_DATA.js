@@ -3,10 +3,10 @@ function COMBAT_EVENT_DATA() {
     Object.setPrototypeOf(this, GameEvent.prototype);
 
     this.m_UseOutdoorMap = false; // set at run-time as event activates
-    this.distance = eventDistType.getByNumber(0);
-    this.direction = eventDirType.getByNumber(0);
-    this.m_eSurprise = eventSurpriseType.getByNumber(0);
-    this.m_eTEMPsurprise = eventSurpriseType.getByNumber(0);
+    this.distance = 0;
+    this.direction = 0;
+    this.m_eSurprise = 0;
+    this.m_eTEMPsurprise = 0;
     this.autoApproach = false;
     this.outdoors = false;
     this.noMonsterTreasure = false;
@@ -18,7 +18,7 @@ function COMBAT_EVENT_DATA() {
     this.MoveSound = "";
     this.TurnUndeadSound = "";
     this.monsterMorale = 0;
-    this.turningMod = eventTurnUndeadModType.getByNumber(0);
+    this.turningMod = 0;
     this.monsters = null;  //MONSTER_EVENT_DATA
     this.bgSounds = null;  //BACKGROUND_SOUND_DATA
     this.needDeathSprite = false;

@@ -38,5 +38,5 @@ while (enumerator.MoveNext()) {
 }
 
 //specialAbilitiesData.InsertString()
-Globals.ASSERT(data.Keys.length == 432);
-Globals.ASSERT(specialAbilitiesData.FindAbility("Global_Display") != null);
+Globals.ASSERT(data.Keys.length == 432, "data.Keys.length == 432");
+Globals.ASSERT(specialAbilitiesData.FindAbility("Global_Display") != null, "specialAbilitiesData.FindAbility(\"Global_Display\") != null");

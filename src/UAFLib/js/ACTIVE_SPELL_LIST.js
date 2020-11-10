@@ -9,21 +9,21 @@ ACTIVE_SPELL_LIST.prototype.xClear = function () {
 }
 
 ACTIVE_SPELL_LIST.prototype.ActivateLingerSpellsOnTarget = function (targ, mapx, mapy, width, height) {
-    Globals.ASSERT(targ != NO_DUDE);
+    Globals.ASSERT(targ != NO_DUDE, "targ != NO_DUDE");
 
     var AtLeastOneSpellActivated = false;
 
     // PORT NOTE:  Rewrote to use a simple array
     for (var idx = 0; idx < this.m_spellList.length; idx++) {
         var as = this.m_spellList[pos];
-        Globals.ASSERT(as.key >= 0);
+        Globals.ASSERT(as.key >= 0, "as.key >= 0");
 
         if (as.LingerSpellAffectsTarget(targ, mapx, mapy, width, height)) {
             AtLeastOneSpellActivated = true;
             as.lingerData.AddTarget(targ);
 
             var caster = as.caster.GetInstance();
-            Globals.ASSERT(caster != NO_DUDE);
+            Globals.ASSERT(caster != NO_DUDE, "caster != NO_DUDE");
 
             if (caster == NO_DUDE)
                 continue;

@@ -26,3 +26,7 @@ OrderedQueue.prototype.GetHeadPosition = function () {
 OrderedQueue.prototype.GetAtPos = function (i) {
     return this.items[i];
 }
+OrderedQueue.prototype.RemoveHead = function () {
+    this.items.pop();
+}
+

@@ -5,7 +5,7 @@
     this.m_Height = 0;
     this.m_maxRangeX = 0;
     this.m_maxRangeY = 0;
-    this.m_targType = TargetingType.getByNumber(0);
+    this.m_targType = 0;
     this.m_SelectingUnits = false; // vs selecting map location
     this.m_canTargetFriend = false; // can party member be targeted?
     this.m_canTargetEnemy = false;

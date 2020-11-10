@@ -126,6 +126,6 @@ for (i = 0; i < Drawtile.MAX_TERRAIN_HEIGHT; i++) {
     dataStr += "]\n";
 }
 
-Globals.ASSERT(dataStr.indexOf(",1") != 0);
-Globals.ASSERT(dataStr.indexOf(",0") != 0);
-Globals.ASSERT(dataStr.indexOf(",2") != 0);
+Globals.ASSERT(dataStr.indexOf(",1") != 0, "TestSetupCombat");
+Globals.ASSERT(dataStr.indexOf(",0") != 0, "TestSetupCombat");
+Globals.ASSERT(dataStr.indexOf(",2") != 0, "TestSetupCombat");

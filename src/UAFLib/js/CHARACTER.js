@@ -2504,7 +2504,7 @@ CHARACTER.prototype.GetContextActor = function (pActor) {               // PORT 
         case FAKE_CHARACTER_TYPE:
             // Used when processing script $CASTSPELLONTARGET.
             pActor.SetFakeCharacterSrc();
-            if (this.IsCombatActive()) {
+            if (Globals.IsCombatActive()) {
                 pActor.Flags &= ~FLAG_NONCOMBAT;
                 pActor.Flags |= FLAG_COMBAT;
             };
@@ -2648,12 +2648,12 @@ CHARACTER.prototype.generateNewCharacter = function (StartExperience, StartExpTy
     };
 
     if ((this.GetType() == MONSTER_TYPE) || (StartExpType == Globals.START_EXP_VALUE)) {
-        Globals.ASSERT(StartExpType == Globals.START_EXP_VALUE);
+        Globals.ASSERT(StartExpType == Globals.START_EXP_VALUE, "StartExpType == Globals.START_EXP_VALUE");
         this.giveCharacterExperience(StartExperience, false);
     }
     else // startexp is minimum level
     {
-        Globals.ASSERT(GetType() != MONSTER_TYPE);
+        Globals.ASSERT(GetType() != MONSTER_TYPE, "GetType() != MONSTER_TYPE");
         Globals.die("Not Needed?"); //Not Implemented(0x47abc, false);
     }
 
@@ -3624,7 +3624,7 @@ CHARACTER.prototype.ModifyACAsTarget = function(pAttacker, pAC, itemID) {
 
 CHARACTER.prototype.HasDwarfACPenalty = function () {
     if (this.GetType() == MONSTER_TYPE) {
-        return ((monsterData.GetMonsterPenaltyFlags(monsterID) & MonsterPenaltyType.PenaltyDwarfAC) == MonsterPenaltyType.PenaltyDwarfAC);
+        return ((monsterData.GetMonsterPenaltyFlags(this.monsterID) & MonsterPenaltyType.PenaltyDwarfAC) == MonsterPenaltyType.PenaltyDwarfAC);
     }
 
     return false;
@@ -3633,7 +3633,7 @@ CHARACTER.prototype.HasDwarfACPenalty = function () {
 CHARACTER.prototype.HasGnomeACPenalty = function () {
     if (this.GetType() == MONSTER_TYPE)
     {
-        return ((monsterData.GetMonsterPenaltyFlags(monsterID) & MonsterPenaltyType.PenaltyGnomeAC) == MonsterPenaltyType.PenaltyGnomeAC);
+        return ((monsterData.GetMonsterPenaltyFlags(this.monsterID) & MonsterPenaltyType.PenaltyGnomeAC) == MonsterPenaltyType.PenaltyGnomeAC);
     }
 
     return false;
@@ -3641,7 +3641,7 @@ CHARACTER.prototype.HasGnomeACPenalty = function () {
 
 CHARACTER.prototype.IsAlwaysLarge = function () {
     if (this.GetType() == MONSTER_TYPE) {
-        return ((monsterData.GetMonsterFormFlags(monsterID) & FormLarge) == MonsterFormType.FormLarge);
+        return ((monsterData.GetMonsterFormFlags(this.monsterID) & MonsterFormType.FormLarge) == MonsterFormType.FormLarge);
     }
 
     return true;  
@@ -3654,7 +3654,7 @@ CHARACTER.prototype.GetAdjStatus = function (flags) {
     val = this.ApplySpellEffectAdjustments(flags, key, val);
     if ((val < 0) || (val >= GameRules.NUM_CHAR_STATUS_TYPES))
         val = this.GetStatus();
-    return charStatusType.getByNumber(val);
+    return val;
 }
 
 
@@ -3679,7 +3679,7 @@ CHARACTER.prototype.GetAdjAlignment = function (flags) {
     val = this.ApplySpellEffectAdjustments(flags, key, val);
     if ((val < 0) || (val >= GameRules.NUM_ALIGNMENT_TYPES))
         val = this.GetAlignment();
-    return alignmentType.getByNumber(val);
+    return val;
 }
 
 
@@ -3699,7 +3699,7 @@ CHARACTER.prototype.GetAdjSize = function (flags) {
     if (val < creatureSizeType.Small) val = creatureSizeType.Small;
     if (val > creatureSizeType.Large) val = creatureSizeType.Large;
 
-    return creatureSizeType.getByNumber(val);
+    return val;
 }
 
 CHARACTER.prototype.GetAdjDmgBonus = function (flags) {
@@ -3788,7 +3788,7 @@ CHARACTER.prototype.ModifyAttackDamageDice = function(pTarget, num, sides, pBonu
 
 CHARACTER.prototype.HasRangerDmgPenalty = function () {
     if (this.GetType() == MONSTER_TYPE) {
-        return ((monsterData.GetMonsterPenaltyFlags(monsterID) & MonsterPenaltyType.PenaltyRangerDmg) == MonsterPenaltyType.PenaltyRangerDmg);
+        return ((monsterData.GetMonsterPenaltyFlags(this.monsterID) & MonsterPenaltyType.PenaltyRangerDmg) == MonsterPenaltyType.PenaltyRangerDmg);
     }
 
     return false;
@@ -3936,7 +3936,7 @@ CHARACTER.prototype.SetHitPoints = function (val) {
         this.hitPoints = -10;
 
     if (this.hitPoints < 0) {
-        if (!this.IsCombatActive()) // combat takes care of setting correct status
+        if (!Globals.IsCombatActive()) // combat takes care of setting correct status
         {
             if (this.hitPoints == -10) {
                 this.SetStatus(charStatusType.Dead);
@@ -3979,6 +3979,13 @@ CHARACTER.prototype.UpdateSpellForDamage = function(DamageTaken) {
         activeSpellList.ProcessTimeSensitiveData(0);
 }
 
+CHARACTER.prototype.HasDeathImmunity = function () {
+    if (this.GetType() == MONSTER_TYPE) {
+        return ((monsterData.GetMonsterImmunityFlags(this.monsterID) & MonsterImmunityType.ImmuneDeath) == MonsterImmunityType.ImmuneDeath);
+    }
+
+    return FALSE;
+}
 
 CHARACTER.prototype.SetLevel = function (lvl) { throw "todo"; }
 CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };
@@ -4092,7 +4099,6 @@ CHARACTER.prototype.IsGiant = function () { throw "todo"; }
 CHARACTER.prototype.HasDwarfTHAC0Penalty = function () { throw "todo"; }
 CHARACTER.prototype.HasGnomeTHAC0Penalty = function () { throw "todo"; }
 CHARACTER.prototype.HasPoisonImmunity = function () { throw "todo"; }
-CHARACTER.prototype.HasDeathImmunity = function () { throw "todo"; }
 CHARACTER.prototype.HasConfusionImmunity = function () { throw "todo"; }
 CHARACTER.prototype.HasVorpalImmunity = function () { throw "todo"; }
 CHARACTER.prototype.CanBeHeldOrCharmed = function () { throw "todo"; }

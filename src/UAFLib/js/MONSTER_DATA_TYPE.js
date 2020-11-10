@@ -24,7 +24,7 @@ function MONSTER_DATA_TYPE() {
     this.Hit_Dice_Bonus = 0;  //long
     this.THAC0 = 0;  //long
     this.Magic_Resistance = 0;  //long
-    this.Size = creatureSizeType.getByNumber(0);
+    this.Size = 0;
     this.Morale = 0;  //long
     this.XP_Value = 0;  //long
 
@@ -177,4 +177,38 @@ MONSTER_DATA_TYPE.prototype.GetMonsterAttackMsg = function (monsterID, attackNum
     }
     if (msg.length == 0) msg = "attacks";
     return msg;
+}
+
+MONSTER_DATA_TYPE.prototype.PlayMove = function(monsterID) {
+    var pMonster;
+    pMonster = this.GetMonster(monsterID);
+    if (pMonster != null) pMonster.PlayMove();
+}
+
+MONSTER_DATA_TYPE.prototype.GetMonster = function (monsterID) {
+    return this.PeekMonster(this.LocateMonster(monsterID));
+}
+
+MONSTER_DATA_TYPE.prototype.GetMonsterFormFlags = function (monsterID) {
+    var index;
+    if ((index = this.LocateMonster(monsterID)) >= 0)
+        return this.PeekMonster(index).Form_Type;
+    else
+        return 0;
+}
+
+MONSTER_DATA_TYPE.prototype.GetMonsterPenaltyFlags = function (monsterID) {
+    var index;
+    if ((index = this.LocateMonster(monsterID)) >= 0)
+        return this.PeekMonster(index).Penalty_Type;
+    else
+        return 0;
+}
+
+MONSTER_DATA_TYPE.prototype.GetMonsterImmunityFlags = function (monsterID) {
+    var index;
+    if ((index = this.LocateMonster(monsterID)) >= 0)
+        return this.PeekMonster(index).Immunity_Type;
+    else
+        return 0;
 }

@@ -57,3 +57,7 @@ CList.prototype.RemoveAll = function () {
 CList.prototype.IsEmpty = function () {
     return this.mList.length == 0;
 }
+
+CList.prototype.RemoveHead = function () {
+    return this.mList.pop();
+}

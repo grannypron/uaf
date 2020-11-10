@@ -515,7 +515,7 @@ COMBATANT.prototype.InitFromMonsterDataMonster = function (pMonster, IsFriendly,
         this.m_iNumDiagonalMoves = 0;
     }
 
-    Globals.ASSERT(this.GetAdjHitPoints() > 0);
+    Globals.ASSERT(this.GetAdjHitPoints() > 0, "this.GetAdjHitPoints() > 0");
 
     {
         var hookParameters = new HOOK_PARAMETERS();
@@ -567,7 +567,7 @@ COMBATANT.prototype.ReadyBestWpn = function(targ) {
     else {
         var targCOMBATANT;
         targCOMBATANT = Globals.GetCombatantPtr(targ);
-        Globals.ASSERT(targCOMBATANT != null);
+        Globals.ASSERT(targCOMBATANT != null, "targCOMBATANT != null");
         if (targCOMBATANT != null) {
             isLargeTarget = targCOMBATANT.isLargeDude();
             dist = Distance(self, x, y,
@@ -1026,7 +1026,6 @@ inline void InitTargeting(spellTargetingType ttype,
         lingering);
 };
 inline int  GetThiefBackstabDamageMultiplier() const { return m_pCharacter-> GetThiefBackstabDamageMultiplier();};
-inline BOOL HasDeathImmunity() const { return m_pCharacter-> HasDeathImmunity(); };
 inline void UpdateSpellForDamage(int DamageTaken) { m_pCharacter -> UpdateSpellForDamage(DamageTaken); };
 inline CString  GetUndeadType() const { return m_pCharacter-> GetUndeadType(); };
 inline BOOL IsAnimal() const { return m_pCharacter-> IsAnimal();};
@@ -1073,21 +1072,18 @@ void PostCombatScreenUpdate();
 int  HandleCurrState(BOOL zeroMoveAttackOK);
 void displayCombatSprite();
 void blitDeadSprite();
-void blitDyingSprite();
 void blitPetrifiedSprite();
 BOOL CanAddTarget(int target);
 BOOL C_AddTarget(COMBATANT & dude, int range = 0);
 BOOL AddMapTarget(int mapx, int mapy, PATH_DIR dir, int dirX, int dirY);
 BOOL AddTargetSelf();
 void AutoChooseSpellTargets();
-void RemoveCurrTarget();
 int  GetCurrTarget(bool updateTarget, bool unconsciousOK, bool petrifiedOK);
 int  GetNextTarget();
 int  GetMaxTargets();
 int  GetNumTargets() const { return combattargets.GetCount(); }
 BOOL HaveTarget(int target);
 BOOL IsAttackPossible(void);
-int  makeAttack(int target, int extraAttacksAvailable, int * pDeathIndex);
 BOOL DetermineIfBackStab(int wpn, int targ) const ;
 void AttackOver();
 void StopAttack();
@@ -1118,7 +1114,6 @@ CString SpecialActionName();
 int SpecialActionIndex();
 BOOL CanGuard(GUARDING_CASE guardCase);
 void Bandage();
-void EndTurn(individualCombatantState newState = ICS_None);
 void Quick(BOOL Enable);
 void Guard();
 void DelayAction();
@@ -1666,7 +1661,7 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
             };
 #endif*/
             tempCOMBATANT = Globals.GetCombatantPtr(dude);              // PORT NOTE: yes this is different from getCombatantPtr with a lower case g
-            Globals.ASSERT(tempCOMBATANT != null);
+            Globals.ASSERT(tempCOMBATANT != null, "tempCOMBATANT != null");
             if (tempCOMBATANT != null) {
                 if (tempCOMBATANT.m_ICS == individualCombatantState.ICS_Casting) {
                     continue;
@@ -1771,7 +1766,7 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
             };
 #endif*/
             tempCOMBATANT = Globals.GetCombatantPtr(dude);
-            Globals.ASSERT(tempCOMBATANT != null);
+            Globals.ASSERT(tempCOMBATANT != null, "tempCOMBATANT != null");
             if (tempCOMBATANT != null) {
                 if (tempCOMBATANT.m_ICS == individualCombatantState.ICS_Casting) {
                     continue;
@@ -1894,7 +1889,7 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
 
     var targCOMBATANT;
     targCOMBATANT = Globals.GetCombatantPtr(targ);
-    Globals.ASSERT(targCOMBATANT != null);
+    Globals.ASSERT(targCOMBATANT != null, "tempCOMBATANT != null");
     if (targCOMBATANT == null) return false;
     if (targetX < 0) targetX = targCOMBATANT.x;
     if (targetY < 0) targetY = targCOMBATANT.y;
@@ -2048,7 +2043,7 @@ COMBATANT.prototype.AddTarget = function (newTarget, freeAttack) {
 
         var targCOMBATANT;
         targCOMBATANT = Globals.GetCombatantPtr(newTarget);
-        Globals.ASSERT(targCOMBATANT != null);
+        Globals.ASSERT(targCOMBATANT != null, "tempCOMBATANT != null");
         if (targCOMBATANT == null) return;
 
         var dist = Drawtile.Distance6(this.self, this.x, this.y,
@@ -2095,7 +2090,6 @@ COMBATANT.prototype.IsDone = function(freeAttack, comment) {
         default:
             break;
     };
-
     if (this.m_isCombatReady < 0) {
         var actor;
         var hookParameters = new HOOK_PARAMETERS();
@@ -2160,7 +2154,7 @@ COMBATANT.prototype.StopCasting = function(EndYourTurn, canFinishCasting) {
     this.combatant_activeSpellKey = -1;
     this.forceAttackPose = false;
     if (EndYourTurn)
-        this.EndTurn(State());
+        this.EndTurn(this.State());
 }
 
 
@@ -2168,13 +2162,13 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
 {
     var wpnConsumesSelfAsAmmo = false; // Assign value to make compiler happy!
     if (targ == 0) {
-        Globals.ASSERT(true);
+        Globals.ASSERT(true, "targ == 0");
     };
     var toHitComputation = new ToHitComputation();
-    Globals.ASSERT(this.self != NO_DUDE);
+    Globals.ASSERT(this.self != NO_DUDE, "this.self != NO_DUDE");
     if (this.IsDone(false, "Can combatant make attack")) return 1;
     toHitComputation.BeginSpellScriptFailure(0);
-    CombatMsg = "";
+    DispText.CombatMsg = "";
     FormattedText.ClearFormattedText(FormattedText.combatTextData);
     if (targ == NO_DUDE) return 1;
     if (this.availAttacks + extraAttacksAvailable <= 0) return 1;
@@ -2198,7 +2192,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
 
     var targCOMBATANT;
     targCOMBATANT = Globals.GetCombatantPtr(targ);
-    Globals.ASSERT(targCOMBATANT != null);
+    Globals.ASSERT(targCOMBATANT != null, "targCOMBATANT != null");
     if (targCOMBATANT == null) return 1;
     if (targCOMBATANT.GetStatus() == individualCombatantState.Dead) return 1; // not on the map anymore
 
@@ -2276,7 +2270,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                 if ((currAttack < 0) || (currAttack >= nbrAttacks)) currAttack = 0;
 
                 var pMonster = monsterData.PeekMonster(this.m_pCharacter.monsterID);
-                Globals.ASSERT(pMonster != null);
+                Globals.ASSERT(pMonster != null, "pMonster != null");
 
                 attackSpellID = pMonster.attackData.PeekMonsterAttackDetails(currAttack).spellID;
             };
@@ -2326,7 +2320,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                 if (spellData.IsValidSpell(damageComputation.SpellID())) {
                     var samsg = "";
                     var pSpell = spellData.GetSpell(damageComputation.SpellID());
-                    Globals.ASSERT(pSpell != null);
+                    Globals.ASSERT(pSpell != null, "pSpell != null");
                     if (pSpell != null) {
                         samsg = pSpell.CastMsg;
                         samsg.ReplaceAll("/s", pSpell.Name);
@@ -2351,7 +2345,6 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                     else {
                         DispText.CombatMsg = damageComputation.Message();
                     };
-                    UIEventManager.UpdateCombatMessage();
                 }
             };
             // Condition added 20110413 PRS......
@@ -2385,6 +2378,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         };
         continueAttack = true;
     }
+    UIEventManager.UpdateCombatMessage();
 
 
 
@@ -2559,7 +2553,7 @@ COMBATANT.prototype.PlayMiss = function() {
   else
     {
         if (this.GetType() == MONSTER_TYPE)
-            monsterData.PlayMiss(m_pCharacter.monsterID);
+            monsterData.PlayMiss(this.m_pCharacter.monsterID);
         else
             Globals.PlayCharMiss();
     }
@@ -2568,7 +2562,7 @@ COMBATANT.prototype.PlayMiss = function() {
 COMBATANT.prototype.FaceOpponent = function(opponent) {
     var pOpponent;
     pOpponent = Globals.GetCombatantPtr(opponent);
-    Globals.ASSERT(pOpponent != null);
+    Globals.ASSERT(pOpponent != null, "pOpponent != null");
     if (pOpponent == null) return;
     var ax = pOpponent.x;
     var ay = pOpponent.y;
@@ -2696,7 +2690,7 @@ COMBATANT.prototype.GetDamageDice = function(wpn, pNum, pSides, pBonus, pNonLeth
             if ((currAttack < 0) || (currAttack >= nbrAttacks)) currAttack = 0;
 
             pMonster = monsterData.PeekMonster(this.m_pCharacter.monsterID);
-            Globals.ASSERT(pMonster != NULL);
+            Globals.ASSERT(pMonster != null, "pMonster != NULL");
 
             if (pMonster == null) {
                 pNum   = this.m_pCharacter.unarmedNbrDieL;
@@ -2730,7 +2724,7 @@ COMBATANT.prototype.GetDamageDice = function(wpn, pNum, pSides, pBonus, pNonLeth
             else {
                 pNum   = this.m_pCharacter.unarmedNbrDieS;
                 pSides = this.m_pCharacter.unarmedDieS;
-                pBonus = this.m_pCharacter.unarmedBonus + GetAdjDmgBonus();
+                pBonus = this.m_pCharacter.unarmedBonus + this.GetAdjDmgBonus();
             }
         }
     }
@@ -2846,7 +2840,7 @@ COMBATANT.prototype.TakeDamage = function(dmg, IsNonLethal, invokeOptions, canFi
         if (trueHp <= 0)
             trueHp = -10;
         // unless configured to not die
-        if ((trueHp < 1) && (this.GetConfigMonsterNoDeath())) // debug flag
+        if ((trueHp < 1) && (Globals.GetConfigMonsterNoDeath())) // debug flag
             trueHp = 1;
         if ((trueHp < 1) && (this.HasDeathImmunity())) // monster immunity flag
             trueHp = -10;
@@ -2870,18 +2864,19 @@ COMBATANT.prototype.TakeDamage = function(dmg, IsNonLethal, invokeOptions, canFi
 
         // still can't let monsters die, even if hp is 
         // magically below 0
-        if ((adjHp < 1) && (this.GetConfigMonsterNoDeath()))
+        if ((adjHp < 1) && (Globals.GetConfigMonsterNoDeath()))
             adjHp = 1;
         if ((adjHp < 1) && (this.HasDeathImmunity())) // monster immunity flag
             adjHp = -10;
     }
 
     if (adjHp <= -10) {
-        this.SetStatus(Dead);
+        this.SetStatus(charStatusType.Dead);
         if (Drawtile.getCombatantInCell(this.x, this.y, 1, 1, NO_DUDE) == this.self) {
             Drawtile.placeCombatant(this.x, this.y, NO_DUDE, this.width, this.height);
         };
         Drawtile.placeDyingCombatant(this.x, this.y, NO_DUDE, this.width, this.height);
+        UIEventManager.CombatantDead(this.self, this.x, this.y);
         Globals.TRACE(this.self + " takes " + dmg + " hp damage, -10 left, and is dead\n");
         if ((invokeOptions != null) && (invokeOptions.m_supressBlitSprite & WhatSprite.DeathSprite)) {
             invokeOptions.m_whatSpriteNeeded |= WhatSprite.DeathSprite;
@@ -2896,15 +2891,16 @@ COMBATANT.prototype.TakeDamage = function(dmg, IsNonLethal, invokeOptions, canFi
         }
     }
     else if (adjHp <= 0) {
-        Globals.ASSERT(IsPartyMember());
-        if (Drawtile.getCombatantInCell(this.x, this.y, 1, 1, NO_DUDE) == self) {
+        Globals.ASSERT(this.IsPartyMember(), "IsPartyMember()");
+        if (Drawtile.getCombatantInCell(this.x, this.y, 1, 1, NO_DUDE) == this.self) {
             Drawtile.placeCombatant(this.x, this.y, NO_DUDE, this.width, this.height);
         };
-        this.placeDyingCombatant(this.x, this.y, this.self, this.width, this.height);
+        Drawtile.placeDyingCombatant(this.x, this.y, this.self, this.width, this.height);
+        UIEventManager.CombatantDying(this.self, this.x, this.y);
         this.SetStatus(charStatusType.Dying);
         this.isBandaged = false;
         this.bandageWho = -1;
-        TRACE(this.self + " takes " + dmg + " hp damage, " + adjHp + " left, and is dying\n");
+        Globals.TRACE(this.self + " takes " + dmg + " hp damage, " + adjHp + " left, and is dying\n");
         if ((invokeOptions != null) && (invokeOptions.m_supressBlitSprite & WhatSprite.DyingSprite)) {
             invokeOptions.m_whatSpriteNeeded |= WhatSprite.DyingSprite;
         }
@@ -2916,9 +2912,9 @@ COMBATANT.prototype.TakeDamage = function(dmg, IsNonLethal, invokeOptions, canFi
     if (adjHp <= 0) {
         // update stats used for monster morale
         if (this.friendly)
-            this.IncNumFriendSlain();
+            Globals.IncNumFriendSlain();
         else
-            this.IncNumMonsterSlain();
+            Globals.IncNumMonsterSlain();
 
         // if dead, this dude can't do anything else    
         this.StopCasting(true, false); // also calls EndTurn()
@@ -2944,3 +2940,88 @@ COMBATANT.prototype.GetHitPoints = function () {
 COMBATANT.prototype.UpdateSpellForDamage = function (DamageTaken) {
     this.m_pCharacter.UpdateSpellForDamage(DamageTaken);
 };
+
+COMBATANT.prototype.HasDeathImmunity = function () {
+    return this.m_pCharacter.HasDeathImmunity();
+}
+
+COMBATANT.prototype.EndTurn = function(newState) {
+    if (!newState) { newState = individualCombatantState.ICS_None; }
+
+    /**TODO
+     *   State(newState);
+  QueuedCombatantData &qcomb = GetQueuedCombatants();
+
+  if (qcomb.Top() == self)
+  {
+    // PRS 20110219  if (qcomb.ChangeStats())
+    if (qcomb.ChangeStats() || qcomb.NumFreeAttacks() || qcomb.NumGuardAttacks())
+    {
+      TRACE("EndTurn(%s), %i done\n", CombatantStateText[State()], self);
+      turnIsDone = TRUE;
+    }
+    else
+      TRACE("EndTurn(%s), %i (no change to done)\n", CombatantStateText[State()], self);
+
+    // input was disabled if auto combatant
+    EnableUserInput(TRUE);
+    //  PRS  20110219                         //*
+    if (qcomb.NumFreeAttacks() || qcomb.NumGuardAttacks())             //*
+    {                                         //*
+      //combatData.m_iPrevRndCombatant = self;//*
+      combatData.m_forceRoundDelay = TRUE;    //*
+    };                                        //*
+    qcomb.Pop();
+    if (qcomb.Top() != NO_DUDE)
+    {
+      if (qcomb.DelayedX() >= 0)
+      {
+        int delayedDude;
+        COMBATANT *pDelayedCombatant;
+        if (terrain[qcomb.DelayedY()][qcomb.DelayedX()].tileIndex != NO_DUDE)
+        {
+          / * Really * / NotImplemented(0x34c1, false);
+    };
+    delayedDude = qcomb.Top();
+    pDelayedCombatant = combatData.GetCombatant(delayedDude);
+    placeCombatant(pDelayedCombatant -> x,
+        pDelayedCombatant -> y,
+        NO_DUDE,
+        pDelayedCombatant -> width,
+        pDelayedCombatant -> height);
+    pDelayedCombatant -> x = qcomb.DelayedX();
+    pDelayedCombatant -> y = qcomb.DelayedY();
+    qcomb.SetXY(-1, -1);
+    placeCombatant(pDelayedCombatant -> x,
+        pDelayedCombatant -> y,
+        delayedDude,
+        pDelayedCombatant -> width,
+        pDelayedCombatant -> height);
+          };
+        };
+      }
+      else
+    {
+        qcomb.Remove(self);
+        if (qcomb.DelayedX() >= 0) {
+          /* Really * /NotImplemented(0x43c6, false);
+        };
+        TRACE("Forced EndTurn(%s), %i done\n", CombatantStateText[State()], self);
+        turnIsDone = TRUE;
+    }
+    forceAttackPose = FALSE;
+    OnEndTurn();
+      //combatMsgs.msgs.RemoveAll(); // not set up for scrolling msgs yet
+    */
+}
+
+COMBATANT.prototype.RemoveCurrTarget = function () {
+    if (!this.combattargets.IsEmpty())
+        this.combattargets.RemoveHead();
+
+    this.SetCurrTarget();
+}
+
+COMBATANT.prototype.blitDyingSprite = function () {
+    UIEventManager.CombatantDying(this.self, this.x, this.y);
+}

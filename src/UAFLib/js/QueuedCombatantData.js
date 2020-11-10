@@ -13,8 +13,3 @@ QueuedCombatantData.prototype.Top = function () {
     else
         return NO_DUDE;
 }
-
-QueuedCombatantData.prototype.Pop = function () {
-    this.m_q.RemoveHead();
-}
-
