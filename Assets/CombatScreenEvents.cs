@@ -1,4 +1,5 @@
 ﻿using Jint;
+using Jint.Runtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,14 +26,15 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
     private bool mapPainted = false;
     private bool librariesLoaded = false;
     private Dictionary<int, String> monsters = new Dictionary<int, string>();
+    private string CombatMessageSuffix = "";
 
     // Start is called before the first frame update
-    void Start()
+    IEnumerator Start()
     {
         PlayerScaleFactor = (int)Math.Floor(GameObject.Find("Player").GetComponent<Transform>().localScale.x);
         jintEngine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly, typeof(UnityEngine.Debug).Assembly));
 
-        /*
+        
         UnityWebRequest configHttpReq = UnityWebRequest.Get(CONFIG_FILE_URL);
         yield return configHttpReq.SendWebRequest();
 
@@ -45,18 +47,14 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
             // Show results as text
             Debug.Log("Loaded config file from " + CONFIG_FILE_URL + ".  Length:" + configHttpReq.downloadHandler.text.Length);
         }
-        */
-        //XmlDocument configDoc = new XmlDocument();
-        //configDoc.LoadXml(configHttpReq.downloadHandler.text);
-        //IEngineLoader loader = new GitHubEngineLoader();
-        //Text txtCombatMessage = GameObject.Find("txtCombatMessage").GetComponent<Text>();
-        //UnityUAFEventManager unityUAFEventManager = new UnityUAFEventManager(txtCombatMessage);
-
+        
         XmlDocument configDoc = new XmlDocument();
-        configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js</setupScript></config>");
-        IEngineLoader loader = new LocalEngineLoader(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\");
+        configDoc.LoadXml(configHttpReq.downloadHandler.text);
+        IEngineLoader loader = new GitHubEngineLoader();
+        //XmlDocument configDoc = new XmlDocument();
+        //configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js</setupScript></config>");
+        //IEngineLoader loader = new LocalEngineLoader(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\");
 
-        Text txtCombatMessage = GameObject.Find("txtCombatMessage").GetComponent<Text>();
         UnityUAFEventManager unityUAFEventManager = new UnityUAFEventManager(this);
 
         StartCoroutine(loader.loadEngine(configDoc, jintEngine, unityUAFEventManager, delegate (ConsoleResults setupResults)
@@ -200,12 +198,40 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
         txtCombatantInfo.text += "Moves Left: " + movesLeft + "\n";
     }
 
+    public void playerAttack(int attacker, int attacked)
+    {
+        //***TODO***:  Not the best plan to use the UI events to trigger model events.  This is done to bridge the gap between StartAttack and makeAttack since there is no sequencing of these events with a general event queue
+        try
+        {
+            jintEngine.Execute("var deathIndex = []; combatData.m_aCombatants[" + attacker + "].makeAttack(" + attacked + ", 0, deathIndex);");
+        } catch (JavaScriptException ex)
+        {
+            Debug.LogException(ex);
+            Debug.Log("Line:" + ex.LineNumber);
+        }
+    }
+
+    public void combatantDying(int id, int x, int y)
+    {
+        this.CombatMessageSuffix = " and kills!";   // To be added on when the CombatMsg is printed ¯\(ツ)/¯
+        this.RemoveCombatant(id);
+    }
+
+    public void RemoveCombatant(int id)
+    {
+        Debug.Log("Destroying Monster" + id);
+        GameObject monsterGO = GameObject.Find("Monster" + id);
+        monsterGO.GetComponent<SpriteRenderer>().sprite = ((Tile)Resources.Load<Tile>("Sprites/CombatDeath")).sprite;
+        GameObject.Destroy(monsterGO, 2);
+    }
+
     public void OnEvent(string eventName, object data)
     {
         ;
         switch (eventName) {
             case "UpdateCombatMessage":
-               GameObject.Find("txtCombatMessage").GetComponent<Text>().text = (string)data;
+                GameObject.Find("txtCombatMessage").GetComponent<Text>().text = (string)data + this.CombatMessageSuffix;
+                this.CombatMessageSuffix = "";
                 break;
             case "CombatantMoved":
                 object[] aMove = (object[])data;
@@ -214,6 +240,15 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
             case "StartAttack":
                 int[] aAttack = (int[])data;
                 GameObject.Find("txtCombatMessage").GetComponent<Text>().text = "Combatant " + aAttack[0] + " attacks Combatant " + aAttack[1];
+                playerAttack(aAttack[0], aAttack[1]);
+                break;
+            case "CombatantDying":
+                int[] aDying = (int[])data;
+                combatantDying(aDying[0], aDying[1], aDying[2]);
+                break;
+            case "CombatantDead":
+                int[] aDead = (int[])data;
+                combatantDying(aDead[0], aDead[1], aDead[2]);
                 break;
             default:
                 break;

@@ -38,6 +38,16 @@ public class UnityUAFEventManager
         this.notifyAll("StartAttack", new int[] { attacker, attacked });
     }
 
+    public void CombatantDying(int id, int x, int y)
+    {
+        this.notifyAll("CombatantDying", new int[] { id, x, y});
+    }
+
+    public void CombatantDead(int id, int x, int y)
+    {
+        this.notifyAll("CombatantDead", new int[] { id, x, y });
+    }
+
     private void notifyAll(string eventName, object data)
     {
         foreach (IUIListener listener in listeners)

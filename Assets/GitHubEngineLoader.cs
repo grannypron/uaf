@@ -56,15 +56,15 @@ public class GitHubEngineLoader : MonoBehaviour, IEngineLoader
             Debug.Log(jsUrl + " executed.");
         }
 
-        String setupFileContents = "";
-        using (FileStream fs = new FileStream(@"C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js", FileMode.Open, FileAccess.Read))
-        {
-            setupFileContents = new StreamReader(fs).ReadToEnd();
-        }
 
+        String setupFileUrl = configDoc.SelectNodes("//node()[local-name() = 'setupScript']")[0].InnerText;
+        String setupFileContents = "";
+        UnityWebRequest setupFileReq = UnityWebRequest.Get(setupFileUrl);
+        yield return setupFileReq.SendWebRequest();
+        setupFileContents = setupFileReq.downloadHandler.text;
         int setupFileLineCount = setupFileContents.Split('\n').Length;
         ConsoleResults setupResults = new ConsoleResults();
-        engine.SetValue("consoleResults", setupResults).Execute(setupFileContents);
+        engine.SetValue("consoleResults", setupResults).SetValue("unityUAFEventManager", unityUAFEventManager).Execute(setupFileContents);
         initComplete.Invoke(setupResults);
     }
 

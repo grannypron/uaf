@@ -1,12 +1,15 @@
 
+Globals.SPECAB_HACKS = {};
+Globals.SPECAB_HACKS["IsCombatReady"] = function (pkt) { Globals.debug("SPECAB_HACKS: IsCombatReady"); SPECAB.p_hook_parameters[0] = "1"; }  // This is to return 1 when COMBATANT.IsDone is called
+
 UnityEngine = importNamespace("UnityEngine");  // For Jint to access C# library
 // Override the logging function for now because System.Console is not available in WebGL - should change to use Unity.Debug
 Globals.debug = function (msg) {
     UnityEngine.Debug.Log(msg);
-};
+}
 
-UIEventManager.UpdateCombatMessage = function (message) {
-    unityUAFEventManager.UpdateCombatMessage(message);
+UIEventManager.UpdateCombatMessage = function () {
+    unityUAFEventManager.UpdateCombatMessage(DispText.CombatMsg);
 }
 
 UIEventManager.CombatantMoved = function (x, y, self, w, h) {
@@ -18,6 +21,13 @@ UIEventManager.StartAttack = function (attacker, attacked) {
     unityUAFEventManager.StartAttack(attacker, attacked);
 }
 
+UIEventManager.CombatantDying = function (id, x, y) {
+    unityUAFEventManager.CombatantDying(id, x, y);
+}
+
+UIEventManager.CombatantDead = function (id, x, y) {
+    unityUAFEventManager.CombatantDead(id, x, y);
+}
 
 function Deserialize(filename, debug) {
 var character = new CHARACTER();
@@ -210,6 +220,6 @@ combatEventData.direction = eventDirType.North;
 combatData.InitCombatData(combatEventData);
 
 cWarrior = combatData.m_aCombatants[0];
-Globals.debug("cWarrior.GetName(): " + cWarrior.GetName() + " / " + cWarrior.self);
+Globals.debug("cWarrior.GetName(): " + cWarrior.GetName() + " / " + cWarrior.self + " / " + cWarrior.GetStatus());
 
 consoleResults.payload = packageMapAndCombatantStatus(cWarrior);
