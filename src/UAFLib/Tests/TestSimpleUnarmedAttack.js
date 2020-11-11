@@ -1,7 +1,5 @@
 // Requires TestSetupCombat.js & TestCombatMovementAttack.js
 combatData.m_aCombatants[0].m_isCombatReady = -1;
-combatData.GetCombatant(0).m_pCharacter.addCharacterItem("Long Sword", 1, 0, 0, 0);
-combatData.GetCombatant(0).m_pCharacter.toggleReadyItem(0);
 cWarrior = combatData.GetCombatant(0);
 
 Globals.SPECAB_HACKS = {};
@@ -18,6 +16,4 @@ for (var idx = 1; idx < combatData.m_aCombatants.length; idx++) {
 }
 
 var deathIndex = [];
-cWarrior.makeAttack(idxEnemy, 0, deathIndex);
-
 cWarrior.makeAttack(idxEnemy, 0, deathIndex);

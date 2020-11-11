@@ -58,5 +58,20 @@ UAFUtil.prototype.IsEmpty = function (s) {
     return s == "" || s == null;
 }
 
+UAFUtil.prototype.parseDice = function (s) {
+    var reDice = /(\d+)[D|d](\d+)(\s*[\+\-]\s*\d+)*/
+    var tokens = s.match(reDice);
+    var nbr = tokens[1];
+    var die = tokens[2];
+    var bonus = 0;
+
+    if (tokens.length > 3 && tokens[3]) {
+        var bonusExp = tokens[3];
+        bonusExp = bonusExp.replace(/[\s\+]/g, '');  // take out the + but save the minus just in case we want to support negatives
+        bonus = parseInt(bonusExp);
+    }
+    return { nbr: nbr, die: die, bonus: bonus};
+}
+
 
 var UAFUtil = new UAFUtil();

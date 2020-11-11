@@ -154,25 +154,25 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
                 "YN",
                 "To-Hit versus THAC0");
         result = resultObj.scriptResult;
-        if (!(result == null || result == "")) finalResult = result;
+        if (!UAFUtil.IsEmpty(result)) finalResult = result;
         result = pAttacker.m_pCharacter.RunCharacterScripts
             (SPECAB.DOES_ATTACK_SUCCEED,
                 SPECAB.ScriptCallback_RunAllScripts,
                 "YN",
                 "To-Hit versus THAC0");
-        if (!(result == null || result == "")) finalResult = result;
+        if (!UAFUtil.IsEmpty(result)) finalResult = result;
         result = pTarget.RunCombatantScripts
             (SPECAB.DOES_ATTACK_SUCCEED,
                 SPECAB.ScriptCallback_RunAllScripts,
                 "YN",
                 "To-Hit versus THAC0");
-        if (!(result == null || result == "")) finalResult = result;
+        if (!UAFUtil.IsEmpty(result)) finalResult = result;
         result = pTarget.m_pCharacter.RunCharacterScripts
             (SPECAB.DOES_ATTACK_SUCCEED,
                 SPECAB.ScriptCallback_RunAllScripts,
                 "YN",
                 "To-Hit versus THAC0");
-        if (!(result == null || result == "")) finalResult = result;
+        if (!UAFUtil.IsEmpty(result)) finalResult = result;
         if (itemData.IsValidItem(itemID)) {
             pItem = itemData.GetItem(itemID);
             if (pItem != null) {
@@ -181,14 +181,14 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
                         SPECAB.ScriptCallback_RunAllScripts,
                         "YN",
                         "To-Hit versus THAC0");
-                if (!(result == null || result == "")) finalResult = result;
+                if (!UAFUtil.IsEmpty(result)) finalResult = result;
                 if (scriptContext.pSpellContext != null) {
                     result = scriptContext.GetSpellContext(null).RunSpellScripts
                         (SPECAB.DOES_ATTACK_SUCCEED,
                             SPECAB.ScriptCallback_RunAllScripts,
                             "YN",
                             "To-Hit versus THAC0");
-                    if (!(result == null || result == "")) finalResult = result;
+                    if (!UAFUtil.IsEmpty(result)) finalResult = result;
                 };
             };
         };
@@ -204,7 +204,7 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
         else {
             result = "";
         };
-        if (!(result == null || result == "")) finalResult = result;
+        if (!UAFUtil.IsEmpty(result)) finalResult = result;
         {
             var pRace;
             pRace = pAttacker.m_pCharacter.PeekRaceData();
@@ -215,7 +215,7 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
                         SPECAB.ScriptCallback_RunAllScripts,
                         "YN",
                         "To-Hit versus THAC0");
-                if (!(result == null || result == "")) finalResult = result;
+                if (!UAFUtil.IsEmpty(result)) finalResult = result;
             };
         };
         {
@@ -228,7 +228,7 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
                         SPECAB.ScriptCallback_RunAllScripts,
                         "YN",
                         "To-Hit versus THAC0");
-                if (!(result == null || result == "")) finalResult = result;
+                if (!UAFUtil.IsEmpty(result)) finalResult = result;
             };
         }
         {
@@ -241,7 +241,7 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
                         SPECAB.ScriptCallback_RunAllScripts,
                         "YN",
                         "To-Hit versus THAC0");
-                if (!(result == null || result == "")) finalResult = result;
+                if (!UAFUtil.IsEmpty(result)) finalResult = result;
             };
         };
         {
@@ -258,7 +258,7 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
                             SPECAB.ScriptCallback_RunAllScripts,
                             null,
                             "To-Hit versus THAC0");
-                        if (!(result == null || result == "")) finalResult = result;
+                        if (!UAFUtil.IsEmpty(result)) finalResult = result;
                     };
                 };
             };

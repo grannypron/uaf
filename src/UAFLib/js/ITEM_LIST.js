@@ -41,13 +41,13 @@ ITEM_LIST.prototype.CanReady = function (itemKey) {
             null,
             "Test if item can be readied");
         answer = true;
-        if (result == null || result == "") {
+        if (UAFUtil.IsEmpty(result)) {
             answer = count == 0;
         }
         else {
             if (result[0] != 'Y') answer = false;
         };
-        if (!(hookParameters[6] == null || hookParameters[6] == "")) {
+        if (!UAFUtil.IsEmpty(hookParameters[6])) {
             errorText = hookParameters[6];
             SetMiscError(ErrorText);
         }
@@ -183,3 +183,89 @@ ITEM_LIST.prototype.GetProtectModForRdyItems = function() {
     return acMod;
 }
 
+//*****************************************************************************
+// NAME: addItem
+//
+// PURPOSE:  Add a single item to the inventory (or single bundle qty)
+//*****************************************************************************
+ITEM_LIST.prototype.addItem5 = function(itemID, qty, numCharges, id, cost) {
+    if (qty < 1)
+        return FALSE;
+
+    var newItem;
+
+    if (itemData.IsMoneyItem(itemID))
+    {
+        if (numCharges < 0)
+            numCharges = 0;
+
+        newItem.itemID = itemID;
+        newItem.qty = qty;
+        newItem.ClearReadyLocation();
+        newItem.charges = numCharges;
+        newItem.identified = id;
+        newItem.cursed = false;
+    }
+    else
+    {
+        var theItem = itemData.GetItem(itemID);
+        Globals.debug("---- " + itemData.LocateItem(itemID));
+        if (theItem == null)
+            return false;
+
+        if ((theItem.Bundle_Qty <= 1) && (qty > 1)) {
+            Globals.WriteDebugString("qty > 1 && BundleQty <= 1 in addItem()\n");
+            qty = 1;
+        }
+
+        if (numCharges < 0)
+            numCharges = theItem.Num_Charges;
+
+        newItem.itemID = itemID;
+        newItem.qty = qty;
+        newItem.ClearReadyLocation();
+        newItem.charges = numCharges;
+        newItem.identified = id;
+        newItem.cursed = theItem.Cursed;
+        newItem.paid = cost;
+    }
+
+    return this.AddItem(newItem, false); // no auto-join
+}
+
+ITEM_LIST.prototype.AddItem = function(data, AutoJoin) {
+    var newkey = 0;
+    var joined = false;
+    if (AutoJoin) {
+        if (itemData.itemCanBeJoined(data.itemID)) {
+            // look for another instance of item
+            var joinIndex = -1;
+            var pos = this.GetHeadPosition();
+            while ((pos != null) && (joinIndex < 0)) {
+                if ((this.PeekAtPos(pos).itemID == data.itemID))
+                    joinIndex = PeekAtPos(pos).key;
+                this.GetNext(pos); pos = this.NextPos(pos);
+            }
+
+            // if item instance in list
+            if (joinIndex >= 0) {
+                var joinItem;
+                if (this.GetItem(joinIndex, joinItem)) {
+                    joinItem.qty += data.qty;
+                    this.SetItem(joinIndex, joinItem);
+                    joined = true;
+                    newkey = joinIndex;
+                }
+            }
+        }
+    }
+
+    if (!joined) {
+        if (this.m_items.GetCount() < Items.MAX_ITEMS) {
+            data. key = GetNextKey();
+            this.m_items.Insert(data, data.key);
+            newkey = data.key;
+        }
+    }
+    return newkey;
+}

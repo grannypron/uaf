@@ -1023,13 +1023,13 @@ CHARACTER.prototype.getItemList = function (id) {
 };
 
 CHARACTER.prototype.addCharacterItem = function (itemID, qty, numCharges, id, cost) {
-    if ((Items.getItemEncumbrance(itemID, qty) + this.GetEncumbrance()) > this.GetAdjMaxEncumbrance()) {
+    if ((itemData.getItemEncumbrance(itemID, qty) + this.GetEncumbrance()) > this.GetAdjMaxEncumbrance()) {
         Globals.SetMiscError(Globals.miscErrorType.TooMuchWeight);
         return false;
     }
 
-    if (!this.myItems.addItem(itemID, qty, numCharges, id, cost)) {
-        UAFUtil.WriteDebugString("Failed to addItem to character\n");
+    if (!this.myItems.addItem5(itemID, qty, numCharges, id, cost)) {
+        Globals.WriteDebugString("Failed to addItem to character\n");
         return false;
     }
 
@@ -1083,7 +1083,7 @@ CHARACTER.prototype.buyItem = function (itemID, type) {
         return;
     }
 
-    if ((Items.getItemEncumbrance(itemID, 1) + this.GetEncumbrance()) > this.GetAdjMaxEncumbrance())
+    if ((itemData.getItemEncumbrance(itemID, 1) + this.GetEncumbrance()) > this.GetAdjMaxEncumbrance())
         Globals.SetMiscError(Globals.miscErrorType.TooMuchWeight);
     else {
         var bundle = Math.max(data.Bundle_Qty, 1);
@@ -1985,7 +1985,7 @@ CHARACTER.prototype.GetStatus = function () {
 }
 
 CHARACTER.prototype.GetUndeadType = function () {
-    return this.undeadType == null || this.undeadType == "" ? "none" : undeadType;
+    return UAFUtil.IsEmpty(this.undeadType) ? "none" : undeadType;
 }
 
 CHARACTER.prototype.GetSize = function () {
@@ -2201,7 +2201,7 @@ CHARACTER.prototype.determineEffectiveEncumbrance = function () {
     var pos = this.myItems.GetHeadPosition();
     while (pos != null) {
         {
-            total += getItemEncumbrance(myItems.PeekAtPos(pos).itemID, this.myItems.PeekAtPos(pos).qty);
+            total += itemData.getItemEncumbrance(myItems.PeekAtPos(pos).itemID, this.myItems.PeekAtPos(pos).qty);
         }
         pos = this.myItems.NextPos(pos);
     }
@@ -3360,7 +3360,7 @@ CHARACTER.prototype.ModifyAttackRollDice = function (pTarget, num, sides, pBonus
             else {
                 result = this.GetAdjSpecAb(SPECAB.SA_InvisibleToUndead, src, spellID); src = result.src; spellID = result.spellID;   // PORT NOTE:  Dealing with output parameters
                 if (result.returnVal) {
-                    if (!(pTarget.GetUndeadType() == null || pTarget.GetUndeadType() == "")) {
+                    if (!UAFUtil.IsEmpty(pTarget.GetUndeadType())) {
                         pBonus += 2;
                         this.QueueUsedSpecAb(SPECAB.SA_InvisibleToUndead, src, spellID);
                         modify = true;
@@ -3391,7 +3391,7 @@ CHARACTER.prototype.ModifyAttackRollDice = function (pTarget, num, sides, pBonus
             else {
                 result = pTarget.GetAdjSpecAb(SPECAB.SA_InvisibleToUndead, src, spellID); src = result.src; spellID = result.spellID;   // PORT NOTE:  Dealing with output parameters
                 if (result.returnVal) {
-                    if (!(this.GetUndeadType() == null || this.GetUndeadType() == "")) {
+                    if (!UAFUtil.IsEmpty(this.GetUndeadType())) {
                         pBonus -= 4;
                         pTarget.QueueUsedSpecAb(SPECAB.SA_InvisibleToUndead, src, spellID);
                         modify = true;
@@ -3987,6 +3987,15 @@ CHARACTER.prototype.HasDeathImmunity = function () {
     return FALSE;
 }
 
+CHARACTER.prototype.GetAdjMaxEncumbrance = function (flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    var key = IF_KEYWORD_INDEX.CHAR_MAXENC;
+    var val = this.GetMaxEncumbrance();
+    val = this.ApplySpellEffectAdjustments(flags, key, val);
+    val = Math.max(1, val);
+    return val;
+}
+
 CHARACTER.prototype.SetLevel = function (lvl) { throw "todo"; }
 CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };
 CHARACTER.prototype.GetBestMemorizedHealingSpell = function (pSpellID) { throw "todo"; };
@@ -4041,7 +4050,6 @@ CHARACTER.prototype.SetAlignment = function (val) { throw "todo"; }
 CHARACTER.prototype.SetAllowInCombat = function (allow) { throw "todo"; }
 CHARACTER.prototype.determineEncumbrance = function () { throw "todo"; }
 CHARACTER.prototype.determineNormalEncumbrance = function () { throw "todo"; }
-CHARACTER.prototype.GetAdjMaxEncumbrance = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.GetPerm = function () { };
 CHARACTER.prototype.GetAdj = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.GetLimited = function () { throw "todo"; }

@@ -398,7 +398,7 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
                 "Initializing new combat");
             scriptContext.Clear();
             RunTimeIF.ClearCharContext();
-            if (!(priority == null || priority == "")) {
+            if (!UAFUtil.IsEmpty(priority)) {
                 var k;
                 k = UAFUtil.ScriptAtoI(priority);
                 this.m_aCombatants[i].scriptPriority = k;
@@ -1111,7 +1111,7 @@ COMBAT_DATA.prototype.determineInitCombatPos = function () {
             partyArrangement = partyIndoorCombatArrangement;
         };
         scriptResult = SPECAB.RunGlobalScript("Global_Combat", "PartyArrangement", true);
-        if (!(scriptResult == null || scriptResult == "")) {
+        if (!UAFUtil.IsEmpty(scriptResult)) {
             if (scriptResult.GetLength() == partyIndoorCombatArrangement.length)
             {
                 partyArrangement = scriptResult;
@@ -2157,7 +2157,7 @@ COMBAT_DATA.prototype.IsValidTarget = function(pAttacker, pTarget, targetValidit
         "YN",
         "Determine if valid target");
     answer = 1;
-    if (!(result == null || result == "")) {
+    if (!UAFUtil.IsEmpty(result == null)) {
         if (result[0] == 'N') answer = 0;
     }
     if (targetValidity != null) targetValidity = answer;

@@ -282,6 +282,14 @@ ITEM_DATA.prototype.SerializeCAR = function (ar, ver) {
         this.item_asl.SerializeCAR(ar, "ITEM_DATA_ATTRIBUTES");
 }
 
+ITEM_DATA.prototype.UniqueName = function () {
+    return this.m_uniqueName;
+}
+
+ITEM_DATA.prototype.ItemID = function () {
+    return this.m_uniqueName;
+}
+
 
 /**TODO
     CString IdName(void)const { return m_idName; }
@@ -315,10 +323,7 @@ ITEM_DATA.prototype.SerializeCAR = function (ar, ver) {
     friend static void DitemDroppable(CONFIG_PKT * pkt);
 void SetIdName(const CString& name);                               //        **
 CString  CommonName(void)const { return m_commonName;}; //Not serialized.//        **
-inline   CString  UniqueName(void)const { return m_uniqueName;};         //        **
 void SetUniqueName(const CString& name);                           //        **
-ITEM_ID  ItemID(void)  const { ITEM_ID x; x = m_uniqueName; return x;};    //        **
-void SpellID(const SPELL_ID& s) { spellID = s; };                     //        **
 BOOL IsUsableByClass(const CHARACTER * pChar) const ;
 BOOL IsUsableByBaseclass(const BASECLASS_ID& baseclassID) const ;
     inline BOOL IsUsable(void) const { return (m_usageFlags & USAGE_usable) != 0;};

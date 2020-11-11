@@ -21,8 +21,8 @@ SPECAB.loadData(specialAbilitiesData, "C:\\Users\\Shadow\\Downloads\\Full_Releas
 */
 
 
-var loader = new UAFLib.SpecabilityLoader();
-var data = loader.load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\SpecialAbilities.xml");
+var loader = new UAFLib.dataLoaders.SpecabilityLoader();
+var data = loader.load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\SpecialAbilities.xml");
 
 var enumerator = data.GetEnumerator();
 while (enumerator.MoveNext()) {

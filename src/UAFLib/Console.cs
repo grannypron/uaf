@@ -20,7 +20,10 @@ namespace UAFLib
 
             try
             {
-                /*
+                
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestParseDice.js" });
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadSAs.js" });
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadItems.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestUtilHex.js"});
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestEntityType.js" }); 
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestStripFilenamePath.js"});
@@ -29,14 +32,15 @@ namespace UAFLib
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestPathManager.js"});
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestRollDice.js"});
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestGlobalStats.js"});
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadSAs.js"});
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js"});
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestSimpleCombatMovement.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestFreeAttacks.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js" });
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js", @"..\..\..\UAFLib\Tests\TestSimpleUnarmedAttack.js" });
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js", @"..\..\..\UAFLib\Tests\TestSimpleUnarmedAttack.js", @"..\..\..\UAFLib\Tests\TestKill.js" });
+                
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestCharacterSerialize.js", @"..\..\..\UAFLib\Tests\TestInventory.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js", @"..\..\..\UAFLib\Tests\TestSimpleAttack.js" });
-              */
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js", @"..\..\..\UAFLib\Tests\TestSimpleAttack.js", @"..\..\..\UAFLib\Tests\TestKill.js" });
                 System.Console.WriteLine("Tests complete!  Press Any key.");
             }
             catch (JavaScriptException ex)

@@ -61,3 +61,11 @@ CList.prototype.IsEmpty = function () {
 CList.prototype.RemoveHead = function () {
     return this.mList.pop();
 }
+
+CList.prototype.Add = function (itm) {
+    return this.mList.push(itm);
+}
+
+CList.prototype.SetAtGrow = function (length, itm) {
+    return this.mList.push(itm);
+}

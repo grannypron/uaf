@@ -61,27 +61,31 @@
   <ItemGroup>
     <Compile Include="Console.cs" />
     <Compile Include="ConsoleResults.cs" />
+    <Compile Include="dataLoaders\ItemLoader.cs" />
+    <Compile Include="dataLoaders\BaseLoader.cs" />
     <Compile Include="LibraryFile.cs" />
     <Compile Include="LibraryInfo.cs" />
     <Compile Include="MFCSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SpecabilityLoader.cs" />
+    <Compile Include="dataLoaders\SpecabilityLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="SaveB.pty" />
-    <None Include="specialAbilities.dat" />
     <None Include="Tests\Druid.chr" />
     <None Include="Tests\Priestess.chr" />
     <None Include="Tests\Rogue.chr" />
     <None Include="Tests\Warrior.chr" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="data\items.xml" />
     <Content Include="js\ABILITY_DATA.js" />
     <Content Include="js\ABILITY_DATA_TYPE.js" />
     <Content Include="js\ACTIVE_SPELL_LIST.js" />
+    <Content Include="js\alignmentType - Copy.js" />
     <Content Include="js\BASECLASS_LIST.js" />
     <Content Include="js\interop\UIEventManager.js" />
+    <Content Include="js\itemRechargeRate.js" />
     <Content Include="js\MonsterImmunityType.js" />
     <Content Include="js\spellDurationType.js" />
     <Content Include="js\WhatSprite.js" />
@@ -216,15 +220,19 @@
     <Content Include="js\SPELL_ABILITY.js" />
     <Content Include="js\ITEM_DATA_TYPE.js" />
     <Content Include="js\CHARACTER_ID.js" />
-    <Content Include="SpecialAbilities.xml" />
+    <Content Include="data\SpecialAbilities.xml" />
     <Content Include="js\DICEPLUS.js" />
     <Content Include="Tests\TestCombatMovementAttack.js" />
+    <Content Include="Tests\TestLoadItems.js" />
+    <Content Include="Tests\TestParseDice.js" />
     <Content Include="Tests\TestRollDice.js" />
     <Content Include="Tests\TestLoadSAs.js" />
     <Content Include="Tests\DemoCombat.js" />
     <Content Include="Tests\TestFreeAttacks.js" />
     <Content Include="Tests\TestKill.js" />
+    <Content Include="Tests\TestInventory.js" />
     <Content Include="Tests\TestSimpleAttack.js" />
+    <Content Include="Tests\TestSimpleUnarmedAttack.js" />
     <Content Include="Tests\TestSimpleCombatMovement.js" />
     <Content Include="Tests\TestSetupCombat.js" />
     <Content Include="Tests\TestGlobalStats.js" />

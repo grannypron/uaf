@@ -18,4 +18,14 @@ function Items() {
     this.Neck = UAFUtil.StringToBase38('NECK');
     this.Pack = UAFUtil.StringToBase38('PACK');
     this.Undefined = UAFUtil.StringToBase38('UNDEF');
+
+    this.MAX_ITEMS = UAFUtil.ByteFromHexString("0x00FFFFFF");
+}
+
+Items.prototype.GetReadiedLocationByString = function (str) {
+    if (str == null || str == "") {
+        return this.Undefined;
+    } else {
+        return UAFUtil.StringToBase38(str);
+    }
 }

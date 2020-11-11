@@ -129,7 +129,7 @@ SCRIPT_CONTEXT.prototype.SetTargetContextCombatant = function(pCombatant)
 SCRIPT_CONTEXT.prototype.SetItemContext = function(pItem)
 {
     this.pItemContext = pItem;
-    if (pItem != null) {
+    if (pItem != null && !UAFUtil.IsEmpty(pItem)) {    //PORT NOTE:  Had to add IsEmpty check to prevent NPE because pItemID could be an empty string in my new scheme with IDs as strings
         this.SetSpellContext(pItem.SpellID());
     }
 }

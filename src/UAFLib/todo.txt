@@ -1,7 +1,5 @@
-﻿- Go back and find all the == "" || == null entries and change them to use UAFUtil.IsEmpty()
-- Make a unit test that sets an enemy next to a character and makes an attack - check out makeAttack called from COMBATANT.HandleTimeDelayMsgBegin (ew)
-- Figure out how we are going to load resources in Unity.  Make a ResourceLoader interface in UAFLib that a Unity class will implement
-- Make a monster library loader, class library loader, etc.
+﻿- Make a monster library loader, class library loader, etc.
+- Test case(s) for inventory management of Joinable items
 - Figure out how to handle their compression algorithm
 - go back through the C++ source and find all instances of "delete" and re-insert them back with calls to a MemoryManager() class.  Apparently jint responds to delete statements, although all engines might not
 - Get GenerateIndoorCombatMap() working

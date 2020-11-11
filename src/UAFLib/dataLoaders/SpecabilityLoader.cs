@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using UAFLib.dataLoaders;
 
-namespace UAFLib
+namespace UAFLib.dataLoaders
 {
-    class SpecabilityLoader
+    class SpecabilityLoader : BaseLoader
     {
-        public Dictionary<String, object[]> load(string path)
+        public override Dictionary<String, object> load(XmlDocument doc)
         {
 
-            Dictionary<String, object[]> returnData = new Dictionary<string, object[]>();
-
-            XmlDocument doc = new XmlDocument();
-            doc.Load(path);
+            Dictionary<String, object> returnData = new Dictionary<string, object>();
             XmlNodeList items = doc.SelectNodes("//node()[local-name()='item']");
 
             foreach (XmlNode node in items)

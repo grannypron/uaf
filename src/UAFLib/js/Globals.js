@@ -110,7 +110,7 @@ Globals.prototype.GetMaxPartyMembers = function()
 }
 
 Globals.prototype.StripFilenamePath = function (filename) {
-    if (filename == "" || filename == null)
+    if (UAFUtil.IsEmpty(filename))
         return filename;
 
     // if filaname ends with '\', strip it
@@ -262,7 +262,7 @@ Globals.prototype.GetSkillValue = function(SC)
             m = SC.pClass.GetCount();
             for (j = 0; j < m; j++) {
                 baseclassID = SC.pClass.PeekBaseclassID(j);
-                if ((SC.baseclassID == null || SC.baseclassID == "") || (SC.baseclassID == baseclassID)) {
+                if (UAFUtil.IsEmpty(SC.baseclassID) || (SC.baseclassID == baseclassID)) {
                     pBaseclass = baseclassData.PeekBaseclass(baseclassID);
                     if (pBaseclass == null) continue;
                     SC = pBaseclass.GetSkillValue(SC);
@@ -307,7 +307,7 @@ Globals.prototype.UpdateSkillValue = function(SC) {
             if (SC.baseclassID.IsEmpty() || (SC.baseclassID == baseclassID)) {
                 pBaseclass = baseclassData.PeekBaseclass(baseclassID);
                 if (pBaseclass == null) continue;
-                if ((SC.baseclassID == null || SC.baseclassID == "") || (SC.baseclassID == pBaseclass.BaseclassID())) {
+                if (UAFUtil.IsEmpty(SC.baseclassID) || (SC.baseclassID == pBaseclass.BaseclassID())) {
                     SC = pBaseclass.UpdateSkillValue(SC)
                 }
             }

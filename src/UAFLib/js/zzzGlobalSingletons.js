@@ -19,6 +19,7 @@ var EventSourceType = new EventSourceTypeObj();
 var genderType = new genderTypeObj(genderType);
 var eventType = new eventTypeObj();
 var eventTurnUndeadModType = new eventTurnUndeadModTypeObj();
+var itemRechargeRate = new itemRechargeRate();
 var eventSurpriseType = new eventSurpriseTypeObj();
 var chainTriggerType = new chainTriggerTypeObj();
 var eventTriggerType = new eventTriggerTypeObj();

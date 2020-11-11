@@ -24,7 +24,7 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
     distance = Drawtile.Distance6(pAttacker.self, pAttacker.x, pAttacker.y,
         pTarget.self, pTarget.x, pTarget.y);
 
-    itemID = null;
+    itemID = "";
     if (wpn != NO_READY_ITEM) {
         itemID = pAttacker.m_pCharacter.myItems.GetItem(wpn);
     }
@@ -84,6 +84,7 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
         if (isBackStab) {
             this.m_damage = this.m_damage * backstabMultiplier / 100;
         };
+
         {
             var result = "";
             var hookParameters = new HOOK_PARAMETERS();

@@ -79,7 +79,15 @@ function loadAbility(abilityName) {
     abilityData.AddAbility(data);
 }
 
-
+UIEventManager.dyingCount = 0;
+UIEventManager.CombatantDying = function (id, x, y) {
+    Globals.debug("CombatantDying");
+    UIEventManager.dyingCount++;
+}
+UIEventManager.CombatantDead = function (id, x, y) {
+    Globals.debug("CombatantDead");
+    UIEventManager.dyingCount++;
+}
 
 var Warrior = Deserialize("Warrior.chr");
 Warrior.SetStatus(charStatusType.Okay);
@@ -87,7 +95,6 @@ var Rogue = Deserialize("Rogue.chr");
 
 //var cWarrior = new COMBATANT();
 //cWarrior.m_pCharacter = Warrior;
-
 loadLibraryStub();
 SPECAB.loadData(specialAbilitiesData, "C:\\Users\\Shadow\\Downloads\\Full_Release_191031\\TutorialDesign.dsn\\Data\\specialAbilities.dat");
 Globals.logDebuggingInfo = true;

@@ -415,8 +415,8 @@ function SPECAB() {
 SPECAB.prototype.loadData = function (data, fullPath) {
 
     /** TODO  - temporarily using a stub here because the compression is just too hard right now **/
-    var loader = new UAFLib.SpecabilityLoader();
-    var data = loader.load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\SpecialAbilities.xml");
+    var loader = new UAFLib.dataLoaders.SpecabilityLoader();
+    var data = loader.load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\SpecialAbilities.xml");
 
     var enumerator = data.GetEnumerator();
     while (enumerator.MoveNext()) {

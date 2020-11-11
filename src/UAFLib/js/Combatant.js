@@ -915,7 +915,7 @@ COMBATANT.prototype.OnAuto = function (callAutoActionHook) {
 
 
 
-        while (!(hookParameters[0] == null || hookParameters[0] == "")) {
+        while (!UAFUtil.IsEmpty(hookParameters[0])) {
             var col = 0;
             this.iFleeingFlags &= ~FLEEING_FLAGS.fleeAutoActionScript;
             this.iAutoFlags &= ~FLEEING_FLAGS.forceAutoScript;
@@ -1705,7 +1705,7 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
 //                            WriteDebugString("TFA - script 'Guarding-CanGuardAttack' returned \"%s\"\n", result);
 //#endif
                             scriptContext.Clear();
-                            if (!(result == null || result == "")) {
+                            if (!UAFUtil.IsEmpty(result)) {
                                 if (result[0] == 'Y') {
                                     performGuardAttack = true;
                                 };
@@ -1972,7 +1972,7 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
 
                     // ammo class must match between weapon and ammo
                     var myammoclass = this.m_pCharacter.myItems.GetAmmoClass(myammoitemidx);
-                    if (myammoclass == null || myammoclass == "") return false; // might be wand,potion,amulet,etc
+                    if (UAFUtil.IsEmpty(myammoclass)) return false; // might be wand,potion,amulet,etc
 
                     if (myammoclass != this.m_pCharacter.myItems.GetAmmoClass(mywpnitemidx))
                         return false;
@@ -2015,7 +2015,7 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
             if (targCOMBATANT.GetAdjSpecAb(SPECAB.SA_Invisible))
                 return false;
 
-            if (!(this.GetUndeadType() == null || this.GetUndeadType() == "")) {
+            if (!UAFUtil.IsEmpty(this.GetUndeadType())) {
                 if (targCOMBATANT.GetAdjSpecAb(SPECAB.SA_InvisibleToUndead))
                     return false;
             }
@@ -2107,7 +2107,7 @@ COMBATANT.prototype.IsDone = function(freeAttack, comment) {
             "N",
             comment);
 
-        if (!(result == null || result == "")) {
+        if (!UAFUtil.IsEmpty(result)) {
             this.m_isCombatReady = 0;
         }
         else {
@@ -2116,7 +2116,7 @@ COMBATANT.prototype.IsDone = function(freeAttack, comment) {
                 SPECAB.ScriptCallback_LookForChar,
                 "N",
                 comment);
-            if (!(result == null || result == "")) {
+            if (!UAFUtil.IsEmpty(result)) {
                 this.m_isCombatReady = 0;
             }
         };
@@ -2196,7 +2196,6 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
     if (targCOMBATANT == null) return 1;
     if (targCOMBATANT.GetStatus() == individualCombatantState.Dead) return 1; // not on the map anymore
 
-
     var decQty = false;
     var wpn = 0;
     wpn = this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0);
@@ -2248,7 +2247,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         if (wpn != NO_READY_ITEM) {
             var pSpell;
             itemSpellID = pWeapon.SpellID();
-            if (!(itemSpellID == "" || itemSpellID == null)) {
+            if (!UAFUtil.IsEmpty(itemSpellID)) {
                 pSpell = spellData.PeekSpell(itemSpellID);
                 if (itemSpellID.IsValidSpell()) {
                     //Not Implemented(0x551c, false);
@@ -2289,7 +2288,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                 toHitComputation.IsBackStab(),
                 toHitComputation.BackstabMultiplier());
             {
-                if (!(itemID == null || itemID == "")) {                   // PORT NOTE:   Was if (!itemID.IsNoItem()), but this just checked to see if it was empty
+                if (!UAFUtil.IsEmpty(itemID)) {                   // PORT NOTE:   Was if (!itemID.IsNoItem()), but this just checked to see if it was empty
                     var noSpell = "";
                     if (pWeapon.IsUsable() && (pWeapon.Wpn_Type == weaponClassType.SpellCaster)) {
                         this.InstantSpellActivate(pWeapon.spellID, noSpell, targ, toHitComputation);
@@ -2333,8 +2332,8 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                         DispText.CombatMsg = samsg;
                     }
                 };
-                if (DispText.CombatMsg == null || DispText.CombatMsg == "") {
-                    if (damageComputation.Message() == null || damageComputation.Message() == "") {
+                if (UAFUtil.IsEmpty(DispText.CombatMsg)) {
+                    if (UAFUtil.IsEmpty(damageComputation.Message())) {
                         if (toHitComputation.IsBackStab()) {
                             DispText.CombatMsg = "Rolls " + toHitComputation.Rolled() + " and BackStabs for " + damageComputation.Damage() + " dmg";
                         }
