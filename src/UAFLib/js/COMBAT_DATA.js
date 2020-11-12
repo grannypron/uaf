@@ -752,12 +752,10 @@ COMBAT_DATA.prototype.AddCombatants = function () {
 
 COMBAT_DATA.prototype.AddCharsToCombatants = function() {
     var temp = new COMBATANT();
-    Globals.debug("COMBAT_DATA.prototype.AddCharsToCombatants - 1");
+
     for (i = 0; i < party.numCharacters; i++)
     {
         var stype = party.characters[i].GetAdjStatus();
-        Globals.debug("COMBAT_DATA.prototype.AddCharsToCombatants - " + stype + " / " + party.characters[i].status);
-        Globals.debug("COMBAT_DATA.prototype.AddCharsToCombatants - " + party.characters[i].GetAllowInCombat());
         if (((stype == charStatusType.Okay) || (stype == charStatusType.Dying))
             && (party.characters[i].GetAllowInCombat())) {
             temp = new COMBATANT();   // PORT NOTE:  I don't know how this was only temp.Clear() here, but it was.  Should have had multiple copies of the same combatant object in the m_aCombatants array...

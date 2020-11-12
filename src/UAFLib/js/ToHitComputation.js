@@ -174,7 +174,7 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
                 "To-Hit versus THAC0");
         if (!UAFUtil.IsEmpty(result)) finalResult = result;
         if (itemData.IsValidItem(itemID)) {
-            pItem = itemData.GetItem(itemID);
+            pItem = itemData.GetItemFromID(itemID);
             if (pItem != null) {
                 result = pItem.RunItemScripts
                     (SPECAB.DOES_ATTACK_SUCCEED,
@@ -319,7 +319,7 @@ ToHitComputation.prototype.ComputeEffectiveTHAC0 = function(pAttacker, pTarget, 
 
     var pWeapon = null;
     if (itemData.IsValidItem(weaponID)) {                  // PORT NOTE:  Changed IsValidItem a bit
-        pWeapon = itemData.GetItem(weaponID);
+        pWeapon = itemData.GetItemFromID(weaponID);
     };
 
     //////////////////////// attackerTHAC0

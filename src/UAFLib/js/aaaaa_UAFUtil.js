@@ -18,7 +18,8 @@ UAFUtil.prototype.StringToBase38 = function (str) {
     len = str.length;
     for (i = 0; i < 6; i++) {
         if (len <= i) c = ' ';
-        else c = str.indexOf(i);
+        else c = str.charAt(i);
+
         if (c == ' ') c = 1;
         else if ((c >= '0') && (c <= '9')) c = c.charCodeAt(0) - '0'.charCodeAt(0) + 2;
         else if ((c >= 'A') && (c <= 'Z')) c = c.charCodeAt(0) - 'A'.charCodeAt(0) + 12;

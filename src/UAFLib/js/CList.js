@@ -18,24 +18,31 @@ CList.prototype.PeekAt = function (idx) {
 }
 
 CList.prototype.PeekNext = function (idx) {
-    if (idx >= this.mList.length)
+    if (idx >= this.mList.length || idx < 0)
         return null;
     else {
-        return idx + 1;
+        return this.mList[idx + 1];
     }
 }
 
 CList.prototype.GetAtPos = function (idx) {
-    return this.PeekAt(idx);
+    if (idx >= this.mList.length || idx < 0)
+        return null;
+    else
+        return this.PeekAt(idx);
+        
 }
 
 CList.prototype.PeekAtPos = function (idx) {
-    return this.PeekAt(idx);
+    if (idx >= this.mList.length || idx < 0)
+        return null;
+    else
+        return this.PeekAt(idx);
 }
 
 CList.prototype.NextPos = function (idx) {
     var idx = idx + 1;
-    if (idx >= idx.length) {
+    if (idx >= this.mList.length) {
         return null;
     } else {
         return idx;     // PORT NOTE: Obviously, this is not really necessary to have, but I wanted to keep the idea of the linked list with pointers so as to keep the code as close as possible to the original on the first conversion

@@ -2,7 +2,7 @@
 function ITEM() {
     this.key;
     this.itemID = new ITEM_ID(); // was GLOBAL_ITEM_ID m_giID;  // exactly one int in size.
-    this.readyLocation = new itemReadiedLocation();
+    this.readyLocation = itemReadiedLocation.NotReady;
     this.pItemData = new ITEM_DATA();  // Not Serialized.....temporary cache
     this.qty = 0;
     this.identified = 0;
@@ -60,9 +60,15 @@ ITEM.prototype.SerializeCAR = function (ar, ver) {
 
     this.rdyItems_Deprecated.SerializeCAR(ar);
 }
+ITEM.prototype.ClearReadyLocation = function () {
+    this.readyLocation.Clear();
+}
+
+ITEM.prototype.GetReadyLocation = function() {
+    return this.readyLocation;
+}
+
 /**TODO**
 void Serialize(CArchive & ar, double ver);
-itemReadiedLocation ReadyLocation(void) const ;
 void ReadyLocation(DWORD rdyLoc);
-void ClearReadyLocation(void){ readyLocation.Clear(); };
 **/

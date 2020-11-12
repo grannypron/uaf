@@ -290,6 +290,39 @@ ITEM_DATA.prototype.ItemID = function () {
     return this.m_uniqueName;
 }
 
+ITEM_DATA.prototype.FreeArt = function () { // release surface
+    //PORT NOTE: No need
+}
+
+ITEM_DATA.prototype.ClearSounds = function () {
+    //PORT NOTE: No need
+}
+
+ITEM_DATA.prototype.IsUsableByClass = function(pChar) {
+    {
+        var i = 0, n = 0;
+        n = pChar.GetBaseclassStatsCount();
+        for (i = 0; i < n; i++) {
+            if (!pChar.CanUseBaseclassBaseclassStats(pChar.PeekBaseclassStats(i))) continue;
+            {
+                var j = 0, m = 0;
+                m = this.GetBaseclassCount();
+                for (j = 0; j < m; j++) {
+                    if (this.PeekBaseclass(j) == pChar.PeekBaseclassStats(i).baseclassID) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+
+ITEM_DATA.prototype.GetBaseclassCount = function () {
+    return this.usableByBaseclass.length;
+}
+
 
 /**TODO
     CString IdName(void)const { return m_idName; }
@@ -312,10 +345,8 @@ ITEM_DATA.prototype.ItemID = function () {
     void PlayHit();
     void PlayMiss();
     void PlayLaunch();
-    void ClearSounds();
     void LoadArt();
     void ClearArt(); // release surface and clear pic data
-    void FreeArt(); // release surface
     void CastSpell(int spell) const ;
     void SpellActivate(const PENDING_SPELL & data) const ;
     friend BOOL ImportUAItemsToUAF(const char * path);
@@ -324,7 +355,6 @@ ITEM_DATA.prototype.ItemID = function () {
 void SetIdName(const CString& name);                               //        **
 CString  CommonName(void)const { return m_commonName;}; //Not serialized.//        **
 void SetUniqueName(const CString& name);                           //        **
-BOOL IsUsableByClass(const CHARACTER * pChar) const ;
 BOOL IsUsableByBaseclass(const BASECLASS_ID& baseclassID) const ;
     inline BOOL IsUsable(void) const { return (m_usageFlags & USAGE_usable) != 0;};
 inline void IsUsable(BOOL usable){ if (usable) m_usageFlags |= USAGE_usable; else m_usageFlags &= ~USAGE_usable; };

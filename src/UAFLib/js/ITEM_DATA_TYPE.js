@@ -6,6 +6,7 @@ function ITEM_DATA_TYPE() {
 
 ITEM_DATA_TYPE.prototype.GetWpnType = function(itemID) {
     var pItem;
+
     pItem = this.PeekItem(itemID);
     if (pItem != null) {
         return pItem.Wpn_Type;
@@ -15,18 +16,24 @@ ITEM_DATA_TYPE.prototype.GetWpnType = function(itemID) {
 }
 
 ITEM_DATA_TYPE.prototype.PeekItem = function (itemID) {
-    return this.GetItem(itemID);
-}
-
-ITEM_DATA_TYPE.prototype.GetItem = function (itemID) {
+    if (UAFUtil.IsEmpty(itemID)) { return null; }
     return this.ItemData.GetAtPos(this.LocateItem(itemID));
 }
 
-ITEM_DATA_TYPE.prototype.FreeArt = function() {
+ITEM_DATA_TYPE.prototype.GetItemFromID = function (itemID) {
+    if (UAFUtil.IsEmpty(itemID)) { return null; }
+    return this.ItemData.GetAtPos(this.LocateItem(itemID));
+}
+
+ITEM_DATA_TYPE.prototype.GetItemByPos = function (idx) {
+    return this.ItemData.GetAtPos(idx);
+}
+
+ITEM_DATA_TYPE.prototype.FreeArt = function () {
     var i, n;
     n = this.GetCount();
     for (i = 0; i < n; i++) {
-        this.GetItem(i).FreeArt();
+        this.GetItemByPos(i).FreeArt();
     }
 }
 
@@ -38,7 +45,7 @@ ITEM_DATA_TYPE.prototype.ClearSounds = function() {
     var i, n;
     n = this.GetCount();
     for (i = 0; i < n; i++) {
-        this.GetItem(i).ClearSounds();
+        this.GetItemByPos(i).ClearSounds();
     };
 }
 
@@ -187,7 +194,7 @@ ITEM_DATA_TYPE.prototype.LoadFromLoader = function (data) {
         item.Cursed = itemRecord["cursed"] == "yes";
         item.Bundle_Qty = parseInt(itemRecord["bundle_quantity"]);
         item.Num_Charges = parseInt(itemRecord["number_of_charges"]);
-        item.Location_Readied = Items.GetReadiedLocationByString(itemRecord["Location_Readied"]);
+        item.Location_Readied = Items.GetReadiedLocationByString(itemRecord["readied_location"]);
         item.Hands_to_Use = parseInt(itemRecord["hands_to_carry"]);
         var sm_dice = UAFUtil.parseDice(itemRecord["small_medium_damage_dice"]);
         item.Dmg_Dice_Sm = sm_dice.die;
@@ -256,10 +263,10 @@ ITEM_DATA_TYPE.prototype.getItemEncumbrance = function(itemID, qty) {
             return qty;
     }
 
-    var data = itemData.GetItem(itemID);
+    var data = itemData.GetItemFromID(itemID);
     if (data == null)
         return 0;
-    var bundle = max(data.Bundle_Qty, 1);
+    var bundle = Math.max(data.Bundle_Qty, 1);
 
     // if bundle qty > 1 then stated encumbrance is for
     // the whole group of items. Figure out the encumbrance

@@ -92,7 +92,7 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
             var pWeapon = null;
             scriptContext.SetItemContext(itemID);
             if (!itemData.IsNoItem(itemID)) {
-                pWeapon = itemData.GetItem(itemID);
+                pWeapon = itemData.GetItemFromID(itemID);
             };
             hookParameters[2] = "" + this.m_damage;
             if (pWeapon != null) {
@@ -104,7 +104,7 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
                         var launchID = "";
                         var pLauncher;
                         launchID = pAttacker.m_pCharacter.myItems.GetItem(launchWpnIndex);
-                        pLauncher = itemData.GetItem(launchID);
+                        pLauncher = itemData.GetItemFromID(launchID);
                         hookParameters[3] = "" + pLauncher.Attack_Bonus;
                         this.m_damage += pLauncher.Attack_Bonus;
                     };

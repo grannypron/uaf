@@ -11,7 +11,6 @@ function CHARACTER(character) {
     CHARACTER & 	operator= (CHARACTER &src) // TODO 
     CHARACTER.prototype.operator== (CHARACTER &src) // TODO
     */
-    this.itemData = ITEM_DATA_TYPE;
     this.preSpellNamesKey = 0;
     this.name = "";
     this.undeadType = "";
@@ -887,7 +886,7 @@ CHARACTER.prototype.getCharWeaponText = function (wpn, dmg) {
         var itemID = new ITEM_ID();
         itemID = this.myItems.GetItem(wpnHand);
 
-        data = this.itemData.GetItem(itemID);
+        data = itemData.GetItemFromID(itemID);
 
         if (data != null) {
             if ((Items.isMagical(itemID)) && (this.myItems.GetId(wpnHand))) {
@@ -916,7 +915,7 @@ CHARACTER.prototype.getCharWeaponText = function (wpn, dmg) {
                 if (ammoHand != NO_READY_ITEM) {
                     var itemName;
                     itemName = this.myItems.GetItem(ammoHand);
-                    data = this.itemData.GetItem(itemID);
+                    data = itemData.GetItemFromID(itemID);
                     isMissile = true;
                 }
             }
@@ -965,11 +964,11 @@ CHARACTER.prototype.getCharArmorText = function () {
     var index = this.myItems.GetReadiedItem(this.BodyArmor, 0); // dude's ready armor, if any
 
     if (index != NO_READY_ITEM) {
-        var itemData = this.itemData.GetItem(itemID);
-        if ((Items.isMagical(this.myItems.GetItem(index))) && (this.myItems.GetId(index)))
-            armor = itemData.GetItemIdName(myItems.GetItem(index));
+        var itemData = itemData.GetItemFromID(itemID);
+        if ((Items.isMagical(myItems.GetItem(index))) && (this.myItems.GetId(index)))
+            armor = itemData.GetItemFromIDIdName(myItems.GetItem(index));
         else
-            armor = itemData.GetItemCommonName(myItems.GetItem(index));
+            armor = itemData.GetItemFromIDCommonName(myItems.GetItem(index));
     }
     else
         armor = "";
@@ -1014,8 +1013,9 @@ CHARACTER.prototype.getItemList = function (id) {
     var pos = this.myItems.GetHeadPosition();
     while (pos != null) {
         itemID = this.myItems.PeekAtPos(pos).itemID;
-        var itemData = this.itemData.GetItem(itemID);
-        temp.Format("{" + itemData.GetItemUniqueName(itemID) + "[" + id + "]}");
+        var itemData = itemData.GetItemFromID(itemID);
+        var itemData = itemData.GetItemFromID(itemID);
+        temp.Format("{" + itemData.GetItemFromIDUniqueName(itemID) + "[" + id + "]}");
         result += temp;
         this.myItems.GetNext(pos);
     }
@@ -1028,7 +1028,7 @@ CHARACTER.prototype.addCharacterItem = function (itemID, qty, numCharges, id, co
         return false;
     }
 
-    if (!this.myItems.addItem5(itemID, qty, numCharges, id, cost)) {
+    if (!(this.myItems.addItem5(itemID, qty, numCharges, id, cost) >=0)) {  // PORT NOTE:  Had to add >=0 since 0 is an ok index, but is also == false
         Globals.WriteDebugString("Failed to addItem to character\n");
         return false;
     }
@@ -1072,7 +1072,7 @@ CHARACTER.prototype.buyItem = function (itemID, type) {
         return;
     }
 
-    var data = this.itemData.GetItem(itemID);
+    var data = itemData.GetItemFromID(itemID);
     if (data == null)
         return;
 
@@ -1130,7 +1130,7 @@ CHARACTER.prototype.IsIdentified = function (key, num) {
     pITEM = this.myItems.GetITEM(key);
     if (pITEM == null) return -1;
     itemID = pITEM.itemID;
-    pItem = this.itemData.GetItem(itemID);
+    pItem = itemData.GetItemFromID(itemID);
     if (pItem == null) return -1;
     if (num == 0) {
         return (pITEM.identified) ? 1 : 0;
@@ -1171,7 +1171,7 @@ CHARACTER.prototype.CanReady = function (index) {
             var answer;
             actor = this.GetContextActor();
             actor = RunTimeIF.SetCharContext(actor);
-            pItem = this.itemData.GetItem(this.myItems.GetItem(index));
+            pItem = itemData.GetItemFromID(this.myItems.GetItem(index));
             scriptContext.SetCharacterContext(this);
             scriptContext.SetItemContext(pItem);
             scriptContext.SetItemContextKey(index);
@@ -1195,44 +1195,46 @@ CHARACTER.prototype.CanReady = function (index) {
 CHARACTER.prototype.toggleReadyItem = function (item) {
     var success = false;
     var rdyLoc;
-    var data = this.itemData.GetItem(this.myItems.GetItem(item));
+    var data = itemData.GetItemFromID(this.myItems.GetItem(item).itemID);   // PORT NOTE:   Changed due to item indexing scheme change
     if (data == null) return false;
     rdyLoc = data.Location_Readied;
+
     if (this.myItems.IsReady(item)) {
         this.myItems.UnReady(item);
         success = !this.myItems.IsReady(item);
         if (success) {
-            if (rdyLoc == Items.WeaponHand) UnReadyWeaponScript(item);
-            else if (rdyLoc == Items.ShieldHand) UnReadyShieldScript(item);
-            else if (rdyLoc == Items.BodyArmor) UnReadyArmorScript(item);
-            else if (rdyLoc == Items.Hands) UnReadyGauntletsScript(item);
-            else if (rdyLoc == Items.Head) UnReadyHelmScript(item);
-            else if (rdyLoc == Items.Waist) UnReadyBeltScript(item);
-            else if (rdyLoc == Items.BodyRobe) UnReadyRobeScript(item);
-            else if (rdyLoc == Items.Back) UnReadyCloakScript(item);
-            else if (rdyLoc == Items.Feet) UnReadyBootsScript(item);
-            else if (rdyLoc == Items.Fingers) UnReadyRingScript(item);
+            if (itemReadiedLocation.WeaponHand.EqualsDWORD(rdyLoc)) this.UnReadyWeaponScript(item);
+            else if (itemReadiedLocation.ShieldHand.EqualsDWORD(rdyLoc)) this.UnReadyShieldScript(item);
+            else if (itemReadiedLocation.BodyArmor.EqualsDWORD(rdyLoc)) this.UnReadyArmorScript(item);
+            else if (itemReadiedLocation.Hands.EqualsDWORD(rdyLoc)) this.UnReadyGauntletsScript(item);
+            else if (itemReadiedLocation.Head.EqualsDWORD(rdyLoc)) this.UnReadyHelmScript(item);
+            else if (itemReadiedLocation.Waist.EqualsDWORD(rdyLoc)) this.UnReadyBeltScript(item);
+            else if (itemReadiedLocation.BodyRobe.EqualsDWORD(rdyLoc)) this.UnReadyRobeScript(item);
+            else if (itemReadiedLocation.Back.EqualsDWORD(rdyLoc)) this.UnReadyCloakScript(item);
+            else if (itemReadiedLocation.Feet.EqualsDWORD(rdyLoc)) this.UnReadyBootsScript(item);
+            else if (itemReadiedLocation.Fingers.EqualsDWORD(rdyLoc)) this.UnReadyRingScript(item);
             // should separate this into ring1 and ring2?
-            else if (rdyLoc == Items.AmmoQuiver) UnReadyAmmoScript(item);
-            else UnReadyXXXScript(SPECAB.ON_UNREADY, item);
+            else if (itemReadiedLocation.AmmoQuiver.EqualsDWORD(rdyLoc)) this.UnReadyAmmoScript(item);
+            else this.UnReadyXXXScript(SPECAB.ON_UNREADY, item);
         };
     }
     else {
-        if (rdyLoc == Items.WeaponHand) ReadyWeaponScript(item);
-        else if (rdyLoc == Items.ShieldHand) ReadyShieldScript(item);
-        else if (rdyLoc == Items.BodyArmor) ReadyArmorScript(item);
-        else if (rdyLoc == Items.Hands) ReadyGauntletsScript(item);
-        else if (rdyLoc == Items.Head) ReadyHelmScript(item);
-        else if (rdyLoc == Items.Waist) ReadyBeltScript(item);
-        else if (rdyLoc == Items.BodyRobe) ReadyRobeScript(item);
-        else if (rdyLoc == Items.Back) ReadyCloakScript(item);
-        else if (rdyLoc == Items.Feet) ReadyBootsScript(item);
-        else if (rdyLoc == Items.Fingers) ReadyRingScript(item);
+        if (itemReadiedLocation.WeaponHand.EqualsDWORD(rdyLoc)) this.ReadyWeaponScript(item);
+        else if (itemReadiedLocation.ShieldHand.EqualsDWORD(rdyLoc)) this.ReadyShieldScript(item);
+        else if (itemReadiedLocation.BodyArmor.EqualsDWORD(rdyLoc)) this.ReadyArmorScript(item);
+        else if (itemReadiedLocation.Hands.EqualsDWORD(rdyLoc)) this.ReadyGauntletsScript(item);
+        else if (itemReadiedLocation.Head.EqualsDWORD(rdyLoc)) this.ReadyHelmScript(item);
+        else if (itemReadiedLocation.Waist.EqualsDWORD(rdyLoc)) this.ReadyBeltScript(item);
+        else if (itemReadiedLocation.BodyRobe.EqualsDWORD(rdyLoc)) this.ReadyRobeScript(item);
+        else if (itemReadiedLocation.Back.EqualsDWORD(rdyLoc)) this.ReadyCloakScript(item);
+        else if (itemReadiedLocation.Feet.EqualsDWORD(rdyLoc)) this.ReadyBootsScript(item);
+        else if (itemReadiedLocation.Fingers.EqualsDWORD(rdyLoc)) this.ReadyRingScript(item);
         // should separate this into ring1 and ring2?
-        else if (rdyLoc == Items.AmmoQuiver) ReadyAmmoScript(item);
-        else ReadyXXXScript(data.Location_Readied, SPECAB.ON_READY, item);
+        else if (itemReadiedLocation.AmmoQuiver.EqualsDWORD(rdyLoc)) this.ReadyAmmoScript(item);
+        else this.ReadyXXXScript(data.Location_Readied, SPECAB.ON_READY, item);
         success = this.myItems.IsReady(item);
     }
+    Globals.debug("----toggleReadyItem: success:" + success);
 
     if (success)
         this.SetCharAC();
@@ -1241,7 +1243,6 @@ CHARACTER.prototype.toggleReadyItem = function (item) {
 };
 
 CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
-
     this.ReadyWeaponScript(NO_READY_ITEM);
 
     // need to check for usable items
@@ -1262,7 +1263,7 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
     //
     var pos = this.myItems.GetHeadPosition();
     while (pos != null) {
-        if ((data = this.itemData.GetItem(myItems.PeekAtPos(pos).itemID)) != null) {
+        if ((data = itemData.GetItemFromID(this.myItems.PeekAtPos(pos).itemID)) != null) {
             if (data.Location_Readied == Items.WeaponHand) {
                 var err;
                 err = this.myItems.CanReadyItem(this.myItems.PeekAtPos(pos), this);
@@ -1299,7 +1300,7 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
                 };
             };
         };
-        this.myItems.GetNext(pos);
+        pos = this.myItems.NextPos(pos);                // PORT NOTE:  Changed to advance the pointer since no pass-by-reference in JS
     };
     // clear miscError that may have been set by CanReady()
     Globals.SetMiscError(miscErrorType.NoError);
@@ -1336,7 +1337,7 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
     if (IdxToUse == NO_READY_ITEM)
         return;
 
-    data = this.itemData.GetItem(myItems.GetItem(IdxToUse));
+    data = itemData.GetItemFromID(myItems.GetItem(IdxToUse));
     if (data != null) {
         if (data.Hands_to_Use > 1)
             myItems.UnReady(this.myItems.GetReadiedItem(Items.ShieldHand, 0));
@@ -1364,7 +1365,7 @@ CHARACTER.prototype.ReadyBestShield = function () {
     //
     var pos = this.myItems.GetHeadPosition();
     while (pos != null) {
-        if ((data = this.itemData.GetItem(this.myItems.PeekAtPos(pos).itemID)) != null) {
+        if ((data = itemData.GetItemFromID(this.myItems.PeekAtPos(pos).itemID)) != null) {
             if (data.Location_Readied == Items.ShieldHand) {
                 var err;
                 err = this.myItems.CanReadyItem(myItems.PeekAtPos(pos), this);
@@ -1404,7 +1405,7 @@ CHARACTER.prototype.ReadyBestArmor = function () {
     //
     var pos = this.myItems.GetHeadPosition();
     while (pos != null) {
-        if ((data = this.itemData.GetItem(this.myItems.PeekAtPos(pos).itemID)) != null) {
+        if ((data = itemData.GetItemFromID(this.myItems.PeekAtPos(pos).itemID)) != null) {
 
             if (data.Location_Readied == Items.BodyArmor) {
                 var err;
@@ -1453,7 +1454,7 @@ CHARACTER.prototype.ReadyBestAmmo = function (isLargeTarget) {
 
         var err;
         err = this.myItems.CanReadyItem(this.myItems.PeekAtPos(pos), this);
-        if ((err == Globals.miscErrorType.NoError) && ((data = this.itemData.GetItem(this.myItems.PeekAtPos(pos).itemID)) != null)) {
+        if ((err == Globals.miscErrorType.NoError) && ((data = itemData.GetItemFromID(this.myItems.PeekAtPos(pos).itemID)) != null)) {
             if ((data.Location_Readied == Items.AmmoQuiver) && (data.Wpn_Type == Items.Ammo)) {
                 if (data.Protection_Base + data.Protection_Bonus <= def) {
                     def = data.Protection_Base + data.Protection_Bonus;
@@ -1510,12 +1511,12 @@ CHARACTER.prototype.ReadyItemByLocation = function (rdyLoc, index, specAbsOK) {
         this.UnreadyItemByLocation(rdyLoc, specAbsOK);
         return true;
     }
-    if (this.myItems.CanReadyKey(index, this) != Globals.miscErrorType.NoError) return false;
-  //Not Implemented(0x4f9044, false);
-  // We see if the character has any of the item's Allowed Baseclasses.
+    if (this.myItems.CanReadyKey(index, this) != miscErrorType.NoError) return false;
+
+    // We see if the character has any of the item's Allowed Baseclasses.
     this.myItems.Ready(index, this, rdyLoc);
     if (this.myItems.IsReady(index)) {
-        var pData = this.itemData.GetItem(myItems.GetItem(index));
+        var pData = itemData.GetItemFromID(myItems.GetItem(index));
         if (pData != null) {
             var PreSpecAbCount = this.m_spellEffects.GetCount();
             if (!specAbsOK) {
@@ -1564,7 +1565,7 @@ CHARACTER.prototype.UnreadyItemByLocation = function (rdyLoc, specAbsOK) {
     //int myitemidx = myItems.GetReady(loctype);
     var myitemidx = this.myItems.GetReadiedItem(rdyLoc, 0);
 
-    var pData = itemData.GetItem(this.myItems.GetItem(myitemidx));
+    var pData = itemData.GetItemFromID(this.myItems.GetItem(myitemidx));
     if (pData != null) {
         if (!specAbsOK) {
             pData.specAbs.DisableAllFor(this);
@@ -1575,7 +1576,6 @@ CHARACTER.prototype.UnreadyItemByLocation = function (rdyLoc, specAbsOK) {
 };
 
 CHARACTER.prototype.ReadyXXXScript = function (rdyLoc, scriptName, index) {
-
     if (this.ReadyItemByLocation(rdyLoc, index, true)) {
         if (index != NO_READY_ITEM) {
             var actor;
@@ -1584,7 +1584,7 @@ CHARACTER.prototype.ReadyXXXScript = function (rdyLoc, scriptName, index) {
             var scriptContext = new SCRIPT_CONTEXT();
             actor = this.GetContextActor();
             actor = RunTimeIF.SetCharContext(actor);
-            pItem = this.itemData.GetItem(this.myItems.GetItem(index));
+            pItem = itemData.GetItemFromID(this.myItems.GetItem(index));
             scriptContext.SetCharacterContext(this);
             scriptContext.SetItemContext(pItem);
             scriptContext.SetItemContextKey(index);
@@ -1604,7 +1604,7 @@ CHARACTER.prototype.UnReadyXXXScript = function (scriptName, index) {
     var scriptContext = new SCRIPT_CONTEXT();
     actor = this.GetContextActor();
     actor = RunTimeIF.SetCharContext(actor);
-    pItem = this.itemData.GetItem(this.myItems.GetItem(index));
+    pItem = itemData.GetItemFromID(this.myItems.GetItem(index));
     scriptContext.SetCharacterContext(this);
     scriptContext.SetItemContext(pItem);
     scriptContext.SetItemContextKey(index);
@@ -2012,13 +2012,12 @@ CHARACTER.prototype.GetAdjTHAC0 = function (flags) {
 
     var val = this.GetTHAC0();
     var itemID;
-
     var wpn = this.myItems.GetReadiedItem(Items.WeaponHand, 0);
     var itemID = this.myItems.GetItem(wpn);
     val -= this.GetAdjHitBonus(itemID, 0); // subtract strength bonus from base THAC0
 
     if (wpn != NO_READY_ITEM) {
-        var pData = itemData.GetItem(itemID);
+        var pData = itemData.GetItemFromID(itemID);
         if (pData != null)
             val -= pData.Attack_Bonus; // subtract weapon attack bonus
     }
@@ -2201,7 +2200,7 @@ CHARACTER.prototype.determineEffectiveEncumbrance = function () {
     var pos = this.myItems.GetHeadPosition();
     while (pos != null) {
         {
-            total += itemData.getItemEncumbrance(myItems.PeekAtPos(pos).itemID, this.myItems.PeekAtPos(pos).qty);
+            total += itemData.getItemEncumbrance(this.myItems.PeekAtPos(pos).itemID, this.myItems.PeekAtPos(pos).qty);
         }
         pos = this.myItems.NextPos(pos);
     }
@@ -2432,7 +2431,7 @@ CHARACTER.prototype.determineNbrAttacks = function () {
         wpn = this.myItems.GetReadiedItem(Items.WeaponHand, 0);
         if (wpn != NO_READY_ITEM) {
             weaponID = this.myItems.GetItem(wpn);
-            pWeapon = itemData.GetItem(weaponID);
+            pWeapon = itemData.GetItemFromID(weaponID);
             scriptContext.SetItemContext(pWeapon);
             scriptContext.SetItemContextKey(wpn);
         };
@@ -2463,7 +2462,7 @@ CHARACTER.prototype.determineNbrAttacks = function () {
         this.SetNbrAttacks(monsterData.GetMonsterNbrAttacks(this.monsterID));
 
     if (this.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM) {
-        var wpnAttacks = itemData.GetItemROF(this.myItems.GetItem(this.myItems.GetReadiedItem(Items.WeaponHand, 0)));
+        var wpnAttacks = itemData.GetItemFromIDROF(this.myItems.GetItem(this.myItems.GetReadiedItem(Items.WeaponHand, 0)));
         if (wpnAttacks < 1.0) wpnAttacks = 1.0;
         this.SetNbrAttacks(wpnAttacks);
         // check for sweeps
@@ -3231,7 +3230,7 @@ CHARACTER.prototype.getCharTHAC0 = function () {
         var level;
         pBaseclassStats = this.PeekBaseclassStats(i);
         if (pBaseclassStats == null) continue;
-        if (!this.CanUseBaseclass(pBaseclassStats)) continue;
+        if (!this.CanUseBaseclassBaseclassStats(pBaseclassStats)) continue;
         if (pBaseclassStats.currentLevel > 0) {
             level = pBaseclassStats.currentLevel;
         }
@@ -3589,7 +3588,7 @@ CHARACTER.prototype.ModifyACAsTarget = function(pAttacker, pAC, itemID) {
         var result = this.GetAdjSpecAb(SPECAB.SA_Shield, src, spellID); src = result.pSource, spellID = result.pSpellName;
         if (result.returnVal) {
             if (spellData.IsValidSpell(spellID)) {
-                var pItem = itemData.GetItem(itemID);
+                var pItem = itemData.GetItemFromID(itemID);
                 if (pItem != null) {
                     switch (pItem.Wpn_Type) {
                         case weaponClassType.NotWeapon:
@@ -3809,7 +3808,7 @@ CHARACTER.prototype.ModifyAttackDamageDiceForItemAsTarget = function(pAttacker, 
     relAbs[0] = 0;
     relAbs[1] = pBonus;
     var pItem;
-    pItem = itemData.GetItem(itemID);
+    pItem = itemData.GetItemFromID(itemID);
     if (pItem == null) return { pBonus: pBonus };
     {
         var hookParameters = new HOOK_PARAMETERS();
@@ -3996,6 +3995,56 @@ CHARACTER.prototype.GetAdjMaxEncumbrance = function (flags) {
     return val;
 }
 
+CHARACTER.prototype.determineNormalEncumbrance = function () {
+    return GameRules.DetermineNormalEncumbranceStrength(this.GetAdjStr(), this.GetAdjStrMod());
+}
+
+
+CHARACTER.prototype.ReadyXXXScript = function(rdyLoc, scriptName, index) {
+    if (this.ReadyItemByLocation(rdyLoc, index, true)) {
+        if (index != NO_READY_ITEM) {
+            var actor;
+            var pItem;
+            var hookParameters = new HOOK_PARAMETERS();
+            var scriptContext = new SCRIPT_CONTEXT();
+            actor = GetContextActor();
+            RunTimeIF.SetCharContext(actor);
+            pItem = itemData.GetItemFromID(this.myItems.GetItem(index));
+            scriptContext.SetCharacterContext(this);
+            scriptContext.SetItemContext(pItem);
+            scriptContext.SetItemContextKey(index);
+            pItem.SPECAB.RunItemScripts(scriptName,
+                SPECAB.ScriptCallback_RunAllScripts,
+                null,
+                "Character just readied an item");
+            RunTimeIF.ClearCharContext();
+        }
+    }
+}
+
+CHARACTER.prototype.UnReadyXXXScript = function(scriptName, index) {
+    var actor;
+    var pItem;
+    var hookParameters = new HOOK_PARAMETERS();
+    var scriptContext = new SCRIPT_CONTEXT();
+    actor = GetContextActor();
+    RunTimeIF.SetCharContext(actor);
+    pItem = itemData.GetItemFromID(this.myItems.GetItem(index));
+    scriptContext.SetCharacterContext(this);
+    scriptContext.SetItemContext(pItem);
+    scriptContext.SetItemContextKey(index);
+    pItem.SPECAB.RunItemScripts(scriptName,
+        SPECAB.ScriptCallback_RunAllScripts,
+        null,
+        "Character just un-readied an item");
+    RunTimeIF.ClearCharContext();
+}
+
+CHARACTER.prototype.PeekBaseclassStats = function (i) {
+    return this.baseclassStats[i];
+}
+
+
 CHARACTER.prototype.SetLevel = function (lvl) { throw "todo"; }
 CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };
 CHARACTER.prototype.GetBestMemorizedHealingSpell = function (pSpellID) { throw "todo"; };
@@ -4049,7 +4098,6 @@ CHARACTER.prototype.SetClass = function (classID) { throw "todo"; }
 CHARACTER.prototype.SetAlignment = function (val) { throw "todo"; }
 CHARACTER.prototype.SetAllowInCombat = function (allow) { throw "todo"; }
 CHARACTER.prototype.determineEncumbrance = function () { throw "todo"; }
-CHARACTER.prototype.determineNormalEncumbrance = function () { throw "todo"; }
 CHARACTER.prototype.GetPerm = function () { };
 CHARACTER.prototype.GetAdj = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.GetLimited = function () { throw "todo"; }

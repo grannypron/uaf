@@ -4,29 +4,28 @@ function UnorderedQueue() {
 }
 
 function OrderedQueue() {
-    this.items = {};
+    CList.call(this);
+    Object.setPrototypeOf(this, CList.prototype);
+
+    this.Insert = function (data, key) {
+        this.SetAtGrow(key, data);                                  // PORT NOTE:  Simplified this
+    }
+
+    this.FindKeyPos = function (i) {
+        if (i >= this.GetCount() || i < 0)                     // PORT NOTE: I removed the idea of keys for a simple index
+            return null;
+        else
+            return i;
+    }
+
 }
 
 
-OrderedQueue.prototype.Insert = function(obj, key) {
-    this.items[key] = obj;
+/*
+OrderedQueue.prototype.PeekAtPos = function(pos) {
+    return this.GetAtPos(pos);
 }
-OrderedQueue.prototype.RemoveAll = function (obj, key) {
-    this.items = [];
+OrderedQueue.prototype.PeekNext = function (pos) {
+    return this.GetAtPos(pos + 1);
 }
-OrderedQueue.prototype.IsEmpty = function () {
-    return this.items.length <= 0;
-}
-OrderedQueue.prototype.GetCount = function () {
-    return this.items.length;
-}
-OrderedQueue.prototype.GetHeadPosition = function () {
-    return this.items.length == 0 ? null : 0;
-}
-OrderedQueue.prototype.GetAtPos = function (i) {
-    return this.items[i];
-}
-OrderedQueue.prototype.RemoveHead = function () {
-    this.items.pop();
-}
-
+*/

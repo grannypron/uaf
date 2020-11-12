@@ -1,16 +1,13 @@
 /** TODO **/
 function ITEM_LIST() {
     this.rdyItems_Deprecated = new READY_ITEMS();
-    this.m_items = new CList();
+    this.m_items = new OrderedQueue();
 }
 
 ITEM_LIST.prototype.Clear = function () {
     /**TODO**/
 }
 
-ITEM_LIST.prototype.CanReady = function (rdyLoc, pChar, pItem) {
-    throw "todo -- CanReady"
-}
 
 ITEM_LIST.prototype.CanUnReady = function(item) {
     if (!this.ValidItemListIndex(item))
@@ -30,7 +27,7 @@ ITEM_LIST.prototype.CanReady = function (itemKey) {
         var hookParameters = new HOOK_PARAMETERS();
         var scriptContext = new SCRIPT_CONTEXT();
         actor = pChar.GetContextActor();
-        pItemData = itemData.GetItem(pItem.itemID);
+        pItemData = itemData.GetItemFromID(pItem.itemID);
         scriptContext.SetCharacterContext(pChar);
         scriptContext.SetItemContext(pItemData);
         scriptContext.SetItemContextKey(pItem.key);
@@ -59,10 +56,10 @@ ITEM_LIST.prototype.SetReady = function(index, rdyLoc) {
     var pos;
     if ((pos = this.m_items.FindKeyPos(index)) != null) {
         if (rdyLoc == Items.NotReady) {
-            this.m_items.GetAtPos(pos).ReadyLocation(Items.NotReady); //readyLocation.Clear();
+            this.m_items.GetAtPos(pos).SetReadyLocation(Items.NotReady); //readyLocation.Clear();
         }
         else {
-            this.m_items.GetAtPos(pos).ReadyLocation(rdyLoc);
+            this.m_items.GetAtPos(pos).SetReadyLocation(rdyLoc);
         };
     };
 }
@@ -70,7 +67,7 @@ ITEM_LIST.prototype.SetReady = function(index, rdyLoc) {
 ITEM_LIST.prototype.IsReady = function(index) {
     var pos;
     if ((pos = this.m_items.FindKeyPos(index)) != null)
-        return this.m_items.PeekAtPos(pos).ReadyLocation() != Items.NotReady;
+        return !itemReadiedLocation.NotReady.Equals(this.m_items.PeekAtPos(pos).GetReadyLocation());
     else
         return false; 
 }
@@ -89,9 +86,10 @@ ITEM_LIST.prototype.GetReadiedItem = function (rdyLoc, readiedItemCount) {
     var pCharItem;
     pos = this.GetHeadPosition();
     for (pCharItem = this.PeekNext(pos); pCharItem != null; pCharItem = this.PeekNext(pos)) {
-        if (pCharItem.ReadyLocation() == rdyLoc) {
+        pos = this.NextPos();           //  PORT NOTE:  Added this - no "auto"-increment because no pass-by-reference
+        if (pCharItem.GetReadyLocation() == rdyLoc) {
             if (readiedItemCount == 0) {
-                return pCharItem.key;
+                return pos;//pCharItem.key;     // PORT NOTE:  Changed to use array-index based indexing
             }
             else {
                 readiedItemCount--;
@@ -125,11 +123,7 @@ ITEM_LIST.prototype.PeekNext = function (pos) {
 }
 
 ITEM_LIST.prototype.GetItem = function (index) {
-    var pos;
-    if ((pos = this.m_items.FindKeyPos(index)) != null)
-        return this.m_items.PeekAtPos(pos).itemID;
-    else
-        return new ITEM_ID();
+    return this.m_items.PeekAtPos(index);    // PORT NOTE:  Simplified with array indexing scheme
 }
 
 ITEM_LIST.prototype.SerializeCAR = function(ar, version) {
@@ -153,7 +147,7 @@ ITEM_LIST.prototype.SerializeCAR = function(ar, version) {
             var pItem = new ITEM_DATA();
             data.SerializeCAR(ar, ver);
             //pItem = itemData.GetItemData(data.m_giID);
-            pItem = itemData.GetItem(data.itemID);
+            pItem = itemData.GetItemFromID(data.itemID);
             if (pItem != null) {
                 data.charges = pIte.Num_Charges;
                 this.AddItemWithCurrKey(data);
@@ -173,8 +167,8 @@ ITEM_LIST.prototype.GetProtectModForRdyItems = function() {
     var pos;
     pos = this.m_items.GetHeadPosition();
     while (pos != null) {
-        if (this.PeekAtPos(pos).ReadyLocation() != Items.NotReady) {
-            var data = itemData.GetItem(PeekAtPos(pos).itemID);
+        if (this.PeekAtPos(pos).GetReadyLocation() != Items.NotReady) {
+            var data = itemData.GetItemFromID(this.PeekAtPos(pos).itemID);
             if (data != null)
                 acMod += (data.Protection_Base + data.Protection_Bonus);
         }
@@ -190,9 +184,9 @@ ITEM_LIST.prototype.GetProtectModForRdyItems = function() {
 //*****************************************************************************
 ITEM_LIST.prototype.addItem5 = function(itemID, qty, numCharges, id, cost) {
     if (qty < 1)
-        return FALSE;
+        return false;
 
-    var newItem;
+    var newItem = new ITEM();
 
     if (itemData.IsMoneyItem(itemID))
     {
@@ -208,8 +202,7 @@ ITEM_LIST.prototype.addItem5 = function(itemID, qty, numCharges, id, cost) {
     }
     else
     {
-        var theItem = itemData.GetItem(itemID);
-        Globals.debug("---- " + itemData.LocateItem(itemID));
+        var theItem = itemData.GetItemByPos(itemData.LocateItem(itemID));     // PORT NOTE: Had to add the call to LocateItem - not sure how this worked with GetItem as I have seen GetItem being called with an integer index in other places
         if (theItem == null)
             return false;
 
@@ -262,10 +255,98 @@ ITEM_LIST.prototype.AddItem = function(data, AutoJoin) {
 
     if (!joined) {
         if (this.m_items.GetCount() < Items.MAX_ITEMS) {
-            data. key = GetNextKey();
+            data.key = this.GetNextKey();
             this.m_items.Insert(data, data.key);
             newkey = data.key;
         }
     }
     return newkey;
 }
+
+ITEM_LIST.prototype.GetNextKey = function () {
+    return this.m_items.GetCount();                  // PORT NOTE:  Simplified this
+}
+
+ITEM_LIST.prototype.NextPos = function (pos) {          // PORT NOTE:  Adding because pos is not "auto"-incremented as a pass-by-reference parameter
+    return this.m_items.NextPos(pos);
+}
+
+ITEM_LIST.prototype.CanReadyKey = function (itemKey, pChar) {
+    var pos;
+    var pCharItem;
+    if ((pos = this.m_items.FindKeyPos(itemKey)) == null)
+        return miscErrorType.UnknownError;
+
+    pCharItem = this.m_items.PeekAtPos(pos);
+    return this.CanReadyItem(pCharItem, pChar);
+
+}
+
+ITEM_LIST.prototype.CanReadyItem = function(pCharItem, pChar) {
+    if (itemData.IsMoneyItem(pCharItem.itemID))
+        return miscErrorType.UnknownError;
+
+    if (!pCharItem.GetReadyLocation().Equals(itemReadiedLocation.NotReady))
+        return miscErrorType.NoError;
+
+    if (pCharItem.qty <= 0)
+        return miscErrorType.UnknownError;
+
+    var pItem = itemData.GetItemFromID(pCharItem.itemID);
+    if (pItem == null)
+        return miscErrorType.UnknownError;
+
+    // dont handle items using more than 2 hands yet
+    if (pItem.Hands_to_Use > 2)
+        return miscErrorType.UnknownError;
+
+      /* The item is usable by this character's class if any of his current sub-classes can
+       * use the item.
+       */
+    Globals.debug("----CHARACTER.prototype.CanReadyItem:");
+    if (!pItem.IsUsableByClass(pChar)) {
+        return miscErrorType.WrongClass;
+    }
+    Globals.debug("----CHARACTER.prototype.CanReadyItem:");
+
+    if (this.itemUsesRdySlot(pItem)) {
+        if ((pItem.Hands_to_Use == 2)
+            && ((itemReadiedLocation.WeaponHand.Equals(pItem.Location_Readied)) || itemReadiedLocation.ShieldHand.Equals(pItem.Location_Readied))) {
+            if ((this.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM)
+                || (this.GetReadiedItem(Items.ShieldHand, 0) != NO_READY_ITEM)) {
+                return TakesTwoHands;
+            }
+        }
+        else if (pItem.Hands_to_Use > 0) {
+            var readiedItem = 0, hand = 0;
+            var rdyLoc = 0;
+            for (hand = 0, rdyLoc = WeaponHand; hand < 2; hand++, rdyLoc = ShieldHand) {
+                readiedItem = this.GetReadiedItem(rdyLoc, 0);
+                if (readiedItem != NO_READY_ITEM) {
+                    var readiedPos;
+                    readiedPos = this.m_items.FindKeyPos(readiedItem);
+                    if (readiedPos != null) {
+                        var pCharReadiedItem;
+                        var pReadiedItem;
+                        pCharReadiedItem = this.m_items.PeekAtPos(readiedPos);
+                        pReadiedItem = itemData.GetItem(pCharReadiedItem.itemID);
+                        if (pReadiedItem != null) {
+                            if (pReadiedItem.Hands_to_Use > 1) {
+                                return miscErrorType.NoFreeHands;
+                            };
+                        };
+                    };
+                };
+            };
+        }
+
+        if (!this.CanReady(pItem.Location_Readied, pChar, pCharItem)) {
+            {
+                return miscErrorType.ItemAlreadyReadied;
+            };
+        }
+    }
+
+    return miscErrorType.NoError;
+}
+

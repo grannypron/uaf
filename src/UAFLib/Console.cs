@@ -20,7 +20,7 @@ namespace UAFLib
 
             try
             {
-                
+                /*
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestParseDice.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadSAs.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadItems.js" });
@@ -38,9 +38,9 @@ namespace UAFLib
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js", @"..\..\..\UAFLib\Tests\TestSimpleUnarmedAttack.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js", @"..\..\..\UAFLib\Tests\TestSimpleUnarmedAttack.js", @"..\..\..\UAFLib\Tests\TestKill.js" });
-                
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestCharacterSerialize.js", @"..\..\..\UAFLib\Tests\TestInventory.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js", @"..\..\..\UAFLib\Tests\TestSimpleAttack.js" });
+                */
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadItems.js", @"..\..\..\UAFLib\Tests\TestInventory.js" });
+                //runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js", @"..\..\..\UAFLib\Tests\TestSimpleAttack.js" });
                 System.Console.WriteLine("Tests complete!  Press Any key.");
             }
             catch (JavaScriptException ex)

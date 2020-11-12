@@ -2226,7 +2226,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
     };
     var pWeapon = null;
     if (!(itemData.IsNoItem(itemID))) {
-        pWeapon = itemData.GetItem(itemID);
+        pWeapon = itemData.GetItemFromID(itemID);
     };
 
     toHitComputation.Compute4(this, targ, targCOMBATANT, wpn);
@@ -2403,7 +2403,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
             // 20110519 PRS  if (!myItems.HaveItem(*(GLOBAL_ITEM_ID*)&wpn)) // if deleted because of zero quantity
             {
                 // item removed, disable special abilities granted by it (if any)
-                var pItem = itemData.GetItem(itemID);
+                var pItem = itemData.GetItemFromID(itemID);
                 if (pItem != null) {
                     var actor;
                     var hookParameters = new HOOK_PARAMETERS();
@@ -2467,7 +2467,7 @@ COMBATANT.prototype.GetAttackBonus = function (weaponID, distance) {
     var bonus = 0;
 
     if (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM) {
-        var idata = itemData.GetItem(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)));
+        var idata = itemData.GetItemFromID(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)));
         if (idata != null) {
             bonus += idata.Attack_Bonus;
         }
@@ -2662,7 +2662,7 @@ COMBATANT.prototype.GetDamageDice = function(wpn, pNum, pSides, pBonus, pNonLeth
     pNonLethal = false;
     pSpellName = "";
     if (wpn != NO_READY_ITEM) {
-        var idata = itemData.GetItem(this.m_pCharacter.myItems.GetItem(wpn));
+        var idata = itemData.GetItemFromID(this.m_pCharacter.myItems.GetItem(wpn));
 
         if (idata != null) {      
             pNonLethal = idata.IsNonLethal;
@@ -2773,7 +2773,7 @@ COMBATANT.prototype.ModifyAttackDamageDiceAsTarget = function(pAttacker, num, si
 }
 
 COMBATANT.prototype.ModifyAttackDamageDiceForItemAsTarget = function(pAttacker, itemID, num, sides, pBonus, pNonLethal, toHitRolled) {
-    var pItem = itemData.GetItem(itemID);
+    var pItem = itemData.GetItemFromID(itemID);
     if (pItem == null) return { pBonus: pBonus, pNonLethal: pNonLethal };
 
     var src = 0;   // DWORD
@@ -2858,7 +2858,6 @@ COMBATANT.prototype.TakeDamage = function(dmg, IsNonLethal, invokeOptions, canFi
         // 20120605  PRS I changed this to avoid the ASSERT about 25 lines below.
         // It also agress with the code about 21 lines above.
         if (adjHp <= 0)
-            //if (adjHp < 0)
             adjHp = -10;
 
         // still can't let monsters die, even if hp is 

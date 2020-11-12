@@ -3,6 +3,6 @@ var data = loader.load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFL
 
 itemData.LoadFromLoader(data);
 
-Globals.ASSERT(itemData.GetCount() == 540, "TestLoadItems.js");
-Globals.ASSERT(itemData.PeekItem("Long Sword") != null && itemData.PeekItem("Long Sword").m_uniqueName != null, "TestLoadItems.js");
-Globals.ASSERT(itemData.PeekItem("Long Sword").Dmg_Dice_Sm == 8);
+Globals.ASSERT(itemData.GetCount() == 540, "TestLoadItems.js - 1");
+Globals.ASSERT(itemData.PeekItem("Long Sword") != null && itemData.PeekItem("Long Sword").m_uniqueName != null, "TestLoadItems.js - 2");
+Globals.ASSERT(itemData.PeekItem("Long Sword").Dmg_Dice_Sm == 8, "TestLoadItems.js - 3");

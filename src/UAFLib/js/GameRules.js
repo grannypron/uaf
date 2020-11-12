@@ -235,3 +235,86 @@ GameRules.prototype.determineStrengthProperties = function(strength, strengthMod
             break;
     }
 }
+
+GameRules.prototype.DetermineNormalEncumbranceStrength = function(str, strMod) {
+    var result = 0;
+    var BaseAllowance = 350;
+    // normal is based on str 8-11 able to carry 350gp
+    switch (str) {
+        case 1:
+        case 2:
+        case 3: // -350
+            result = BaseAllowance - 350;
+            break;
+        case 4:
+        case 5: // -250
+            result = BaseAllowance - 250;
+            break;
+        case 6:
+        case 7: // -150
+            result = BaseAllowance - 150;
+            break;
+        case 8:
+        case 9: // normal
+        case 10:
+        case 11:
+            result = BaseAllowance;
+            break;
+        case 12:
+        case 13:
+            result = BaseAllowance + 100;
+            break;
+        case 14:
+        case 15:
+            result = BaseAllowance + 200;
+            break;
+        case 16:
+            result = BaseAllowance + 350;
+            break;
+        case 17:
+            result = BaseAllowance + 500;
+            break;
+        case 18:
+            {
+                var mod = strMod;
+                if (mod == 0)
+                    result = BaseAllowance + 750;
+                else if (mod < 51)
+                    result = BaseAllowance + 1000;
+                else if (mod < 76)
+                    result = BaseAllowance + 1250;
+                else if (mod < 91)
+                    result = BaseAllowance + 1500;
+                else if (mod < 100)
+                    result = BaseAllowance + 2000;
+                else
+                    result = BaseAllowance + 3000;
+            }
+            break;
+        case 19:  // cases 19-25 by manikus 4-5-11
+            result = BaseAllowance + 4500;
+            break;
+        case 20:
+            result = BaseAllowance + 5000;
+            break;
+        case 21:
+            result = BaseAllowance + 6000;
+            break;
+        case 22:
+            result = BaseAllowance + 7500;
+            break;
+        case 23:
+            result = BaseAllowance + 9000;
+            break;
+        case 24:
+            result = BaseAllowance + 12000;
+            break;
+        case 25:
+            result = BaseAllowance + 15000;
+            break;
+        default:
+            result = BaseAllowance;
+    }
+    if (result <= 0) result = 1;
+    return result;
+}
