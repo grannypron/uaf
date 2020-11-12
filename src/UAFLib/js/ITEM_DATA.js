@@ -323,7 +323,20 @@ ITEM_DATA.prototype.GetBaseclassCount = function () {
     return this.usableByBaseclass.length;
 }
 
+ITEM_DATA.prototype.PeekBaseclass = function (i) {
+    return this.usableByBaseclass[i];
+}
 
+
+ITEM_DATA.prototype.RunItemScripts = function(scriptName, fnc, pkt, comment) {
+        return this.specAbs.RunScripts(
+            scriptName,
+            fnc,
+            pkt,
+            comment,
+            SPECAB.ScriptSourceType_Item,
+            this.m_uniqueName);
+}
 /**TODO
     CString IdName(void)const { return m_idName; }
     ITEM_DATA(ITEM_DATA & src) :
@@ -363,18 +376,5 @@ inline BOOL IsNotMagical(void) const { return (m_usageFlags & USAGE_notMagical) 
 inline void IsNotMagical(BOOL t){ if (t) m_usageFlags |= USAGE_notMagical; else m_usageFlags &= ~USAGE_notMagical; };
 inline void IsScribable(BOOL scribable){ if (scribable) m_usageFlags |= USAGE_scribable; else m_usageFlags &= ~USAGE_scribable; };
 
- CString RunItemScripts(LPCSTR     scriptName,
-    CBRESULT(* fnc)(CBFUNC func, CString * scriptResult, void * pkt),
-    void      * pkt,
-    LPCSTR     comment) const
-        {
-            return specAbs.RunScripts(
-                scriptName,
-                fnc,
-                pkt,
-                comment,
-                ScriptSourceType_Item,
-                m_uniqueName);
-  };
 
   **/

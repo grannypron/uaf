@@ -17,7 +17,7 @@ ITEM_LIST.prototype.CanUnReady = function(item) {
     return (!this.IsCursed(item));
 }
 
-ITEM_LIST.prototype.CanReady = function (itemKey) {
+ITEM_LIST.prototype.CanReady = function (rdyLoc, pChar, pItem) {
     {
         var count;
         var pItemData;
@@ -31,7 +31,7 @@ ITEM_LIST.prototype.CanReady = function (itemKey) {
         scriptContext.SetCharacterContext(pChar);
         scriptContext.SetItemContext(pItemData);
         scriptContext.SetItemContextKey(pItem.key);
-        count = GetReadiedCount(rdyLoc);
+        count = this.GetReadiedCount(rdyLoc);
         hookParameters[5] = "" + count;
         result = pItemData.RunItemScripts(SPECAB.CAN_READY,
             SPECAB.ScriptCallback_RunAllScripts,
@@ -51,6 +51,26 @@ ITEM_LIST.prototype.CanReady = function (itemKey) {
         return answer;
     };
  }
+
+ITEM_LIST.prototype.GetReadiedCount = function(rdyLoc) {
+    var pos;
+    var result = 0;
+    var pItem = null;
+    var pItemData;
+    pos = this.m_items.GetHeadPosition();
+    if (pos != null) pItem = this.PeekAtPos(pos);
+    result = 0;
+    while (pItem != null) {
+        if (!itemReadiedLocation.NotReady.Equals(pItem.GetReadyLocation())) {
+            pItemData = itemData.GetItem(pItem.itemID);
+            if (pItemData.Location_Readied == rdyLoc) result++;
+        };
+        pItem = this.m_items.PeekNext(pos);
+        post = this.m_items.NextPos(pos);
+    };
+    return result;
+}
+
 
 ITEM_LIST.prototype.SetReady = function(index, rdyLoc) {
     var pos;
@@ -303,13 +323,11 @@ ITEM_LIST.prototype.CanReadyItem = function(pCharItem, pChar) {
       /* The item is usable by this character's class if any of his current sub-classes can
        * use the item.
        */
-    Globals.debug("----CHARACTER.prototype.CanReadyItem:");
     if (!pItem.IsUsableByClass(pChar)) {
         return miscErrorType.WrongClass;
     }
-    Globals.debug("----CHARACTER.prototype.CanReadyItem:");
 
-    if (this.itemUsesRdySlot(pItem)) {
+    if (itemData.itemUsesRdySlot(pItem)) {
         if ((pItem.Hands_to_Use == 2)
             && ((itemReadiedLocation.WeaponHand.Equals(pItem.Location_Readied)) || itemReadiedLocation.ShieldHand.Equals(pItem.Location_Readied))) {
             if ((this.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM)
@@ -320,7 +338,7 @@ ITEM_LIST.prototype.CanReadyItem = function(pCharItem, pChar) {
         else if (pItem.Hands_to_Use > 0) {
             var readiedItem = 0, hand = 0;
             var rdyLoc = 0;
-            for (hand = 0, rdyLoc = WeaponHand; hand < 2; hand++, rdyLoc = ShieldHand) {
+            for (hand = 0, itemReadiedLocation.WeaponHand.EqualsDWORD(rdyLoc); hand < 2; hand++, itemReadiedLocation.ShieldHand.EqualsDWORD(rdyLoc)) {
                 readiedItem = this.GetReadiedItem(rdyLoc, 0);
                 if (readiedItem != NO_READY_ITEM) {
                     var readiedPos;
@@ -339,7 +357,6 @@ ITEM_LIST.prototype.CanReadyItem = function(pCharItem, pChar) {
                 };
             };
         }
-
         if (!this.CanReady(pItem.Location_Readied, pChar, pCharItem)) {
             {
                 return miscErrorType.ItemAlreadyReadied;
@@ -350,3 +367,34 @@ ITEM_LIST.prototype.CanReadyItem = function(pCharItem, pChar) {
     return miscErrorType.NoError;
 }
 
+ITEM_LIST.prototype.Ready = function(itemKey, pChar, rdyLoc) {
+    var pItem = itemData.GetItemFromID(this.GetItemIDByPos(itemKey));
+    if (pItem == null) return false;
+
+    if (this.CanReadyKey(itemKey, pChar) != miscErrorType.NoError) return false;
+
+    var result = true;
+    if (result)
+        this.SetReady(itemKey, rdyLoc);
+    return (this.IsReady(itemKey));
+}
+
+ITEM_LIST.prototype.GetItemIDByPos = function (index) {
+    // PORT NOTE:  Simplified this function some
+    if (this.GetAtPos(index))
+        return this.GetAtPos(index).itemID;
+    else
+        return ""; 
+}
+
+ITEM_LIST.prototype.ValidItemListIndex = function (index) {
+    return (this.GetAtPos(index) != null && this.GetAtPos(index) != undefined); 
+}
+
+ITEM_LIST.prototype.IsCursed = function (index) {
+    // PORT NOTE:  Changed a little
+    if (this.GetAtPos(index) != null)
+        return this.GetAtPos(index).cursed;
+    else
+        return false;
+}

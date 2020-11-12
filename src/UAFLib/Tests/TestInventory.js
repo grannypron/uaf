@@ -18,15 +18,12 @@ function Deserialize(filename, debug) {
 }
 var Warrior = Deserialize("Warrior.chr");
 Globals.ASSERT(Warrior.addCharacterItem("Long Sword", 1, 0, 0, 0), "TestInventory.js  - 1");
-Globals.debug("Warrior.myItems.IsReady(0):" + Warrior.myItems.IsReady(0));
-Globals.debug("Warrior.myItems.PeekAtPos(0).itemID:" + Warrior.myItems.PeekAtPos(0).itemID);
-Warrior.toggleReadyItem(0);
+Globals.ASSERT(!Warrior.myItems.IsReady(0), "TestInventory.js - 1.5");
+Globals.ASSERT("Long Sword" == Warrior.myItems.PeekAtPos(0).itemID);
+Globals.ASSERT(Warrior.toggleReadyItem(0));
 Globals.ASSERT(Warrior.myItems.IsReady(0), "TestInventory.js - 2");
-Warrior.toggleReadyItem(0);
+Globals.ASSERT(itemReadiedLocation.WeaponHand.Equals(Warrior.myItems.PeekAtPos(0).readyLocation), "TestInventory.js - 3")
+Globals.ASSERT(Warrior.toggleReadyItem(0));
 Globals.ASSERT(!Warrior.myItems.IsReady(0), "TestInventory.js - 2.5");
-Globals.ASSERT(itemReadiedLocation.WeaponHand.Equals(Warrior.myItems.PeekAtPos(0).Location_Readied), "TestInventory.js - 3")
-Globals.debug("itemReadiedLocation.WeaponHand:" + itemReadiedLocation.WeaponHand.location);
-Globals.debug(Warrior.myItems.PeekAtPos(0).GetReadyLocation().location);
 Globals.ASSERT(Warrior.myItems.PeekAtPos(0).itemID == "Long Sword", "TestInventory.js - 4");
-Globals.ASSERT(Warrior.myItems.PeekAtPos(0).GetReadyLocation() == itemReadiedLocation.WeaponHand, "TestInventory.js - 5");
 

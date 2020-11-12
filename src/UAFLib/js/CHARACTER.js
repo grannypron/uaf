@@ -1234,7 +1234,6 @@ CHARACTER.prototype.toggleReadyItem = function (item) {
         else this.ReadyXXXScript(data.Location_Readied, SPECAB.ON_READY, item);
         success = this.myItems.IsReady(item);
     }
-    Globals.debug("----toggleReadyItem: success:" + success);
 
     if (success)
         this.SetCharAC();
@@ -1267,8 +1266,8 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
             if (data.Location_Readied == Items.WeaponHand) {
                 var err;
                 err = this.myItems.CanReadyItem(this.myItems.PeekAtPos(pos), this);
-                if (err == Globals.miscErrorType.NoError) {
-                    if (Items.WpnCanAttackAtRange(this.myItems.PeekAtPos(pos).itemID, dist)) {
+                if (err == miscErrorType.NoError) {
+                    if (itemData.WpnCanAttackAtRange(this.myItems.PeekAtPos(pos).itemID, dist)) {
                         if (data.Protection_Base + data.Protection_Bonus <= def) {
                             def = data.Protection_Base + data.Protection_Bonus;
                             defIdx = this.myItems.GetKeyAt(pos);
@@ -1511,12 +1510,13 @@ CHARACTER.prototype.ReadyItemByLocation = function (rdyLoc, index, specAbsOK) {
         this.UnreadyItemByLocation(rdyLoc, specAbsOK);
         return true;
     }
+
     if (this.myItems.CanReadyKey(index, this) != miscErrorType.NoError) return false;
 
     // We see if the character has any of the item's Allowed Baseclasses.
     this.myItems.Ready(index, this, rdyLoc);
     if (this.myItems.IsReady(index)) {
-        var pData = itemData.GetItemFromID(myItems.GetItem(index));
+        var pData = itemData.GetItemFromID(this.myItems.GetItem(index));
         if (pData != null) {
             var PreSpecAbCount = this.m_spellEffects.GetCount();
             if (!specAbsOK) {
@@ -4007,13 +4007,13 @@ CHARACTER.prototype.ReadyXXXScript = function(rdyLoc, scriptName, index) {
             var pItem;
             var hookParameters = new HOOK_PARAMETERS();
             var scriptContext = new SCRIPT_CONTEXT();
-            actor = GetContextActor();
+            actor = this.GetContextActor();
             RunTimeIF.SetCharContext(actor);
-            pItem = itemData.GetItemFromID(this.myItems.GetItem(index));
+            pItem = itemData.GetItemFromID(this.myItems.GetItemIDByPos(index));
             scriptContext.SetCharacterContext(this);
             scriptContext.SetItemContext(pItem);
             scriptContext.SetItemContextKey(index);
-            pItem.SPECAB.RunItemScripts(scriptName,
+            pItem.RunItemScripts(scriptName,
                 SPECAB.ScriptCallback_RunAllScripts,
                 null,
                 "Character just readied an item");
@@ -4027,13 +4027,13 @@ CHARACTER.prototype.UnReadyXXXScript = function(scriptName, index) {
     var pItem;
     var hookParameters = new HOOK_PARAMETERS();
     var scriptContext = new SCRIPT_CONTEXT();
-    actor = GetContextActor();
+    actor = this.GetContextActor();
     RunTimeIF.SetCharContext(actor);
-    pItem = itemData.GetItemFromID(this.myItems.GetItem(index));
+    pItem = itemData.GetItemFromID(this.myItems.GetItemIDByPos(index));
     scriptContext.SetCharacterContext(this);
     scriptContext.SetItemContext(pItem);
     scriptContext.SetItemContextKey(index);
-    pItem.SPECAB.RunItemScripts(scriptName,
+    pItem.RunItemScripts(scriptName,
         SPECAB.ScriptCallback_RunAllScripts,
         null,
         "Character just un-readied an item");
@@ -4043,6 +4043,20 @@ CHARACTER.prototype.UnReadyXXXScript = function(scriptName, index) {
 CHARACTER.prototype.PeekBaseclassStats = function (i) {
     return this.baseclassStats[i];
 }
+
+CHARACTER.prototype.SetCharAC = function () {
+    this.SetCharBaseAC();
+    return this.GetEffectiveAC();
+}
+
+CHARACTER.prototype.GetEffectiveAC = function () {
+    var val = this.GetBaseAC();
+    val += this.myItems.GetProtectModForRdyItems();
+    val = Math.min(MAX_AC, val);
+    val = Math.max(MIN_AC, val);
+    return val;
+}
+
 
 
 CHARACTER.prototype.SetLevel = function (lvl) { throw "todo"; }
@@ -4115,9 +4129,7 @@ CHARACTER.prototype.GetDetectingTraps = function () { throw "todo"; }
 CHARACTER.prototype.SetDetectingTraps = function (flag) { throw "todo"; }
 CHARACTER.prototype.GetAdjDetectingTraps = function (flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.SetTHAC0 = function (val) { throw "todo"; }
-CHARACTER.prototype.GetEffectiveAC = function () { throw "todo"; }
 CHARACTER.prototype.SetAC = function (val) { throw "todo"; }
-CHARACTER.prototype.SetCharAC = function () { throw "todo"; }
 CHARACTER.prototype.DetermineCharMaxHitPoints = function () { throw "todo"; }
 CHARACTER.prototype.SetHitPointsIntIntBool = function (val, int, canFinishCasting) { throw "todo"; }
 CHARACTER.prototype.RestoreMaxHitPoints = function () { throw "todo"; }

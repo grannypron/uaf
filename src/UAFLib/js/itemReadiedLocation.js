@@ -21,7 +21,6 @@ void Serialize(CArchive & car);
 
 itemReadiedLocationObj.prototype.Equals = function(rdyLoc)
 {
-
     return this.location == rdyLoc.location;
 }
 

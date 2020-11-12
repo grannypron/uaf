@@ -32,7 +32,7 @@ namespace UAFLib.dataLoaders
                 List<string> baseClasses = new List<string>();
                 foreach (XmlNode baseClassNode in node.SelectNodes("node()[local-name() = 'baseclass']"))
                 {
-                    specAbs.Add(baseClassNode.InnerText);
+                    baseClasses.Add(baseClassNode.InnerText);
                 }
                 itemData["BaseClasses"] = baseClasses;
                 returnData[itemData["id_name"].ToString()] = itemData;

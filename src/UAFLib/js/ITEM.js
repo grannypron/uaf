@@ -68,6 +68,9 @@ ITEM.prototype.GetReadyLocation = function() {
     return this.readyLocation;
 }
 
+ITEM.prototype.SetReadyLocation = function (readyLoc) {
+    return this.readyLocation = new itemReadiedLocationObj(readyLoc);
+}
 /**TODO**
 void Serialize(CArchive & ar, double ver);
 void ReadyLocation(DWORD rdyLoc);

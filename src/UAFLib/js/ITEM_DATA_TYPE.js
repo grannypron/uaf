@@ -179,51 +179,55 @@ ITEM_DATA_TYPE.prototype.LoadFromLoader = function (data) {
         key = enumerator.Current;
         var itemRecord = data[key];
         if (itemRecord["id_name"] == null || itemRecord["id_name"] == "") { continue; }
-        var item = new ITEM_DATA();
-        item.m_uniqueName = itemRecord["name"];
-        item.m_commonName = itemRecord["id_name"];
-        item.m_idName = itemRecord["name"];
-        item.AmmoType = itemRecord["ammo_type"];
-        item.HitSound = itemRecord["hit_sound"];
-        item.MissSound = itemRecord["miss_sound"];
-        item.LaunchSound = itemRecord["launch_sound"];
-        item.Experience = parseInt(itemRecord["experience"]);
-        item.Cost = parseInt(itemRecord["cost"]);
-        item.Encumbrance = parseInt(itemRecord["encumbrance"]);
-        item.Attack_Bonus = parseInt(itemRecord["attack_bonus"]);
-        item.Cursed = itemRecord["cursed"] == "yes";
-        item.Bundle_Qty = parseInt(itemRecord["bundle_quantity"]);
-        item.Num_Charges = parseInt(itemRecord["number_of_charges"]);
-        item.Location_Readied = Items.GetReadiedLocationByString(itemRecord["readied_location"]);
-        item.Hands_to_Use = parseInt(itemRecord["hands_to_carry"]);
+        var itemData = new ITEM_DATA();
+        itemData.m_uniqueName = itemRecord["name"];
+        itemData.m_commonName = itemRecord["id_name"];
+        itemData.m_idName = itemRecord["name"];
+        itemData.AmmoType = itemRecord["ammo_type"];
+        itemData.HitSound = itemRecord["hit_sound"];
+        itemData.MissSound = itemRecord["miss_sound"];
+        itemData.LaunchSound = itemRecord["launch_sound"];
+        itemData.Experience = parseInt(itemRecord["experience"]);
+        itemData.Cost = parseInt(itemRecord["cost"]);
+        itemData.Encumbrance = parseInt(itemRecord["encumbrance"]);
+        itemData.Attack_Bonus = parseInt(itemRecord["attack_bonus"]);
+        itemData.Cursed = itemRecord["cursed"] == "yes";
+        itemData.Bundle_Qty = parseInt(itemRecord["bundle_quantity"]);
+        itemData.Num_Charges = parseInt(itemRecord["number_of_charges"]);
+        itemData.Location_Readied = Items.GetReadiedLocationByString(itemRecord["readied_location"]);
+        itemData.Hands_to_Use = parseInt(itemRecord["hands_to_carry"]);
         var sm_dice = UAFUtil.parseDice(itemRecord["small_medium_damage_dice"]);
-        item.Dmg_Dice_Sm = sm_dice.die;
-        item.Nbr_Dice_Sm = sm_dice.nbr;
-        item.Dmg_Bonus_Sm = sm_dice.bonus;
+        itemData.Dmg_Dice_Sm = sm_dice.die;
+        itemData.Nbr_Dice_Sm = sm_dice.nbr;
+        itemData.Dmg_Bonus_Sm = sm_dice.bonus;
         var lg_dice = UAFUtil.parseDice(itemRecord["large_damage_dice"]);
-        item.Dmg_Dice_Lg = lg_dice.die;
-        item.Nbr_Dice_Lg = lg_dice.nbr;
-        item.Dmg_Bonus_Lg = lg_dice.bonus;
-        item.ROF_Per_Round = parseFloat(itemRecord["ROF_per_round"]);
-        item.Protection_Base = parseInt(itemRecord["AC_base"]);
-        item.Protection_Bonus = parseInt(itemRecord["AC_bonus"]);
-        item.Wpn_Type = weaponClassType.NotWeapon;
-        item.m_priorityAI = 0; // Not serialized.  Initialized from Special Ability.
-        item.m_usageFlags = 0;
-        item.USAGE_usable = itemRecord["usable"] == "yes";
-        item.USAGE_scribable = itemRecord["scribtable"] == "yes";
-        item.USAGE_notMagical = itemRecord["not_magical"] == "yes";
-        item.CanBeHalvedJoined = itemRecord["CanHalveJoin"] == "yes";
-        item.CanBeTradeDropSoldDep = itemRecord["can_drop"] == "yes";
-        item.RangeMax = parseInt(itemRecord["combat_range"]);
-        item.RangeShort = (this.RangeMax + 2) / 3; // These may be overridden by $AI_ShortRange
-        item.RangeMedium = 2 * this.RangeMax / 3;  // and $AI_MediumRange Special Abilities. 
-        item.ExamineEvent = parseInt(itemRecord["Examine_Event_ID"]);  //DWORD
-        item.ExamineLabel = itemRecord["Examine_Label"];
-        item.attackMsg = "";
-        item.Recharge_Rate = itemRechargeRate.GetByString(itemRecord["recharge_rate"]);
-        item.IsNonLethal = itemRecord["non_lethal"] == "yes";
-        item.usableByBaseclass = [];
+        itemData.Dmg_Dice_Lg = lg_dice.die;
+        itemData.Nbr_Dice_Lg = lg_dice.nbr;
+        itemData.Dmg_Bonus_Lg = lg_dice.bonus;
+        itemData.ROF_Per_Round = parseFloat(itemRecord["ROF_per_round"]);
+        itemData.Protection_Base = parseInt(itemRecord["AC_base"]);
+        itemData.Protection_Bonus = parseInt(itemRecord["AC_bonus"]);
+        itemData.Wpn_Type = weaponClassType.NotWeapon;
+        itemData.m_priorityAI = 0; // Not serialized.  Initialized from Special Ability.
+        itemData.m_usageFlags = 0;
+        itemData.USAGE_usable = itemRecord["usable"] == "yes";
+        itemData.USAGE_scribable = itemRecord["scribtable"] == "yes";
+        itemData.USAGE_notMagical = itemRecord["not_magical"] == "yes";
+        itemData.CanBeHalvedJoined = itemRecord["CanHalveJoin"] == "yes";
+        itemData.CanBeTradeDropSoldDep = itemRecord["can_drop"] == "yes";
+        itemData.RangeMax = parseInt(itemRecord["combat_range"]);
+        itemData.RangeShort = (this.RangeMax + 2) / 3; // These may be overridden by $AI_ShortRange
+        itemData.RangeMedium = 2 * this.RangeMax / 3;  // and $AI_MediumRange Special Abilities. 
+        itemData.ExamineEvent = parseInt(itemRecord["Examine_Event_ID"]);  //DWORD
+        itemData.ExamineLabel = itemRecord["Examine_Label"];
+        itemData.attackMsg = "";
+        itemData.Recharge_Rate = itemRechargeRate.GetByString(itemRecord["recharge_rate"]);
+        itemData.IsNonLethal = itemRecord["non_lethal"] == "yes";
+        itemData.usableByBaseclass = [];
+        var baseClasses = itemRecord["BaseClasses"];
+        for (var idx = 0; idx < baseClasses.Count; idx++) {
+            itemData.usableByBaseclass.push(baseClasses[idx]);
+        }
         /**TODO 
         item.MissileArt = new PIC_DATA(); // in-route sprite
         item.HitArt = new PIC_DATA();     // target hit sprite
@@ -232,7 +236,7 @@ ITEM_DATA_TYPE.prototype.LoadFromLoader = function (data) {
         item.spellID = itemRecord["spell_effect"] ?????
         item.specAbs = new SPECIAL_ABILITIES(true);
         */
-        this.AddItem(item);
+        this.AddItem(itemData);
 
     }
 }
@@ -283,4 +287,53 @@ ITEM_DATA_TYPE.prototype.getItemEncumbrance = function(itemID, qty) {
     // multiply encumbrance by qty of this item
     encumbrance = qty;
     return Math.max(encumbrance, 0);
+}
+
+ITEM_DATA_TYPE.prototype.itemUsesRdySlot = function(pItem) {
+    if (pItem == null) return false;
+    return (!itemReadiedLocation.Cannot.EqualsDWORD(pItem.Location_Readied));
+}
+
+ITEM_DATA_TYPE.prototype.WpnCanAttackAtRange = function(weaponID, Range) {
+    if (this.IsMoneyItem(weaponID))
+        return false;
+
+    switch (itemData.GetWpnType(weaponID)) {
+        case weaponClassType.NotWeapon:
+        case weaponClassType.Ammo:
+            return false;
+
+        case weaponClassType.SlingNoAmmo:
+        case weaponClassType.Bow:
+        case weaponClassType.Crossbow:
+        case weaponClassType.Throw:
+            return ((Range >= 2)
+                //&& (Range <= itemData.GetItemRange(Wpn_giID)));
+                && (Range <= itemData.GetItemRange(weaponID)));
+
+        case weaponClassType.HandBlunt:
+        case weaponClassType.HandCutting:
+        case weaponClassType.HandThrow:
+            //return (Range <= itemData.GetItemRange(Wpn_giID));
+            return (Range <= itemData.GetItemRange(weaponID));
+        case weaponClassType.SpellCaster:
+        case weaponClassType.SpellLikeAbility:
+            {
+                var pSpell;
+                var pItem;
+                pItem = itemData.PeekItem(weaponID);
+                if (pItem.SpellID().IsEmpty()) {
+                    return (Range <= itemData.GetItemRange(weaponID));
+                };
+                pSpell = spellData.PeekSpell(pItem.SpellID());
+                if ((pSpell == null) || (pSpell.Targeting != Self)) {
+                    return (Range <= itemData.GetItemRange(weaponID));
+                };
+                return Range == 0;
+            };
+        default:
+            WriteDebugString("Bogus item type in IsWeapon()\n");
+            break;
+    }
+    return false;
 }

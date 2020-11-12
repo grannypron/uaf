@@ -41,11 +41,14 @@ ActorType.prototype.SetCombatNPCSrc = function (friendly) {
 }
 
 ActorType.prototype.SetCombatMonsterSrc = function (friendly) {
-    if (friendly == null || friendly == undefined) { friendly = false; }
     this.EnemyAlly = (friendly ? EA_ALLY : EA_ENEMY);
     this.Flags = FLAG_COMBAT | FLAG_MONSTER;
 }
-
+ActorType.prototype.SetPartySrc = function (friendly) {
+    if (friendly == null || friendly == undefined) { friendly = false; }
+    this.EnemyAlly = (friendly ? EA_ALLY : EA_ENEMY);
+    Flags = FLAG_NONCOMBAT | FLAG_PARTY_MEMBER;
+}
 ActorType.prototype.ToString = function() {
     //return CString((LPCTSTR)(this), sizeof(ActorType));    // PORT NOTE:  Changed this - I think this was maybe getting the address in memory as a string?
     return this.EnemyAlly + " | " +
@@ -83,7 +86,7 @@ void XYGet(unsigned short & x, unsigned short & y);
 void FromString(const CString& str);
 
 
-void SetPartySrc(BOOL friendly = TRUE);
+
 void SetItemSrc();
 void SetNPCSrc(BOOL friendly = FALSE);
 void SetCreatedCharacterSrc(BOOL friendly = FALSE);
