@@ -22599,10 +22599,11 @@ void PARTY_DIED_MENU_DATA::OnInitialEvent(void)
 {
   menu.setMenu(PartyDiedMenuData, NULL, FALSE, this, "PartyDied");
   menu.setHorzOrient();  
+  HOOK_PARAMETERS hookParameters;
   if (party.numCharacters == 1)
-    FormatDisplayText(textData, "YOU HAVE DIED!");
+    FormatDisplayText(textData, getGlobalEventMessage("YOU HAVE DIED!", "EventPartyDied", hookParameters, "", control));
   else
-    FormatDisplayText(textData, "THE PARTY HAS DIED!");
+    FormatDisplayText(textData, getGlobalEventMessage("THE PARTY HAS DIED!", "EventPartyDied", hookParameters, "", control));
   PlayDeath(TRUE);
   Invalidate();
 }
