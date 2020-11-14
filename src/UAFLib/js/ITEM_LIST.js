@@ -62,11 +62,11 @@ ITEM_LIST.prototype.GetReadiedCount = function(rdyLoc) {
     result = 0;
     while (pItem != null) {
         if (!itemReadiedLocation.NotReady.Equals(pItem.GetReadyLocation())) {
-            pItemData = itemData.GetItem(pItem.itemID);
+            pItemData = itemData.GetItemFromID(pItem.itemID);
             if (pItemData.Location_Readied == rdyLoc) result++;
         };
         pItem = this.m_items.PeekNext(pos);
-        post = this.m_items.NextPos(pos);
+        pos = this.m_items.NextPos(pos);
     };
     return result;
 }

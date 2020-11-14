@@ -27,4 +27,3 @@ Globals.ASSERT(Warrior.toggleReadyItem(0));
 Globals.ASSERT(!Warrior.myItems.IsReady(0), "TestInventory.js - 2.5");
 Globals.ASSERT(Warrior.myItems.PeekAtPos(0).itemID == "Long Sword", "TestInventory.js - 4");
 
-combatData.GetCombatant(0).m_pCharacter.addCharacterItem("Shield", 1, 0, 0, 0);

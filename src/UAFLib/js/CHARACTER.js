@@ -1301,6 +1301,7 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
         };
         pos = this.myItems.NextPos(pos);                // PORT NOTE:  Changed to advance the pointer since no pass-by-reference in JS
     };
+
     // clear miscError that may have been set by CanReady()
     Globals.SetMiscError(miscErrorType.NoError);
 
