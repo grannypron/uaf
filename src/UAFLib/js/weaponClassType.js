@@ -29,6 +29,42 @@ function weaponClassType() {
 function weaponClassTypeObj() {
     weaponClassType.call(this);
     Object.setPrototypeOf(this, entityType.prototype);
+
+    // override parent
+    this.getByString = function (str) {
+        // PORT NOTE:  Support getting the value by the attribute name
+        if (this[str] != null)
+            return this[str];
+
+        // or the value used in the import/export
+        switch (str) {
+            case "not weapon":
+                return this.NotWeapon;
+            case "hand held blunt":
+                return this.HandBlunt;
+            case "hand held cutting":
+                return this.HandCutting;
+            case "hand held or thrown":
+                return this.HandThrow;
+            case "sling":
+                return this.SlingNoAmmo;
+            case "bow":
+                return this.Bow;
+            case "crossbow":
+                return this.Crossbow;
+            case "thrown only":
+                return this.Throw;
+            case "ammo":
+                return this.Ammo;
+            case "SpellCaster":
+                return this.SpellCaster;
+            case "Spell-like Ability":
+                return this.SpellLikeAbility;
+            default:
+                return null;
+        }
+    }
+
 }
 
 

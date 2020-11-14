@@ -2,7 +2,6 @@
 combatData.m_aCombatants[0].m_isCombatReady = -1;
 combatData.GetCombatant(0).m_pCharacter.addCharacterItem("Long Sword", 1, 0, 0, 0);
 combatData.GetCombatant(0).m_pCharacter.ReadyBestWpn(1, false);
-Globals.debug("---- Long sword should be readied here!  Check ReadyBestWpn");
 Globals.ASSERT(combatData.GetCombatant(0).m_pCharacter.myItems.IsReady(0));
 cWarrior = combatData.GetCombatant(0);
 

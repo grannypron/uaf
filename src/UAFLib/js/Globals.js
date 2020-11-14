@@ -171,6 +171,7 @@ Globals.prototype.GetConfigMonsterPlyrControl = function () {
 }
 
 Globals.prototype.SetMiscError = function (error) {
+    Globals.debug("----SetMiscError:" + error);
     if ((error >= 0) && (error < MAX_MISC_ERROR_MSGS)) {
         miscError = error;
         if (error != miscErrorType.NoError) {

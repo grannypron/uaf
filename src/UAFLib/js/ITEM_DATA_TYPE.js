@@ -207,7 +207,7 @@ ITEM_DATA_TYPE.prototype.LoadFromLoader = function (data) {
         itemData.ROF_Per_Round = parseFloat(itemRecord["ROF_per_round"]);
         itemData.Protection_Base = parseInt(itemRecord["AC_base"]);
         itemData.Protection_Bonus = parseInt(itemRecord["AC_bonus"]);
-        itemData.Wpn_Type = weaponClassType.NotWeapon;
+        itemData.Wpn_Type = weaponClassType.getByString(itemRecord["weapon_type"]);
         itemData.m_priorityAI = 0; // Not serialized.  Initialized from Special Ability.
         itemData.m_usageFlags = 0;
         itemData.USAGE_usable = itemRecord["usable"] == "yes";
@@ -308,13 +308,11 @@ ITEM_DATA_TYPE.prototype.WpnCanAttackAtRange = function(weaponID, Range) {
         case weaponClassType.Crossbow:
         case weaponClassType.Throw:
             return ((Range >= 2)
-                //&& (Range <= itemData.GetItemRange(Wpn_giID)));
                 && (Range <= itemData.GetItemRange(weaponID)));
 
         case weaponClassType.HandBlunt:
         case weaponClassType.HandCutting:
         case weaponClassType.HandThrow:
-            //return (Range <= itemData.GetItemRange(Wpn_giID));
             return (Range <= itemData.GetItemRange(weaponID));
         case weaponClassType.SpellCaster:
         case weaponClassType.SpellLikeAbility:
@@ -333,6 +331,44 @@ ITEM_DATA_TYPE.prototype.WpnCanAttackAtRange = function(weaponID, Range) {
             };
         default:
             WriteDebugString("Bogus item type in IsWeapon()\n");
+            break;
+    }
+    return false;
+}
+
+ITEM_DATA_TYPE.prototype.GetItemRange = function(itemID) {
+    var pItem;
+    pItem = this.PeekItem(itemID);
+    if (pItem != null) {
+        return pItem.RangeMax;
+    }
+    else
+        return 0;
+}
+
+ITEM_DATA_TYPE.prototype.WpnUsesAmmo = function (itemID) {
+    if (this.IsMoneyItem(itemID))
+        return false;
+    return (this.WpnUsesAmmoType(itemData.GetWpnType(itemID)));
+}
+
+ITEM_DATA_TYPE.prototype.WpnUsesAmmoType = function (type) {
+    switch (type) {
+        case weaponClassType.NotWeapon:
+        case weaponClassType.Ammo:
+        case weaponClassType.HandBlunt:
+        case weaponClassType.HandCutting:
+        case weaponClassType.HandThrow:
+        case weaponClassType.SlingNoAmmo:
+        case weaponClassType.Throw:
+        case weaponClassType.SpellCaster:
+        case weaponClassType.SpellLikeAbility:
+            return false;
+        case weaponClassType.Bow:
+        case weaponClassType.Crossbow:
+            return true;
+        default:
+            Globals.WriteDebugString("Bogus item type in WpnUsesAmmo()\n");
             break;
     }
     return false;

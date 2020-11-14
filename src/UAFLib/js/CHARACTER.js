@@ -1024,7 +1024,7 @@ CHARACTER.prototype.getItemList = function (id) {
 
 CHARACTER.prototype.addCharacterItem = function (itemID, qty, numCharges, id, cost) {
     if ((itemData.getItemEncumbrance(itemID, qty) + this.GetEncumbrance()) > this.GetAdjMaxEncumbrance()) {
-        Globals.SetMiscError(Globals.miscErrorType.TooMuchWeight);
+        Globals.SetMiscError(miscErrorType.TooMuchWeight);
         return false;
     }
 
@@ -1336,14 +1336,14 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
     if (IdxToUse == NO_READY_ITEM)
         return;
 
-    data = itemData.GetItemFromID(myItems.GetItem(IdxToUse));
+    data = itemData.GetItemFromID(this.myItems.GetItem(IdxToUse));
     if (data != null) {
         if (data.Hands_to_Use > 1)
             myItems.UnReady(this.myItems.GetReadiedItem(Items.ShieldHand, 0));
     }
 
     this.ReadyWeaponScript(IdxToUse);
-    if (Items.WpnUsesAmmo(this.myItems.GetItem(IdxToUse)))
+    if (itemData.WpnUsesAmmo(this.myItems.GetItem(IdxToUse)))
         this.ReadyBestAmmo(isLargeTarget);
 };
 
@@ -2967,7 +2967,7 @@ CHARACTER.prototype.DetermineNewCharMaxHitPoints = function (randomSeed) {
             pBaseclass = baseclassData.PeekBaseclass(baseclassID);
             if (pBaseclass != null) {
                 var pBaseclassStats;
-                pBaseclassStats = PeekBaseclassStats(baseclassID);
+                pBaseclassStats = this.PeekBaseclassStats(baseclassID);
                 if (pBaseclassStats != null) {
                     var j = 0, level = 0, numDice = 0, sides = 0, constant = 0, bonus = 0, HP = 0;
                     numBaseclass++;

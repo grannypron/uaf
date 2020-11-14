@@ -6,7 +6,7 @@ using UAFLib.dataLoaders;
 
 namespace UAFLib.dataLoaders
 {
-    class SpecabilityLoader : BaseLoader
+    public class SpecabilityLoader : BaseLoader
     {
         public override Dictionary<String, object> load(XmlDocument doc)
         {

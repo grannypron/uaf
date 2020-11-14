@@ -398,3 +398,9 @@ ITEM_LIST.prototype.IsCursed = function (index) {
     else
         return false;
 }
+
+
+ITEM_LIST.prototype.GetKeyAt = function (index) {
+    //PORT NOTE:  Simplified this by just indexing the array by its indices and not separate keys
+    return index;
+}
