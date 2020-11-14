@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using UAFLib;
 
-public delegate void InitComplete(ConsoleResults results);
+public delegate void InitComplete();
 interface IEngineLoader
 {
     IEnumerator loadEngine(XmlDocument config, Jint.Engine engine, UnityUAFEventManager unityUAFEventManager, InitComplete complete);

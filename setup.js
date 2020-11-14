@@ -2,6 +2,9 @@
 Globals.SPECAB_HACKS = {};
 Globals.SPECAB_HACKS["IsCombatReady"] = function (pkt) { Globals.debug("SPECAB_HACKS: IsCombatReady"); SPECAB.p_hook_parameters[0] = "1"; }  // This is to return 1 when COMBATANT.IsDone is called
 
+/** Load item database */
+itemData.LoadFromLoader(consoleResults.payload);
+
 UnityEngine = importNamespace("UnityEngine");  // For Jint to access C# library
 // Override the logging function for now because System.Console is not available in WebGL - should change to use Unity.Debug
 Globals.debug = function (msg) {
@@ -160,6 +163,14 @@ function packageMapAndCombatantStatus(c) {
 }
 
 
+function makeInventoryList(c) {
+    var str = "";
+    for (idx = 0; idx < c.m_pCharacter.myItems.m_items.GetCount(); idx++) {
+        str += c.m_pCharacter.myItems.IsReady(idx) ? "*" : " ";
+        str += c.m_pCharacter.myItems.GetItemIDByPos(idx) + "\n";
+    }
+    return str;
+}
 
 var Warrior = new CHARACTER();
 Warrior.name = "Hardest_Ken"
@@ -172,7 +183,12 @@ Warrior.age = 20;
 Warrior.maxAge = 100;
 Warrior.alignment = 0;
 Warrior.encumbrance = 10;
+Warrior.maxEncumbrance = 1000;
 Warrior.SetMaxMovement(2000);
+var bcs = new BASECLASS_STATS();
+bcs.currentLevel = 1;
+bcs.baseclassID = "fighter";   // I think??
+Warrior.baseclassStats.push(bcs);
 
 
 
@@ -213,13 +229,22 @@ globalData.SetMaxPCs(2);
 globalData.SetMinPCs(2);
 globalData.SetMaxPartySize(2);
 
+
 party.addTempToParty(Warrior);
 combatEventData.distance = eventDistType.UpClose;
 combatEventData.m_UseOutdoorMap = false; // only outdoor stub is in place right now
 combatEventData.direction = eventDirType.North;
 combatData.InitCombatData(combatEventData);
 
+combatData.GetCombatant(0).m_pCharacter.addCharacterItem("Long Sword", 1, 0, 0, 0);
+//combatData.GetCombatant(0).m_pCharacter.addCharacterItem("Shield", 1, 0, 0, 0);
+//combatData.GetCombatant(0).m_pCharacter.addCharacterItem("Chain Mail", 1, 0, 0, 0);
+//combatData.GetCombatant(0).m_pCharacter.addCharacterItem("Dagger", 1, 0, 0, 0);
+//combatData.GetCombatant(0).m_pCharacter.SetReady(1, itemReadiedLocation.ShieldHand);
+//combatData.GetCombatant(0).m_pCharacter.SetReady(2, itemReadiedLocation.BodyArmor);
+combatData.GetCombatant(0).m_pCharacter.ReadyBestWpn(1, false);
+
 cWarrior = combatData.m_aCombatants[0];
 Globals.debug("cWarrior.GetName(): " + cWarrior.GetName() + " / " + cWarrior.self + " / " + cWarrior.GetStatus());
-
+Globals.debug("makeInventoryList(cWarrior): " + makeInventoryList(cWarrior));
 consoleResults.payload = packageMapAndCombatantStatus(cWarrior);

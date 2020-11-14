@@ -30,9 +30,13 @@ public class LocalEngineLoader : IEngineLoader
         {
             setupFileContents = new StreamReader(fs).ReadToEnd();
         }
-        ConsoleResults setupResults = new ConsoleResults();
-        engine.SetValue("consoleResults", setupResults).SetValue("unityUAFEventManager", unityUAFEventManager).Execute(setupFileContents);
-        initComplete.Invoke(setupResults);
+        try { 
+        engine.Execute(setupFileContents);
+        } catch (Exception ex)
+        {
+
+        }
+        initComplete.Invoke();
         return null;
     }
 

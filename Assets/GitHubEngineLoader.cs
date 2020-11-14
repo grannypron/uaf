@@ -63,9 +63,8 @@ public class GitHubEngineLoader : MonoBehaviour, IEngineLoader
         yield return setupFileReq.SendWebRequest();
         setupFileContents = setupFileReq.downloadHandler.text;
         int setupFileLineCount = setupFileContents.Split('\n').Length;
-        ConsoleResults setupResults = new ConsoleResults();
-        engine.SetValue("consoleResults", setupResults).SetValue("unityUAFEventManager", unityUAFEventManager).Execute(setupFileContents);
-        initComplete.Invoke(setupResults);
+        engine.Execute(setupFileContents);
+        initComplete.Invoke();
     }
 
 }

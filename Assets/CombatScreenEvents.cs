@@ -29,12 +29,11 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
     private string CombatMessageSuffix = "";
 
     // Start is called before the first frame update
-    IEnumerator Start()
+    void Start()
     {
         PlayerScaleFactor = (int)Math.Floor(GameObject.Find("Player").GetComponent<Transform>().localScale.x);
         jintEngine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly, typeof(UnityEngine.Debug).Assembly));
-
-        
+        /*
         UnityWebRequest configHttpReq = UnityWebRequest.Get(CONFIG_FILE_URL);
         yield return configHttpReq.SendWebRequest();
 
@@ -51,17 +50,24 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
         XmlDocument configDoc = new XmlDocument();
         configDoc.LoadXml(configHttpReq.downloadHandler.text);
         IEngineLoader loader = new GitHubEngineLoader();
-        //XmlDocument configDoc = new XmlDocument();
-        //configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js</setupScript></config>");
-        //IEngineLoader loader = new LocalEngineLoader(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\");
+        */
+        XmlDocument configDoc = new XmlDocument();
+        configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js</setupScript></config>");
+        IEngineLoader loader = new LocalEngineLoader(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\");
 
         UnityUAFEventManager unityUAFEventManager = new UnityUAFEventManager(this);
 
-        StartCoroutine(loader.loadEngine(configDoc, jintEngine, unityUAFEventManager, delegate (ConsoleResults setupResults)
+        this.setupResults = new ConsoleResults();
+
+        XmlDocument doc = new XmlDocument();
+        doc.Load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\items.xml");
+        setupResults.payload = new UAFLib.dataLoaders.ItemLoader().load(doc);
+        jintEngine.SetValue("consoleResults", setupResults).SetValue("unityUAFEventManager", unityUAFEventManager);
+
+        StartCoroutine(loader.loadEngine(configDoc, jintEngine, unityUAFEventManager, delegate ()
         {
             Text txtLoading = GameObject.Find("txtLoading").GetComponent<Text>();
             txtLoading.enabled = false;
-            this.setupResults = setupResults;
             this.librariesLoaded = true;
         }));
 
@@ -255,4 +261,10 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
         }
     }
 
+    public void Inventory()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("ViewInventoryScene");
+        GameState.engine = this.jintEngine;
+        GameState.engineOutput = this.setupResults;
+    }
 }
