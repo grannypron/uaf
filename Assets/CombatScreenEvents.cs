@@ -21,56 +21,78 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
     public static int BlockScaleFactor = 40;          //**TODO** - Idk why
     private int PlayerScaleFactor = -1;
     private const String CONFIG_FILE_URL = "https://raw.githubusercontent.com/grannypron/uaf/unity/config.xml";
+    private const String ITEMS_DATA_URL = "https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/data/items.xml";
     private Engine jintEngine;
-    private ConsoleResults setupResults;
+    private ConsoleResults engineOutput;
     private bool mapPainted = false;
     private bool librariesLoaded = false;
     private Dictionary<int, String> monsters = new Dictionary<int, string>();
     private string CombatMessageSuffix = "";
 
     // Start is called before the first frame update
-    void Start()
+    IEnumerator Start()
     {
         PlayerScaleFactor = (int)Math.Floor(GameObject.Find("Player").GetComponent<Transform>().localScale.x);
-        jintEngine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly, typeof(UnityEngine.Debug).Assembly));
-        /*
-        UnityWebRequest configHttpReq = UnityWebRequest.Get(CONFIG_FILE_URL);
-        yield return configHttpReq.SendWebRequest();
-
-        if (configHttpReq.isNetworkError || configHttpReq.isHttpError)
+        Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+        DontDestroyOnLoad(this.gameObject);
+        Text txtCombatantInfo = GameObject.Find("txtCombatantInfo").GetComponent<Text>();
+        txtCombatantInfo.text = "";
+        if (GameState.engine != null)
         {
-            Debug.Log(configHttpReq.error);
-        }
-        else
-        {
-            // Show results as text
-            Debug.Log("Loaded config file from " + CONFIG_FILE_URL + ".  Length:" + configHttpReq.downloadHandler.text.Length);
-        }
-        
-        XmlDocument configDoc = new XmlDocument();
-        configDoc.LoadXml(configHttpReq.downloadHandler.text);
-        IEngineLoader loader = new GitHubEngineLoader();
-        */
-        XmlDocument configDoc = new XmlDocument();
-        configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js</setupScript></config>");
-        IEngineLoader loader = new LocalEngineLoader(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\");
-
-        UnityUAFEventManager unityUAFEventManager = new UnityUAFEventManager(this);
-
-        this.setupResults = new ConsoleResults();
-
-        XmlDocument doc = new XmlDocument();
-        doc.Load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\items.xml");
-        setupResults.payload = new UAFLib.dataLoaders.ItemLoader().load(doc);
-        jintEngine.SetValue("consoleResults", setupResults).SetValue("unityUAFEventManager", unityUAFEventManager);
-
-        StartCoroutine(loader.loadEngine(configDoc, jintEngine, unityUAFEventManager, delegate ()
-        {
+            this.jintEngine = GameState.engine;
+            this.engineOutput = GameState.engineOutput;
+            this.monsters = new Dictionary<int, string>();
             Text txtLoading = GameObject.Find("txtLoading").GetComponent<Text>();
             txtLoading.enabled = false;
             this.librariesLoaded = true;
-        }));
+            playerModelMove(new int[] { 0, 0 }); // little hack 🤷
+        }
+        else { 
+            jintEngine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly, typeof(UnityEngine.Debug).Assembly));
+            
+            UnityWebRequest configHttpReq = UnityWebRequest.Get(CONFIG_FILE_URL);
+            yield return configHttpReq.SendWebRequest();
 
+            if (configHttpReq.isNetworkError || configHttpReq.isHttpError)
+            {
+                Debug.Log(configHttpReq.error);
+            }
+            else
+            {
+                // Show results as text
+                Debug.Log("Loaded config file from " + CONFIG_FILE_URL + ".  Length:" + configHttpReq.downloadHandler.text.Length);
+            }
+
+            UnityWebRequest itemDataHttpReq = UnityWebRequest.Get(ITEMS_DATA_URL);
+            yield return itemDataHttpReq.SendWebRequest();
+            XmlDocument itemDataDoc = new XmlDocument();
+            itemDataDoc.LoadXml(itemDataHttpReq.downloadHandler.text);
+
+            XmlDocument configDoc = new XmlDocument();
+            configDoc.LoadXml(configHttpReq.downloadHandler.text);
+            IEngineLoader loader = new GitHubEngineLoader();
+            /*
+            XmlDocument configDoc = new XmlDocument();
+            configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js</setupScript></config>");
+            IEngineLoader loader = new LocalEngineLoader(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\");
+            XmlDocument itemDataDoc = new XmlDocument();
+            itemDataDoc.Load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\items.xml");
+            */
+
+            UnityUAFEventManager unityUAFEventManager = new UnityUAFEventManager(this);
+
+            this.engineOutput = new ConsoleResults();
+
+            engineOutput.payload = new UAFLib.dataLoaders.ItemLoader().load(itemDataDoc);
+            jintEngine.SetValue("consoleResults", engineOutput).SetValue("unityUAFEventManager", unityUAFEventManager);
+
+            StartCoroutine(loader.loadEngine(configDoc, jintEngine, unityUAFEventManager, delegate ()
+            {
+                Text txtLoading = GameObject.Find("txtLoading").GetComponent<Text>();
+                txtLoading.enabled = false;
+                this.librariesLoaded = true;
+            }));
+        }
     }
 
     private void FixedUpdate()
@@ -88,7 +110,7 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
         Tilemap terrainTilemap = GameObject.Find("TerrainTilemap").GetComponent<Tilemap>();
         Tile groundTile = (Tile)terrainTilemap.GetTile(new Vector3Int(-30, 11, 0));
 
-        object[] returnData = (object[])setupResults.payload;
+        object[] returnData = (object[])engineOutput.payload;
         object[] characterData = (object[])returnData[0];
         object[] mapData = (object[])returnData[1];
 
@@ -174,7 +196,7 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
     public void playerModelMove(int[] xy)
     {
         jintEngine.Execute("cWarrior.MoveCombatant(cWarrior.x + " + xy[0] + ", cWarrior.y + " + xy[1] + ", false); consoleResults.payload = packageMapAndCombatantStatus(combatData.m_aCombatants[0]);");
-        object[] data = (object[])this.setupResults.payload;
+        object[] data = (object[])this.engineOutput.payload;
         object[] characterData = (object[])data[0];
         paintMap();
     }
@@ -265,6 +287,6 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("ViewInventoryScene");
         GameState.engine = this.jintEngine;
-        GameState.engineOutput = this.setupResults;
+        GameState.engineOutput = this.engineOutput;
     }
 }

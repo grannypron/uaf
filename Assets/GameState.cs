@@ -9,5 +9,6 @@ public static class GameState
 {
     public static Jint.Engine engine;
     public static ConsoleResults engineOutput;
+    public static Dictionary<int, String> monsters;
 
 }

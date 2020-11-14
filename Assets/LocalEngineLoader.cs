@@ -30,12 +30,8 @@ public class LocalEngineLoader : IEngineLoader
         {
             setupFileContents = new StreamReader(fs).ReadToEnd();
         }
-        try { 
         engine.Execute(setupFileContents);
-        } catch (Exception ex)
-        {
 
-        }
         initComplete.Invoke();
         return null;
     }
