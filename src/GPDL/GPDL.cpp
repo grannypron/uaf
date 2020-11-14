@@ -51,7 +51,7 @@ const char *GetOneLine(int /*n*/)
 int ProcessErrorMessage(const CString& errMsg, bool wait)
 {
   char line[80];
-  fprintf(stderr, "%s\n",LPCSTR(errMsg));
+  fprintf(stderr, "%s\n",(LPCSTR)(LPCTSTR)errMsg);
   if (wait)
   {
     fprintf(stderr, "    Press Enter  ");
@@ -75,7 +75,7 @@ int main(int argc,char *argv[])
 		fprintf(stderr,"Cannot open input file %s\n",argv[1]);
 		usage();
 	};
-	if (!outfile.Open(argv[2],CFile::modeWrite|CFile::modeCreate))
+	if (!outfile.Open((LPCTSTR)argv[2],CFile::modeWrite|CFile::modeCreate))
   {
 		fprintf(stderr,"Cannot open out file %s\n",argv[2]);
 		usage();
