@@ -184,14 +184,11 @@ Warrior.maxAge = 100;
 Warrior.alignment = 0;
 Warrior.encumbrance = 10;
 Warrior.maxEncumbrance = 1000;
-Warrior.SetMaxMovement(2000);
+
 var bcs = new BASECLASS_STATS();
 bcs.currentLevel = 1;
 bcs.baseclassID = "fighter";   // I think??
 Warrior.baseclassStats.push(bcs);
-
-
-
 
 
 var cWarrior = new COMBATANT();
@@ -236,15 +233,17 @@ combatEventData.m_UseOutdoorMap = false; // only outdoor stub is in place right 
 combatEventData.direction = eventDirType.North;
 combatData.InitCombatData(combatEventData);
 
-combatData.GetCombatant(0).m_pCharacter.addCharacterItem("Long Sword", 1, 0, 0, 0);
-//combatData.GetCombatant(0).m_pCharacter.addCharacterItem("Shield", 1, 0, 0, 0);
-//combatData.GetCombatant(0).m_pCharacter.addCharacterItem("Chain Mail", 1, 0, 0, 0);
-//combatData.GetCombatant(0).m_pCharacter.addCharacterItem("Dagger", 1, 0, 0, 0);
-//combatData.GetCombatant(0).m_pCharacter.SetReady(1, itemReadiedLocation.ShieldHand);
-//combatData.GetCombatant(0).m_pCharacter.SetReady(2, itemReadiedLocation.BodyArmor);
-combatData.GetCombatant(0).m_pCharacter.ReadyBestWpn(1, false);
 
 cWarrior = combatData.m_aCombatants[0];
-Globals.debug("cWarrior.GetName(): " + cWarrior.GetName() + " / " + cWarrior.self + " / " + cWarrior.GetStatus());
-Globals.debug("makeInventoryList(cWarrior): " + makeInventoryList(cWarrior));
+
+cWarrior.m_pCharacter.addCharacterItem("Long Sword", 1, 0, 0, 0);
+cWarrior.m_pCharacter.addCharacterItem("Shield", 1, 0, 0, 0);
+cWarrior.m_pCharacter.addCharacterItem("Chain Mail", 1, 0, 0, 0);
+cWarrior.m_pCharacter.addCharacterItem("Dagger", 1, 0, 0, 0);
+cWarrior.m_pCharacter.myItems.SetReady(1, itemReadiedLocation.ShieldHand);
+cWarrior.m_pCharacter.myItems.SetReady(2, itemReadiedLocation.BodyArmor);
+cWarrior.m_pCharacter.ReadyBestWpn(1, false);
+cWarrior.m_pCharacter.SetMaxMovement(2000);
+
+
 consoleResults.payload = packageMapAndCombatantStatus(cWarrior);
