@@ -3471,7 +3471,10 @@ void SPELL_DATA::Serialize(CArchive &ar, double ver)
     //m_gsID.Serialize(ar, ver); //ar >> key;
     ar >> preSpellNameKey;  // Any verion using CArchive.
     DAS(ar,Name);
-
+    if (globalData.version >= _VERSION_528)
+    {
+        DAS(ar, Description);
+    }
 #ifdef UAFEngine
     // In the runtime, Name means only the un-decorated
     // part of the name.  For example:  "Fireball|Green" will be
@@ -3788,7 +3791,8 @@ void SPELL_DATA::Serialize(CAR &ar, double ver)
     //m_gsID.Serialize(ar, ver); //ar << key;
     ar << preSpellNameKey;
     AS(ar,Name);
-    AS(ar,CastSound);
+    AS(ar, Description);
+    AS(ar, CastSound);
     //ar << schoolMask;
     ar << schoolID;
     //ar << CastMask;
@@ -3884,6 +3888,10 @@ void SPELL_DATA::Serialize(CAR &ar, double ver)
       preSpellNameKey = -1;
     };
     DAS(ar,Name);
+    if (globalData.version >= _VERSION_528)
+    {
+        DAS(ar, Description);
+    }
 
 
 #ifdef UAFEngine

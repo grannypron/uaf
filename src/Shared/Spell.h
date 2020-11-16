@@ -458,6 +458,7 @@ public:
 
   //GLOBAL_SPELL_ID m_gsID;
 	CString Name;
+    CString Description;
 #ifdef UAFEngine
   CString uniqueName;  // The fully qualified name for scripts "Bless|Ranger"
 #endif

@@ -25079,7 +25079,8 @@ void MEMORIZE_MENU_DATA::OnKeypress(key_code key, char ascii)
    { "EXIT", 1 }
   */
   int currIndex = currSpellTextIndex();
-  switch (menu.currentItem()) 
+  TEXT_DISPLAY_DATA textData;
+  switch (menu.currentItem())
   {
   case 1: // "SELECT"
     spellListText.IncreaseSpellSelectedCount(currIndex);

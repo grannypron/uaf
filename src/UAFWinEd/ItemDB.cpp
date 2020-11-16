@@ -3530,7 +3530,19 @@ static void spellObject(CONFIG_PKT *pkt) {
 }
 
 
-
+static void DspellDescription(CONFIG_PKT* pkt)
+{
+    if (pkt->IsStoring)
+    {
+        pkt->value = tempSPELL.Description;
+        return;
+    };
+    pkt->status = CONFIG_DECODE_string(
+        pkt->value,
+        pkt->errorMsg,
+        tempSPELL.Description);
+    pkt->objectName = tempSPELL.Description;
+}
 static void DspellName(CONFIG_PKT *pkt)
 {
   if (pkt->IsStoring)
@@ -5765,6 +5777,7 @@ CONFIGID spellIDs[] =
 {
 CONFIGID ("",CONFIG_DATA_object,spellObject),
 DEFID ("name"               ,string     ,Name),
+DEFID ("description"        ,string     ,Description),
 DEFID ("Key"                ,long       ,Key),
 DEFID ("casting sound"      ,file       ,CastingSound),
 DEFID ("cast msg"           ,string     ,CastMsg),

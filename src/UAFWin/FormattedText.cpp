@@ -1990,50 +1990,55 @@ void DisplayFormattedText(TEXT_DISPLAY_DATA& data, FONT_COLOR_NUM colorNum, int 
    if (data.numLines <= 0) return;
    int x = textboxX;
    int y = textboxY;
+   DisplayFormattedTextAtPos(x, y, data, colorNum, fontNumber);
 
-   int curr = data.currLine;
-   int last = curr + TEXTBOX_LINES;
+}
 
-   if (last > data.numLines)
-      last = data.numLines;
+void DisplayFormattedTextAtPos(int x, int y, TEXT_DISPLAY_DATA& data, FONT_COLOR_NUM colorNum, int fontNumber)
+{
+    int curr = data.currLine;
+    int last = curr + TEXTBOX_LINES;
 
-   BOOL useFrontbuffer = data.NeedsFrontBuffer();
-   BOOL useSlowText = data.UseSlowText();
+    if (last > data.numLines)
+        last = data.numLines;
 
-   if (useFrontbuffer) MouseRender.ShowMouseCursor(FALSE);
+    BOOL useFrontbuffer = data.NeedsFrontBuffer();
+    BOOL useSlowText = data.UseSlowText();
 
-   /*  PRS  20200208
-   GraphicsMgr.ResetFontColorTags();
-   GraphicsMgr.EnableFontColorTags(TRUE);
-   */
-   while (curr < last)
-   {
-      // to allow for slow text, formatted text is drawn directly to the front
-      // buffer, so this function must be called after the back buffer is flipped
-      if (data.PeekTextLine(curr)->waitForReturn)
-      {
-        last = curr+1;
-      };
-      /*  PRS  20200208
-      GraphicsMgr.ResetFontColorTags();
-      */
-      //displayText(x,y, data.text[curr], color, data.highlightAll, useSlowText, !useFrontbuffer);
-      DisplayText(x,y, 
-                  fontNumber, 
-                  data.PeekTextLine(curr)->text, 
-                  colorNum, FALSE,
-                  data.highlightAll, useSlowText, !useFrontbuffer);
-      //y += 18;
-      y += GraphicsMgr.GetMaxCharacterHeight();
-      curr++;
-   }
+    if (useFrontbuffer) MouseRender.ShowMouseCursor(FALSE);
 
-   /*  PRS  20200208
-   GraphicsMgr.EnableFontColorTags(FALSE);
-   */
-   if (useFrontbuffer) MouseRender.ShowMouseCursor(TRUE);
+    /*  PRS  20200208
+    GraphicsMgr.ResetFontColorTags();
+    GraphicsMgr.EnableFontColorTags(TRUE);
+    */
+    while (curr < last)
+    {
+        // to allow for slow text, formatted text is drawn directly to the front
+        // buffer, so this function must be called after the back buffer is flipped
+        if (data.PeekTextLine(curr)->waitForReturn)
+        {
+            last = curr + 1;
+        };
+        /*  PRS  20200208
+        GraphicsMgr.ResetFontColorTags();
+        */
+        //displayText(x,y, data.text[curr], color, data.highlightAll, useSlowText, !useFrontbuffer);
+        DisplayText(x, y,
+            fontNumber,
+            data.PeekTextLine(curr)->text,
+            colorNum, FALSE,
+            data.highlightAll, useSlowText, !useFrontbuffer);
+        //y += 18;
+        y += GraphicsMgr.GetMaxCharacterHeight();
+        curr++;
+    }
 
-   data.InitialBoxDisplay = FALSE;
+    /*  PRS  20200208
+    GraphicsMgr.EnableFontColorTags(FALSE);
+    */
+    if (useFrontbuffer) MouseRender.ShowMouseCursor(TRUE);
+
+    data.InitialBoxDisplay = FALSE;
 }
 
 //*****************************************************************************

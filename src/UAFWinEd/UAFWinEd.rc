@@ -6038,6 +6038,7 @@ END
 STRINGTABLE
 BEGIN
     IDS_HELP_spell_Name     "The spell's name.  String.  Must be unique.\nA spell with a name of all blanks is treated as a comment."
+    IDS_HELP_spell_Description     "Description of the spell."
     IDS_HELP_spell_CastingSound 
                             "The name of a .WAV file, or ""none"", or ""default"".\nIf missing or blank then ""default"" is assumed.\n""none"" means silent.\n""default"" means to use the default spell casting sound."
     IDS_HELP_spell_School   "The base school of magic that this spell belongs to."
