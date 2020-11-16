@@ -880,19 +880,18 @@ int handleSpellFormInput(SPELL_FORM_INPUT_MESSAGE_TYPE msg,
   {
     SpellForm.Display(0);
   };
-
-  CString spellDesc;
-  SPELL_ID spellID;
-  spellID = spellListText.GetSpellID(currSpellTextIndex());
-  if (!spellID.IsEmpty()) {
-      int spellIdx = spellData.LocateSpell(spellID);
-      if (spellIdx >= 0) {
-          SPELL_DATA* spell;
-          TEXT_DISPLAY_DATA txtData;
-          spell = spellData.GetSpell(spellIdx);
-          spellDesc.Format("%s\r\n%s", spell->Name, spell->Description);
-          FormatDisplayText(txtData, spellDesc, false, false, false);
-          DisplayFormattedTextAtPos(400, 100, txtData, whiteColor, 0);
+  
+  if (currSpellTextIndex() <= spellListText.GetCount() && currSpellTextIndex() >= 0) {
+      CString spellDesc;
+      SPELL_ID spellID;
+      spellID = spellListText.m_CharData->GetCharacterSpell(currSpellTextIndex())->spellID;
+      if (!spellID.IsEmpty()) {
+        TEXT_DISPLAY_DATA txtData;
+        const SPELL_DATA *spell;
+        spell = spellData.PeekSpell(spellData.LocateSpell(spellID));
+        spellDesc.Format("%s\r\n%s", spell->Name, spell->Description);
+        FormatDisplayText(txtData, spellDesc, false, false, false);
+        DisplayFormattedTextAtPos(400, 100, txtData, whiteColor, 0);
       }
   }
   return result|(flip?1:0);

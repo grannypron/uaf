@@ -302,7 +302,7 @@
 #define IDC_RETAILER                    1098
 #define IDC_DELAY                       1098
 #define IDS_HELP_spell_Name             1100
-#define IDS_HELP_spell_Description      1100
+#define IDS_HELP_spell_Description      1099
 #define IDC_RENAMELEVEL                 1101
 #define IDS_HELP_spell_CastingSound     1101
 #define IDC_USEBG2                      1102

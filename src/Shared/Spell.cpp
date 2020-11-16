@@ -3039,6 +3039,7 @@ SPELL_DATA::SPELL_DATA() :
 { 
   //m_gsID.Clear();//key = 0;
   Name="";
+  Description="";
   CastSound = "";
   MissileSound="";
   CoverageSound="";
@@ -3152,6 +3153,7 @@ void SPELL_DATA::Clear(BOOL ctor)
 {
   //m_gsID.Clear();//key = 0;
   Name="";
+  Description="";
   preSpellNameKey = -1;
   CastSound = "";
   MissileSound="";
@@ -3237,6 +3239,7 @@ SPELL_DATA &SPELL_DATA::operator=(const SPELL_DATA &src)
   //m_gsID = src.m_gsID;//key = src.key;
   preSpellNameKey = src.preSpellNameKey;
   Name=src.Name;
+  Description = src.Description;
 #ifdef UAFEngine
   uniqueName = src.uniqueName;
 #endif
@@ -3337,6 +3340,7 @@ bool SPELL_DATA::operator==(const SPELL_DATA &src) const
   if (hLingerSound           != src.hLingerSound          ) return false;
   //if (m_gsID                 != src.m_gsID                ) return false;
   if (Name                   != src.Name                  ) return false;
+  if (Description            != src.Description           ) return false;
 #ifdef UAFEngine
   if (uniqueName             != src.uniqueName            ) return false;
 #endif
