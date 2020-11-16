@@ -92,7 +92,7 @@ int main(int argc,char *argv[])
   result = GPDLcomp.CompileProgram(GetOneLine, ProcessErrorMessage);
 // ******************************************
 // Produce binary file and listing file
-// ******************************************
+//  ******************************************
   if (result == 0)
   {
 	  GPDLcomp.WriteCode(outarchive);

@@ -2,6 +2,8 @@
 
 var Globals = new Globals();
 
+var gpdlStack = new GPDL_STACK();
+var GPDL_STATE = new GPDL_STATE();
 var miscErrorType = new miscErrorTypeObj();
 var debugStrings = new DEBUG_STRINGS();
 var alignmentType = new alignmentTypeObj();

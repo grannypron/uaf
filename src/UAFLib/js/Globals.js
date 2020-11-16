@@ -409,3 +409,7 @@ Globals.prototype.GetConfigMonsterNoDeath = function () {
 Globals.prototype.IncNumMonsterSlain = function () {
     combatData.m_iNumMonSlain++;
 }
+
+Globals.prototype.My_free = function (addr) {
+    delete addr;
+}

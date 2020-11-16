@@ -168,7 +168,7 @@ int INPUTFILE::Open(char *filename) {                         //INPUTFILE
     _exit(1);                                                 //INPUTFILE
   };                                                          //INPUTFILE
   m_file=new CFile();                                         //INPUTFILE
-  if (m_file->Open(filename,CFile::modeRead)==0) {            //INPUTFILE
+  if (m_file->Open(CA2CT(filename),CFile::modeRead)==0) {            //INPUTFILE
     delete m_file;                                            //INPUTFILE
     m_file=NULL;                                              //INPUTFILE
     return 0;                                                 //INPUTFILE
@@ -300,7 +300,7 @@ void INPUTFILE::m_backspace(void) {                           //INPUTFILE
 void INPUTFILE::backspaceToken(void) {                        //INPUTFILE
   if (m_backspaceTkn!=TKN_NONE) {                             //INPUTFILE
     MessageBox(NULL,                                          //INPUTFILE
-             "Internal error in backspaceToken",              //INPUTFILE
+             _T("Internal error in backspaceToken"),              //INPUTFILE
            NULL,                                              //INPUTFILE
            MB_OK|MB_TOPMOST);                                 //INPUTFILE
     exit(1);                                                  //INPUTFILE
@@ -342,7 +342,7 @@ void INPUTFILE::error(CString text, bool printLineNumbers)    //INPUTFILE
     if (m_file != NULL)                                       //INPUTFILE
     {                                                         //INPUTFILE
       TRACE("file  %s",file->m_file->GetFilePath());          //INPUTFILE
-      message.Format("file  %s",file->m_file->GetFilePath()); //INPUTFILE
+      message.Format(_T("file  %s"),file->m_file->GetFilePath()); //INPUTFILE
       (*m_ProcessErrorMessage)(message, false);               //INPUTFILE
     }                                                         //INPUTFILE
     else                                                      //INPUTFILE
@@ -352,14 +352,14 @@ void INPUTFILE::error(CString text, bool printLineNumbers)    //INPUTFILE
     };                                                        //INPUTFILE
     TRACE("\n   at line number %d\n",file->m_lineNumber);     //INPUTFILE
     message.Format(                                           //INPUTFILE
-              "\n   at line number %d\n",file->m_lineNumber); //INPUTFILE
+              _T("\n   at line number %d\n"),file->m_lineNumber); //INPUTFILE
     (*m_ProcessErrorMessage)(message, false);                 //INPUTFILE
     TRACE("The last token encountered was \'%s\'\n",m_token); //INPUTFILE
     message.Format(                                           //INPUTFILE
-               "The last token encountered was \'%s\'\n",m_token);//INPUTFILE
+               _T("The last token encountered was \'%s\'\n"),m_token);//INPUTFILE
     (*m_ProcessErrorMessage)(message, false);                 //INPUTFILE
     //TRACE("The line being parsed was \'%s\'\n",m_line);     //INPUTFILE$monsterpl
-    message.Format("The line being parsed was \'%s\'\n",m_line);//INPUTFILE
+    message.Format(_T("The line being parsed was \'%s\'\n"),m_line);//INPUTFILE
     (*m_ProcessErrorMessage)(message, true);                  //INPUTFILE
   };                                                          //INPUTFILE
 }                                                             //INPUTFILE
@@ -810,7 +810,7 @@ void CODE::poke(unsigned int addr, unsigned int value) {      //code
   if (addr==0) {                                              //code
     if (m_H!=0) { //  Allow initial NOOP to be placed here.   //code
       MessageBox(NULL,                                        //code
-                 "Somone is tampering with address zero",     //code
+                 _T("Somone is tampering with address zero"),     //code
                  NULL, MB_OK|MB_TOPMOST);                     //code
     };                                                        //code
   };                                                          //code
@@ -825,7 +825,7 @@ void CODE::comma(unsigned int binCode) {                      //code
     m_code=(unsigned int *)My_realloc(m_code,m_allocated*sizeof (int));
     if (m_code==NULL)                                         //code
     {                                                         //code
-      MessageBox(NULL,"Cannot allocate code memory",          //code
+      MessageBox(NULL, _T("Cannot allocate code memory"),          //code
                        NULL,MB_OK|MB_TOPMOST|MB_TASKMODAL);   //code
       _exit(1);                                               //code
     };                                                        //code
@@ -1011,7 +1011,7 @@ DEFINITION::DEFINITION (void) {                               //DICTIONARY
 DEFINITION::~DEFINITION(void) {                               //DICTIONARY
   DEFINITION *fp;                                             //DICTIONARY
   if (m_next!=NULL) {                                         //DICTIONARY
-    MessageBox(NULL,"DEFINITION destructor error",            //DICTIONARY
+    MessageBox(NULL, _T("DEFINITION destructor error"),            //DICTIONARY
                        NULL,MB_OK|MB_TOPMOST);                //DICTIONARY
     return;                                                   //DICTIONARY
   };                                                          //DICTIONARY
@@ -2544,7 +2544,7 @@ int GPDLCOMP::compileAtomicElement(void) {
     m_globals->InsertConstant(token)->addCodeReference();
   }
   else if (tokenType==TKN_INTEGER) {
-    token.Format("%d",infile.integer());
+    token.Format(_T("%d"),infile.integer());
     m_globals->InsertConstant(token)->addCodeReference();
   }
   else if (tokenType==TKN_NAME) {
@@ -2840,13 +2840,13 @@ int GPDLCOMP::compileTypedSystemFunctionCall(int type)
   switch (type)
   {
   case STRING:
-    msg.Format("The parameter must be of type String");
+    msg.Format(_T("The parameter must be of type String"));
     break;
   case ACTOR:
-    msg.Format("The parameter must be of type Actor");
+    msg.Format(_T("The parameter must be of type Actor"));
     break;
   default:
-    msg.Format("The parameter must be of type %i", type);
+    msg.Format(_T("The parameter must be of type %i"), type);
     break;
   }
   
@@ -3282,7 +3282,7 @@ int GPDLCOMP::compileStatement()
       if (def==NULL) 
       {
         CString msg;
-        msg.Format("Undefined name \'%s\' at start of statement", token);
+        msg.Format(_T("Undefined name \'%s\' at start of statement"), token);
         infile.error(msg);
         return 1;
       };
@@ -3305,7 +3305,7 @@ int GPDLCOMP::compileStatement()
       }
       else
       {
-        tmperr.Format("Unknown token \'%s\' at start of statement", token);
+        tmperr.Format(_T("Unknown token \'%s\' at start of statement"), token);
         infile.error(tmperr);
         return 1;
       };
@@ -3318,7 +3318,7 @@ int GPDLCOMP::compileStatement()
     tokenType=GetToken();
     if (tokenType!=TKN_SEMICOLON) 
     {
-      tmperr.Format("Expected semi-colon at end of statement: \'%s\'", token);
+      tmperr.Format(_T("Expected semi-colon at end of statement: \'%s\'"), token);
       infile.error(tmperr);
       return 1;
     };
@@ -3326,7 +3326,7 @@ int GPDLCOMP::compileStatement()
   } 
   else 
   {    
-    tmperr.Format("Statement starts badly: \'%s\'", token);
+    tmperr.Format(_T("Statement starts badly: \'%s\'"), token);
     infile.error(tmperr);
     return 1;
   };
@@ -3507,7 +3507,7 @@ int GPDLCOMP::compileFunctionDecl(unsigned int attributes)
     }
     else
     {
-      entryDebug.Format("%s(%d)",newFunc->name(),newFunc->numParam());
+      entryDebug.Format(_T("%s(%d)"),newFunc->name(),newFunc->numParam());
     };
     m_globals->InsertConstant(entryDebug)->addCodeReference();
     result=compileBlock(token);
@@ -3640,7 +3640,7 @@ CString GPDLCOMP::CompileScript(const CString& script, const char *entryPoints[]
   CString globalVar, entryName, emptyString;
   emptyString = "";
   scriptError = "";
-  scriptText = LPCTSTR(script);
+  scriptText = CStringA(script);
   CompileProgram(GetScriptLine, ProcessScriptError, true);
   if (scriptError.GetLength() > 0)
   {
@@ -3712,7 +3712,7 @@ CString GPDLCOMP::CompileScript(const CString& script, const char *entryPoints[]
     {
       strcpy_s(binaryCode + codeOffset + pGlobal, 
 		      binaryCodeSize-codeOffset-pGlobal,
-		      LPCTSTR(globalVar));
+            CT2A(LPCTSTR(globalVar)));
       ((int *)(binaryCode))[i] = pGlobal;
       pGlobal += globalVar.GetLength() + 1;
     }
@@ -3810,7 +3810,7 @@ void PROGRAM_TEXT::Initialize(const char *text)
 const char *PROGRAM_TEXT::GetNextLine()
 {
   if (m_lineNum >= m_lines.GetCount()) return NULL;
-  return m_lines.GetAt(m_lineNum++);
+  return CT2A(m_lines.GetAt(m_lineNum++));
 }
 
 PROGRAM_TEXT programText;
@@ -3821,7 +3821,7 @@ int ProcessProgramError(const CString& errorMessage, bool wait)
 {
   programErrorMessage += errorMessage;
   if (!wait) return 0;
-  MessageBox(NULL,programErrorMessage,"Error compiling GPDL program", MB_OK);
+  MessageBox(NULL,programErrorMessage, _T("Error compiling GPDL program"), MB_OK);
   programErrorMessage.Empty();
   return 0;
 }
@@ -4018,7 +4018,7 @@ void GPDLCOMP::list(FILE *file) {                             //LIST
   for (k=0; k<code.here(); k++) {                             //LIST
     funcName=m_root->findUserFunc(k);                         //LIST
     if (funcName!="") {                                       //LIST
-      fprintf(file,"%s\n",(LPCSTR)funcName);                          //LIST
+      fprintf(file,"%s\n",(LPCSTR)(LPCTSTR)funcName);                          //LIST
     };                                                        //LIST
     bincode=code.peek(k);                                     //LIST
     fprintf(file,"        %06x %02x %06x ",                   //LIST
@@ -4081,7 +4081,7 @@ void GPDLCOMP::list(FILE *file) {                             //LIST
       default:                                                //LIST
         operand="?????";                                      //LIST
       };                                                      //LIST
-      fprintf(file,"%s %s\n",mneumonic, (LPCSTR)operand);     //LIST
+      fprintf(file,"%s %s\n",mneumonic, (LPCSTR)(LPCTSTR)operand);     //LIST
     };                                                        //LIST
   };                                                          //LIST
 }                                                             //LIST
@@ -4166,7 +4166,7 @@ void RDRCOMP::m_backspace(void) {                                       //RDR
 void RDRCOMP::m_backspaceToken(void) {                                  //RDR
   if (m_backspaceTkn!=CTKN_NONE) {                                      //RDR
     MessageBox(NULL,                                                    //RDR
-             "Internal error in backspaceToken",                        //RDR
+             _T("Internal error in backspaceToken"),                        //RDR
            NULL,                                                        //RDR
            MB_OK|MB_TOPMOST);                                           //RDR
     exit(1);                                                            //RDR

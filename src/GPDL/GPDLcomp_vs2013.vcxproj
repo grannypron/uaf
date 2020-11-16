@@ -142,11 +142,13 @@
     </ClCompile>
     <ClCompile Include="GPDL.cpp" />
     <ClCompile Include="..\Shared\GPDLcomp.cpp" />
+    <ClCompile Include="GPDLManagedWrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Shared\GPDLcomp.h" />
     <ClInclude Include="..\Shared\GPDLOpCodes.h" />
     <ClInclude Include="..\Shared\ramfile.h" />
+    <ClInclude Include="GPDLManagedWrapper.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="README.txt" />

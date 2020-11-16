@@ -7,7 +7,7 @@ void RAM_FILE::Initialize(const CString& str)
 {
   Clear();
   m_pData = (unsigned char *)malloc(str.GetLength());
-  memcpy(m_pData, LPCSTR(str), str.GetLength());
+  memcpy(m_pData, (LPCSTR)(LPCTSTR)str, str.GetLength());
 }
 
 RAM_FILE& RAM_FILE::Write(unsigned char *c, int n)
@@ -33,7 +33,7 @@ RAM_FILE& RAM_FILE:: operator <<(unsigned int i)
 RAM_FILE& RAM_FILE:: operator <<(const CString& str)
 {
   *this << (unsigned int)str.GetLength();
-  return Write((unsigned char *)LPCSTR(str), str.GetLength());
+  return Write((unsigned char *)(LPCSTR)(LPCTSTR)str, str.GetLength());
 }
 
 RAM_FILE& RAM_FILE::Read(unsigned char *c, int n)

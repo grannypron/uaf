@@ -43,6 +43,9 @@
     <Reference Include="Esprima, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2e92ba9c8d81157f, processorArchitecture=MSIL">
       <HintPath>packages\Esprima.2.0.0-beta-1298\lib\net461\Esprima.dll</HintPath>
     </Reference>
+    <Reference Include="GPDLcomp">
+      <HintPath>..\GPDL\Debug\GPDLcomp.dll</HintPath>
+    </Reference>
     <Reference Include="Jint, Version=0.0.0.0, Culture=neutral, PublicKeyToken=2e92ba9c8d81157f, processorArchitecture=MSIL">
       <HintPath>packages\Jint.3.0.0-beta-1828\lib\net461\Jint.dll</HintPath>
     </Reference>
@@ -84,6 +87,13 @@
     <Content Include="js\ACTIVE_SPELL_LIST.js" />
     <Content Include="js\alignmentType - Copy.js" />
     <Content Include="js\BASECLASS_LIST.js" />
+    <Content Include="js\ERRORLOG.js" />
+    <Content Include="js\GPDL.js" />
+    <Content Include="js\GPDL_EVENT.js" />
+    <Content Include="js\GPDL_GLOBALS.js" />
+    <Content Include="js\GPDL_STACK.js" />
+    <Content Include="js\GPDL_STATE.js" />
+    <Content Include="js\INDEX.js" />
     <Content Include="js\interop\UIEventManager.js" />
     <Content Include="js\itemRechargeRate.js" />
     <Content Include="js\MonsterImmunityType.js" />
@@ -223,6 +233,7 @@
     <Content Include="data\SpecialAbilities.xml" />
     <Content Include="js\DICEPLUS.js" />
     <Content Include="Tests\TestCombatMovementAttack.js" />
+    <Content Include="Tests\TestGPDL.js" />
     <Content Include="Tests\TestLoadItems.js" />
     <Content Include="Tests\TestParseDice.js" />
     <Content Include="Tests\TestRollDice.js" />
