@@ -3541,6 +3541,7 @@ static void DspellDescription(CONFIG_PKT* pkt)
         pkt->value,
         pkt->errorMsg,
         tempSPELL.Description);
+    tempSPELL.Description.Replace("/n", "\r\n");
     pkt->objectName = tempSPELL.Description;
 }
 static void DspellName(CONFIG_PKT *pkt)
