@@ -884,18 +884,20 @@ int handleSpellFormInput(SPELL_FORM_INPUT_MESSAGE_TYPE msg,
   if (currSpellTextIndex() <= spellListText.GetCount() && currSpellTextIndex() >= 0) {
       CString spellDesc;
       SPELL_ID spellID;
-      spellID = spellListText.m_CharData->GetCharacterSpell(currSpellTextIndex())->spellID;
-      if (!spellID.IsEmpty()) {
-        TEXT_DISPLAY_DATA txtData;
-        const SPELL_DATA *spell;
-        spell = spellData.PeekSpell(spellData.LocateSpell(spellID));
-        CString desc;
-        desc = spell->Description;
-        desc.Replace("\\r", "");
-        desc.Replace("\\n", "\n");
-        spellDesc.Format("%s", desc);
-        FormatDisplayText(txtData, spellDesc, false, false, false);
-        DisplayFormattedTextAtPos(400, 30, txtData, whiteColor, 0);
+      if (spellListText.m_CharData != NULL) {
+          spellID = spellListText.m_CharData->GetCharacterSpell(currSpellTextIndex())->spellID;
+          if (!spellID.IsEmpty()) {
+              TEXT_DISPLAY_DATA txtData;
+              const SPELL_DATA* spell;
+              spell = spellData.PeekSpell(spellData.LocateSpell(spellID));
+              CString desc;
+              desc = spell->Description;
+              desc.Replace("\\r", "");
+              desc.Replace("\\n", "\n");
+              spellDesc.Format("%s", desc);
+              FormatDisplayText(txtData, spellDesc, false, false, false);
+              DisplayFormattedTextAtPos(400, 30, txtData, whiteColor, 0, 100);
+          }
       }
   }
   return result|(flip?1:0);
