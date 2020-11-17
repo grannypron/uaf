@@ -152,7 +152,7 @@ void DisplayFormattedText(TEXT_DISPLAY_DATA& data,
                           int fontNumber);
 void DisplayFormattedTextAtPos(int x, int y, TEXT_DISPLAY_DATA& data,
     FONT_COLOR_NUM colorNum,
-    int fontNumber);
+    int fontNumber, int maxLines);
 // prs 20191221 void DisplayPausedText(TEXT_DISPLAY_DATA &data, COLORREF color=White);
 void DisplayPausedText(TEXT_DISPLAY_DATA& data, FONT_COLOR_NUM colorNum, int fontNumber);
 

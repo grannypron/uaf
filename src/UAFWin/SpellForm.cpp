@@ -881,7 +881,7 @@ int handleSpellFormInput(SPELL_FORM_INPUT_MESSAGE_TYPE msg,
     SpellForm.Display(0);
   };
   
-  if (currSpellTextIndex() <= spellListText.GetCount() && currSpellTextIndex() >= 0) {
+  if (!DescriptionsOff && currSpellTextIndex() <= spellListText.GetCount() && currSpellTextIndex() >= 0) {
       CString spellDesc;
       SPELL_ID spellID;
       if (spellListText.m_CharData != NULL) {

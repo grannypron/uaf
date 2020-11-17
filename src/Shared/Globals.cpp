@@ -174,6 +174,7 @@ int INTER_CHARACTER_DELAY = 15; // delay, in millisecs, between output character
 BOOL UseCustomCursor = FALSE;
 BOOL DisableScreenSaver = TRUE;
 DWORD SoundPlaybackRate = 22050;
+BOOL DescriptionsOff = FALSE;
 
 LONGLONG virtualGameTime = 0; // Milliseconds since start-of-play (this session)
 
@@ -2856,6 +2857,8 @@ BOOL LoadConfigFile(const char *path)
   WriteDebugString("DisableScreenSaver = %i\n", DisableScreenSaver);
 
   ConfigFile.FindToken("SOUND_PLAYBACK_RATE", SoundPlaybackRate);
+
+  ConfigFile.FindToken("DESCRIPTIONS_OFF", DescriptionsOff);
 
 #else // ifdef UAFEngine
 

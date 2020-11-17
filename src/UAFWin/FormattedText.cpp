@@ -1990,14 +1990,15 @@ void DisplayFormattedText(TEXT_DISPLAY_DATA& data, FONT_COLOR_NUM colorNum, int 
    if (data.numLines <= 0) return;
    int x = textboxX;
    int y = textboxY;
-   DisplayFormattedTextAtPos(x, y, data, colorNum, fontNumber);
+   DisplayFormattedTextAtPos(x, y, data, colorNum, fontNumber, TEXTBOX_LINES);
 
 }
 
-void DisplayFormattedTextAtPos(int x, int y, TEXT_DISPLAY_DATA& data, FONT_COLOR_NUM colorNum, int fontNumber)
+void DisplayFormattedTextAtPos(int x, int y, TEXT_DISPLAY_DATA& data, FONT_COLOR_NUM colorNum, int fontNumber, int maxLines)
 {
+
     int curr = data.currLine;
-    int last = curr + TEXTBOX_LINES;
+    int last = curr + maxLines;
 
     if (last > data.numLines)
         last = data.numLines;

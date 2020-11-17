@@ -1060,6 +1060,7 @@ extern COLORREF CustomColor;
 
 extern COLORREF KeyboardCharColor;
 extern BOOL UseKeyboardShortcuts;
+extern BOOL DescriptionsOff;
 
 extern int deltaX[4];
 extern int deltaY[4];
