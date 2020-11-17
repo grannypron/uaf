@@ -880,25 +880,30 @@ int handleSpellFormInput(SPELL_FORM_INPUT_MESSAGE_TYPE msg,
   {
     SpellForm.Display(0);
   };
-  
-  if (!DescriptionsOff && currSpellTextIndex() <= spellListText.GetCount() && currSpellTextIndex() >= 0) {
-      CString spellDesc;
-      SPELL_ID spellID;
-      if (spellListText.m_CharData != NULL) {
-          spellID = spellListText.m_CharData->GetCharacterSpell(currSpellTextIndex())->spellID;
-          if (!spellID.IsEmpty()) {
-              TEXT_DISPLAY_DATA txtData;
-              const SPELL_DATA* spell;
-              spell = spellData.PeekSpell(spellData.LocateSpell(spellID));
-              CString desc;
-              desc = spell->Description;
-              desc.Replace("\\r", "");
-              desc.Replace("\\n", "\n");
-              spellDesc.Format("%s", desc);
-              FormatDisplayText(txtData, spellDesc, false, false, false);
-              DisplayFormattedTextAtPos(400, 30, txtData, whiteColor, 0, 100);
-          }
-      }
+
+  // Display spell descriptions on-screen - uaf_00014
+  if (!DescriptionsOff && currSpellTextIndex() < spellListText.GetCount() && currSpellTextIndex() >= 0) {
+    CString spellDesc;
+    SPELL_ID spellID;
+    if (spellListText.m_CharData != NULL) {
+      spellID = spellListText.m_CharData->GetCharacterSpell(currSpellTextIndex())->spellID;
+    }
+    else {
+    // In the case of a new character, where m_CharData is not set
+      spellID = spellListText.GetSpellID(currSpellTextIndex());
+    }
+    if (!spellID.IsEmpty()) {
+      TEXT_DISPLAY_DATA txtData;
+      const SPELL_DATA* spell;
+      spell = spellData.PeekSpell(spellData.LocateSpell(spellID));
+      CString desc;
+      desc = spell->Description;
+      desc.Replace("\\r", "");
+      desc.Replace("\\n", "\n");
+      spellDesc.Format("%s", desc);
+      FormatDisplayText(txtData, spellDesc, false, false, false);
+      DisplayFormattedTextAtPos(400, 30, txtData, whiteColor, 0, 100);
+    }
   }
   return result|(flip?1:0);
 }
