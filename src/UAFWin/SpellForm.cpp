@@ -902,7 +902,7 @@ int handleSpellFormInput(SPELL_FORM_INPUT_MESSAGE_TYPE msg,
       desc.Replace("\\n", "\n");
       spellDesc.Format("%s", desc);
       FormatDisplayText(txtData, spellDesc, false, false, false);
-      DisplayFormattedTextAtPos(400, 30, txtData, whiteColor, 0, 100);
+      DisplayFormattedTextAtPos(DescriptionsText_x, DescriptionsText_y, txtData, whiteColor, 0, 100);
     }
   }
   return result|(flip?1:0);

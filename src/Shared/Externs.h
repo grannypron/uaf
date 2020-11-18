@@ -384,6 +384,9 @@ extern int SCREEN_WIDTH;  // these change to reflect the current
 extern int SCREEN_HEIGHT; // screen resolution for the editor,
 extern int COLOR_BITS;
 
+extern int DescriptionsText_x;
+extern int DescriptionsText_y;
+
 enum screenRes { res640x480=0, res800x600=1, res1024x768=2, res1152x864=3, res1280x1024=4 };
 extern screenRes m_GameScreenRes;
 

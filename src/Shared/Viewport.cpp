@@ -214,7 +214,8 @@ int BigPic_x = 14;      //
 int BigPic_y = 16;      //
 int VersionText_x = 280; //
 int VersionText_y = 301; //end add
-
+int DescriptionsText_x = 400;
+int DescriptionsText_y = 30;
 
 SELECTION_PAGE_FORMAT Select_Race_Format;
 SELECTION_PAGE_FORMAT Select_Choosestats_Format;

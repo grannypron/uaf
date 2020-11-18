@@ -2859,6 +2859,11 @@ BOOL LoadConfigFile(const char *path)
   ConfigFile.FindToken("SOUND_PLAYBACK_RATE", SoundPlaybackRate);
 
   ConfigFile.FindToken("DESCRIPTIONS_OFF", DescriptionsOff);
+  if (ConfigFile.FindTokens("DESCRIPTIONSTEXT", x, y))             //
+  {                                                          //
+      DescriptionsText_x = x;                                     //
+      DescriptionsText_y = y;                                     //
+  }                                                          //
 
 #else // ifdef UAFEngine
 
