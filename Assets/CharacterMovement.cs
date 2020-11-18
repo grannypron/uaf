@@ -29,6 +29,12 @@ public class CharacterMovement : MonoBehaviour
 
     public void movePlayer(int xDir, int yDir)
     {
+        if (xDir < 0 || yDir > 0) { 
+            GameObject.Find("Player").GetComponent<SpriteRenderer>().flipX = true;
+        } else { 
+            GameObject.Find("Player").GetComponent<SpriteRenderer>().flipX = false;
+        }
+
         GameObject.Find("EventSystem").SendMessage("playerModelMove", new int[] { xDir, yDir });
     }
 

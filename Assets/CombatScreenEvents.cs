@@ -26,11 +26,12 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
     private ConsoleResults engineOutput;
     private bool mapPainted = false;
     private bool librariesLoaded = false;
+    private bool registeredWalls = false;
     private Dictionary<int, String> monsters = new Dictionary<int, string>();
     private string CombatMessageSuffix = "";
 
     // Start is called before the first frame update
-    IEnumerator Start()
+    void Start()
     {
         PlayerScaleFactor = (int)Math.Floor(GameObject.Find("Player").GetComponent<Transform>().localScale.x);
         Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
@@ -49,7 +50,8 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
         }
         else { 
             jintEngine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly, typeof(UnityEngine.Debug).Assembly));
-            
+            /*
+
             UnityWebRequest configHttpReq = UnityWebRequest.Get(CONFIG_FILE_URL);
             yield return configHttpReq.SendWebRequest();
 
@@ -67,17 +69,16 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
             yield return itemDataHttpReq.SendWebRequest();
             XmlDocument itemDataDoc = new XmlDocument();
             itemDataDoc.LoadXml(itemDataHttpReq.downloadHandler.text);
-
             XmlDocument configDoc = new XmlDocument();
             configDoc.LoadXml(configHttpReq.downloadHandler.text);
             IEngineLoader loader = new GitHubEngineLoader();
-            /*
+            */
+
             XmlDocument configDoc = new XmlDocument();
             configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js</setupScript></config>");
             IEngineLoader loader = new LocalEngineLoader(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\");
             XmlDocument itemDataDoc = new XmlDocument();
             itemDataDoc.Load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\items.xml");
-            */
 
             UnityUAFEventManager unityUAFEventManager = new UnityUAFEventManager(this);
 
@@ -108,6 +109,7 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
     {
         Rigidbody2D player = GetComponent<Rigidbody2D>();
         Tilemap terrainTilemap = GameObject.Find("TerrainTilemap").GetComponent<Tilemap>();
+        Tilemap collidableTilemap = GameObject.Find("CollidableTilemap").GetComponent<Tilemap>();
         Tile groundTile = (Tile)terrainTilemap.GetTile(new Vector3Int(-30, 11, 0));
 
         object[] returnData = (object[])engineOutput.payload;
@@ -123,8 +125,15 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
                 int[] coords = new int[] { x , y };
                 if (cellValue < 0)
                 {
+                    if (!registeredWalls) { 
+                        // This is just temporary - I am populating the engine's grid from the tiles I drew in the Unity tilemap. It should go the other way around
+                        if ((Tile)collidableTilemap.GetTile(new Vector3Int(x - 25, y - 25, 0)) != null) {
+                            this.jintEngine.Execute("Drawtile.terrain[" + y + "][" + x + "].cell = -1;");
+                        }
+                    }
                     //terrainTilemap.SetTile(new Vector3Int(translatedCoords[0], translatedCoords[1], zIndex), groundTile);// for now, just leave what I have painted on the map
-                } else if (cellValue == 0)
+                }
+                else if (cellValue == 0)
                 {
                     placePlayer(coords[0], coords[1]);
                 } else if (cellValue > 0)
@@ -139,7 +148,7 @@ public class CombatScreenEvents : MonoBehaviour, IUIListener
                 }
             }
         }
-
+        registeredWalls = true;
         paintCharStatus(Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), characterData[2].ToString(), Int32.Parse(characterData[3].ToString()), Int32.Parse(characterData[4].ToString()), Int32.Parse(characterData[5].ToString()), Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), Int32.Parse(characterData[6].ToString()));
     }
 
