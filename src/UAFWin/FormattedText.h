@@ -138,7 +138,12 @@ public:
   BOOL     IsCustomColorActive(void) {return m_customColorActive;};
 };
 
-
+void FormatDisplayText(TEXT_DISPLAY_DATA& data,
+    const char* pText,
+    BOOL slowText,
+    BOOL HighlightAll,
+    BOOL requireEnter,
+    int char_pixels_per_line);
 void FormatDisplayText(TEXT_DISPLAY_DATA &data, 
                        const char *pText, 
                        BOOL slowText=TRUE, 

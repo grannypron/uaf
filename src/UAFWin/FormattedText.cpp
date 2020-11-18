@@ -1625,11 +1625,21 @@ CString FORMATTED_TEXT::GetString(CString *preamble)
 // PURPOSE: 
 //
 //*****************************************************************************
+
+void FormatDisplayText(TEXT_DISPLAY_DATA& data,
+    const char* pText,
+    BOOL slowText,
+    BOOL HighlightAll,
+    BOOL requireEnter) {
+    FormatDisplayText(data, pText, slowText, HighlightAll, requireEnter, GetTextBoxCharWidth());
+}
+
 void FormatDisplayText(TEXT_DISPLAY_DATA& data,
   const char* pText,
   BOOL slowText,
   BOOL HighlightAll,
-  BOOL requireEnter)
+  BOOL requireEnter,
+  int char_pixels_per_line)
 {
   ResetFontColorTags();
   ClearFormattedText(data);
@@ -1655,7 +1665,7 @@ void FormatDisplayText(TEXT_DISPLAY_DATA& data,
     data.slowText = FALSE;
 
   data.highlightAll = HighlightAll;
-  int char_pixels_per_line = GetTextBoxCharWidth(); //DLD 12/20/00 now a changable var //unsigned int char_pixels_per_line = GetTextBoxCharWidth();
+  
   if (char_pixels_per_line <= 0)
   {
     if (buffer != NULL)

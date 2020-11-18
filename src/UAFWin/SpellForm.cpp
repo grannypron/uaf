@@ -901,7 +901,7 @@ int handleSpellFormInput(SPELL_FORM_INPUT_MESSAGE_TYPE msg,
       desc.Replace("\\r", "");
       desc.Replace("\\n", "\n");
       spellDesc.Format("%s", desc);
-      FormatDisplayText(txtData, spellDesc, false, false, false);
+      FormatDisplayText(txtData, spellDesc, false, false, false, DESCRIPTIONS_WIDTH);
       DisplayFormattedTextAtPos(DescriptionsText_x, DescriptionsText_y, txtData, whiteColor, 0, 100);
     }
   }

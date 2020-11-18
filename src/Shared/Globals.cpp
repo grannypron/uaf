@@ -2865,6 +2865,9 @@ BOOL LoadConfigFile(const char *path)
       DescriptionsText_y = y;                                     //
   }                                                          //
 
+  if (ConfigFile.FindToken("DESCRIPTIONS_WIDTH", DESCRIPTIONS_WIDTH))
+      DESCRIPTIONS_WIDTH = max(1, DESCRIPTIONS_WIDTH);
+
 #else // ifdef UAFEngine
 
   int GameWidth=0;
