@@ -2203,13 +2203,12 @@ COMBAT_DATA.prototype.UpdateCombat = function () {
         }
 
         if (dude != NO_DUDE) {
-            isUpdate = TRUE;
+            isUpdate = true;
             this.m_aCombatants[dude].OnStartCombatantAction();
         }
     } // if dude is done with his turn
     else {
     };
-
 
     this.DetermineIfCombatOver();  // PRS 24 Oct 2009
 
@@ -2287,7 +2286,7 @@ COMBAT_DATA.prototype.getNextCombatant = function() {
         };
 
         i = 0;
-        while ((i < this. m_iNumCombatants) && (!found)) {
+        while ((i < this.m_iNumCombatants) && (!found)) {
             if (this.m_aCombatants[i].m_iInitiative == this.m_iCurrInitiative) {
                 this.m_aCombatants[i].m_isCombatReady = -2;  // Value to indicate unknown.
                 if (!this.m_aCombatants[i].IsDone(false, "Determine next combatantant to take turn")) {
@@ -2301,11 +2300,9 @@ COMBAT_DATA.prototype.getNextCombatant = function() {
         if (!found)
             this.m_iCurrInitiative++;
     }
-
     if (dude != NO_DUDE) {
         this.QComb.Push(dude, true, 0, 0);
         this.turningSummary.Clear();
-
         {
             var j = dude;
             if (this.m_aCombatants[j].State() == individualCombatantState.ICS_ContinueGuarding) {
@@ -2684,4 +2681,32 @@ COMBAT_DATA.prototype.DetermineIfCombatOver = function() {
 
 COMBAT_DATA.prototype.IsCombatOver = function () {
     return this.m_bCombatOver;
+}
+
+
+
+COMBAT_DATA.prototype.CheckIdleTime = function() {
+    var minIdleTime = 1000000;
+    var diff;
+    for (var i = 0; i < this.m_iNumCombatants; i++)
+    {
+        diff = this.m_iCurrRound - this.m_aCombatants[i].lastAttackRound;
+        if (diff < minIdleTime)
+            minIdleTime = diff;
+    }
+
+    return (minIdleTime > Globals.MAX_COMBAT_IDLE_ROUNDS);
+}
+
+
+// have we changed to the next active combatant
+COMBAT_DATA.prototype.IsStartOfTurn = function()
+{
+    return this.QComb.StartOfTurn() || this.QComb.RestartInterruptedTurn();
+}
+
+COMBAT_DATA.prototype.IsFreeAttacker = function() {
+    return (this.QComb.Top() != NO_DUDE)
+        && !this.QComb.ChangeStats()
+        && this.QComb.NumFreeAttacks();
 }

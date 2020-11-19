@@ -85,6 +85,7 @@
     <Content Include="js\ABILITY_DATA.js" />
     <Content Include="js\ABILITY_DATA_TYPE.js" />
     <Content Include="js\ACTIVE_SPELL_LIST.js" />
+    <Content Include="js\AUTO_FLAGS.js" />
     <Content Include="js\BASECLASS_LIST.js" />
     <Content Include="js\ERRORLOG.js" />
     <Content Include="js\GPDL.js" />

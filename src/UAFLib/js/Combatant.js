@@ -1051,7 +1051,6 @@ void PlayLaunch() const ;
 void PlayCombatDeath() const ;
 void PlayCombatTurnUndead() const ;
 void RestoreToParty();
-void /* PRS July 2009 BOOL * / UpdateCombatant();
 BOOL Think();
 BOOL FreeThink(void);
 void HandleCombatRoundMsgExpired();
@@ -3156,3 +3155,97 @@ COMBATANT.prototype.OnStartCombatantAction = function() {
 COMBATANT.prototype.ClearQueuedSpecAb = function() {
     this.m_pCharacter.ClearQueuedSpecAb();
 };
+
+COMBATANT.prototype.UpdateCombatant = function() {
+    var onAuto;
+    var oldState = this.State();
+    onAuto = this.OnAuto(true);
+
+    if (onAuto) {
+        if (this.m_ICS != individualCombatantState.ICS_Casting)  // No need to think if already casting
+        {
+            if (combatData.IsFreeAttacker()) {
+                return;  // No need to Think
+            };
+            if (!this.Think())
+                return; // PRS July 2009 FALSE; 
+        };
+    };
+
+
+    if ((this.State() != individualCombatantState.ICS_None) && (this.State() != oldState)) {
+        Globals.TRACE("done updating " + (onAuto ? "auto" : "manual") + " combatant " + this.self + " (" + CombatantStateText[this.State()] + ")\n");
+    }
+    return;
+}
+
+COMBATANT.prototype.OnAuto = function (callAutoActionHook) {
+    // We want to call the hook only at those points in
+    // the combat where it makes sense for 'auto action' to have changed.
+    // Otherwise we call the hook hundreds of times (for example from OnIdle).
+
+    if (callAutoActionHook) {
+        var actor;
+        var hookParameters = new HOOK_PARAMETERS();
+        var scriptContext = new SCRIPT_CONTEXT();
+        actor = this.GetContextActor();
+        RunTimeIF.SetCharContext(actor);
+        scriptContext.SetCombatantContext(this);
+
+        this.RunCombatantScripts(SPECAB.AUTO_ACTION,
+            SPECAB.ScriptCallback_RunAllScripts,
+            null,
+            "Combatant Auto-action may have changed");
+        RunTimeIF.ClearCharContext();
+
+        while (!UAFUtil.IsEmpty(hookParameters[0])) {
+            var col;
+            this.iFleeingFlags &= ~FLEEING_FLAGS.fleeAutoActionScript;
+            this.iAutoFlags &= ~AUTO_FLAGS.forceAutoScript;
+            this.iAutoFlags &= ~AUTO_FLAGS.forcePlayerScript;
+            switch (hookParameters[0][0]) {
+                case 'F':
+                    // We probably need to clear 'fleeAutoActionScript' when we 'GetNextCombatant'
+                    // so that the fleeing can be terminated when a spell effect ends.
+                    this.iFleeingFlags |= fleeAutoActionScript;
+                    if (hookParameters[0].GetLength() > 1) {
+                        var attacker = parseInt(hookParameters[0][1]);
+                        if (!isNaN(attacker)) {
+                            if ((attacker >= 0) && (attacker < combatData.NumCombatants())) {
+                                if (attacker != this.self) {
+                                    this.m_iLastAttacker = attacker;
+                                };
+                            };
+                        };
+                    };
+                    break;
+                case 'C':
+                    if (hookParameters[0].GetLength() > 1) {
+                        if (hookParameters[0][1] == 'P') this.iAutoFlags |= AUTO_FLAGS.forcePlayerScript;
+                        if (hookParameters[0][1] == 'A') this.iAutoFlags |= AUTO_FLAGS.forceAutoScript;
+                    };
+                    break;
+            };
+            col = hookParameters[0].indexOf(',');
+            if (col < 0) hookParameters[0] = "";
+            else hookParameters[0] = hookParameters[0].substring(col);
+        }
+    }
+
+
+    if (this.iFleeingFlags != 0) return true;
+    if (this.iAutoFlags & AUTO_FLAGS.forceAutoScript) return true;
+    if (this.iAutoFlags & AUTO_FLAGS.forcePlayerScript) return false;
+
+    if ((this.friendly && (this.m_adjFriendly == 2))
+        || (this.m_adjFriendly == 3)
+    ) {
+        return true;
+    }
+
+    if (this.GetAdjAutomatic()) {
+        return true;
+    }
+
+    return false;
+}

@@ -64,6 +64,7 @@ var Items = new Items();
 var specialAbilitiesData = new A_SPECABILITY_DEF_L();
 var pScriptContext = new SCRIPT_CONTEXT();
 var activeSpellList = new ACTIVE_SPELL_LIST();
+var AUTO_FLAGS = new AUTO_FLAGS();
 var FLEEING_FLAGS = new FLEEING_FLAGS();
 
 var pathMgr = new PATH_MANAGER(1000);
