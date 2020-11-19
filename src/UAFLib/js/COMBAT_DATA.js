@@ -2337,8 +2337,6 @@ COMBAT_DATA.prototype.getNextCombatant = function() {
             };
         };
 
-
-        //PlaceCursorOnCurrentDude();
         Globals.TRACE("getNextCombatant() returns " + dude + "\n");
     }
     else
@@ -2709,4 +2707,12 @@ COMBAT_DATA.prototype.IsFreeAttacker = function() {
     return (this.QComb.Top() != NO_DUDE)
         && !this.QComb.ChangeStats()
         && this.QComb.NumFreeAttacks();
+}
+
+// Returns non-zero if screen needs to be redrawn
+COMBAT_DATA.prototype.HandleCurrState = function(zeroMoveAttackOK) {
+    var curr = this.GetCurrCombatant();
+    if (curr != NO_DUDE)
+        return this.m_aCombatants[curr].HandleCurrState(zeroMoveAttackOK);
+    return 0;
 }

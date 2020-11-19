@@ -88,12 +88,15 @@
     <Content Include="js\AUTO_FLAGS.js" />
     <Content Include="js\BASECLASS_LIST.js" />
     <Content Include="js\ERRORLOG.js" />
+    <Content Include="js\Forth.js" />
     <Content Include="js\GPDL.js" />
     <Content Include="js\GPDL_EVENT.js" />
     <Content Include="js\GPDL_GLOBALS.js" />
     <Content Include="js\GPDL_STACK.js" />
     <Content Include="js\GPDL_STATE.js" />
+    <Content Include="js\GUARDING_CASE.js" />
     <Content Include="js\INDEX.js" />
+    <Content Include="js\ACTION_TYPE.js" />
     <Content Include="js\INITIATIVE.js" />
     <Content Include="js\interop\UIEventManager.js" />
     <Content Include="js\itemRechargeRate.js" />

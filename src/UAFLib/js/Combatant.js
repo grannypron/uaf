@@ -62,6 +62,20 @@ function COMBATANT() {
     this.m_preCombatMorale = 0;
     this.targeters = new CList();
     this.Clear();
+
+    this.CombatantStateText = ["ICS_None",
+        "ICS_Casting",
+        "ICS_Attacking",
+        "ICS_Guarding",
+        "ICS_Bandaging",
+        "ICS_Using",
+        "ICS_Moving",
+        "ICS_Turning",
+        "ICS_Fleeing",
+        "ICS_Fled",
+        "ICS_ContinueGuarding",
+        "ICS_Petrified"
+        ];
 }
 
 COMBATANT.prototype.Clear = function () {
@@ -1051,7 +1065,6 @@ void PlayLaunch() const ;
 void PlayCombatDeath() const ;
 void PlayCombatTurnUndead() const ;
 void RestoreToParty();
-BOOL Think();
 BOOL FreeThink(void);
 void HandleCombatRoundMsgExpired();
 void HandleTimeDelayMsgExpired(int iDeathIndex);
@@ -3168,13 +3181,13 @@ COMBATANT.prototype.UpdateCombatant = function() {
                 return;  // No need to Think
             };
             if (!this.Think())
-                return; // PRS July 2009 FALSE; 
+                return;
         };
     };
 
 
     if ((this.State() != individualCombatantState.ICS_None) && (this.State() != oldState)) {
-        Globals.TRACE("done updating " + (onAuto ? "auto" : "manual") + " combatant " + this.self + " (" + CombatantStateText[this.State()] + ")\n");
+        Globals.TRACE("done updating " + (onAuto ? "auto" : "manual") + " combatant " + this.self + " (" + this.CombatantStateText[this.State()] + ")\n");
     }
     return;
 }
@@ -3248,4 +3261,831 @@ COMBATANT.prototype.OnAuto = function (callAutoActionHook) {
     }
 
     return false;
+}
+
+
+
+COMBATANT.prototype.Think = function () {
+    //8a0c
+    // no user input allowed while dude is on auto
+    var actionIndex = [];
+    var useScriptedAI = false;
+    var bestWeaponIdx = 0;
+    if (this.IsPartyMember())
+        Globals.EnableUserInput(true);
+    else {
+        Globals.EnableUserInput(false);
+    }
+    Globals.TRACE("thinking for auto combatant " + this.self + " (" + this.CombatantStateText[this.State()] + ")\n");
+
+    // make sure current path has not been exhausted
+    if (this.hPath >= 0) {
+        if (pathMgr.GetStepsRemaining(this.hPath) == 0)
+            this.ClearPath();
+    }
+
+    if (this.iFleeingFlags != 0) {
+        this.State(individualCombatantState.ICS_Moving);
+        Globals.TRACE("thinking result for auto combatant " + this.self + " (" + this.CombatantStateText[this.State()] + "=fleeing)\n");
+        // find path to closest map edge
+
+        var fled = false;
+        // if already on map edge, flee off the map
+        if ((x == 0) || (x == (Drawtile.MAX_TERRAIN_WIDTH - 1))
+            || (y == 0) || (y == (Drawtile.MAX_TERRAIN_HEIGHT - 1))) {
+            fled = true;
+        }
+
+        if (fled) {
+            if (this.friendly)
+                Globals.IncNumFriendFlee(); //combatData.numFrndFlee++;
+            else
+                Globals.IncNumMonsterFlee(); //combatData.numMonFlee++;
+
+            RunEvent.menu.setMenu(MENU_DATA_TYPE.EmptyMenuData, null, true, null, null); // starts empty
+            RunEvent.menu.setHorzOrient();
+            RunEvent.menu.setUseActive(false); // no highlighting      
+
+            var msg = "";
+            msg = this.GetName() + " has fled...";
+            RunEvent.menu.changeMenuItem(1, msg);
+            Screen.UpdateCombatTimeDelayMsg();
+            theApp.AppSleep(Globals.GetMsgTimeDelay()); // give time to see normal icon      
+
+            this.SetStatus(Fled);
+            Drawtile.placeCombatant(x, y, NO_DUDE, width, height);
+            Globals.TRACE("combatant " + this.self + " has fled the map\n");
+            this.State(individualCombatantState.ICS_Fled); //BUGFIX
+            Globals.EnableUserInput(false);
+            return true;
+        }
+        if (this.CanMove(false)) {
+            if (this.hPath < 0) {
+                // find path to farthest corner of room away from cleric that turned me
+                if (!FindPathAwayFrom(m_iLastAttacker)) {
+                    Globals.WriteDebugString("Fleeing combatant " + this.self + " failed to find exit path\n");
+                    this.State(individualCombatantState.ICS_Guarding);
+                }
+            }
+        }
+        else
+            this.State(individualCombatantState.ICS_Guarding);
+        return true;
+    }
+
+    if (this.isTurned) {
+        this.State(individualCombatantState.ICS_Moving);
+        Globals.TRACE("thinking result for auto combatant " + this.self + " (" + this.CombatantStateText[this.State()] + "=turned/fleeing " + this.m_iLastAttacker + ")\n");
+
+        var fled = false;
+        // if already on map edge, flee off the map
+        if ((x == 0) || (x == (Drawtile.MAX_TERRAIN_WIDTH - 1))
+            || (y == 0) || (y == (Drawtile.MAX_TERRAIN_HEIGHT - 1))) {
+            fled = true;
+        }
+
+        if (fled) {
+            if (this.friendly)
+                Globals.IncNumFriendFlee(); //combatData.numFrndFlee++;
+            else
+                Globals.IncNumMonsterFlee(); //combatData.numMonFlee++;
+
+            RunEvent.menu.setMenu(MENU_DATA_TYPE.EmptyMenuData, null, true, null, null); // starts empty
+            RunEvent.menu.setHorzOrient();
+            RunEvent.menu.setUseActive(false); // no highlighting      
+
+            var msg = "";
+            msg = this.GetName() + " has fled...";
+            RunEvent.menu.changeMenuItem(1, msg);
+            Screen.UpdateCombatTimeDelayMsg();
+            theApp.AppSleep(GetMsgTimeDelay()); // give time to see normal icon      
+
+            this.SetStatus(Fled);
+            this.State(individualCombatantState.ICS_Fled); // BUGFIX
+            Drawtile.placeCombatant(x, y, NO_DUDE, width, height);
+            Globals.TRACE("Turned Undead " + this.self + " has fled the map\n");
+            return true;
+        }
+        if (this.CanMove(false)) {
+            if (this.hPath < 0) {
+                // find path to farthest corner of room away from cleric that turned me
+                if (!this.FindPathAwayFrom(this.m_iLastAttacker)) {
+                    Globals.WriteDebugString("Fleeing combatant " + this.self + " failed to find exit path\n");
+                    this.State(individualCombatantState.ICS_Guarding);
+                }
+            }
+        }
+        else
+            this.State(individualCombatantState.ICS_Guarding);
+        return true;
+    }
+
+    // make sure current target is still on the map
+    useScriptedAI = false;
+    this.m_pCharacter.ReadyWeaponScript(NO_READY_ITEM);
+    this.m_pCharacter.ReadyShieldScript(NO_READY_ITEM);
+    {
+        if (this.LoadAI_Script()) {
+            combatSummary.m_thinkCount++;
+            combatSummary.Clear();  // Does not clear thinkcount
+            combatData.ListCombatants(combatSummary, this, null);
+            combatData.ListWeapons(combatSummary.GetCombatant(0)); // List weapons for attacker only.
+            combatData.ListAmmo(combatSummary.GetCombatant(0));    // List ammo for attacker only.
+            combatData.ListAttacks(combatSummary.GetCombatant(0), 0); // List attacks for attacker only.
+            combatData.ListReachableCells(combatSummary, combatSummary.GetCombatant(0)); // Number of steps to each cell.
+            combatData.ListActions(combatSummary, 0, 0, false);
+            // Compare all the actions to find the very best one.
+            // We could simply go down the list from one end to
+            // the other, keeping track of the best one found and
+            // comparing the current best to the next.
+            // But let us instead place the actions in a binary 
+            // tree such that at each node, the action at the top
+            // is better than the two actions immediately below.
+            // Then we can easily extract several actions if we
+            // would like to choose randomly from the three best, 
+            // for example.
+            {
+                var i = 0, j = 0, k = 0;
+                actionIndex = []; for (i = 0; i < combatSummary.GetActionCount(); i++) { actionIndex[i] = 0;} }//PORT NOTE: Changed from SetSize
+                for (i = 0; i < combatSummary.GetActionCount(); i++) {
+                    actionIndex[i] = i;
+                    // Move the new entry towards the top of the tree.
+                    j = i;
+                    while (j > 0) {
+                        var temp;
+                        k = (j - 1) / 2;
+                        combatSummary.pActionA = combatSummary.GetAction(actionIndex[j]);
+                        combatSummary.pActionB = combatSummary.GetAction(actionIndex[k]);
+                        if (Forth.RunTHINK(thinkProgram.pgm, combatSummary) <= 0) break;
+                        temp = actionIndex[j];
+                        actionIndex[j] = actionIndex[k];
+                        actionIndex[k] = temp;
+                        j = k;
+                    }
+                }
+                this.DumpActions(actionIndex, combatSummary, true);
+                if (combatSummary.GetActionCount() > 0) {
+                    useScriptedAI = true;
+                }
+                else {
+                    this.State(individualCombatantState.ICS_Guarding);
+                    Globals.TRACE("thinking result for auto combatant " + this.self + " (" + this.CombatantStateText[this.State()] + ") - no actions\n");
+                    return true;
+                }
+            }
+    }
+
+    var dude = NO_DUDE;
+
+    if (useScriptedAI) {
+        if (combatSummary.m_thinkCount == 20) {
+            Globals.ASSERT(true);
+        }
+        var actionType = combatSummary.PeekAction(actionIndex[0]).actionType;
+        switch (actionType) {
+            case ACTION_TYPE.AT_SpellLikeAbility:
+            case ACTION_TYPE.AT_SpellCaster:
+                {
+                    var pCSA;
+                    var itemIdx = 0;
+                    combattargets.RemoveAll();
+                    pCSA = combatSummary.PeekAction(actionIndex[0]);
+                    itemIdx = pCSA.pMe.PeekWeapon(pCSA.weaponOrd - 1).index;
+                    dude = combatSummary.PeekCombatant(pCSA.targetOrd - 1).index;
+                    this.m_pCharacter.ReadyWeaponScript(itemIdx);
+                    this.AddTarget(dude, false);
+                    this.ReadyBestArmor();
+                    {
+                        this.State(individualCombatantState.ICS_Attacking);
+                        itemIdx = this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0);
+                        if (m_pCharacter.myItems.GetCharges(itemIdx) > 0) {
+                            var pItem;
+                            pItem = combatSummary.PeekCombatant(0).PeekWeapon(pCSA.weaponOrd - 1).pWeapon;
+                            var pos;
+                            pos = combattargets.GetHeadPosition();
+                            if (pos != null) {
+                                var pSpell;
+                                var pSpData;
+                                var pTarget;
+                                var rollerLevel = -1;
+                                var newSpell = new CHARACTER_SPELL();
+                                var dir = new PATH_DIR();
+                                pSpell = combatSummary.PeekCombatant(0).PeekWeapon(pCSA.weaponOrd - 1).pSpell;
+                                pSpData = pSpell;
+                                pTarget = this.GetCombatantPtr(dude);
+                                combattargets.RemoveAll();
+                                {
+                                    var result = "";
+                                    var hookParameters = new HOOK_PARAMETERS();
+                                    var scriptContext = new SCRIPT_CONTEXT();
+                                    scriptContext.SetSpellContext(pSpData);
+                                    scriptContext.SetAttackerContext(this);
+                                    result = pSpData.RunSpellScripts(
+                                        SPECAB.SPELL_CASTER_LEVEL,
+                                        SPECAB.ScriptCallback_RunAllScripts,
+                                        null,
+                                        "Combat AI - Can combatant use this spell");
+                                    if (result.GetLength() > 0) {
+                                        rollerLevel = parseInt(result);
+                                        if (isNaN(rollerLevel)) { rollerLevel = -1;}  // PORT NOTE:  Reset to its initialized value if parseInt fails
+                                    }
+                                }
+
+                                var targs = this.EvalDiceAsClass(pSpData.TargetQuantity(),
+                                    pSpData.schoolID,
+                                    pSpData.Level, 
+                                    rollerLevel);
+                                var range = this.EvalDiceAsClass(pSpData.TargetRange(),
+                                    pSpData.schoolID,
+                                    pSpData.Level, 
+                                    rollerLevel);
+                                var xSize = this.EvalDiceAsClass(pSpData.TargetWidth(),
+                                    pSpData.schoolID,
+                                    pSpData.Level, 
+                                    rollerLevel);
+                                var ySize = this.EvalDiceAsClass(pSpData.TargetHeight(),
+                                    pSpData.schoolID,
+                                    pSpData.Level, 
+                                    rollerLevel);
+                                this.m_pCharacter.InitTargeting(pSpData.Targeting,
+                                    pSpData.CanTargetFriend,
+                                    pSpData.CanTargetEnemy,
+                                    false,
+                                    targs,
+                                    range,
+                                    xSize,
+                                    ySize,
+                                    pSpData.Lingers);
+                                this.m_itemSpellIDBeingCast = pSpData.SpellID();
+                                this.Wpn_Type = pItem.Wpn_Type;
+                                this.combatant_spellCastingLevel = rollerLevel;
+                                this.m_spellIDBeingCast.Clear();
+                                dir = PATH_DIR.GetSpellTargetingDir(this.GetCenterX(), this.GetCenterY(), pTarget.x, pTarget.y);
+                                if (this.m_pCharacter.targets.m_SelectingUnits) {
+                                    // 20200204 PRS  We set the target distance to 0.
+                                    // Why?  Because it is irrelevant.  This action wuould not
+                                    // have been listed (and chosen) if the target were 
+                                    // beyond reach of the spell.
+                                    this.C_AddTarget(pTarget, 0);
+                                }
+                                else {
+                                    var dirX = 0, dirY = 0;
+                                    dirX = pTarget.x - GetCenterX();
+                                    dirY = pTarget.y - GetCenterY();
+                                    this.AddMapTarget(pTarget.x, pTarget.y, dir, dirX, dirY);
+                                };
+                                this.State(individualCombatantState.ICS_Casting);
+                                this.m_pCharacter.ClearSpellbook();
+                                this.m_pCharacter.UseSpellLimits(false);
+                                // We may have to do some fiddling here.
+                                // Setting the caster baseclass and spell school to
+                                // illegal values for now......
+                                {
+                                    var schoolID;
+                                    var baseclassID;
+                                    this.m_pCharacter.KnowSpell(baseclassID, schoolID, pSpData.SpellID(), 1, true);
+                                }
+                                this.m_pCharacter.myItems.SetCharges(itemIdx, m_pCharacter.myItems.GetCharges(itemIdx) - 1);
+                                if (this.m_pCharacter.myItems.GetCharges(itemIdx) <= 0) {
+                                    this.m_pCharacter.myItems.DeleteItem(itemIdx);
+                                }
+                            }
+                        }
+                        else {
+                            this.m_pCharacter.myItems.DeleteItem(itemIdx);
+                            this.State(individualCombatantState.ICS_Guarding);
+                        };
+                    }
+                }
+                return true;
+            case ACTION_TYPE.AT_Advance:
+                {
+                    var found = false;
+                    var pCSA;
+                    combattargets.RemoveAll();
+                    pCSA = combatSummary.PeekAction(actionIndex[0]);
+                    dude = combatSummary.PeekCombatant(pCSA.targetOrd - 1).index;
+                    this.AddTarget(dude, false);
+                    {
+                        {
+                            var tempCOMBATANT;
+                            this.ClearPath();
+                            this.SetCurrTarget(); // setup for iteration
+                            var targetCount = 0;
+                            dude = this.GetCurrTarget(true, false, true);
+
+                            while ((!found)
+                                && (dude != NO_DUDE)
+                                && (targetCount < this.GetNumTargets())) {
+                                tempCOMBATANT = GetCombatantPtr(dude);
+                                Globals.ASSERT(tempCOMBATANT != null);
+                                if (tempCOMBATANT == null) return false;
+                                if (this.FindPathTo(tempCOMBATANT.x - 1,
+                                    tempCOMBATANT.y - 1,
+                                    tempCOMBATANT.x + tempCOMBATANT.width,
+                                    tempCOMBATANT.y + tempCOMBATANT.height,
+                                    true,
+                                    false,
+                                    false)) {
+                                    found = true;
+                                    this.RemoveAllTargets();
+                                    this.AddTarget(dude, false);
+                                }
+                                else {
+                                    dude = this.GetNextTarget();
+                                };
+                                targetCount++;
+                            };
+                        };
+                    };
+                    if (found) {
+                        this.State(individualCombatantState.ICS_Moving);
+                        return true;
+                    };
+                };
+                break;
+            case ACTION_TYPE.AT_RangedWeapon:
+                {
+                    var pCSA;
+                    var itemIdx = 0;
+                    combattargets.RemoveAll();
+                    pCSA = combatSummary.PeekAction(actionIndex[0]);
+                    itemIdx = pCSA.pMe.PeekWeapon(pCSA.weaponOrd - 1).index;
+                    dude = combatSummary.PeekCombatant(pCSA.targetOrd - 1).index;
+                    this.m_pCharacter.ReadyWeaponScript(itemIdx);
+                    this.m_pCharacter.ReadyBestAmmo(this.m_pCharacter.m_pCombatant.isLargeDude());
+                    this.AddTarget(dude, false);
+                    this.ReadyBestArmor();
+                    this.State(individualCombatantState.ICS_Attacking);
+                };
+                return true;
+            case ACTION_TYPE.AT_Judo:
+                {
+                    var pCSA;
+                    pCSA = combatSummary.PeekAction(actionIndex[0]);
+                    combattargets.RemoveAll();
+                    dude = combatSummary.PeekCombatant(pCSA.targetOrd - 1).index;
+                    this.AddTarget(dude, false);
+                    this.ReadyBestArmor();
+                    this.State(individualCombatantState.ICS_Attacking);
+                };
+                return true;
+            case AT_MeleeWeapon:
+                {
+                    var pCSA;
+                    pCSA = combatSummary.PeekAction(actionIndex[0]);
+                    combattargets.RemoveAll();
+                    dude = combatSummary.PeekCombatant(pCSA.targetOrd - 1).index;
+                    if (pCSA.weaponOrd == 0) bestWeaponIdx = NO_READY_ITEM;
+                    else bestWeaponIdx = pCSA.pMe.PeekWeapon(pCSA.weaponOrd - 1).index;
+                    this.m_pCharacter.ReadyWeaponScript(bestWeaponIdx);
+                    this.AddTarget(dude, false);
+                    this.ReadyBestArmor();
+                    this.State(individualCombatantState.ICS_Attacking);
+                };
+                return TRUE;
+            case AT_Unknown:
+      /* Really */ Globals.NotImplemented(0xa88, false);
+                break;
+            default:
+      /* Really */ Globals.NotImplemented(0x55ab, false);
+                break;
+        }
+    }
+
+
+    if (useScriptedAI) {
+        var pCSA;
+        if (combatSummary.GetActionCount() > 0) {
+            combattargets.RemoveAll();
+            pCSA = combatSummary.PeekAction(actionIndex[0]);
+            dude = combatSummary.PeekCombatant(pCSA.targetOrd - 1).index;
+            if (pCSA.weaponOrd == 0) bestWeaponIdx = 0;
+            else bestWeaponIdx = pCSA.pMe.PeekWeapon(pCSA.weaponOrd).index;
+            this.m_pCharacter.ReadyWeaponScript(bestWeaponIdx);
+            this.AddTarget(dude, false);
+        };
+    };
+
+    if (dude == NO_DUDE) {
+        dude = this.GetCurrTarget(true, false, true);
+    };
+    var tempCOMBATANT = null;
+    if (dude != NO_DUDE) {
+        tempCOMBATANT = this.GetCombatantPtr(dude);
+        Globals.ASSERT(tempCOMBATANT != NULL);
+        if (tempCOMBATANT == NULL) return false;
+
+        //here we must ready the item indicated by combatSunnary
+        if (!useScriptedAI || (combatSummary.PeekAction(actionIndex[0]).advance == 0)) {
+            if (!this.canAttack(dude, -1, -1, 0, Drawtile.Distance6, useScriptedAI)) {
+                // target is not attackable for some reason,
+                // so force new target acquisition
+                dude = NO_DUDE;
+            }
+        };
+    }
+
+    if ((dude == NO_DUDE)
+        || ((tempCOMBATANT != null) && (!tempCOMBATANT.charOnCombatMap(false, true)))) {
+        // if no target or it's gone, acquire new target (if any)
+        this.RemoveAllTargets();
+
+        var i;
+        // try for combat targets with line of sight first
+        // combat targets are ordered by distance, but the closest
+        // target in terms of distance may be on the other side
+        // of a wall. Using line of sight helps to ensure we will attack
+        // closest target that is also the shortest path distance.
+        for (i = 0; i < Globals.GetNumCombatants(); i++) {
+            tempCOMBATANT = Globals.GetCombatantPtr(i);
+            Globals.ASSERT(tempCOMBATANT != null);
+            if (tempCOMBATANT == null) return false;
+            if ((i != self)
+                && (tempCOMBATANT.GetIsFriendly() != GetIsFriendly())
+                && (tempCOMBATANT.charOnCombatMap(false, true))) {
+                if (HaveLineOfSight(GetCenterX(), GetCenterY(), tempCOMBATANT.GetCenterX(), tempCOMBATANT.GetCenterY(), NULL))
+                    this.AddTarget(i, false);
+            }
+        }
+
+        if (this.GetCurrTarget(true, false, true) == NO_DUDE) {
+            // no combat targets within line of sight
+            // so use any avail target
+            for (i = 0; i < Globals.GetNumCombatants(); i++) {
+                tempCOMBATANT = Globals.GetCombatantPtr(i);
+                Globals.ASSERT(tempCOMBATANT != null);
+                if (tempCOMBATANT == null) return false;
+                if ((i != self)
+                    && (tempCOMBATANT.friendly != this.GetIsFriendly())
+                    && (tempCOMBATANT.charOnCombatMap(false, true)))
+                    this.AddTarget(i, false);
+            }
+        }
+    }
+
+    // might use current target when determining best
+    // items to make ready.
+    this.ReadyBestArmor();
+    // Moved past ReadyBestWeapon 20140425 PRS
+    // A monster with a shield refused to use a two-handed weapon at range.
+    // So we remove the shield until we decide what weapon will be used.
+
+
+    // Scripted "THINK" inagurated on 7 May 2014. PRS
+    { // *********************************************************** SHIELD
+        // ReadyBestShield();
+        var pcsc;
+        pcsc = combatSummary.PeekCombatant(0);
+        if ((pcsc != null) && (pcsc.shieldToReady != 0)) {
+            this.m_pCharacter.ReadyShieldScript(pcsc.PeekShield(pcsc.shieldToReady - 1).index);
+        };
+    };
+    if (!useScriptedAI) { // *********************************************************** WEAPON
+        this.ReadyBestWpn(this.GetCurrTarget(true, false, true));
+    };
+
+    if (!useScriptedAI) {
+        dude = this.GetCurrTarget(true, false, true);
+    };
+
+    // no combattargets, sit tight and guard
+    if (dude == NO_DUDE) {
+        this.State(individualCombatantState.ICS_Guarding);
+        Globals.TRACE("thinking result for auto combatant " + this.self + " (" + this.CombatantStateText[this.State()] + ") - no targets\n");
+        return true;
+    }
+    var CanAttack = false;
+    if (useScriptedAI && (combatSummary.PeekAction(0).advance != 0)) {
+        CanAttack = false;
+    }
+    else {
+        CanAttack = this.canAttack(dude, -1, -1, 0, Drawtile.Distance6, useScriptedAI);
+    };
+    tempCOMBATANT = Globals.GetCombatantPtr(dude);
+    Globals.ASSERT(tempCOMBATANT != null);
+    if (tempCOMBATANT == null) return false;
+    var found = false;
+
+    // no need to find a path if we can attack from current spot
+    if (!CanAttack) {
+        var repath = true;
+
+        // check to see if existing path to target needs to change
+        var pathPtr = pathMgr.GetPath(this.hPath);
+
+        if (pathPtr != NULL) {
+            var stepPtr = pathPtr.GetLastStep();
+
+            if ((tempCOMBATANT.x == stepPtr.x)
+                && (tempCOMBATANT.y == stepPtr.y)) {
+                // use same path to target
+                repath = false;
+                found = true;
+                Globals.TRACE("Using same path for combatant " + this.self + " to target " + dude + "\n");
+            }
+            else
+                Globals.TRACE("Existing path for combatant " + this.self + " does not end at curr target, re-pathing\n");
+        }
+
+        // find path to closest enemy
+        // need to change to closest enemy with shortest path!
+        if ((repath) && (this.CanMove(FALSE))) {
+            this.ClearPath();
+            this.SetCurrTarget(); // setup for iteration
+            var targetCount = 0;
+            dude = this.GetCurrTarget(true, false, true);
+
+            while ((!found)
+                && (dude != NO_DUDE)
+                && (targetCount < this.GetNumTargets())) {
+                tempCOMBATANT = Globals.GetCombatantPtr(dude);
+                Globals.ASSERT(tempCOMBATANT != null);
+                if (tempCOMBATANT == null) return false;
+                if (FindPathTo(tempCOMBATANT.x - 1,
+                    tempCOMBATANT.y - 1,
+                    tempCOMBATANT.x + tempCOMBATANT.width,
+                    tempCOMBATANT.y + tempCOMBATANT.height,
+                    true,
+                    false,
+                    false)) {
+                    found = true;
+                    this.RemoveAllTargets();
+                    this.AddTarget(dude, false);
+                }
+                else {
+                    dude = this.GetNextTarget();
+                }
+                targetCount++;
+            }
+        }
+    }
+
+    if (!found) // do we have a path to take?
+    {
+        if (!useScriptedAI && (this.GetCurrTarget(true, false, true) == NO_DUDE)) {
+            this.State(individualCombatantState.ICS_Guarding);
+        }
+        else {
+            if (CanAttack) {
+                this.State(individualCombatantState.ICS_Attacking);
+                var itemID;
+                var itemIdx;
+                itemIdx = this. m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0);
+                if (itemIdx != NO_READY_ITEM) {
+                    itemID = this.m_pCharacter.myItems.GetItem(itemIdx);
+                    var weaponType;
+                    weaponType = itemData.GetWpnType(itemID);
+                    if ((weaponType == weaponClassType.SpellCaster)
+                        || (weaponType == weaponClassType.SpellLikeAbility)) {
+                        if (this.m_pCharacter.myItems.GetCharges(itemIdx) > 0) {
+                            var pItem;
+                            var spellID;
+                            pItem = itemData.GetItem(itemID);
+                            spellID = pItem.spellID;
+                            if (spellID.IsValidSpell()) {
+                                var pos;
+                                pos = combattargets.GetHeadPosition();
+                                if (pos != null) {
+                                    var pSpData;
+                                    var pTarget;
+                                    var rollerLevel = -1;
+                                    var newSpell = new CHARACTER_SPELL();
+                                    var dir = new PATH_DIR();
+                                    pTarget = Globals.GetCombatantPtr(dude);
+                                    combattargets.RemoveAll();
+                                    pSpData = spellData.GetSpell(spellID);
+                                    {
+                                        var result = "";
+                                        var hookParameters = new HOOK_PARAMETERS();
+                                        var scriptContext = new SCRIPT_CONTEXT();
+                                        scriptContext.SetSpellContext(pSpData);
+                                        scriptContext.SetAttackerContext(this);
+                                        result = pSpData.RunSpellScripts(
+                                            SPECAB.SPELL_CASTER_LEVEL,
+                                            SPECAB.ScriptCallback_RunAllScripts,
+                                            null,
+                                            "Combat AI - Can combatant use this spell");
+                                        if (result.GetLength() > 0) {
+                                            rollerLevel = parseInt(result);
+                                            if (isNaN(rollerLevel)) { rollerLevel = -1; }  // PORT NOTE:  Reset to its initialized value if parseInt fails
+                                        };
+                                    };
+
+                                    var targs = this.EvalDiceAsClass(pSpData.TargetQuantity(),
+                                        pSpData.schoolID,
+                                        pSpData.Level, 
+                                       rollerLevel);
+                                    var range = this.EvalDiceAsClass(pSpData.TargetRange(),
+                                        pSpData.schoolID,
+                                        pSpData.Level, 
+                                        rollerLevel);
+                                    var xSize = this.EvalDiceAsClass(pSpData.TargetWidth(),
+                                        pSpData.schoolID,
+                                        pSpData.Level, 
+                                        rollerLevel);
+                                    var ySize = this.EvalDiceAsClass(pSpData.TargetHeight(),
+                                        pSpData.schoolID,
+                                        pSpData.Level, 
+                                        rollerLevel);
+                                    this.m_pCharacter.InitTargeting(pSpData.Targeting,
+                                        pSpData.CanTargetFriend,
+                                        pSpData.CanTargetEnemy,
+                                        FALSE,
+                                        targs,
+                                        range,
+                                        xSize,
+                                        ySize,
+                                        pSpData.Lingers);
+                                    this.m_itemSpellIDBeingCast = spellID;
+                                    this.Wpn_Type = pItem.Wpn_Type;
+                                    this.combatant_spellCastingLevel = rollerLevel;
+                                    this.m_spellIDBeingCast.Clear();
+                                    dir = PATH_DIR.GetSpellTargetingDir(this.GetCenterX(), this.GetCenterY(), pTarget.x, pTarget.y);
+                                    if (m_pCharacter.targets.m_SelectingUnits) {
+                                        this.C_AddTarget(pTarget, range);
+                                    }
+                                    else {
+                                        var dirX = 0, dirY = 0;
+                                        dirX = pTarget.x - this.GetCenterX();
+                                        dirY = pTarget.y - this.GetCenterY();
+                                        this.AddMapTarget(pTarget.x, pTarget.y, dir, dirX, dirY);
+                                    };
+                                    this.State(individualCombatantState.ICS_Casting);
+                                    this.m_pCharacter.ClearSpellbook();
+                                    this.m_pCharacter.UseSpellLimits(false);
+                                    //m_pCharacter->KnowSpell(MagicUserFlag,MagicUserFlag,gsID,1,TRUE);
+                                    //Not Implemented(0x7c5da86, false);
+                                    // We may have to do some fiddling here.
+                                    // Setting the caster baseclass and spell school to
+                                    // illegal values for now......
+                                    {
+                                        var schoolID;
+                                        var baseclassID;
+                                        this.m_pCharacter.KnowSpell(baseclassID, schoolID, spellID, 1, true);
+                                    }
+                                    this.m_pCharacter.myItems.SetCharges(itemIdx, this.m_pCharacter.myItems.GetCharges(itemIdx) - 1);
+                                    if (this.m_pCharacter.myItems.GetCharges(itemIdx) <= 0) {
+                                        this.m_pCharacter.myItems.DeleteItem(itemIdx);
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            this.m_pCharacter.myItems.DeleteItem(itemIdx);
+                            this.State(individualCombatantState.ICS_Guarding);
+                        }
+                    }
+                }
+            }
+            else
+                this.State(individualCombatantState.ICS_Guarding);
+        }
+    }
+    else
+        this.State(individualCombatantState.ICS_Moving);
+
+    Globals.TRACE("thinking result for auto combatant " + this.self + " (" + this.CombatantStateText[this.State()] + ")\n");
+    return true;
+}
+
+
+// Returns non-zero if scrren needs to be redrawn
+COMBATANT.prototype.HandleCurrState = function(zeroMoveAttackOK) {
+    var dude;
+    var updateScreen = 0;
+    Globals.debug("----COMBATANT.prototype.HandleCurrState: this.State():" + this.State());
+
+    switch (this.State()) {
+        case individualCombatantState.ICS_None:
+            break;
+        case individualCombatantState.ICS_Fled:
+            this.EndTurn();
+            break;
+        case individualCombatantState.ICS_Casting:
+            break;
+        case individualCombatantState.ICS_Using:
+            break;
+        case individualCombatantState.ICS_Guarding:
+            break;
+        case individualCombatantState.ICS_Bandaging:
+            break;
+        case individualCombatantState.ICS_Turning:
+            break;
+        case individualCombatantState.ICS_Attacking:
+            dude = this.GetCurrTarget(true, false, true);
+            if (dude == NO_DUDE)
+                this.EndTurn();
+            else {
+                if (!this.canAttack(dude, -1, -1, 0, Drawtile.Distance6, false))
+                    this.EndTurn();
+            }
+            break;
+
+        case individualCombatantState.ICS_Moving:
+            if (this.hPath < 0) {
+                // if actually have a destination
+                if ((this.moveX >= 0) && (this.moveY >= 0) && coordsOnMap(this.moveX, this.moveY, this.width, this.height)) {
+                    // find path to moveX, moveY
+                    this.FindPathTo(this.moveX, this.moveY, this.moveX, this.moveY, !zeroMoveAttackOK, true, true);
+                }
+                else {
+                    // This guy is fleeing the map. Paths of length 1 result
+                    // in instant flee. Longer paths need to move dude to
+                    // edge of map before flee is performed.
+                    this.iFleeingFlags |= FLEEING_FLAGS.fleeBecauseOffMap;
+
+                    if (this.friendly)
+                        this.IncNumFriendFlee(); //combatData.numFrndFlee++;
+                    else
+                        this.IncNumMonsterFlee(); //combatData.numMonFlee++;
+
+                    RunEvent.menu.setMenu(MENU_DATA_TYPE.EmptyMenuData, null, true, null, null); // starts empty
+                    RunEvent.menu.setHorzOrient();
+                    RunEvent.menu.setUseActive(false); // no highlighting      
+
+                    var msg = "";
+                    msg = this.GetName() + " has fled...";
+                    RunEvent.menu.changeMenuItem(1, msg);
+                    Screen.UpdateCombatTimeDelayMsg();
+                    theApp.AppSleep(Globals.GetMsgTimeDelay()); // give time to see flee message      
+
+                    //BUGFIX EndTurn();
+                    this.SetStatus(charStatusType.Fled);
+                    this.State(individualCombatantState.ICS_Fled); //BUGFIX
+                    Drawtile.placeCombatant(this.x, this.y, NO_DUDE, this.width, this.height); Globals.TRACE(this.self + " has fled the map\n");
+                }
+            }
+
+            if (this.hPath >= 0) {
+                if (!this.TakeNextStep(true)) {
+                    // unable to move/attack target
+                    if ((this.OnAuto(false)) && (this.State() == individualCombatantState.ICS_Moving)) {
+                        // end your turn but continue
+                        // guarding if possible          
+                        if (this.CanGuard(GUARDING_CASE.GUARD_AutoMaxMovement)) {
+                            Globals.TRACE("Auto combatant " + this.self + " can't move, ending turn and guarding\n");
+                            this.EndTurn(ICS_Guarding);
+                        }
+                        else {
+                            Globals.TRACE("Auto combatant " + this.self + " can't move, ending turn\n");
+                            this.EndTurn();
+                        }
+                    }
+                }
+                else {
+                    updateScreen = 1;
+                };
+            }
+
+            this.moveX = -1; this.moveY = -1;
+            if (this.State() != individualCombatantState.ICS_Moving)
+                this.ClearPath();
+            break;
+
+        default:
+            Globals.die(0xab4c4);
+            break;
+    }
+    return updateScreen;
+}
+
+
+
+var kernelError = false;
+COMBATANT.prototype.LoadAI_Script = function () {
+
+    return false;  /**TODO - leaving out the AI Script for now **/
+    if (!kernelError) {
+        if (Forth.ExpandKernel()) {
+            Forth.FetchKernel(thinkProgram.pgm);
+        }
+        else {
+            kernelError = true;
+            debugSeverity = 5;
+            WriteDebugString("***Error in combat THINKING script***\n");
+        };
+    };
+    return !kernelError;
+}
+
+
+
+COMBATANT.prototype.GetCurrTarget = function (updateTarget, unconsciousOK, petrifiedOK) {
+    //8a2a
+    if (this.m_target != NO_DUDE) {
+        var targCOMBATANT;
+        targCOMBATANT = Globals.GetCombatantPtr(this.m_target);
+
+        if (targCOMBATANT == null) return NO_DUDE;
+        if (!targCOMBATANT.charOnCombatMap(unconsciousOK, petrifiedOK)) {
+            if (!updateTarget) return this.m_target;
+            this.RemoveCurrTarget();
+            if (this.m_target == NO_DUDE) return m_target;
+            targCOMBATANT = Globals.GetCombatantPtr(m_target);
+        };
+        if (!combatData.IsValidTarget(this, targCOMBATANT, this.targetValidity)) return NO_DUDE;
+    };
+
+    return this.m_target;
 }

@@ -17,3 +17,7 @@ COMBAT_SUMMARY.prototype.Clear = function () {
     this.pActionA = null; this.pActionB = null;
     //memset(reachableCells, 0xff, MAX_TERRAIN_WIDTH * MAX_TERRAIN_HEIGHT * sizeof(reachableCells[0]));  **TODO**  ??
 };
+
+COMBAT_SUMMARY.prototype.PeekCombatant = function (idx) {
+    return this.m_combatants[idx];
+};

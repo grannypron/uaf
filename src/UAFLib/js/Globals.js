@@ -434,3 +434,7 @@ Globals.prototype.GetNumMonsterFlee = function () {
 Globals.prototype.GetNumMonsterSlain = function () {
     return combatData.m_iNumMonSlain;
 }
+
+Globals.prototype.EnableUserInput = function (val) {
+    Globals.debug("EnableUserInput: " + val);
+}
