@@ -1,5 +1,3 @@
 ﻿- Make a monster library loader, class library loader, etc.
 - Test case(s) for inventory management of Joinable items
-- Figure out how to handle their compression algorithm
 - go back through the C++ source and find all instances of "delete" and re-insert them back with calls to a MemoryManager() class.  Apparently jint responds to delete statements, although all engines might not
-- Get GenerateIndoorCombatMap() working

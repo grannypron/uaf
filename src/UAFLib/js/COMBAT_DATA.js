@@ -2125,7 +2125,7 @@ COMBAT_DATA.prototype.PlaceCursorOnCurrentDude = function (ForceCenter) {
     ) {
         this.m_iCursorX = this.m_aCombatants[dude].x;
         this.m_iCursorY = this.m_aCombatants[dude].y;
-        this.EnsureVisibleTarget(dude, ForceCenter);
+        Drawtile.EnsureVisibleTarget(dude, ForceCenter);
     };
 }
 
@@ -2160,4 +2160,528 @@ COMBAT_DATA.prototype.IsValidTarget = function(pAttacker, pTarget, targetValidit
     }
     if (targetValidity != null) targetValidity = answer;
     return { answer: (answer == 1), targetValidity: targetValidity };
+}
+
+COMBAT_DATA.prototype.UpdateCombat = function () {
+    var isUpdate = false;
+
+    if (this.QComb.StartOfTurn() || this.QComb.RestartInterruptedTurn()) {
+        this.QComb.NotStartOfTurn();
+        return;
+    };
+
+
+
+    this.m_bStartingNewCombatRound = false;
+
+    var dude = this.GetCurrCombatant();
+
+    if ((dude == NO_DUDE)
+        || this.m_aCombatants[dude].IsDone(
+            (this.QComb.NumFreeAttacks() + this.QComb.NumGuardAttacks()) > 0,
+            "Updating combat state"
+        )
+    ) {
+        this.getNextCombatant();
+        dude = this.GetCurrCombatant();
+
+        if (dude == NO_DUDE) {
+            this.StartNewRound();  // Performs a GetNextCombatant();
+            dude = this.GetCurrCombatant();
+            if (dude != NO_DUDE) {
+                this.m_aCombatants[dude].OnStartCombatantAction();
+            };
+            this.DetermineIfCombatOver();
+
+            if (this.IsCombatOver()) {
+                this.DetermineVictoryExpPoints();
+                isUpdate = true;
+            };
+
+
+            return;
+        }
+
+        if (dude != NO_DUDE) {
+            isUpdate = TRUE;
+            this.m_aCombatants[dude].OnStartCombatantAction();
+        }
+    } // if dude is done with his turn
+    else {
+    };
+
+
+    this.DetermineIfCombatOver();  // PRS 24 Oct 2009
+
+    if (this.CheckIdleTime()) {
+        // force end to combat if nobody does anything for awhile
+        this.m_bCombatOver = true;
+    }
+
+    if (this.IsCombatOver()) {
+        this.DetermineVictoryExpPoints();
+        isUpdate = true;
+    }
+    else {
+        if (this.IsStartOfTurn()) {
+        }
+        else {
+            // there is a delay between combatant updates, if prev combatant is not
+            // current combatant     
+            if (dude != NO_DUDE) {
+
+                // PRS July 2009 isUpdate |= m_aCombatants[dude].UpdateCombatant();
+                this.m_aCombatants[dude].UpdateCombatant();
+            };
+        };
+    };
+
+    isUpdate |= this.m_bNeedUpdate;
+    this.m_bNeedUpdate = false;
+
+    return;
+}
+
+COMBAT_DATA.prototype.getNextCombatant = function() {
+    var dude = 0;
+
+    while ((dude = this.QComb.Top()) != NO_DUDE) {
+        this.m_aCombatants[dude].m_isCombatReady = -1; // Force check before any moves
+        if (this.m_aCombatants[dude].IsDone(false, "Determine next combatant to take turn")) {
+            this.QComb.Pop();
+            if (this.QComb.Top() != NO_DUDE) {
+                if (this.QComb.DelayedX() >= 0) {
+            /* Really */ Globals.NotImplemented(0x34c3, false);
+                };
+            };
+        }
+        else {
+            Globals.TRACE("getNextCombatant() returns " + dude + " (queued)\n");
+            return dude;
+        }
+    }
+
+    var i = 0;
+    var found = false;
+    dude = NO_DUDE;
+
+    while ((this.m_iCurrInitiative <= 22) && (!found)) {
+        if (pendingSpellList.ProcessTimeSensitiveData(0, this.m_iCurrInitiative)) {
+            dude = this.QComb.Top();
+            if (dude != NO_DUDE) {
+                this.m_aCombatants[dude].m_isCombatReady = -1; // Force check before any moves
+                if (this.m_aCombatants[dude].IsDone(false, "Determine next combatant to take turn")) {
+                    this.QComb.Pop();
+                    if (this.QComb.Top() != NO_DUDE) {
+                        if (this.QComb.DelayedX() >= 0) {
+                /* Really */ Globals.NotImplemented(0x34c4, false);
+                        };
+                    };
+                }
+                else {
+                    Globals.TRACE("getNextCombatant() returns " + dude + " (queued) for pending spell.\n");
+                    return dude;
+                }
+
+            };
+        };
+
+        i = 0;
+        while ((i < this. m_iNumCombatants) && (!found)) {
+            if (this.m_aCombatants[i].m_iInitiative == this.m_iCurrInitiative) {
+                this.m_aCombatants[i].m_isCombatReady = -2;  // Value to indicate unknown.
+                if (!this.m_aCombatants[i].IsDone(false, "Determine next combatantant to take turn")) {
+                    dude = i;
+                    found = true;
+                };
+            };
+            i++;
+        };
+
+        if (!found)
+            this.m_iCurrInitiative++;
+    }
+
+    if (dude != NO_DUDE) {
+        this.QComb.Push(dude, true, 0, 0);
+        this.turningSummary.Clear();
+
+        {
+            var j = dude;
+            if (this.m_aCombatants[j].State() == individualCombatantState.ICS_ContinueGuarding) {
+                this.m_aCombatants[j].State(individualCombatantState.ICS_None);
+            };
+
+            {
+                /* The calculation of availAttacks has been moved from
+                 * StartNewRound() to getNextCombatant().
+                 * I did this because Manikus complained that a spell
+                 * given during a combat round that increased the number
+                 * of attacks on a target did not take effect until the
+                 * start of the following round.  PRS 20091215
+                 *
+                 * The code has been moved back to StartNewRound.
+                 * I did this because some things that tak place after
+                 * the start-of-round but before the combatant's turn
+                 * require that we know the number of available attacks.
+                 * In particular, 'Guarding Attacks' and 'Free Attacks'
+                 * are based on the number of available attacks.  We will
+                 * have to solve the original problem differently.
+                 * PRS 20111214
+                 *
+                 * double leftoverAttacks=m_aCombatants[j].availAttacks;             
+                 * m_aCombatants[j].determineAvailAttacks();
+                 * double maxAttacks = ceil(m_aCombatants[j].availAttacks);
+                 * m_aCombatants[j].availAttacks += leftoverAttacks;
+                 * m_aCombatants[j].availAttacks = min(m_aCombatants[j].availAttacks, maxAttacks);
+                 * m_aCombatants[j].m_iMovement = 0;      
+                 * m_aCombatants[j].m_iNumDiagonalMoves = 0;
+                 */
+            };
+        };
+
+
+        //PlaceCursorOnCurrentDude();
+        Globals.TRACE("getNextCombatant() returns " + dude + "\n");
+    }
+    else
+        Globals.TRACE("getNextCombatant() returns NO_DUDE\n");
+
+    return dude;
+}
+
+
+COMBAT_DATA.prototype.StartNewRound = function() {
+    var hookParameters = new HOOK_PARAMETERS();
+    var scriptContext = new SCRIPT_CONTEXT();
+    this.SetUpdateFlag();
+
+    if (this.m_bLastRound)
+        this.m_bCombatOver = true;
+
+    Globals.TRACE("Start new combat round\n");
+
+    // battle rages on
+    this.CheckDyingCombatants();
+    this.CheckMorale();
+    var i;
+    for (i = 0; i < this.m_iNumCombatants; i++) {
+        var continueGuarding = false;
+
+        {
+            scriptContext.SetCharacterContext(this.m_aCombatants[i].m_pCharacter);
+            scriptContext.SetCombatantContext(this.m_aCombatants[i]);
+            hookParameters[5] = "" + this.m_aCombatants[i].State();
+
+            this.m_aCombatants[i].RunCombatantScripts(SPECAB.START_COMBAT_ROUND,
+                SPECAB.ScriptCallback_RunAllScripts,
+                null,
+                "Starting a new combat round");
+            this.m_aCombatants[i].RunCombatantScripts(SPECAB.GUARDING_START_OF_ROUND,
+                SPECAB.ScriptCallback_RunAllScripts,
+                null,
+                "Starting a new combat round");
+            continueGuarding = hookParameters[6].indexOf('G') >= 0;
+            SPECAB.ClearHookParameters();
+            scriptContext.Clear();
+        };
+
+
+        this.m_aCombatants[i].m_isCombatReady = -1; // Force a search of SPECIAL_ABILITIES in IsDone()
+        if ((this.m_aCombatants[i].charCanTakeAction()) && (this.m_aCombatants[i].IsDone(false, "Starting a new combat round"))) {
+            if (this.m_aCombatants[i].State() != individualCombatantState.ICS_Casting) {
+                this.m_aCombatants[i].turnIsDone = fa;se;
+                // stay guarding until told otherwise
+                if (this.m_aCombatants[i].OnAuto(false)) {
+                    if (this.m_aCombatants[i].State() != individualCombatantState.ICS_Guarding)
+                        this.m_aCombatants[i].State(individualCombatantState.ICS_None);
+                }
+                else {
+                    if ((this.m_aCombatants[i].State() == individualCombatantState.ICS_Guarding) && continueGuarding) {
+                        this.m_aCombatants[i].State(individualCombatantState.ICS_ContinueGuarding);
+                    }
+                    else {
+                        this.m_aCombatants[i].State(individualCombatantState.ICS_None);
+                    };
+                };
+            }
+            {
+                /* The calculation of availAttacks has been moved from
+                 * StartNewRound() to getNextCombatant().
+                 * I did this because Manikus complained that a spell
+                 * given during a combat round that increased the number
+                 * of attacks on a target did not take effect until the
+                 * start of the following round.  PRS 20091215
+                 *
+                 * The code has been moved back to StartNewRound.
+                 * I did this because some things that take place after
+                 * the start-of-round but before the combatant's turn
+                 * require that we know the number of available attacks.
+                 * In particular, 'Guarding Attacks' and 'Free Attacks'
+                 * are based on the number of available attacks.  We will
+                 * have to solve the original problem differently.
+                 * PRS 20111214
+                 */
+                var leftoverAttacks = this.m_aCombatants[i].availAttacks;
+                this.m_aCombatants[i].determineNbrAttacks();
+                this.m_aCombatants[i].determineAvailAttacks(this.m_aCombatants[i].GetNbrAttacks());
+                var maxAttacks = Math.ceil(m_aCombatants[i].availAttacks);
+                this.m_aCombatants[i].availAttacks += leftoverAttacks;
+                this.m_aCombatants[i].availAttacks = Math.min(this.m_aCombatants[i].availAttacks, maxAttacks);
+                this.m_aCombatants[i].m_iMovement = 0;
+                this.m_aCombatants[i].m_iNumDiagonalMoves = 0;
+            };
+        }
+
+        if (this.m_aCombatants[i].charOnCombatMap(false, true)) {
+            if (activeSpellList.LingerSpellAffectsTarget(this.m_aCombatants[i].self,
+                this.m_aCombatants[i].x,
+                this.m_aCombatants[i].y,
+                this.m_aCombatants[i].width,
+                this.m_aCombatants[i].height)) {
+                // A lingering spell is active at the location 
+                // this dude is located at.
+                TRACE("%i re-targeted by at least one active linger spell at location %i,%i\n",
+                    this.m_aCombatants[i].self, this.m_aCombatants[i].x, this.m_aCombatants[i].y);
+
+                activeSpellList.ActivateLingerSpellsOnTarget(this.m_aCombatants[i].self,
+                    this.m_aCombatants[i].x,
+                    this.m_aCombatants[i].y,
+                    this.m_aCombatants[i].width,
+                    this.m_aCombatants[i].height);
+            };
+            this.m_aCombatants[i].m_pCharacter.ProcessLingeringSpellEffects();
+        };
+        {
+            var pos;
+            for (pos = this.m_auras.GetHeadPosition(); pos != null;) {
+                var n = 0, j = 0;
+                var pAURA;
+                pAURA = this.m_auras.GetAt(pos);
+                this.m_auras.GetNext(pos); pos = this.m_auras.NextPos(pos);    // PORT NOTE:  Manually advancing pointer because no pass-by-reference
+                n = pAURA.m_combatants.GetSize();
+                for (j = 0; j < n; j++) {
+                    if (pAURA.m_combatants[j] == i) {
+                        this.PushAuraReference(pAURA.auraID);
+                        pAURA.RunAuraScripts(
+                            SPECAB.AURA_EFFECT,
+                            SPECAB.ScriptCallback_RunAllScripts,
+                            null,
+                            "Starting a new combat round");
+                        this.PopAuraReference();
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    {
+        var pos;
+        var hookParams = new HOOK_PARAMETERS();
+        scriptContext.Clear();
+        for (pos = this.m_auras.GetHeadPosition(); pos != null;) {
+            var pAURA;
+            pAURA = this.m_auras.GetAt(pos);
+            this.PushAuraReference(pAURA.auraID);
+            this.m_auras.GetNext(pos); pos = this.m_auras.NextPos(pos);    // PORT NOTE:  Manually advancing pointer because no pass-by-reference
+            pAURA.RunAuraScripts(
+                SPECAB.AURA_ROUND,
+                SPECAB.ScriptCallback_RunAllScripts,
+                null,
+                "Starting a new combat round");
+            this.PopAuraReference();
+        };
+    };
+    this.m_iCurrInitiative = 1;
+    this.m_iCurrRound++;
+    if (this.m_iCurrRound % 10 == 0)
+        this.m_iCurrTurn++;
+
+    party.incrementClock(1);
+
+    this.DetermineCombatInitiative();
+
+    for (i = 0; i < this.m_iNumCombatants; i++) {
+    };
+
+    this.getNextCombatant();
+
+    //PRS 20110223 m_iPrevRndCombatant = GetCurrCombatant();
+    this.m_bStartingNewCombatRound = true;
+}
+
+COMBAT_DATA.prototype.CheckDyingCombatants = function() {
+    for (var i = 0; i < this.m_iNumCombatants; i++)
+    {
+        if (this.m_aCombatants[i].GetAdjStatus() == individualCombatantState.Dying) {
+            if (!this.m_aCombatants[i].isBandaged)
+                this.m_aCombatants[i].TakeDamage(1, false, null, false, null);
+        }
+    }
+}
+
+COMBAT_DATA.prototype.CheckMorale = function() {
+    for (var i = 0; i < this.m_iNumCombatants; i++)
+        this.m_aCombatants[i].CheckMorale();
+}
+
+COMBAT_DATA.prototype.getNumCombatants = function(pNumParty, pNumMons)
+{
+    pNumParty = 0;
+    pNumMons = 0;
+
+    // count friendly pc's and npc's in numParty
+    // count non-friendly pc's, npc's, and monsters in numMons
+    // do not count friendly monsters in numParty
+
+    for (var i = 0; i < this.m_iNumCombatants; i++)
+    {
+        if (this.m_aCombatants[i].charOnCombatMap(false, true)) {
+            if ((this.m_aCombatants[i].IsPartyMember()) || (this.m_aCombatants[i].GetIsFriendly())) pNumParty++;
+            else pNumMons++;
+        }
+    }
+    return { pNumParty: pNumParty, pNumMons: pNumMons };
+}
+
+COMBAT_DATA.prototype.DetermineCombatInitiative = function() {
+    var i;
+    for (i = 0; i < this.m_iNumCombatants; i++) {
+        this.m_aCombatants[i].RollInitiative(this.m_eSurprise);
+    }
+
+    // if one side was initially surprised, it only
+    // works for the first round so reset it.
+    this.m_eSurprise = eventSurpriseType.Neither;
+    {
+        var line = "";
+        var swap = 0;
+        var combatant = []; for (idx = 0; idx < Globals.MAX_COMBATANTS; idx++) { combatant[idx] = 0; }   // PORT NOTE: C++ automatically initializes arrays (by size, anyway)
+        for (i = 0; i < this.m_iNumCombatants; i++) {
+            combatant[i] = i;
+        }
+        for (swap = 1; swap != 0;) {
+            swap = 0;
+            for (i = 0; i < this.m_iNumCombatants - 1; i++) {
+                if (this.m_aCombatants[combatant[i]].m_iInitiative > this.m_aCombatants[combatant[i + 1]].m_iInitiative) {
+                    var temp;
+                    temp = combatant[i];
+                    combatant[i] = combatant[i + 1];
+                    combatant[i + 1] = temp;
+                    swap = 1;
+                }
+            }
+        }
+        if (Globals.logDebuggingInfo) {
+            line = "Initiatives for round " + this.m_iCurrRound + ": ";
+        }
+        {
+            var scriptContext = new SCRIPT_CONTEXT();
+            for (i = 0; i < this.m_iNumCombatants; i++) {
+                var hookParameters = new HOOK_PARAMETERS();
+                var pCombatant;
+                var result = "";
+                scriptContext.SetCombatantContext(this.m_aCombatants[i]);
+                hookParameters[5] = "" + this.m_aCombatants[i].m_iInitiative;
+                hookParameters[6] = "" + this.m_aCombatants[i].GetMorale();
+                hookParameters[7] = "" + this.m_pEvent.monsterMorale;
+                pCombatant = this.m_aCombatants[i];
+                result = pCombatant.RunCombatantScripts(
+                    SPECAB.ADJUST_INITIATIVE,
+                    SPECAB.ScriptCallback_RunAllScripts,
+                    null,
+                    "Determine combat initiative");
+                result = pCombatant.m_pCharacter.RunCharacterScripts(
+                    SPECAB.ADJUST_INITIATIVE,
+                    SPECAB.ScriptCallback_RunAllScripts,
+                    null,
+                    "Determine combat initiative");
+                if (pCombatant.GetType() == MONSTER_TYPE) {
+                    var monsterID;
+                    monsterID = pCombatant.m_pCharacter.monsterID;
+                    {
+                        var pMonsterData;
+                        pMonsterData = monsterData.GetMonster(monsterID);
+                        if (pMonsterData != null) {
+                            result = pMonsterData.RunMonsterScripts(
+                                SPECAB.ADJUST_INITIATIVE,
+                                SPECAB.ScriptCallback_RunAllScripts,
+                                hookParameters,
+                                "Determine combat initiative");
+                        }
+                    }
+                }
+                if (!UAFUtil.IsEmpty(result)) {
+                    var adj = parseInt(result);
+                    if (!isNaN(adj)) {
+                        var initiative = parseInt(hookParameters[5]);
+                        if (!isNaN(initiative)) {    //  PORT NOTE:  This is a little different in that that sscanf would have returned ANY digit in the result, but it's probably meant to just quickly parse the int
+                            this.m_aCombatants[i].m_iInitiative += adj;
+                            if (this.m_aCombatants[i].m_iInitiative < INITIATIVE.INITIATIVE_AlwaysFirst)
+                            {
+                                this.m_aCombatants[i].m_iInitiative = INITIATIVE.INITIATIVE_AlwaysFirst;
+                            }
+                            if (this.m_aCombatants[i].m_iInitiative > INITIATIVE.INITIATIVE_Never)
+                            {
+                                this.m_aCombatants[i].m_iInitiative = INITIATIVE.INITIATIVE_Never;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for (i = 0; i < this.m_iNumCombatants; i++) {
+            var initiative = combatant[i] + "[" + this.m_aCombatants[combatant[i]].m_iInitiative + "] ";
+            line += initiative;
+        }
+        if (Globals.logDebuggingInfo) {
+            Globals.WriteDebugString(line + '\n');
+        }
+    }
+}
+
+COMBAT_DATA.prototype.DetermineIfCombatOver = function() {
+    var dude = this.GetCurrCombatant();
+    var numFriendly = 0, numUnfriendly = 0, numPartyMembers = 0;
+
+    {
+        var i = 0;
+        numFriendly = 0;
+        numUnfriendly = 0;
+        numPartyMembers = 0;
+        for (i = 0; i < this.m_iNumCombatants; i++) {
+            var pCombatant;
+            pCombatant = this.m_aCombatants[i];
+            if (pCombatant.charOnCombatMap(false, false)) {
+                if (pCombatant.IsPartyMember()) {
+                    numPartyMembers++;
+                }
+                if (pCombatant.GetIsFriendly()) numFriendly++;
+                else numUnfriendly++;
+            }
+        }
+    };
+
+    if (numUnfriendly == 0) {
+        // party wins
+        this.m_eCombatVictor = combatVictorType.PartyWins;
+        this.m_bLastRound = true;
+        this.m_bCombatOver = true;
+    }
+    else if ((numFriendly == 0) || (numPartyMembers == 0)) {
+        // monsters win, or party ran away
+        this.m_eCombatVictor = combatVictorType.MonsterWins;
+
+        if (dude != NO_DUDE)
+            this.m_bLastRound = true;
+        else
+            this.m_bCombatOver = true;
+    }
+    else
+        this.m_eCombatVictor = combatVictorType.NoWinner;
+}
+
+COMBAT_DATA.prototype.IsCombatOver = function () {
+    return this.m_bCombatOver;
 }

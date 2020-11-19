@@ -413,3 +413,24 @@ Globals.prototype.IncNumMonsterSlain = function () {
 Globals.prototype.My_free = function (addr) {
     delete addr;
 }
+
+Globals.prototype.GetNumCombatants = function(pNumPty, pNumMonsters)
+{
+    return combatData.getNumCombatants(pNumPty, pNumMonsters);
+}
+
+Globals.prototype.GetNumFriendFlee = function () {
+    return combatData.m_iNumFrndFlee;
+}
+
+Globals.prototype.GetNumFriendSlain = function () {
+    return combatData.m_iNumFrndSlain;
+}
+
+Globals.prototype.GetNumMonsterFlee = function () {
+    return combatData.m_iNumMonFlee;
+}
+
+Globals.prototype.GetNumMonsterSlain = function () {
+    return combatData.m_iNumMonSlain;
+}

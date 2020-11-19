@@ -62,13 +62,6 @@ function COMBATANT() {
     this.m_preCombatMorale = 0;
     this.targeters = new CList();
     this.Clear();
-    /*
-enum INITIATIVE {
-    INITIATIVE_AlwaysFirst = 1,
-    INITIATIVE_FirstDefault = 9,
-    INITIATIVE_LastDefault = 18,
-    INITIATIVE_Never = 23,
-};*/
 }
 
 COMBATANT.prototype.Clear = function () {
@@ -124,7 +117,7 @@ COMBATANT.prototype.Clear = function () {
 
 COMBATANT.prototype.GetName = function () {
     return this.m_pCharacter.GetName();
-};
+}
 
 COMBATANT.prototype.State = function (ICS) {
     if (ICS == null || ICS == undefined) {          // PORT NOTE:  Handling overloaded name of accessor/mutator
@@ -997,7 +990,6 @@ inline void SetAutomatic(BOOL flag) { m_pCharacter -> SetAutomatic(flag); };
 inline BYTE GetMaxMovement() const { return m_pCharacter-> GetMaxMovement(); };
 inline double GetNbrHD() const { return m_pCharacter-> GetNbrHD(); };
 inline void SetMaxMovement(BYTE val) { m_pCharacter -> SetMaxMovement(val); };
-inline void ClearQueuedSpecAb() { m_pCharacter -> ClearQueuedSpecAb(); };
 inline int  getCharExpWorth() { return m_pCharacter -> getCharExpWorth(); };
 inline int  GetMaxHitPoints() const { return m_pCharacter-> GetMaxHitPoints();};
 inline int  GetEffectiveAC(void) const { return m_pCharacter-> GetEffectiveAC();};
@@ -1032,15 +1024,12 @@ inline BOOL IsAnimal() const { return m_pCharacter-> IsAnimal();};
 inline BOOL IsAlwaysLarge() const { return m_pCharacter-> IsAlwaysLarge();};
 inline BOOL HasVorpalImmunity() const { return m_pCharacter-> HasVorpalImmunity();};
 inline void ComputeCharacterViewValues(void) { m_pCharacter -> ComputeCharacterViewValues(); };
-inline BYTE GetAdjInt(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjInt(flags);};
 inline int GetAdjTHAC0(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjTHAC0(flags);};
 inline BOOL GetAdjAllowPlayerControl(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) { return m_pCharacter -> GetAdjAllowPlayerControl(flags); };
 inline BOOL GetAdjDetectingInvisible(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjDetectingInvisible(flags);};
 enum { MAX_COMBAT_TARGETS = 100 };
 int GetUniqueId() { return self; }
 void InitFromNPCData(const CHARACTER_ID& characterID, BOOL IsFriendly, const ITEM_LIST & items, const MONEY_SACK & msack);
-void RollInitiative(eventSurpriseType surprise);
-BOOL charCanTakeAction();
 void GetContext(ActorType * pActor, const BASECLASS_ID& baseclassID) const ;
 void GetContext(ActorType * pActor, const SCHOOL_ID& schoolID) const ;
 void GetContext(ActorType * pActor, const SPELL_ID& spellID) const ;
@@ -1171,10 +1160,8 @@ void ClearPath();
 BOOL TakeNextStep(BOOL allowZeroMoveAttack);
 BOOL toggleReadyItem(int item);
 BOOL delCharacterItem(int index, int qty);
-void CheckMorale();
 int   GetTargetKeyDude(DWORD k) const { return (k & 0x0000FFFF); }
 int   GetTargetKeyDist(DWORD k) const { return ((k >> 16) & 0x0000FFFF); }
-void OnStartCombatantAction();
 void OnEndTurn();
 CString FormatSpecAbMsg(DWORD sa_state);
 // These ModifyXXX functions dynamically alter character
@@ -3023,3 +3010,149 @@ COMBATANT.prototype.RemoveCurrTarget = function () {
 COMBATANT.prototype.blitDyingSprite = function () {
     UIEventManager.CombatantDying(this.self, this.x, this.y);
 }
+
+COMBATANT.prototype.CheckMorale = function () {
+    if ((this.iFleeingFlags != 0) || this.isTurned)
+        return;
+
+    // monsters with no INT never flee
+    if ((this.GetType() == MONSTER_TYPE) && (this.GetAdjInt() <= 1))
+        return;
+
+    var fflee = 0;    // PORT NOTE:  static
+    var fslain = 0;   // PORT NOTE:  static
+    var mflee = 0;    // PORT NOTE:  static
+    var mslain = 0;   // PORT NOTE:  static
+    var SuperiorForceModMade = false;
+
+    var mod = 0;
+    var numParty = 0, numMons = 0;
+    var Flee = false;
+
+    var returnVal = Globals.GetNumCombatants(numParty, numMons);
+    numParty = returnVal.pNumParty;
+    numMons = returnVal.pNumMons;
+
+    if (this.friendly) {
+        if (fflee != Globals.GetNumFriendFlee())
+            mod += ((Globals.GetNumFriendFlee() - fflee) * 5);
+        if (fslain != Globals.GetNumFriendSlain())
+            mod += ((Globals.GetNumFriendSlain() - fslain) * 10);
+        if (((numParty * 3) <= numMons) && (!SuperiorForceModMade)) {
+            mod += 20;
+            SuperiorForceModMade = true;
+        }
+    }
+    else {
+        if (mflee != Globals.GetNumMonsterFlee())
+            mod += ((Globals.GetNumMonsterFlee() - mflee) * 5);
+        if (mslain != Globals.GetNumMonsterSlain())
+            mod += ((Globals.GetNumMonsterSlain() - mslain) * 10);
+        if (((numMons * 3) <= numParty) && (!SuperiorForceModMade)) {
+            mod += 20;
+            SuperiorForceModMade = true;
+        }
+    }
+
+    /* *********************************************************
+      *   The following email from Manikus  20181102
+      * Good afternoon.
+      * I would like the Morale value to not autochange. 
+      * if I can GET 1) total Morale and 2) Combat Morale, 
+      * OR 1) Morale set in editor (monster or NPC) and 
+      * 2) Combat Morale, I will be happy.
+      * I also think I will want the function to match with the 
+      * AdjustInitiative Hook parameters.
+      * 
+      * -Eric
+      ********************************************************* */
+
+    Flee = false;
+
+    if (Flee) {
+        // only auto combatants choose to flee
+        if (this.OnAuto(false)) {
+            if (!this.IsPartyMember()) {
+                if (!Globals.GetConfigMonsterNoFlee())
+                    this.iFleeingFlags |= fleeBecauseImpossible;
+            }
+            else
+                this.iFleeingFlags |= fleeBecauseImpossible;
+        }
+    }
+
+    if (this.iFleeingFlags != 0) {
+        this.ClearPath();
+        this.RemoveAllTargets();
+        this.SetStatus(Running);
+        this.State(ICS_Moving);
+        // stop any casting in progress
+        this.StopCasting(false, false);
+    }
+
+    fflee = Globals.GetNumFriendFlee();
+    fslain = Globals.GetNumFriendSlain();
+    mflee = Globals.GetNumMonsterFlee();
+    mslain = Globals.GetNumMonsterSlain();
+}
+
+
+COMBATANT.prototype.GetAdjInt = function (flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    return this.m_pCharacter.GetAdjInt(flags);
+}
+
+
+COMBATANT.prototype.charCanTakeAction = function() {
+    var stype = this.GetAdjStatus();
+    if ((stype == charStatusType.Okay) || (stype == charStatusType.Running) || (stype == charStatusType.Animated))
+        return true;
+    return false;
+}
+
+COMBATANT.prototype.RollInitiative = function(eSurprise) {
+    var partymember = (this.IsPartyMember() || this.friendly);
+    switch (eSurprise) {
+        case eventSurpriseType.Neither:
+            this.m_iInitiative = Globals.RollDice(INITIATIVE.INITIATIVE_LastDefault - INITIATIVE.INITIATIVE_FirstDefault + 1, 1, INITIATIVE.INITIATIVE_FirstDefault - 1);
+            break;
+        case eventSurpriseType.PartySurprised: // monsters go first
+            this.m_iInitiative = (partymember ? INITIATIVE.INITIATIVE_LastDefault : INITIATIVE.INITIATIVE_FirstDefault);
+            break;
+        case eventSurpriseType.MonsterSurprised: // party members go first
+            this.m_iInitiative = (partymember ? INITIATIVE.INITIATIVE_FirstDefault : INITIATIVE.INITIATIVE_LastDefault);
+            break;
+    }
+
+    if (this.m_iInitiative < INITIATIVE.INITIATIVE_FirstDefault) this.m_iInitiative = INITIATIVE_FirstDefault;
+    if (this.m_iInitiative > INITIATIVE.INITIATIVE_LastDefault) this.m_iInitiative = INITIATIVE_LastDefault;
+}
+
+COMBATANT.prototype.OnStartCombatantAction = function() {
+    var hookParameters = new HOOK_PARAMETERS();
+    var scriptContext = new SCRIPT_CONTEXT();
+    var actor;
+    Globals.TRACE("OnStartCombatantAction for " + this.self + "\n");
+    this.ClearQueuedSpecAb();
+    Globals.PlaceCursorOnCurrentDude();
+
+    DispText.CombatMsg = "";
+    FormattedText.ClearFormattedText(FormattedText.combatTextData);
+    var tmp;
+
+
+    actor = this.GetContextActor(actor);
+    RunTimeIF.SetCharContext(actor);
+    scriptContext.SetCharacterContext(this.m_pCharacter);
+    scriptContext.SetCombatantContext(this);
+    this.RunCombatantScripts(
+        SPECAB.ON_START_COMBATANT_ACTION,
+        SPECAB.ScriptCallback_RunAllScripts,
+        null,
+        "Start Combatant Action");
+    RunTimeIF.ClearCharContext();
+}
+
+COMBATANT.prototype.ClearQueuedSpecAb = function() {
+    this.m_pCharacter.ClearQueuedSpecAb();
+};

@@ -119,7 +119,7 @@ CHARACTER.prototype.Clear = function(isConstructor) {
     this.characterID = "";
     this.uniquePartyID = UAFUtil.ByteFromHexString("0xff");
     this.specAbs.Clear();
-    this.specAbQueue = {};
+    this.specAbQueue = new CList();
     this.blockageData.Clear();
     this.m_spellbook.Clear();
     this.myItems.Clear();
@@ -1780,7 +1780,7 @@ CHARACTER.prototype.CanCastSpells = function () {
     // to see if we can find a CanCastSpells script.
     {
         var hookParameters = new HOOK_PARAMETERS();
-        var scriptContext = SCRIPT_CONTEXT();
+        var scriptContext = new SCRIPT_CONTEXT();
         var pCombatant;
         var pClass;
         pClass = classData.PeekClass(this.GetClass());
@@ -4058,7 +4058,45 @@ CHARACTER.prototype.GetEffectiveAC = function () {
     return val;
 }
 
+CHARACTER.prototype.ProcessLingeringSpellEffects = function () {
+    var pos;
+    var needScan = false;
+    pos = this.m_spellEffects.GetHeadPosition();
+    while (pos != null) {
 
+        var pSE;
+        pSE = this.m_spellEffects.GetAt(pos);
+        if ((pSE.flags & SPELL_EFFECTS_DATA.EFFECT_ONCEONLY) == 0)
+        {
+            // A permanent effect is required.
+            var pSpData;
+            var pActiveSpell;
+            pSpData = spellData.GetSpell(pSE.SourceSpell_ID());
+            pActiveSpell = activeSpellList.Get(pSE.parent);
+            if (pActiveSpell != null) {
+                var pActor;
+                pActor = pActiveSpell.caster;
+                if (pActor.instanceType == ActorInstanceType.InstanceType_CombatantIndex) {
+                    var pCaster;
+                    pCaster = this.GetCombatantActor().m_pCharacter;
+                    this.CalcSpellEffectChangeValue(pSpData, pSE, this.GetIsFriendly(), pCaster);
+                    if (this.AddLingeringSpellEffect(pSE, pCaster, "Processing Lingering Spell Effect")) {
+                        needScan = true;
+                    }
+                };
+            };
+        };
+        this.m_spellEffects.GetNext(pos);
+    };
+    if (needScan) {
+        // force a scan of the current char status
+        this.TakeDamage(0, false, null, false, null);
+    };
+}
+
+CHARACTER.prototype.ClearQueuedSpecAb = function() {
+    this.specAbQueue.RemoveAll();
+}
 
 CHARACTER.prototype.SetLevel = function (lvl) { throw "todo"; }
 CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };
@@ -4160,7 +4198,6 @@ CHARACTER.prototype.IncCurrExp = function (baseclassID, exp) { throw "todo"; }
 CHARACTER.prototype.GetAdjBaseclassExp = function (baseclassID, flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.GetBaseclassExp = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.SetSpecAb = function (sa, enable, flags) { throw "todo"; }
-CHARACTER.prototype.ClearQueuedSpecAb = function () { throw "todo"; }
 CHARACTER.prototype.IsMammal = function () { throw "todo"; }
 CHARACTER.prototype.IsAnimal = function () { throw "todo"; }
 CHARACTER.prototype.IsSnake = function () { throw "todo"; }
@@ -4173,7 +4210,6 @@ CHARACTER.prototype.HasVorpalImmunity = function () { throw "todo"; }
 CHARACTER.prototype.CanBeHeldOrCharmed = function () { throw "todo"; }
 CHARACTER.prototype.AffectedByDispelEvil = function () { throw "todo"; }
 CHARACTER.prototype.CharacterID = function (id) { throw "todo"; }
-CHARACTER.prototype.ProcessLingeringSpellEffects = function () { throw "todo"; }
 CHARACTER.prototype.GetSpellCount = function () { throw "todo"; }
 CHARACTER.prototype.ClearSpellbook = function () { throw "todo"; }
 CHARACTER.prototype.FetchCharacterSpell = function (spellID, pCharSp) { throw "todo"; }

@@ -76,3 +76,13 @@ CList.prototype.Add = function (itm) {
 CList.prototype.SetAtGrow = function (length, itm) {
     return this.mList.push(itm);
 }
+
+CList.prototype.AddHead = function (newElement) {
+    // PORT NOTE: Simplified
+    this.mList.push(newElement);
+    return 0;
+}
+
+CList.prototype.GetHead = function () {
+    return this.mList[0];
+}

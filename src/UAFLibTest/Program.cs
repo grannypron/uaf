@@ -10,6 +10,8 @@ namespace UAFLibTest
     {
         static void Main(string[] args)
         {
+            //DatabaseDescriptionLoader.go();
+
             UAFLib.Console class1 = new UAFLib.Console();
             class1.helloWorld();
             Console.ReadKey();

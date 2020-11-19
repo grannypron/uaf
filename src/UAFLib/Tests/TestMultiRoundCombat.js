@@ -1,0 +1,1 @@
+combatData.UpdateCombat();

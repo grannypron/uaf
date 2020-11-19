@@ -99,3 +99,74 @@ PARTY.prototype.GetPartyFacing = function()
 {
     return (this.facing);
 }
+
+PARTY.prototype.incrementClock = function(MinuteInc) {
+    var mn = 0, hr = 0, day = 0;
+
+    if (MinuteInc <= 0)
+        return;
+
+    if (MinuteInc >= 60) {
+        day = MinuteInc / (1440);
+        MinuteInc %= (1440);
+        hr = MinuteInc / 60;
+        MinuteInc %= 60;
+        mn = MinuteInc;
+    }
+    else {
+        day = 0;
+        hr = 0;
+        mn = MinuteInc;
+    }
+
+    this.minutes += mn;
+
+    if (this.minutes >= 60) {
+        this.minutes -= 60;
+        hr++;
+    }
+
+    this.hours += hr;
+
+    if (this.hours >= 24) {
+        this.hours -= 24;
+        day++;
+    }
+
+    //days += day;
+
+    for (var d = 0; d < day; d++)
+    {
+        this.days += 1;
+
+        var DayOfYear = days % 365;
+
+        // then start checking character birthdates
+        for (var i = 0; i < this.numCharacters; i++)
+        {
+            var bday = this.characters[i].GetBirthday();
+            if (bday <= 0) bday = 1;
+
+            if (DayOfYear == bday) {
+                this.characters[i].SetAge(characters[i].GetAge() + 1);
+                Globals.WriteDebugString(characters[i].GetName() + " has aged one year\n");
+            }
+        }
+    }
+    {
+        var hookParameters = new HOOK_PARAMETERS();
+        var scriptContext = new SCRIPT_CONTEXT();
+        var num;
+        num = "" + ((this.days * 24 + this.hours) * 60) + this.minutes;
+        hookParameters[5] = num;
+        num = "" + this.days;
+        hookParameters[6] = num;
+        num = "" + this.hours;
+        hookParameters[7] = num;
+        num = "" + this.minutes;
+        hookParameters[8] = num;
+        num = "" + MinuteInc;
+        hookParameters[9] = num;
+        SPECAB.RunGlobalScript(SPECAB.GLOBAL_TIME, SPECAB.TIME_ELAPSED, true);
+    };
+}
