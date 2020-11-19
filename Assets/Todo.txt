@@ -1,0 +1,5 @@
+﻿- Dungeon Generation
+- Enemy AI
+- Ranged attacks
+- Move the window with the player smoothly when they get outiside of a certain box in the middle - e.g. x > 306 or x < 118.  Use Lerp.  See code in MainCameraEvents
+- Find a better way to switch between loaders in CombatScreenEvents

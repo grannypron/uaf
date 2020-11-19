@@ -147,7 +147,7 @@ function packageMapAndCombatantStatus(c) {
     for (i = 0; i < Drawtile.MAX_TERRAIN_HEIGHT; i++) {
         mapData[i] = [];
         for (j = 0; j < Drawtile.MAX_TERRAIN_WIDTH; j++) {
-            dataStr += Drawtile.terrain[i][j].tileIndex + ",";
+            dataStr += Drawtile.terrain[i][j].cell + ",";
             mapData[i][j] = Drawtile.terrain[i][j].tileIndex;
         }
         dataStr += "]\n";
