@@ -40,8 +40,16 @@ PATH_MANAGER.prototype.SetPathSize = function (w, h) {
     this.pathWidth = w;
     this.pathHeight = h;
 }
-
-PATH_MANAGER.prototype.GetPathIntIntIntInt = function(startx, starty, destLeft, destTop, destRight, destBottom, occupantsBlock, pCombatantLinger,
+/*
+*  20160612  PRS
+ *  We discovered that the 5th and 6th parameters are not treated as 'width' and 'height'
+ * but rather as the lower right corner of a rectangle.
+ * So we changed the definition and had to change many calls to this function
+ * which had "1,1" as the 5th and 6th parameters.
+ * I worry......this is a major difference.  How did we survive this long?  Am I confused?
+ * Well, here goes.  I'll try to leave a clear 'undo' trail behind.  Just in case.
+ */
+PATH_MANAGER.prototype.GetPath9 = function(startx, starty, destLeft, destTop, destRight, destBottom, occupantsBlock, pCombatantLinger,
     moveOriginPoint)     // 'moveOriginPoint' means that the point (startX,startY)
 // must be moved into the destinatiomn rectangle.
 // Otherwise, any part of the path rectangle being moved into
@@ -76,9 +84,7 @@ PATH_MANAGER.prototype.GetPathIntIntIntInt = function(startx, starty, destLeft, 
             return this.CurrPath;
         }
         else {
-            return 1;
-            //**TODO*** Stub to make sure I get things on the battlefield
-            //return -1;
+            return -1;
         }
     }
     else {
@@ -93,19 +99,15 @@ PATH_MANAGER.prototype.FindPath = function(pCombatantLinger, moveOriginPoint) {
     this.Path[this.CurrPath].Clear();
 
     this.Path[this.CurrPath].SetData(null);
-    this.Path[this.CurrPath].SetValid(this.GetValid());
-    this.Path[this.CurrPath].SetCost(this.GetCost());
+    this.Path[this.CurrPath].SetValid(this.GetValid);
+    this.Path[this.CurrPath].SetCost(this.GetCost);
     this.Path[this.CurrPath].SetSize(Drawtile.MAX_TERRAIN_WIDTH, Drawtile.MAX_TERRAIN_HEIGHT);
 
-
-    var Found = false;
-    /** TODO** - Stub 
-    var Found = this.Path[this.CurrPath].GeneratePath(this.StartX, this.StartY, this.pathWidth, this.pathHeight,
+    var Found = this.Path[this.CurrPath].GeneratePath10(this.StartX, this.StartY, this.pathWidth, this.pathHeight,
         this.DestLeft, this.DestTop,
         this.DestRight, this.DestBottom,
         pCombatantLinger,
         moveOriginPoint);
-        **/
 
     if (!Found) {
         this.Tags.Clear(this.CurrPath);
@@ -134,14 +136,12 @@ PATH_MANAGER.prototype.GetAvailablePath = function()
 
 
 PATH_MANAGER.prototype.GetValid = function(x, y, ud, pCombatantLinger) {
-    //**TODO** Stub
-    return true;
-
     var checkIfOccupied = pathMgr.GetOccBlock();
 
-    if (!this.ValidCoords(y, x))
+    if (!Drawtile.ValidCoords(y, x))
         return false;
 
+    // PORT NOTE:  Comment below was not mine
     /* ****************************** *****************************
      * This made no sense to me.  Perhaps it was meant to not check blocking
      * at the destination itself.  But this code seems incomplete and backward!
@@ -162,13 +162,16 @@ PATH_MANAGER.prototype.GetValid = function(x, y, ud, pCombatantLinger) {
 }
 
 PATH_MANAGER.prototype.GetCost = function(sx, sy, dx, dy, ud) {
-    return 1;//GetDist(GetDir(sx, sy, dx, dy));
-    /**TODO** Stub above
     var d2;
     d2 = (sx - dx) * (sx - dx) + (sy - dy) * (sy - dy);
-    return 5 * d2 + 5; */
+    return 5 * d2 + 5;
 }
 
+PATH_MANAGER.prototype.GetPath = function(which) {
+    if (which < 0 || which >= pathMgr.MaxPaths) return null;
+    this.Tags.Set(which);
+    return this.Path[which];
+}
 
 PATH_MANAGER.prototype.FreePath = function (which) {
     /**TODO** - Stub */
@@ -186,32 +189,21 @@ PATH_MANAGER(int num = MAXPATHS);// max number of paths
 ~PATH_MANAGER();
 
 int  GetStepsRemaining(int which);
-BOOL GetOccBlock() { return OccupantsBlock; }
-BYTE GetPathWidth() { return pathWidth; }
-BYTE GetPathHeight() { return pathHeight; }
 void SetPathSize(int w, int h) { pathWidth = w; pathHeight = h; }
 
 void Clear();
 
 
-*  20160612  PRS
- *  We discovered that the 5th and 6th parameters are not treated as 'width' and 'height'
- * but rather as the lower right corner of a rectangle.
- * So we changed the definition and had to change many calls to this function
- * which had "1,1" as the 5th and 6th parameters.
- * I worry......this is a major difference.  How did we survive this long?  Am I confused?
- * Well, here goes.  I'll try to leave a clear 'undo' trail behind.  Just in case.
- *
- * int  GetPath (int startx,    int starty, 
- *               int destx,     int desty,
- *               int destWidth, int destHeight,
- *               BOOL occupantsBlock,
- *               COMBATANT *pCombatantLinger);
- *
-
-
-
-
-CPathFinder * GetPath(int which);  
-
 */
+
+PATH_MANAGER.prototype.GetOccBlock = function () {
+    return this.OccupantsBlock;
+}
+
+PATH_MANAGER.prototype.GetPathWidth = function() {
+    return this.pathWidth;
+}
+
+PATH_MANAGER.prototype.GetPathHeight = function () {
+    return this.pathHeight;
+}

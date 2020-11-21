@@ -414,9 +414,13 @@ Globals.prototype.My_free = function (addr) {
     delete addr;
 }
 
-Globals.prototype.GetNumCombatants = function(pNumPty, pNumMonsters)
+Globals.prototype.GetNumCombatants2 = function(pNumPty, pNumMonsters)
 {
     return combatData.getNumCombatants(pNumPty, pNumMonsters);
+}
+
+Globals.prototype.GetNumCombatants = function () {
+    return combatData.NumCombatants();
 }
 
 Globals.prototype.GetNumFriendFlee = function () {

@@ -48,6 +48,10 @@ function loadMonsters() {
     monsterData.MonsterData[0].XP_Value = 7;
     monsterData.MonsterData[0].m_type = MONSTER_TYPE;
     monsterData.MonsterData[0].Race = RACE_DATA_TYPE.Monster;
+    monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0] = new ATTACK_DETAILS()
+    monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].sides = 4;
+    monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].nbr = 1;
+    monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].bonus = 0;
 
 }
 

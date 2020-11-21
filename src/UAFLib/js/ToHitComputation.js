@@ -127,8 +127,8 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
         else if (Globals.GetConfigPartyAlwaysHit()) this.m_toHitDiceRoll = this.m_effectiveTHAC0;
     }
     else {
-        if (GetConfigMonsterAlwaysMiss()) this.m_toHitDiceRoll = this.m_effectiveTHAC0 - 1;
-        else if (GetConfigMonsterAlwaysHit()) this.m_toHitDiceRoll = this.m_effectiveTHAC0;
+        if (Globals.GetConfigMonsterAlwaysMiss()) this.m_toHitDiceRoll = this.m_effectiveTHAC0 - 1;
+        else if (Globals.GetConfigMonsterAlwaysHit()) this.m_toHitDiceRoll = this.m_effectiveTHAC0;
     };
     {
         var result = "", finalResult = "", itemName = "";

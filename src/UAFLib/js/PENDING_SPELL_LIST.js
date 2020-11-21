@@ -69,7 +69,7 @@ PENDING_SPELL_LIST.prototype.ProcessTimeSensitiveData = function (roundInc, curr
                 Globals.WriteDebugString("Activating pending spell for char " + data.caster.Instance + ", sdbkey " + data.spellID.UniqueName() + ", turn " + combatData.m_iCurrTurn + ", round " + combatData.m_iCurrRound + ", initiative " + combatData.m_iCurrInitiative + "\n");
                 Globals.WriteDebugString((this.GetCount() - 1) + " pending spells remaining\n");
             };
-            this.SpellActivate(data, false, NULL);
+            this.SpellActivate(data, false, null);
             this.RemoveAt(pos);
         }
 

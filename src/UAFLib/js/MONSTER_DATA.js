@@ -76,7 +76,19 @@ MONSTER_DATA.prototype.PlayMove = function () {
             this.MoveSound = new SOUND_BYTE(globalData.sounds.PartyStep);
             if (!this.MoveSound.Play()) {
                 this.MoveSound.TotalDisable();
-            };
-        };
-    };
+            }
+        }
+    }
+}
+
+
+MONSTER_DATA.prototype.PlayMiss = function()
+{
+    if (!Globals.PlaySoundEffects) return;
+    this.MissSound.Play();
+}
+
+MONSTER_DATA.prototype.PlayHit = function () {
+    if (!Globals.PlaySoundEffects) return;
+    this.HitSound.Play();
 }

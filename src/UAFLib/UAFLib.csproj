@@ -87,6 +87,7 @@
     <Content Include="js\ACTIVE_SPELL_LIST.js" />
     <Content Include="js\AUTO_FLAGS.js" />
     <Content Include="js\BASECLASS_LIST.js" />
+    <Content Include="js\CPoint.js" />
     <Content Include="js\ERRORLOG.js" />
     <Content Include="js\Forth.js" />
     <Content Include="js\GPDL.js" />
@@ -101,6 +102,7 @@
     <Content Include="js\interop\UIEventManager.js" />
     <Content Include="js\itemRechargeRate.js" />
     <Content Include="js\MonsterImmunityType.js" />
+    <Content Include="js\PATH_NODE.js" />
     <Content Include="js\PENDING_SPELL_LIST.js" />
     <Content Include="js\QueuedCombatant.js" />
     <Content Include="js\spellDurationType.js" />

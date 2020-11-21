@@ -18,6 +18,9 @@ function OrderedQueue() {
             return i;
     }
 
+    this.GetNext = function (i) {
+        return this.GetAtPos(i);                                // PORT NOTE: No way to advance pointer automatically - no pass-by-reference parameters
+    }
 }
 
 

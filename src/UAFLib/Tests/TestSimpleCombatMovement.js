@@ -1,4 +1,5 @@
 // Requires TestSetupCombat.js
+combatData.m_eSurprise = eventSurpriseType.MonsterSurprised;
 cWarrior = combatData.GetCombatant(0);
 Globals.debug("cWarrior.x / cWarrior.y: " + cWarrior.x + " / " + cWarrior.y);
 

@@ -141,7 +141,6 @@ COMBATANT.prototype.State = function (ICS) {
         //WriteDebugString("DEBUG - COMBATANT(%s)::State(%d)\n", m_pCharacter->GetName(),ICS);
     };
     if ((this.m_ICS != individualCombatantState.ICS_Guarding) && (ICS == individualCombatantState.ICS_Guarding)) {
-        Globals.debug(this.m_ICS + " / " + ICS);
         this.EnterGuardingState();
     };
 /*
@@ -577,7 +576,7 @@ COMBATANT.prototype.ReadyBestWpn = function(targ) {
         Globals.ASSERT(targCOMBATANT != null, "targCOMBATANT != null");
         if (targCOMBATANT != null) {
             isLargeTarget = targCOMBATANT.isLargeDude();
-            dist = Distance(self, x, y,
+            dist = Drawtile.Distance6(this.self, this.x, this.y,
                 targCOMBATANT.self, targCOMBATANT.x, targCOMBATANT.y);
         }
     }
@@ -1079,10 +1078,7 @@ BOOL C_AddTarget(COMBATANT & dude, int range = 0);
 BOOL AddMapTarget(int mapx, int mapy, PATH_DIR dir, int dirX, int dirY);
 BOOL AddTargetSelf();
 void AutoChooseSpellTargets();
-int  GetCurrTarget(bool updateTarget, bool unconsciousOK, bool petrifiedOK);
-int  GetNextTarget();
 int  GetMaxTargets();
-int  GetNumTargets() const { return combattargets.GetCount(); }
 BOOL HaveTarget(int target);
 BOOL IsAttackPossible(void);
 BOOL DetermineIfBackStab(int wpn, int targ) const ;
@@ -1105,7 +1101,6 @@ void InitSpellHitAnimation(int targ);
 BOOL NeedSpellLingerAnimation();
 void InitSpellLingerAnimation(/*int mapx, int mapy* /);
 void InitSpellLingerAnimation(int targ);
-BOOL CanMove(BOOL allowZeroMove);
 BOOL CanCast();
 BOOL CanUse();
 BOOL CanTurnUndead();
@@ -1156,11 +1151,6 @@ void moveSW();
 void moveSE();
 BOOL CurrMoveWouldFleeMap();
 BOOL TeleportCombatant(int newX, int newY);
-BOOL FindPathTo(int destLeft, int destTop,
-    int destRight, int destBottom,
-    BOOL CheckOccupants,
-    BOOL allowZeroMove,
-    BOOL moveOriginPoint);
 BOOL FindPathAwayFrom(int fleeFrom);
 int FindPathToMapNorthEdge(void);
 int FindPathToMapEastEdge(void);
@@ -1168,7 +1158,6 @@ int FindPathToMapSouthEdge(void);
 int FindPathToMapWestEdge(void);
 BOOL FindPathToMapEdge();
 BOOL FindPathAlongLine(PATH_DIR dir, int dist);
-void ClearPath();
 BOOL TakeNextStep(BOOL allowZeroMoveAttack);
 BOOL toggleReadyItem(int item);
 BOOL delCharacterItem(int index, int qty);
@@ -1812,7 +1801,7 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
 //                                result);
 //#endif
                             scriptContext.Clear();
-                            if (!result.IsEmpty()) {
+                            if (!UAFUtil.IsEmpty(result)) {
                                 if (result[0] == 'Y') {
                                     freeAttackCount = 1 + tempCOMBATANT.AttacksRemaining();
                                 }
@@ -3122,7 +3111,7 @@ COMBATANT.prototype.charCanTakeAction = function() {
     return false;
 }
 
-COMBATANT.prototype.RollInitiative = function(eSurprise) {
+COMBATANT.prototype.RollInitiative = function (eSurprise) {
     var partymember = (this.IsPartyMember() || this.friendly);
     switch (eSurprise) {
         case eventSurpriseType.Neither:
@@ -3672,9 +3661,9 @@ COMBATANT.prototype.Think = function () {
     };
     var tempCOMBATANT = null;
     if (dude != NO_DUDE) {
-        tempCOMBATANT = this.GetCombatantPtr(dude);
-        Globals.ASSERT(tempCOMBATANT != NULL);
-        if (tempCOMBATANT == NULL) return false;
+        tempCOMBATANT = Globals.GetCombatantPtr(dude);
+        Globals.ASSERT(tempCOMBATANT != null);
+        if (tempCOMBATANT == null) return false;
 
         //here we must ready the item indicated by combatSunnary
         if (!useScriptedAI || (combatSummary.PeekAction(actionIndex[0]).advance == 0)) {
@@ -3697,14 +3686,15 @@ COMBATANT.prototype.Think = function () {
         // target in terms of distance may be on the other side
         // of a wall. Using line of sight helps to ensure we will attack
         // closest target that is also the shortest path distance.
+
         for (i = 0; i < Globals.GetNumCombatants(); i++) {
             tempCOMBATANT = Globals.GetCombatantPtr(i);
             Globals.ASSERT(tempCOMBATANT != null);
             if (tempCOMBATANT == null) return false;
-            if ((i != self)
-                && (tempCOMBATANT.GetIsFriendly() != GetIsFriendly())
+            if ((i != this.self)
+                && (tempCOMBATANT.GetIsFriendly() != this.GetIsFriendly())
                 && (tempCOMBATANT.charOnCombatMap(false, true))) {
-                if (HaveLineOfSight(GetCenterX(), GetCenterY(), tempCOMBATANT.GetCenterX(), tempCOMBATANT.GetCenterY(), NULL))
+                if (Drawtile.HaveLineOfSight(this.GetCenterX(), this.GetCenterY(), tempCOMBATANT.GetCenterX(), tempCOMBATANT.GetCenterY(), null))
                     this.AddTarget(i, false);
             }
         }
@@ -3716,7 +3706,7 @@ COMBATANT.prototype.Think = function () {
                 tempCOMBATANT = Globals.GetCombatantPtr(i);
                 Globals.ASSERT(tempCOMBATANT != null);
                 if (tempCOMBATANT == null) return false;
-                if ((i != self)
+                if ((i != this.self)
                     && (tempCOMBATANT.friendly != this.GetIsFriendly())
                     && (tempCOMBATANT.charOnCombatMap(false, true)))
                     this.AddTarget(i, false);
@@ -3739,15 +3729,15 @@ COMBATANT.prototype.Think = function () {
         pcsc = combatSummary.PeekCombatant(0);
         if ((pcsc != null) && (pcsc.shieldToReady != 0)) {
             this.m_pCharacter.ReadyShieldScript(pcsc.PeekShield(pcsc.shieldToReady - 1).index);
-        };
-    };
+        }
+    }
     if (!useScriptedAI) { // *********************************************************** WEAPON
         this.ReadyBestWpn(this.GetCurrTarget(true, false, true));
-    };
+    }
 
     if (!useScriptedAI) {
         dude = this.GetCurrTarget(true, false, true);
-    };
+    }
 
     // no combattargets, sit tight and guard
     if (dude == NO_DUDE) {
@@ -3762,6 +3752,7 @@ COMBATANT.prototype.Think = function () {
     else {
         CanAttack = this.canAttack(dude, -1, -1, 0, Drawtile.Distance6, useScriptedAI);
     };
+
     tempCOMBATANT = Globals.GetCombatantPtr(dude);
     Globals.ASSERT(tempCOMBATANT != null);
     if (tempCOMBATANT == null) return false;
@@ -3774,7 +3765,7 @@ COMBATANT.prototype.Think = function () {
         // check to see if existing path to target needs to change
         var pathPtr = pathMgr.GetPath(this.hPath);
 
-        if (pathPtr != NULL) {
+        if (pathPtr != null) {
             var stepPtr = pathPtr.GetLastStep();
 
             if ((tempCOMBATANT.x == stepPtr.x)
@@ -3790,7 +3781,7 @@ COMBATANT.prototype.Think = function () {
 
         // find path to closest enemy
         // need to change to closest enemy with shortest path!
-        if ((repath) && (this.CanMove(FALSE))) {
+        if ((repath) && (this.CanMove(false))) {
             this.ClearPath();
             this.SetCurrTarget(); // setup for iteration
             var targetCount = 0;
@@ -3802,7 +3793,7 @@ COMBATANT.prototype.Think = function () {
                 tempCOMBATANT = Globals.GetCombatantPtr(dude);
                 Globals.ASSERT(tempCOMBATANT != null);
                 if (tempCOMBATANT == null) return false;
-                if (FindPathTo(tempCOMBATANT.x - 1,
+                if (this.FindPathTo(tempCOMBATANT.x - 1,
                     tempCOMBATANT.y - 1,
                     tempCOMBATANT.x + tempCOMBATANT.width,
                     tempCOMBATANT.y + tempCOMBATANT.height,
@@ -3954,7 +3945,6 @@ COMBATANT.prototype.Think = function () {
 COMBATANT.prototype.HandleCurrState = function(zeroMoveAttackOK) {
     var dude;
     var updateScreen = 0;
-    Globals.debug("----COMBATANT.prototype.HandleCurrState: this.State():" + this.State());
 
     switch (this.State()) {
         case individualCombatantState.ICS_None:
@@ -4088,4 +4078,90 @@ COMBATANT.prototype.GetCurrTarget = function (updateTarget, unconsciousOK, petri
     };
 
     return this.m_target;
+}
+
+COMBATANT.prototype.HandleTimeDelayMsgBegin = function(extraAttacksAvailable, pDeathIndex) {
+    switch (this.State()) {
+    /*#ifdef D20140707     //PORT NOTE:  Not sure but it was greyed out in Visual Studio so I left it out
+      case ICS_Guarding:
+        if (extraAttacksAvailable > 0) {
+            return makeAttack(GetCurrTarget(true, false),
+                extraAttacksAvailable,
+                pDeathIndex);
+        };
+        break;
+    #endif*/
+      case individualCombatantState.ICS_Attacking:
+        return this.makeAttack(this.GetCurrTarget(true, false, true),
+            extraAttacksAvailable,
+            pDeathIndex);
+
+      default:
+        break;
+    }
+    return -1;
+}
+
+
+COMBATANT.prototype.CanMove = function(allowZeroMove) {
+    if (this.GetType() == MONSTER_TYPE) {
+        if (Globals.GetConfigMonsterNoMove())
+            return false;
+    }
+
+    if (this.IsDone(false, "Can combatant move"))
+        return false;
+
+    if (allowZeroMove) {
+        return true;
+    };
+    if (this.m_iMovement >= this.GetAdjMaxMovement(DEFAULT_SPELL_EFFECT_FLAGS, "Can combatant move")) {
+        return false;
+    };
+    return true;
+}
+
+COMBATANT.prototype.ClearPath = function() {
+    if (this.hPath >= 0)
+        pathMgr.FreePath(this.hPath);
+    this.hPath = -1;
+}
+
+COMBATANT.prototype.GetNumTargets = function () {
+    return this.combattargets.GetCount();
+}
+
+// RETURNS: FALSE if already there
+COMBATANT.prototype.FindPathTo = function(destLeft, destTop, destRight, destBottom, CheckOccupants, allowZeroMove, moveOriginPoint) {
+    if (!this.OnAuto(false)) {
+        if ((Math.abs(destLeft - x) > 1) || (Math.abs(destTop - y) > 1))
+            Globals.TRACE("Moving more than 1 square\n");
+    }
+
+    this.ClearPath();
+
+    if (!this.CanMove(allowZeroMove)) return false;
+
+    pathMgr.SetPathSize(this.width, this.height);
+    this.hPath = pathMgr.GetPath9(this.x, this.y, destLeft, destTop, destRight, destBottom, CheckOccupants, this, moveOriginPoint);
+    return (this.hPath >= 0);
+}
+
+COMBATANT.prototype.GetNextTarget = function() {
+    var dude = NO_DUDE;
+
+    if (this.combattargets.IsEmpty())
+        return NO_DUDE;
+
+    if (this.targetPos == null) {
+        this.targetPos = this.combattargets.GetHeadPosition();
+    }
+    else {
+        this.combattargets.GetNext(this.targetPos); this.targetPos = this.combattargets.NextPos(this.targetPos);    // PORT NOTE:  Manually advancing pointer becaues no pass-by-reference parameters
+        if (this.targetPos == null)
+            this.targetPos = this.combattargets.GetHeadPosition();
+    }
+
+    dude = this.combattargets.PeekAtPos(this.targetPos);
+    return dude;
 }

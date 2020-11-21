@@ -212,3 +212,16 @@ MONSTER_DATA_TYPE.prototype.GetMonsterImmunityFlags = function (monsterID) {
     else
         return 0;
 }
+
+
+MONSTER_DATA_TYPE.prototype.PlayMiss = function(monsterID) {
+    var pMonster;
+    pMonster = this.GetMonster(monsterID);
+    if (pMonster != null) pMonster.PlayMiss();
+}
+
+MONSTER_DATA_TYPE.prototype.PlayHit = function (monsterID) {
+    var pMonster;
+    pMonster = this.GetMonster(monsterID);
+    if (pMonster != null) pMonster.PlayHit();
+}

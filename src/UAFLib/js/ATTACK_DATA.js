@@ -10,3 +10,7 @@ ATTACK_DATA.prototype.Clear = function() {
 ATTACK_DATA.prototype.GetMonsterAttackDetailsCount = function () {
     return this.monsterAttackDetails.GetCount();
 }
+
+ATTACK_DATA.prototype.PeekMonsterAttackDetails = function (index) {
+    return this.monsterAttackDetails.GetAtPos(index);
+}

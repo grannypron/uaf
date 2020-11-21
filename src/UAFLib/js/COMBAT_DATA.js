@@ -251,7 +251,7 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
             if (!this.m_aCombatants[i].IsPartyMember()) {
                 var hPath;
                 if ((this.m_aCombatants[i].x < 0)
-                    || (hPath = pathMgr.GetPathIntIntIntInt(this.m_aCombatants[i].x, this.m_aCombatants[i].y,
+                    || (hPath = pathMgr.GetPath9(this.m_aCombatants[i].x, this.m_aCombatants[i].y,
                         this.m_iPartyStartX, this.m_iPartyStartY,
                         this.m_iPartyStartX, this.m_iPartyStartY,
                         false, null, false)) < 0) {
@@ -2715,4 +2715,17 @@ COMBAT_DATA.prototype.HandleCurrState = function(zeroMoveAttackOK) {
     if (curr != NO_DUDE)
         return this.m_aCombatants[curr].HandleCurrState(zeroMoveAttackOK);
     return 0;
+}
+
+COMBAT_DATA.prototype.HandleTimeDelayMsgBegin = function(pDeathIndex) {
+    var curr = this.GetCurrCombatant();
+    if (curr != NO_DUDE)
+        return this.m_aCombatants[curr].HandleTimeDelayMsgBegin(this.IsFreeAttacker() || this.IsGuardAttacker(), pDeathIndex);
+    return -1;
+}
+
+COMBAT_DATA.prototype.IsGuardAttacker = function() {
+    return (this.QComb.Top() != NO_DUDE)
+        && !this.QComb.ChangeStats()
+        && this.QComb.NumGuardAttacks();
 }

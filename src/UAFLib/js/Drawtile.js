@@ -1173,7 +1173,8 @@ Drawtile.prototype.HaveLineOfSight = function(x0, y0, x1, y1, reflects) {
             for (decy = ay - dx; ; x += sx, decy += ay) {
                 // process pixel
                 if (!(x == x0 && y == y0) && !(x == x1 && y == y1)) {
-                    if (!Drawtile.HaveVisibility(y, x, reflects))
+                    var result = Drawtile.HaveVisibility(y, x, reflects); reflects = result.reflects;
+                    if (!result.returnVal)
                         return false;
                 }
 
@@ -1186,8 +1187,9 @@ Drawtile.prototype.HaveLineOfSight = function(x0, y0, x1, y1, reflects) {
             for (decx = ax - dy; ; y += sy, decx += ax) {
                 // process pixel
                 if (!(x == x0 && y == y0) && !(x == x1 && y == y1)) {
-                    if (!Drawtile.HaveVisibility(y, x, reflects))
-                        return FALSE;
+                    var result = Drawtile.HaveVisibility(y, x, reflects); reflects = result.reflects
+                    if (!result.returnVal)
+                        return false;
                 }
 
                 // take Bresenham step
@@ -1257,4 +1259,23 @@ Drawtile.prototype.EnsureVisible = function(tx, ty, forceCenter)
         combatData.m_iStartTerrainY = 0;
     else if ((combatData.m_iStartTerrainY + Globals.TILES_VERT) > Drawtile.MAX_TERRAIN_HEIGHT)
         combatData.m_iStartTerrainY = Drawtile.MAX_TERRAIN_HEIGHT - Globals.TILES_VERT + 1;
+}
+
+
+Drawtile.prototype.HaveVisibility = function(y, x, reflects) {
+    if (reflects != null) {
+        reflects = false;
+    }
+    if (!this.ValidCoords(y, x)) return { returnVal: false, reflects: reflects };
+    var cell = this.terrain[y][x].cell;
+    if ((cell < 1) || (cell > this.CurrentTileCount)) return { returnVal: false, reflects: reflects };
+    if (this.CurrentTileData[cell].tile_invisible > 0) {
+        return { returnVal: true, reflects: reflects };
+    }
+    else {
+        if (reflects != null) {
+            reflects = true;
+        };
+        return { returnVal: false, reflects: reflects };
+    };
 }
