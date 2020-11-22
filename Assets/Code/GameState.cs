@@ -10,5 +10,6 @@ public static class GameState
     public static Jint.Engine engine;
     public static ConsoleResults engineOutput;
     public static Dictionary<int, String> monsters;
-
+    public static int monsterMoveIdx = 0;
+    public static bool allowInput = true;
 }

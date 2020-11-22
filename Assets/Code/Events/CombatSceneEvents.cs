@@ -30,6 +30,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
     private bool registeredWalls = false;
     private Dictionary<int, String> monsters = new Dictionary<int, string>();
     private string CombatMessageSuffix = "";
+    public const float MONSTER_MOVE_SECONDS = .5f;
 
     // Start is called before the first frame update
     void Start()
@@ -75,7 +76,6 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             IEngineLoader loader = new GitHubEngineLoader();
             */
 
-            /*
             XmlDocument configDoc = new XmlDocument();
             configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js</setupScript></config>");
             IEngineLoader loader = new LocalEngineLoader(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\");
@@ -83,15 +83,16 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             itemDataDoc.Load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\items.xml");
             XmlDocument specAbsDataDoc = new XmlDocument();
             specAbsDataDoc.Load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\SpecialAbilities.xml");
-            */
 
 
+            /*
             IEngineLoader loader = new ResourceEngineLoader("js", "setup");
             XmlDocument itemDataDoc = new XmlDocument();
             itemDataDoc.LoadXml(((TextAsset) Resources.Load("data/items")).text);
             XmlDocument specAbsDataDoc = new XmlDocument();
             specAbsDataDoc.LoadXml(((TextAsset)Resources.Load("data/SpecialAbilities")).text);
             XmlDocument configDoc = null;
+            */
 
             UnityUAFEventManager unityUAFEventManager = new UnityUAFEventManager(this);
 
@@ -124,7 +125,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         Tilemap terrainTilemap = GameObject.Find("TerrainTilemap").GetComponent<Tilemap>();
         Tile groundTile = (Tile)terrainTilemap.GetTile(new Vector3Int(-30, 11, 0));
 
-        object[] returnData = (object[])engineOutput.payload;
+        object[] returnData = (object[])getEngineData("packageMapAndCombatantStatus(combatData.m_aCombatants[0]);");
         object[] characterData = (object[])returnData[0];
         object[] mapData = (object[])returnData[1];
 
@@ -209,22 +210,30 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
 
     public void playerModelMove(int[] xy)
     {
+        jintEngine.Execute("startRound();");
         jintEngine.Execute("cWarrior.MoveCombatant(cWarrior.x + " + xy[0] + ", cWarrior.y + " + xy[1] + ", false);");
         jintEngine.Execute("cWarrior.EndTurn();");
-
+        GameState.allowInput = false;
+        paintMap();
         int numCombatants = Int32.Parse(getEngineData("combatData.NumCombatants()").ToString());
+        Debug.Assert(numCombatants == monsters.Count + 1); // +1 to count the player
+        StartCoroutine(moveMonster());
+    }
 
-        for (int idxMonster = 1; idxMonster < numCombatants; idxMonster++) {
-            try
-            {
-                jintEngine.Execute("moveMonster(" + idxMonster + ");");
-                object[] data = (object[])getEngineData("packageMapAndCombatantStatus(combatData.m_aCombatants[0]);");
-                object[] characterData = (object[])data[0];
-                paintMap();
-            } catch (Exception ex)
-            {
-                Debug.Log(ex.Message);
-            }
+    public IEnumerator moveMonster()
+    {
+        if (GameState.monsterMoveIdx >= monsters.Count)
+        {
+            GameState.monsterMoveIdx = 0;
+            GameState.allowInput = true;
+            yield break;
+        }
+        else {
+            GameState.monsterMoveIdx++;
+            jintEngine.Execute("moveMonster(" + GameState.monsterMoveIdx + ");");
+            paintMap();
+            yield return new WaitForSeconds(MONSTER_MOVE_SECONDS);
+            StartCoroutine(moveMonster());
         }
     }
 

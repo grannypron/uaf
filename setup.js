@@ -186,7 +186,9 @@ Globals.SPECAB_HACKS["IsCombatReady"] = function (pkt) {
     //Globals.debug("****SPECAB HACK: IsCombatReady:");
     if (setMonsterReady == -1) {
         SPECAB.p_hook_parameters[0] = "";
-    } else {
+    } else if (setMonsterReady == -2) {
+        SPECAB.p_hook_parameters[0] = "1"; // Used for setting all to Done - so that they get their moves & such reset - called when starting a round
+    }else {
         //Globals.debug("****SPECAB HACK: callCount:" + callCount);
         if (callCount == (setMonsterReady - 1)) {
             SPECAB.p_hook_parameters[0] = "";
@@ -205,18 +207,19 @@ Globals.SPECAB_HACKS["FreeAttack-CanFreeAttack"] = function (pkt) { SPECAB.p_hoo
 
 
 function startRound() {
-    setMonsterReady = -1;
     callCount = 0;
 
     combatData.m_aCombatants[1].m_target = -1;
     combatData.m_aCombatants[2].m_target = -1;
     combatData.m_aCombatants[3].m_target = -1;
     combatData.m_eSurprise = eventSurpriseType.PartySurprised;  // This will force the monsters to go first
+    setMonsterReady = -2;
     combatData.StartNewRound();
+    setMonsterReady = -1;
 }
 
 function moveMonster(idxMonster) {
-    setMonsterReady = idxMonster;
+    setMonsterReady = idxMonster;    // Skip 0 - that is the player
     combatData.UpdateCombat();
     combatData.QComb.NotStartOfTurn();
     combatData.UpdateCombat();              // Why do I have to call this again?
