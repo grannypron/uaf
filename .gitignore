@@ -7,6 +7,9 @@
 /[Oo]bj/
 /[Bb]uild/
 /[Bb]uilds/
+/MacOS[Bb]uild/
+/MacOS[Bb]uild.app/
+/Windows[Bb]uild/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 
