@@ -71,7 +71,7 @@ A_ASLENTRY_L.prototype.InsertASLENTRY = function(pEntry) {
             return true;
         }
     }
-    this.mItems.push(pEntry);
+    this.mItems.unshift(pEntry);
     return false;
 }
 
@@ -93,7 +93,7 @@ A_ASLENTRY_L.prototype.Insert = function (key, data, flags) {
     asl.m_value = data;
     asl.m_flags = flags;
     if (idx == null) {
-        this.mItems.push(asl);
+        this.mItems.unshift(asl);
         return true;
     }
     this.mItems[idx].m_key = key;

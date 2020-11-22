@@ -19,6 +19,7 @@ QueuedCombatantData.prototype.StartOfTurn = function() {
     pos = this.m_q.GetHeadPosition();
     if (pos == null) return false;
     return this.m_q.GetAtPos(pos).m_bStartOfTurn;
+    return this.m_q.GetAtPos(pos).m_bStartOfTurn;
 }
 
 QueuedCombatantData.prototype.NotStartOfTurn = function () {
@@ -40,7 +41,7 @@ QueuedCombatantData.prototype.Push = function(dude, stats, numFreeAttacks, numGu
     var pos;
     pos = this.m_q.GetHeadPosition();
     if (pos != null) {
-        var queuedCombatant = m_q.GetAtPos(pos);
+        var queuedCombatant = this.m_q.GetAtPos(pos);
         queuedCombatant.m_bRestartInterruptedTurn = !queuedCombatant.m_bStartOfTurn;
     };
     var temp = new QueuedCombatant(dude, stats, numFreeAttacks, numGuardAttacks);
@@ -75,4 +76,25 @@ QueuedCombatantData.prototype.ChangeStats = function() {
         return this.m_q.GetHead().AffectStats;
     else
         return false;
+}
+
+QueuedCombatantData.prototype.Remove = function(dude) {
+    var pos = this.m_q.GetHeadPosition();
+    while (pos != null) {
+        if (this.m_q.GetAtPos(pos).Dude == dude) {
+            this.m_q.RemoveAt(pos);
+            return;
+        }
+        pos = this.m_q.NextPos(pos);
+    }
+}
+
+QueuedCombatantData.prototype.DelayedX = function() {
+    if (this.m_q.GetCount() > 0)
+        return this.m_q.GetHead().m_delayedX;
+    return -1;
+}
+
+QueuedCombatantData.prototype.Pop = function () {
+    this.m_q.RemoveHead();
 }

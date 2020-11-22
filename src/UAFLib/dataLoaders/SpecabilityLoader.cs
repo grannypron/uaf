@@ -25,10 +25,13 @@ namespace UAFLib.dataLoaders
                 if (name != null && !name.Equals("idk"))
                 {
                     XmlNodeList asls = node.SelectNodes("asl//node()[local-name()='script']");
-                    object[] aslValues = new object[asls.Count];
+                    List<Object> aslValues = new List<Object>();
                     for (int idxAsl = 0; idxAsl < asls.Count; idxAsl++)
                     {
-                        aslValues[idxAsl] = new string[] { asls[idxAsl].Attributes["name"].Value, asls[idxAsl].InnerText };
+                        List<string> values = new List<string>();
+                        values.Add(asls[idxAsl].Attributes["name"].Value);
+                        values.Add(asls[idxAsl].InnerText);
+                        aslValues.Add(values);
                     }
                     returnData.Add(name, aslValues);
                 }

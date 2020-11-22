@@ -4,11 +4,9 @@ var setMonsterReady = -1;
 var callCount = 0;
 // This hack will make the m_isCombatReady flag set to each of them as set by the setMonsterReady variable
 Globals.SPECAB_HACKS["IsCombatReady"] = function (pkt) {
-    //Globals.debug("****SPECAB HACK: 1callCount:" + callCount);
     if (setMonsterReady == -1) {
         SPECAB.p_hook_parameters[0] = "";
     } else {
-        //Globals.debug("****SPECAB HACK: callCount:" + callCount);
         if (callCount == (setMonsterReady - 1)) {
             SPECAB.p_hook_parameters[0] = "";
             callCount = 0;
@@ -26,10 +24,7 @@ Globals.SPECAB_HACKS["FreeAttack-CanFreeAttack"] = function (pkt) { SPECAB.p_hoo
 
 // Move player away so that monsters move toward
 var cWarrior = combatData.m_aCombatants[0];
-cWarrior.MoveCombatant(cWarrior.x + 1, cWarrior.y);
-cWarrior.MoveCombatant(cWarrior.x + 1, cWarrior.y);
-cWarrior.MoveCombatant(cWarrior.x + 1, cWarrior.y);
-cWarrior.MoveCombatant(cWarrior.x + 1, cWarrior.y);
+cWarrior.MoveCombatant(cWarrior.x - 1, cWarrior.y - 1);
 combatData.m_aCombatants[0].EndTurn();
 
 

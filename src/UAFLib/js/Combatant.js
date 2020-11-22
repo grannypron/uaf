@@ -1067,9 +1067,7 @@ void RestoreToParty();
 BOOL FreeThink(void);
 void HandleCombatRoundMsgExpired();
 void HandleTimeDelayMsgExpired(int iDeathIndex);
-int  HandleTimeDelayMsgBegin(int extraAttacksAvailable, int * pDeathIndex);
 void PostCombatScreenUpdate();
-int  HandleCurrState(BOOL zeroMoveAttackOK);
 void displayCombatSprite();
 void blitDeadSprite();
 void blitPetrifiedSprite();
@@ -1158,12 +1156,10 @@ int FindPathToMapSouthEdge(void);
 int FindPathToMapWestEdge(void);
 BOOL FindPathToMapEdge();
 BOOL FindPathAlongLine(PATH_DIR dir, int dist);
-BOOL TakeNextStep(BOOL allowZeroMoveAttack);
 BOOL toggleReadyItem(int item);
 BOOL delCharacterItem(int index, int qty);
 int   GetTargetKeyDude(DWORD k) const { return (k & 0x0000FFFF); }
 int   GetTargetKeyDist(DWORD k) const { return ((k >> 16) & 0x0000FFFF); }
-void OnEndTurn();
 CString FormatSpecAbMsg(DWORD sa_state);
 // These ModifyXXX functions dynamically alter character
 // values based on spell effects or special abilities.
@@ -2078,6 +2074,7 @@ COMBATANT.prototype.IsDone = function(freeAttack, comment) {
         default:
             break;
     };
+
     if (this.m_isCombatReady < 0) {
         var actor;
         var hookParameters = new HOOK_PARAMETERS();
@@ -2934,71 +2931,60 @@ COMBATANT.prototype.HasDeathImmunity = function () {
 COMBATANT.prototype.EndTurn = function(newState) {
     if (!newState) { newState = individualCombatantState.ICS_None; }
 
-    /**TODO
-     *   State(newState);
-  QueuedCombatantData &qcomb = GetQueuedCombatants();
+    this.State(newState);
+    var qcomb = Globals.GetQueuedCombatants();
 
-  if (qcomb.Top() == self)
-  {
-    // PRS 20110219  if (qcomb.ChangeStats())
-    if (qcomb.ChangeStats() || qcomb.NumFreeAttacks() || qcomb.NumGuardAttacks())
-    {
-      TRACE("EndTurn(%s), %i done\n", CombatantStateText[State()], self);
-      turnIsDone = TRUE;
+    if (qcomb.Top() == this.self) {
+        if (qcomb.ChangeStats() || qcomb.NumFreeAttacks() || qcomb.NumGuardAttacks()) {
+            Globals.TRACE("EndTurn(" + this.CombatantStateText[this.State()] + "), " + this.self + " done\n");
+            turnIsDone = true;
+        }
+        else
+            Globals.TRACE("EndTurn(" + this.CombatantStateText[this.State()] + "), " + this.self + " (no change to done)\n");
+
+        // input was disabled if auto combatant
+        Globals.EnableUserInput(true);
+        //  PRS  20110219                         //*
+        if (qcomb.NumFreeAttacks() || qcomb.NumGuardAttacks())             //*
+        {                                         //*
+            combatData.m_forceRoundDelay = true;    //*
+        };                                        //*
+        qcomb.Pop();
+        if (qcomb.Top() != NO_DUDE) {
+            if (qcomb.DelayedX() >= 0) {
+                var delayedDude;
+                var pDelayedCombatant;
+                if (Drawtile.terrain[qcomb.DelayedY()][qcomb.DelayedX()].tileIndex != NO_DUDE) {
+                    /* Really */ Globals.NotImplemented(0x34c1, false);
+                }
+                delayedDude = qcomb.Top();
+                pDelayedCombatant = combatData.GetCombatant(delayedDude);
+                Drawtile.placeCombatant(pDelayedCombatant.x,
+                    pDelayedCombatant.y,
+                    NO_DUDE,
+                    pDelayedCombatant.width,
+                    pDelayedCombatant.height);
+                pDelayedCombatant.x = qcomb.DelayedX();
+                pDelayedCombatant.y = qcomb.DelayedY();
+                qcomb.SetXY(-1, -1);
+                Drawtile.placeCombatant(pDelayedCombatant.x,
+                    pDelayedCombatant.y,
+                    delayedDude,
+                    pDelayedCombatant.width,
+                    pDelayedCombatant.height);
+            }
+        }
     }
-    else
-      TRACE("EndTurn(%s), %i (no change to done)\n", CombatantStateText[State()], self);
-
-    // input was disabled if auto combatant
-    EnableUserInput(TRUE);
-    //  PRS  20110219                         //*
-    if (qcomb.NumFreeAttacks() || qcomb.NumGuardAttacks())             //*
-    {                                         //*
-      //combatData.m_iPrevRndCombatant = self;//*
-      combatData.m_forceRoundDelay = TRUE;    //*
-    };                                        //*
-    qcomb.Pop();
-    if (qcomb.Top() != NO_DUDE)
-    {
-      if (qcomb.DelayedX() >= 0)
-      {
-        int delayedDude;
-        COMBATANT *pDelayedCombatant;
-        if (terrain[qcomb.DelayedY()][qcomb.DelayedX()].tileIndex != NO_DUDE)
-        {
-          / * Really * / NotImplemented(0x34c1, false);
-    };
-    delayedDude = qcomb.Top();
-    pDelayedCombatant = combatData.GetCombatant(delayedDude);
-    placeCombatant(pDelayedCombatant -> x,
-        pDelayedCombatant -> y,
-        NO_DUDE,
-        pDelayedCombatant -> width,
-        pDelayedCombatant -> height);
-    pDelayedCombatant -> x = qcomb.DelayedX();
-    pDelayedCombatant -> y = qcomb.DelayedY();
-    qcomb.SetXY(-1, -1);
-    placeCombatant(pDelayedCombatant -> x,
-        pDelayedCombatant -> y,
-        delayedDude,
-        pDelayedCombatant -> width,
-        pDelayedCombatant -> height);
-          };
-        };
-      }
-      else
-    {
-        qcomb.Remove(self);
+    else {
+        qcomb.Remove(this.self);
         if (qcomb.DelayedX() >= 0) {
-          /* Really * /NotImplemented(0x43c6, false);
+        /* Really */Globals.NotImplemented(0x43c6, false);
         };
-        TRACE("Forced EndTurn(%s), %i done\n", CombatantStateText[State()], self);
-        turnIsDone = TRUE;
+        Globals.TRACE("Forced EndTurn(" + this.CombatantStateText[this.State()] + "), " + this.self + " done\n");
+        turnIsDone = true;
     }
-    forceAttackPose = FALSE;
-    OnEndTurn();
-      //combatMsgs.msgs.RemoveAll(); // not set up for scrolling msgs yet
-    */
+    forceAttackPose = false;
+    this.OnEndTurn();
 }
 
 COMBATANT.prototype.RemoveCurrTarget = function () {
@@ -3945,7 +3931,6 @@ COMBATANT.prototype.Think = function () {
 COMBATANT.prototype.HandleCurrState = function(zeroMoveAttackOK) {
     var dude;
     var updateScreen = 0;
-
     switch (this.State()) {
         case individualCombatantState.ICS_None:
             break;
@@ -4164,4 +4149,35 @@ COMBATANT.prototype.GetNextTarget = function() {
 
     dude = this.combattargets.PeekAtPos(this.targetPos);
     return dude;
+}
+
+COMBATANT.prototype.TakeNextStep = function(allowZeroMoveAttack) {
+    var isUpdate = false;
+    var pathPtr = pathMgr.GetPath(this.hPath);
+
+    if (pathPtr != null) {
+        var stepPtr = pathPtr.GetNextStep();
+
+        if (stepPtr.x >= 0) {
+            Globals.TRACE(this.self + " taking next step of path " + this.hPath + " to " + stepPtr.x + "," + stepPtr.y + "\n");
+            isUpdate = this.MoveCombatant(stepPtr.x, stepPtr.y, allowZeroMoveAttack);
+        }
+        else {
+            Globals.WriteDebugString("Bogus step data for path " + this.hPath + " in TakeNextStep()\n");
+            this.ClearPath();
+        }
+
+        if ((pathPtr.GetStepCount() <= 0) || (!isUpdate))
+            this.ClearPath();
+    }
+    else {
+        Globals.WriteDebugString("Bogus hPath " + this.hPath + " in TakeNextStep()\n");
+        this.ClearPath();
+    }
+
+    return isUpdate;
+}
+
+COMBATANT.prototype.OnEndTurn = function() {
+    Globals.TRACE("OnEndTurn for " + this.self + "\n");
 }

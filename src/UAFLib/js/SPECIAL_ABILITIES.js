@@ -114,6 +114,7 @@ SPECIAL_ABILITIES.prototype.RunScripts = function (scriptName, fnc, pkt, comment
         saAbility[numScript] = pAbility;
         scripts[numScript++] = pSpecString;
     };
+
     if (numScript != 0) {
         var callbackResult;
         for (i = 0; i < numScript; i++) {
@@ -143,11 +144,11 @@ SPECIAL_ABILITIES.prototype.RunScripts = function (scriptName, fnc, pkt, comment
             };
             */
             //**TODO: This is a hack where I can control the SA scripts for now:**/
-            if (Globals.SPECAB_HACKS != null && Globals.SPECAB_HACKS[scriptName] != null) { Globals.SPECAB_HACKS[scriptName](pkt); }
+            if (Globals.SPECAB_HACKS != null && Globals.SPECAB_HACKS[scriptName] != null) { callbackResult = Globals.SPECAB_HACKS[scriptName](pkt); }
             if (callbackResult == CBRESULT.CBR_STOP) {
                 return SPECAB.p_hook_parameters[0];
-            };
-        };
+            }
+        }
         var callbackResultObj = fnc(CBFUNC.CBF_ENDOFSCRIPTS, SPECAB.p_hook_parameters[0], pkt);
         callbackResult = callbackResultObj.CBRESULT;                                // PORT NOTE:  Handling output parameters
         SPECAB.p_hook_parameters[0] = callbackResultObj.scriptResult;

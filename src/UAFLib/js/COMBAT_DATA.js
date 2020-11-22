@@ -2208,7 +2208,7 @@ COMBAT_DATA.prototype.UpdateCombat = function () {
         }
     } // if dude is done with his turn
     else {
-    };
+    }
 
     this.DetermineIfCombatOver();  // PRS 24 Oct 2009
 
@@ -2228,12 +2228,10 @@ COMBAT_DATA.prototype.UpdateCombat = function () {
             // there is a delay between combatant updates, if prev combatant is not
             // current combatant     
             if (dude != NO_DUDE) {
-
-                // PRS July 2009 isUpdate |= m_aCombatants[dude].UpdateCombatant();
                 this.m_aCombatants[dude].UpdateCombatant();
-            };
-        };
-    };
+            }
+        }
+    }
 
     isUpdate |= this.m_bNeedUpdate;
     this.m_bNeedUpdate = false;
@@ -2292,10 +2290,10 @@ COMBAT_DATA.prototype.getNextCombatant = function() {
                 if (!this.m_aCombatants[i].IsDone(false, "Determine next combatantant to take turn")) {
                     dude = i;
                     found = true;
-                };
-            };
+                }
+            }
             i++;
-        };
+        }
 
         if (!found)
             this.m_iCurrInitiative++;
@@ -2385,7 +2383,7 @@ COMBAT_DATA.prototype.StartNewRound = function() {
         this.m_aCombatants[i].m_isCombatReady = -1; // Force a search of SPECIAL_ABILITIES in IsDone()
         if ((this.m_aCombatants[i].charCanTakeAction()) && (this.m_aCombatants[i].IsDone(false, "Starting a new combat round"))) {
             if (this.m_aCombatants[i].State() != individualCombatantState.ICS_Casting) {
-                this.m_aCombatants[i].turnIsDone = fa;se;
+                this.m_aCombatants[i].turnIsDone = false;
                 // stay guarding until told otherwise
                 if (this.m_aCombatants[i].OnAuto(false)) {
                     if (this.m_aCombatants[i].State() != individualCombatantState.ICS_Guarding)
@@ -2420,7 +2418,7 @@ COMBAT_DATA.prototype.StartNewRound = function() {
                 var leftoverAttacks = this.m_aCombatants[i].availAttacks;
                 this.m_aCombatants[i].determineNbrAttacks();
                 this.m_aCombatants[i].determineAvailAttacks(this.m_aCombatants[i].GetNbrAttacks());
-                var maxAttacks = Math.ceil(m_aCombatants[i].availAttacks);
+                var maxAttacks = Math.ceil(this.m_aCombatants[i].availAttacks);
                 this.m_aCombatants[i].availAttacks += leftoverAttacks;
                 this.m_aCombatants[i].availAttacks = Math.min(this.m_aCombatants[i].availAttacks, maxAttacks);
                 this.m_aCombatants[i].m_iMovement = 0;

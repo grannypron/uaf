@@ -243,6 +243,7 @@
     <Content Include="Tests\TestCombatMovementAttack.js" />
     <Content Include="Tests\TestGPDL.js" />
     <Content Include="Tests\TestLoadItems.js" />
+    <Content Include="Tests\TestMonsterAttack.js" />
     <Content Include="Tests\TestParseDice.js" />
     <Content Include="Tests\TestRollDice.js" />
     <Content Include="Tests\TestLoadSAs.js" />

@@ -48,6 +48,17 @@ ACTIVE_SPELL_LIST.prototype.LingerSpellAffectsTarget = function (targ, mapx, map
     return false;
 }
 
+ACTIVE_SPELL_LIST.prototype.LingerSpellBlocksCombatant = function(mapx, mapy, pCombatant) {
+    // PORT NOTE:  Rewrote to use a simple array
+    for (var idx = 0; idx < this.m_spellList.length; idx++) {
+        if (this.m_spellList[pos].LingerSpellBlocksCombatant(mapx, mapy, pCombatant))
+            return true;
+    }
+    return false;
+}
+
+
+
 /**TODO**
 
 class ACTIVE_SPELL_LIST {
@@ -77,7 +88,6 @@ void PreSerialize(BOOL IsStoring) { }
 void PostSerialize(BOOL IsStoring) { }
 void ProcessTimeSensitiveData(int roundInc);
 void DeactivateActiveSpell(int index, const SPELL_DATA * pSpell);
-BOOL LingerSpellBlocksCombatant(int mapx, int mapy, COMBATANT * pCombatant) const ;
 void RemoveLingerSpells();
 CString RunSEScripts(int x, int y, const CString& scriptName, LPCSTR comment);
 #ifdef SpellInitiationScript
@@ -85,3 +95,5 @@ void ExitCombat(void);  // Convert Actor references from combat to non-combat
 #endif
 ACTIVE_SPELL_LIST(ACTIVE_SPELL_LIST & src); // not enabled
 };*/
+
+

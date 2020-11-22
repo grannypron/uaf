@@ -109,6 +109,23 @@ A_SPECABILITY_DEF_L.prototype.InsertAbility = function (specAbilityName) {
 }
 
 
+A_SPECABILITY_DEF_L.prototype.LoadFromLoader = function (data) {
+    var enumerator = data.GetEnumerator();
+    var idx = 1;
+    while (enumerator.MoveNext()) {
+        try {
+            var key = enumerator.Current.Key;
+            var value = data[key];
+            for (var idxAsl = 0; idxAsl < value.Count; idxAsl++) {
+                    specialAbilitiesData.InsertString(key, value[idxAsl][0], value[idxAsl][1], 2);
+            }
+        } catch (ex) {
+            Globals.debug("Error loading specability #" + idx);
+        }
+        idx++;
+    }
+}
+
 
 
 var specAbilityDefEnvironment = {};

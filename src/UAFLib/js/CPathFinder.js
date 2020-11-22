@@ -19,10 +19,6 @@
 	void Clear(void);
 
 	bool InUse();          // true is used, false is avail
-
-	CPoint GetLastStep();
-	CPoint GetNextStep();
-	int    GetStepCount();
 	*/
 }
 
@@ -265,7 +261,7 @@ CPathFinder.prototype.GeneratePath10 = function(sx, sy, sw, sh, destLeft, destTo
                                     var x = 0, y = 0;
                                     x = Math.floor(ID / this.m_iRows);
                                     y = ID % this.m_iRows;
-                                    this.PATH.push(new CPoint(x, y));  // PORT NOTE:  was this.PATH.AddHead(CPoint(x, y));
+                                    this.PATH.unshift(new CPoint(x, y));  // PORT NOTE:  was this.PATH.AddHead(CPoint(x, y));
                                 }
                             }
                             found = true;
@@ -322,4 +318,31 @@ CPathFinder.prototype.CostSort = function(nodeQueue, queueIndex, i) {
         if (iCost == jCost) break;
     };
     return;
+}
+
+
+CPathFinder.prototype.GetStepCount = function() {
+    return this.PATH.length;
+}
+
+
+CPathFinder.prototype.GetLastStep = function() {
+    if (this.PATH.length > 0)
+        return this.PATH[this.PATH.length - 1];
+    else
+        return new CPoint(-1, -1);
+}
+
+CPathFinder.prototype.GetNextStep = function() {
+    var tmp;
+
+    if (this.PATH.length > 0) {
+        tmp = this.PATH[0];
+        this.PATH.pop();
+    }
+    else {
+        tmp.x = -1;
+        tmp.y = -1;
+    }
+    return tmp;
 }

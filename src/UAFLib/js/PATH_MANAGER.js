@@ -188,7 +188,6 @@ PATH_MANAGER & operator=(const PATH_MANAGER &src); // no implementation
 PATH_MANAGER(int num = MAXPATHS);// max number of paths
 ~PATH_MANAGER();
 
-int  GetStepsRemaining(int which);
 void SetPathSize(int w, int h) { pathWidth = w; pathHeight = h; }
 
 void Clear();
@@ -206,4 +205,9 @@ PATH_MANAGER.prototype.GetPathWidth = function() {
 
 PATH_MANAGER.prototype.GetPathHeight = function () {
     return this.pathHeight;
+}
+
+PATH_MANAGER.prototype.GetStepsRemaining = function(which) {
+    if (which < 0 || which >= this.MaxPaths) return 0;
+    return this.Path[which].GetStepCount();
 }

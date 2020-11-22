@@ -28,7 +28,7 @@ var enumerator = data.GetEnumerator();
 while (enumerator.MoveNext()) {
     var key = enumerator.Current.Key;
     var value = enumerator.Current.Value;
-    for (var idxAsl = 0; idxAsl < value.length; idxAsl++) {
+    for (var idxAsl = 0; idxAsl < value.Count; idxAsl++) {
 //        try {
             specialAbilitiesData.InsertString(key, value[idxAsl][0], value[idxAsl][1], 2);
 //        } catch (ex) {
