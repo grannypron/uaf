@@ -1,15 +1,16 @@
 
-Globals.SPECAB_HACKS = {};
-Globals.SPECAB_HACKS["IsCombatReady"] = function (pkt) { Globals.debug("SPECAB_HACKS: IsCombatReady"); SPECAB.p_hook_parameters[0] = "1"; }  // This is to return 1 when COMBATANT.IsDone is called
-
-/** Load item database */
-itemData.LoadFromLoader(consoleResults.payload);
+//Globals.SPECAB_HACKS = {};
+//Globals.SPECAB_HACKS["IsCombatReady"] = function (pkt) { Globals.debug("SPECAB_HACKS: IsCombatReady"); SPECAB.p_hook_parameters[0] = "1"; }  // This is to return 1 when COMBATANT.IsDone is called
 
 UnityEngine = importNamespace("UnityEngine");  // For Jint to access C# library
+UAFLib = importNamespace("UAFLib");
 // Override the logging function for now because System.Console is not available in WebGL - should change to use Unity.Debug
 Globals.debug = function (msg) {
     UnityEngine.Debug.Log(msg);
 }
+/** Load item database */
+itemData.LoadFromLoader(consoleResults.payload[0]);
+specialAbilitiesData.LoadFromLoader(consoleResults.payload[1]);
 
 UIEventManager.UpdateCombatMessage = function () {
     unityUAFEventManager.UpdateCombatMessage(DispText.CombatMsg);
@@ -85,6 +86,10 @@ monsterData.MonsterData[0].Size = creatureSizeType.Medium;
 monsterData.MonsterData[0].Morale = 25;
 monsterData.MonsterData[0].XP_Value = 7;
 monsterData.MonsterData[0].m_type = MONSTER_TYPE;
+monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0] = new ATTACK_DETAILS()
+monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].sides = 4;
+monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].nbr = 1;
+monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].bonus = 0;
 
 //Class = Fighter
 monsterData.MonsterData[0].Race = RACE_DATA_TYPE.Monster;
@@ -172,6 +177,56 @@ function makeInventoryList(c) {
     return str;
 }
 
+
+Globals.SPECAB_HACKS = {};
+var setMonsterReady = -1;
+var callCount = 0;
+// This hack will make the m_isCombatReady flag set to each of them as set by the setMonsterReady variable
+Globals.SPECAB_HACKS["IsCombatReady"] = function (pkt) {
+    //Globals.debug("****SPECAB HACK: IsCombatReady:");
+    if (setMonsterReady == -1) {
+        SPECAB.p_hook_parameters[0] = "";
+    } else {
+        //Globals.debug("****SPECAB HACK: callCount:" + callCount);
+        if (callCount == (setMonsterReady - 1)) {
+            SPECAB.p_hook_parameters[0] = "";
+            callCount = 0;
+        } else {
+            SPECAB.p_hook_parameters[0] = "1";
+            callCount++;
+        }
+    }
+    return CBRESULT.CBR_STOP;
+}
+
+
+
+Globals.SPECAB_HACKS["FreeAttack-CanFreeAttack"] = function (pkt) { SPECAB.p_hook_parameters[0] = "N"; }
+
+
+function startRound() {
+    setMonsterReady = -1;
+    callCount = 0;
+
+    combatData.m_aCombatants[1].m_target = -1;
+    combatData.m_aCombatants[2].m_target = -1;
+    combatData.m_aCombatants[3].m_target = -1;
+    combatData.m_eSurprise = eventSurpriseType.PartySurprised;  // This will force the monsters to go first
+    combatData.StartNewRound();
+}
+
+function moveMonster(idxMonster) {
+    setMonsterReady = idxMonster;
+    combatData.UpdateCombat();
+    combatData.QComb.NotStartOfTurn();
+    combatData.UpdateCombat();              // Why do I have to call this again?
+    combatData.HandleCurrState(true);
+    var m_iDeathIndex = -1;
+    combatData.HandleTimeDelayMsgBegin(m_iDeathIndex); // return from a timer pause that let the user see the roll/message
+    combatData.m_aCombatants[combatData.GetCurrCombatant()].EndTurn();
+}
+
+
 var Warrior = new CHARACTER();
 Warrior.name = "Hardest_Ken"
 Warrior.classID = "Fighter";
@@ -196,10 +251,7 @@ cWarrior.m_pCharacter = Warrior;
 cWarrior.self = 0;
 
 
-//cWarrior.StartAttack(1);
-
 loadLibraryStub();
-//SPECAB.loadData(specialAbilitiesData, "C:\\Users\\Shadow\\Downloads\\Full_Release_191031\\TutorialDesign.dsn\\Data\\specialAbilities.dat");
 Globals.logDebuggingInfo = true;
 
 var combatEventData = new COMBAT_EVENT_DATA();
@@ -219,7 +271,7 @@ combatEventData.monsters.Add(monsterEvent);
 //combatEventData.randomMonster = true;   // This seems to cause an NPE at Line 306 of COMBAT_DATA - "pSaveCharPointer is null"
 combatEventData.UseQty = MONSTER_EVENT.meUsePercent;
 
-var combatData = new COMBAT_DATA();    // This is pretty much the combat "map" and all data on it
+//var combatData = new COMBAT_DATA();    // This is pretty much the combat "map" and all data on it
 party.Posx = 10;
 party.Posy = 10;
 globalData.SetMaxPCs(2);
@@ -232,7 +284,6 @@ combatEventData.distance = eventDistType.UpClose;
 combatEventData.m_UseOutdoorMap = false; // only outdoor stub is in place right now
 combatEventData.direction = eventDirType.North;
 combatData.InitCombatData(combatEventData);
-
 
 cWarrior = combatData.m_aCombatants[0];
 

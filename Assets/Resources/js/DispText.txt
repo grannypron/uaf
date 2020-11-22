@@ -1,0 +1,3 @@
+﻿function DispText() {
+    this.CombatMsg = "";
+}

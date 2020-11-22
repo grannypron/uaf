@@ -75,17 +75,29 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             IEngineLoader loader = new GitHubEngineLoader();
             */
 
+            /*
             XmlDocument configDoc = new XmlDocument();
             configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js</setupScript></config>");
             IEngineLoader loader = new LocalEngineLoader(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\");
             XmlDocument itemDataDoc = new XmlDocument();
             itemDataDoc.Load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\items.xml");
+            XmlDocument specAbsDataDoc = new XmlDocument();
+            specAbsDataDoc.Load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\SpecialAbilities.xml");
+            */
+
+
+            IEngineLoader loader = new ResourceEngineLoader("js", "setup");
+            XmlDocument itemDataDoc = new XmlDocument();
+            itemDataDoc.LoadXml(((TextAsset) Resources.Load("data/items")).text);
+            XmlDocument specAbsDataDoc = new XmlDocument();
+            specAbsDataDoc.LoadXml(((TextAsset)Resources.Load("data/SpecialAbilities")).text);
+            XmlDocument configDoc = null;
 
             UnityUAFEventManager unityUAFEventManager = new UnityUAFEventManager(this);
 
             this.engineOutput = new ConsoleResults();
 
-            engineOutput.payload = new UAFLib.dataLoaders.ItemLoader().load(itemDataDoc);
+            engineOutput.payload = new System.Object[] { new UAFLib.dataLoaders.ItemLoader().load(itemDataDoc), new UAFLib.dataLoaders.SpecabilityLoader().load(specAbsDataDoc) };
             jintEngine.SetValue("consoleResults", engineOutput).SetValue("unityUAFEventManager", unityUAFEventManager);
 
             StartCoroutine(loader.loadEngine(configDoc, jintEngine, unityUAFEventManager, delegate ()
@@ -197,12 +209,30 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
 
     public void playerModelMove(int[] xy)
     {
-        jintEngine.Execute("cWarrior.MoveCombatant(cWarrior.x + " + xy[0] + ", cWarrior.y + " + xy[1] + ", false); consoleResults.payload = packageMapAndCombatantStatus(combatData.m_aCombatants[0]);");
-        object[] data = (object[])this.engineOutput.payload;
-        object[] characterData = (object[])data[0];
-        paintMap();
+        jintEngine.Execute("cWarrior.MoveCombatant(cWarrior.x + " + xy[0] + ", cWarrior.y + " + xy[1] + ", false);");
+        jintEngine.Execute("cWarrior.EndTurn();");
+
+        int numCombatants = Int32.Parse(getEngineData("combatData.NumCombatants()").ToString());
+
+        for (int idxMonster = 1; idxMonster < numCombatants; idxMonster++) {
+            try
+            {
+                jintEngine.Execute("moveMonster(" + idxMonster + ");");
+                object[] data = (object[])getEngineData("packageMapAndCombatantStatus(combatData.m_aCombatants[0]);");
+                object[] characterData = (object[])data[0];
+                paintMap();
+            } catch (Exception ex)
+            {
+                Debug.Log(ex.Message);
+            }
+        }
     }
 
+    public object getEngineData(string expression)
+    {
+        jintEngine.Execute("consoleResults.payload = " + expression + ";");
+        return (object)this.engineOutput.payload;
+    }
 
     string RandoMonsterID()
     {

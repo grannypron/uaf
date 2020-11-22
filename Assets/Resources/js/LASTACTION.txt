@@ -1,0 +1,4 @@
+var LASTACTION = {};
+LASTACTION.LA_None = 0;
+LASTACTION.LA_Attack = 1;
+LASTACTION.LA_Defend = 2;
