@@ -48,6 +48,6 @@ for (var idxMonster = 1; idxMonster < 4; idxMonster++) {
     combatData.UpdateCombat();              // Why do I have to call this again?
     combatData.HandleCurrState(true);   
     var m_iDeathIndex = -1;
-    combatData.HandleTimeDelayMsgBegin(m_iDeathIndex); // return from a timer pause that let the user see the roll/message
+    combatData.HandleTimeDelayMsgBegin(0, m_iDeathIndex); // return from a timer pause that let the user see the roll/message
     combatData.m_aCombatants[combatData.GetCurrCombatant()].EndTurn();
 }

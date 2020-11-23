@@ -2727,3 +2727,8 @@ COMBAT_DATA.prototype.IsGuardAttacker = function() {
         && !this.QComb.ChangeStats()
         && this.QComb.NumGuardAttacks();
 }
+
+
+COMBAT_DATA.prototype.DetermineVictoryExpPoints = function () {
+    /**TODO** Stub for now **/
+}

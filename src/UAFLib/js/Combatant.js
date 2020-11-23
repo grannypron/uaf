@@ -618,7 +618,6 @@ COMBATANT.prototype.MoveCombatant = function(newX, newY, allowZeroMoveAttack) {
         if (Globals.GetConfigMonsterNoMove())
             return false;
     }
-
     moveData.combatantIndex = this.self;
     moveData.oldX = this.x;
     moveData.oldY = this.y;
@@ -4076,7 +4075,7 @@ COMBATANT.prototype.HandleTimeDelayMsgBegin = function(extraAttacksAvailable, pD
         };
         break;
     #endif*/
-      case individualCombatantState.ICS_Attacking:
+    case individualCombatantState.ICS_Attacking:
         return this.makeAttack(this.GetCurrTarget(true, false, true),
             extraAttacksAvailable,
             pDeathIndex);
