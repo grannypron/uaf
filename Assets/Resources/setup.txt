@@ -86,6 +86,10 @@ monsterData.MonsterData[0].Size = creatureSizeType.Medium;
 monsterData.MonsterData[0].Morale = 25;
 monsterData.MonsterData[0].XP_Value = 7;
 monsterData.MonsterData[0].m_type = MONSTER_TYPE;
+monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0] = new ATTACK_DETAILS()
+monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].sides = 4;
+monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].nbr = 1;
+monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].bonus = 0;
 
 //Class = Fighter
 monsterData.MonsterData[0].Race = RACE_DATA_TYPE.Monster;
@@ -179,10 +183,12 @@ var setMonsterReady = -1;
 var callCount = 0;
 // This hack will make the m_isCombatReady flag set to each of them as set by the setMonsterReady variable
 Globals.SPECAB_HACKS["IsCombatReady"] = function (pkt) {
-    //Globals.debug("****SPECAB HACK: IsCombatReady:");
+    //Globals.debug("****SPECAB HACK: IsCombatReady:" + setMonsterReady);
     if (setMonsterReady == -1) {
         SPECAB.p_hook_parameters[0] = "";
-    } else {
+    } else if (setMonsterReady == -2) {
+        SPECAB.p_hook_parameters[0] = "1"; // Used for setting all to Done - so that they get their moves & such reset - called when starting a round
+    }else {
         //Globals.debug("****SPECAB HACK: callCount:" + callCount);
         if (callCount == (setMonsterReady - 1)) {
             SPECAB.p_hook_parameters[0] = "";
@@ -201,33 +207,35 @@ Globals.SPECAB_HACKS["FreeAttack-CanFreeAttack"] = function (pkt) { SPECAB.p_hoo
 
 
 function startRound() {
-    setMonsterReady = -1;
     callCount = 0;
+    DispText.CombatMsg = "";
 
-    combatData.m_aCombatants[1].m_target = -1;
-    combatData.m_aCombatants[2].m_target = -1;
-    combatData.m_aCombatants[3].m_target = -1;
+    for (idx = 1; idx < combatData.NumCombatants(); idx++) {  // start at one and <= to skip the player
+        combatData.m_aCombatants[idx].m_target = -1;
+    }
     combatData.m_eSurprise = eventSurpriseType.PartySurprised;  // This will force the monsters to go first
+    setMonsterReady = -2;
     combatData.StartNewRound();
+    setMonsterReady = -1;
 }
 
 function moveMonster(idxMonster) {
-    setMonsterReady = idxMonster;
+    setMonsterReady = idxMonster;    // Skip 0 - that is the player
     combatData.UpdateCombat();
     combatData.QComb.NotStartOfTurn();
     combatData.UpdateCombat();              // Why do I have to call this again?
     combatData.HandleCurrState(true);
     var m_iDeathIndex = -1;
-    combatData.HandleTimeDelayMsgBegin(m_iDeathIndex); // return from a timer pause that let the user see the roll/message
+    combatData.HandleTimeDelayMsgBegin(0, m_iDeathIndex); // return from a timer pause that let the user see the roll/message
     combatData.m_aCombatants[combatData.GetCurrCombatant()].EndTurn();
 }
 
 
 var Warrior = new CHARACTER();
-Warrior.name = "Hardest_Ken"
+Warrior.name = "Hardest_Ken";
 Warrior.classID = "Fighter";
 Warrior.SetStatus(charStatusType.Okay);
-Warrior.hitPoints = 10;
+Warrior.hitPoints = 20;
 Warrior.maxHitPoints = 20;
 Warrior.maxMovement = 20;
 Warrior.age = 20;
@@ -255,9 +263,9 @@ combatEventData.monsters = new MONSTER_EVENT_DATA();
 var monsterEvent = new MONSTER_EVENT();
 monsterEvent.UseQty = MONSTER_EVENT.meUseQty;
 monsterEvent.UseQty = MONSTER_EVENT.meUsePercent;
-monsterEvent.qtyDiceSides = 6;
+monsterEvent.qtyDiceSides = 4;
 monsterEvent.qtyDiceQty = 1;
-monsterEvent.qtyBonus = 2;
+monsterEvent.qtyBonus = 0;
 monsterEvent.qty = 10;
 monsterEvent.qty = 3;
 monsterEvent.monsterID = "Kobold";

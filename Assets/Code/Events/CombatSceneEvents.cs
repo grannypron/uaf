@@ -37,6 +37,10 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
     {
         PlayerScaleFactor = (int)Math.Floor(GameObject.Find("Player").GetComponent<Transform>().localScale.x);
         Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+        DontDestroyOnLoad(GameObject.Find("pnlDead"));
+        DontDestroyOnLoad(GameObject.Find("pnlWin"));
+        togglePanel("pnlDead", false);
+        togglePanel("pnlWin", false);
         DontDestroyOnLoad(this.gameObject);
         Text txtCombatantInfo = GameObject.Find("txtCombatantInfo").GetComponent<Text>();
         txtCombatantInfo.text = "";
@@ -76,6 +80,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             IEngineLoader loader = new GitHubEngineLoader();
             */
 
+            /*
             XmlDocument configDoc = new XmlDocument();
             configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js</setupScript></config>");
             IEngineLoader loader = new LocalEngineLoader(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\");
@@ -83,25 +88,24 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             itemDataDoc.Load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\items.xml");
             XmlDocument specAbsDataDoc = new XmlDocument();
             specAbsDataDoc.Load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\SpecialAbilities.xml");
+            */
 
 
-            /*
             IEngineLoader loader = new ResourceEngineLoader("js", "setup");
             XmlDocument itemDataDoc = new XmlDocument();
             itemDataDoc.LoadXml(((TextAsset) Resources.Load("data/items")).text);
             XmlDocument specAbsDataDoc = new XmlDocument();
             specAbsDataDoc.LoadXml(((TextAsset)Resources.Load("data/SpecialAbilities")).text);
             XmlDocument configDoc = null;
-            */
 
             UnityUAFEventManager unityUAFEventManager = new UnityUAFEventManager(this);
 
             this.engineOutput = new ConsoleResults();
 
             engineOutput.payload = new System.Object[] { new UAFLib.dataLoaders.ItemLoader().load(itemDataDoc), new UAFLib.dataLoaders.SpecabilityLoader().load(specAbsDataDoc) };
-            jintEngine.SetValue("consoleResults", engineOutput).SetValue("unityUAFEventManager", unityUAFEventManager);
+            this.jintEngine.SetValue("consoleResults", engineOutput).SetValue("unityUAFEventManager", unityUAFEventManager);
 
-            StartCoroutine(loader.loadEngine(configDoc, jintEngine, unityUAFEventManager, delegate ()
+            StartCoroutine(loader.loadEngine(configDoc, this.jintEngine, unityUAFEventManager, delegate ()
             {
                 Text txtLoading = GameObject.Find("txtLoading").GetComponent<Text>();
                 txtLoading.enabled = false;
@@ -125,7 +129,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         Tilemap terrainTilemap = GameObject.Find("TerrainTilemap").GetComponent<Tilemap>();
         Tile groundTile = (Tile)terrainTilemap.GetTile(new Vector3Int(-30, 11, 0));
 
-        object[] returnData = (object[])getEngineData("packageMapAndCombatantStatus(combatData.m_aCombatants[0]);");
+        object[] returnData = (object[])getEngineData("packageMapAndCombatantStatus(combatData.m_aCombatants[" + GameState.monsterMoveIdx + "]);");
         object[] characterData = (object[])returnData[0];
         object[] mapData = (object[])returnData[1];
 
@@ -194,6 +198,8 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         BoxCollider2D boxCollider2D = monsterGO.AddComponent<BoxCollider2D>();
         monsterR2D.isKinematic = true;
         monsterR2D.mass = 5;
+        Debug.Log("----newMonster:" + id + "/" + monsterType);
+        this.jintEngine.Execute("combatData.m_aCombatants[" + id + "].m_pCharacter.name = '" + monsterType + "';combatData.m_aCombatants[" + id + "].m_pCharacter.monsterID = '" + monsterType + "';");
     }
 
     void placeMonster(int x, int y, int id) {
@@ -210,9 +216,9 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
 
     public void playerModelMove(int[] xy)
     {
-        jintEngine.Execute("startRound();");
-        jintEngine.Execute("cWarrior.MoveCombatant(cWarrior.x + " + xy[0] + ", cWarrior.y + " + xy[1] + ", false);");
-        jintEngine.Execute("cWarrior.EndTurn();");
+        this.jintEngine.Execute("cWarrior.m_isCombatReady = 1");
+        this.jintEngine.Execute("cWarrior.MoveCombatant(cWarrior.x + " + xy[0] + ", cWarrior.y + " + xy[1] + ", false);");
+        this.jintEngine.Execute("cWarrior.EndTurn();");
         GameState.allowInput = false;
         paintMap();
         int numCombatants = Int32.Parse(getEngineData("combatData.NumCombatants()").ToString());
@@ -220,26 +226,36 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         StartCoroutine(moveMonster());
     }
 
+    private void endMonsterMoves()
+    {
+        this.jintEngine.Execute("startRound();");
+        object[] characterData = (object[])getEngineData("packageCombatantStatus(combatData.m_aCombatants[0])");
+        paintCharStatus(Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), characterData[2].ToString(), Int32.Parse(characterData[3].ToString()), Int32.Parse(characterData[4].ToString()), Int32.Parse(characterData[5].ToString()), Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), Int32.Parse(characterData[6].ToString()));
+        GameState.allowInput = true;
+    }
+
     public IEnumerator moveMonster()
     {
         if (GameState.monsterMoveIdx >= monsters.Count)
         {
             GameState.monsterMoveIdx = 0;
-            GameState.allowInput = true;
+            endMonsterMoves();
             yield break;
         }
         else {
             GameState.monsterMoveIdx++;
-            jintEngine.Execute("moveMonster(" + GameState.monsterMoveIdx + ");");
-            paintMap();
-            yield return new WaitForSeconds(MONSTER_MOVE_SECONDS);
+            if (GameState.deadMonsters.IndexOf(GameState.monsterMoveIdx) < 0) {
+                this.jintEngine.Execute("moveMonster(" + GameState.monsterMoveIdx + ");");
+                paintMap();   // Don't wait/paint for dead monsters
+                yield return new WaitForSeconds(MONSTER_MOVE_SECONDS);
+            }
             StartCoroutine(moveMonster());
         }
     }
 
     public object getEngineData(string expression)
     {
-        jintEngine.Execute("consoleResults.payload = " + expression + ";");
+        this.jintEngine.Execute("consoleResults.payload = " + expression + ";");
         return (object)this.engineOutput.payload;
     }
 
@@ -262,9 +278,9 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         txtCombatantInfo.text = name + " (0:" + x + "," + y + ")\n";
         txtCombatantInfo.text += "HITPOINTS  " + hp + "\n";
         txtCombatantInfo.text += "AC   " + ac + "\n";
-        txtCombatantInfo.text += "Attacks: " + attacks + "\n";
-        txtCombatantInfo.text += "Cursor: " + y + ", " + x + "\n";   // x/y are flipped in combat engine position array
-        txtCombatantInfo.text += "Moves Left: " + movesLeft + "\n";
+        //txtCombatantInfo.text += "Attacks: " + attacks + "\n";
+        //txtCombatantInfo.text += "Cursor: " + y + ", " + x + "\n";   // x/y are flipped in combat engine position array
+        //txtCombatantInfo.text += "Moves Left: " + movesLeft + "\n";
     }
 
     public void playerAttack(int attacker, int attacked)
@@ -272,7 +288,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         //***TODO***:  Not the best plan to use the UI events to trigger model events.  This is done to bridge the gap between StartAttack and makeAttack since there is no sequencing of these events with a general event queue
         try
         {
-            jintEngine.Execute("var deathIndex = []; combatData.m_aCombatants[" + attacker + "].makeAttack(" + attacked + ", 0, deathIndex);");
+            this.jintEngine.Execute("var deathIndex = []; combatData.m_aCombatants[" + attacker + "].makeAttack(" + attacked + ", 0, deathIndex);");
         } catch (JavaScriptException ex)
         {
             Debug.LogException(ex);
@@ -282,8 +298,32 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
 
     public void combatantDying(int id, int x, int y)
     {
-        this.CombatMessageSuffix = " and kills!";   // To be added on when the CombatMsg is printed ¯\(ツ)/¯
-        this.RemoveCombatant(id);
+        if (GameState.deadMonsters.Count >= monsters.Count)
+        {
+            youWin();
+        }
+
+        if (id == 0) {
+            gameOver();
+        } else { 
+            this.CombatMessageSuffix = " and kills!";   // To be added on when the CombatMsg is printed ¯\(ツ)/¯
+            GameState.deadMonsters.Add(id);
+            this.RemoveCombatant(id);
+        }
+    }
+
+    private void youWin()
+    {
+        GameState.monsterMoveIdx = int.MaxValue;
+        togglePanel("pnlWin", true);
+        GameState.allowInput = false;
+    }
+
+    private void gameOver()
+    {
+        GameState.monsterMoveIdx = int.MaxValue;
+        togglePanel("pnlDead", true);
+        GameState.allowInput = false;
     }
 
     public void RemoveCombatant(int id)
@@ -329,5 +369,16 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         UnityEngine.SceneManagement.SceneManager.LoadScene("ViewInventoryScene");
         GameState.engine = this.jintEngine;
         GameState.engineOutput = this.engineOutput;
+    }
+
+    private void togglePanel(string panelName, bool on)
+    {
+        // Just make it disappear by shrinking the y scale to 0
+        if (on) { 
+            GameObject.Find(panelName).GetComponent<RectTransform>().localScale = new Vector3Int(1, 1, 0);
+        } else {
+            GameObject.Find(panelName).GetComponent<RectTransform>().localScale = new Vector3Int(1, 0, 0);
+        }
+
     }
 }

@@ -18,7 +18,7 @@ QueuedCombatantData.prototype.StartOfTurn = function() {
     var pos;
     pos = this.m_q.GetHeadPosition();
     if (pos == null) return false;
-    Globals.debug("QueuedCombatantData.prototype.StartOfTurn:" + this.m_q.GetAtPos(pos).m_bStartOfTurn);
+    return this.m_q.GetAtPos(pos).m_bStartOfTurn;
     return this.m_q.GetAtPos(pos).m_bStartOfTurn;
 }
 

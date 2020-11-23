@@ -183,7 +183,7 @@ var setMonsterReady = -1;
 var callCount = 0;
 // This hack will make the m_isCombatReady flag set to each of them as set by the setMonsterReady variable
 Globals.SPECAB_HACKS["IsCombatReady"] = function (pkt) {
-    //Globals.debug("****SPECAB HACK: IsCombatReady:");
+    //Globals.debug("****SPECAB HACK: IsCombatReady:" + setMonsterReady);
     if (setMonsterReady == -1) {
         SPECAB.p_hook_parameters[0] = "";
     } else if (setMonsterReady == -2) {
@@ -208,10 +208,11 @@ Globals.SPECAB_HACKS["FreeAttack-CanFreeAttack"] = function (pkt) { SPECAB.p_hoo
 
 function startRound() {
     callCount = 0;
+    DispText.CombatMsg = "";
 
-    combatData.m_aCombatants[1].m_target = -1;
-    combatData.m_aCombatants[2].m_target = -1;
-    combatData.m_aCombatants[3].m_target = -1;
+    for (idx = 1; idx < combatData.NumCombatants(); idx++) {  // start at one and <= to skip the player
+        combatData.m_aCombatants[idx].m_target = -1;
+    }
     combatData.m_eSurprise = eventSurpriseType.PartySurprised;  // This will force the monsters to go first
     setMonsterReady = -2;
     combatData.StartNewRound();
@@ -225,16 +226,16 @@ function moveMonster(idxMonster) {
     combatData.UpdateCombat();              // Why do I have to call this again?
     combatData.HandleCurrState(true);
     var m_iDeathIndex = -1;
-    combatData.HandleTimeDelayMsgBegin(m_iDeathIndex); // return from a timer pause that let the user see the roll/message
+    combatData.HandleTimeDelayMsgBegin(0, m_iDeathIndex); // return from a timer pause that let the user see the roll/message
     combatData.m_aCombatants[combatData.GetCurrCombatant()].EndTurn();
 }
 
 
 var Warrior = new CHARACTER();
-Warrior.name = "Hardest_Ken"
+Warrior.name = "Hardest_Ken";
 Warrior.classID = "Fighter";
 Warrior.SetStatus(charStatusType.Okay);
-Warrior.hitPoints = 10;
+Warrior.hitPoints = 20;
 Warrior.maxHitPoints = 20;
 Warrior.maxMovement = 20;
 Warrior.age = 20;
@@ -262,9 +263,9 @@ combatEventData.monsters = new MONSTER_EVENT_DATA();
 var monsterEvent = new MONSTER_EVENT();
 monsterEvent.UseQty = MONSTER_EVENT.meUseQty;
 monsterEvent.UseQty = MONSTER_EVENT.meUsePercent;
-monsterEvent.qtyDiceSides = 6;
+monsterEvent.qtyDiceSides = 4;
 monsterEvent.qtyDiceQty = 1;
-monsterEvent.qtyBonus = 2;
+monsterEvent.qtyBonus = 1;
 monsterEvent.qty = 10;
 monsterEvent.qty = 3;
 monsterEvent.monsterID = "Kobold";

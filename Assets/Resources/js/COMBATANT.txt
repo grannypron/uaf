@@ -618,7 +618,6 @@ COMBATANT.prototype.MoveCombatant = function(newX, newY, allowZeroMoveAttack) {
         if (Globals.GetConfigMonsterNoMove())
             return false;
     }
-
     moveData.combatantIndex = this.self;
     moveData.oldX = this.x;
     moveData.oldY = this.y;
@@ -2092,7 +2091,6 @@ COMBATANT.prototype.IsDone = function(freeAttack, comment) {
             "N",
             comment);
 
-        Globals.debug("----result:" + result);
         if (!UAFUtil.IsEmpty(result)) {
             this.m_isCombatReady = 0;
         }
@@ -3932,7 +3930,6 @@ COMBATANT.prototype.Think = function () {
 COMBATANT.prototype.HandleCurrState = function(zeroMoveAttackOK) {
     var dude;
     var updateScreen = 0;
-    Globals.debug("COMBATANT.prototype.HandleCurrState: this.self" + this.self + " this.State:" + this.State());
     switch (this.State()) {
         case individualCombatantState.ICS_None:
             break;
@@ -4078,7 +4075,7 @@ COMBATANT.prototype.HandleTimeDelayMsgBegin = function(extraAttacksAvailable, pD
         };
         break;
     #endif*/
-      case individualCombatantState.ICS_Attacking:
+    case individualCombatantState.ICS_Attacking:
         return this.makeAttack(this.GetCurrTarget(true, false, true),
             extraAttacksAvailable,
             pDeathIndex);

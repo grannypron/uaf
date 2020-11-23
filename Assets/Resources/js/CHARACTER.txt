@@ -27,7 +27,7 @@ function CHARACTER(character) {
     this.char_asl = new A_ASLENTRY_L();
     this.targets = new SPELL_TARGETING_DATA();
     this.Clear(true);
-};
+}
 
 CHARACTER.prototype.IsSameCharacter = function(dude) {
   if (dude == this) return true;
@@ -35,7 +35,7 @@ CHARACTER.prototype.IsSameCharacter = function(dude) {
   if (this.IsPreGen != dude.IsPreGen) return false;
   if (this.name != dude.name) return false;  
   return true;
-};
+}
 
 /**TODO** virtual COMBATANT * 	GetCombatant () */
 
