@@ -241,6 +241,7 @@
     <Content Include="data\SpecialAbilities.xml" />
     <Content Include="js\DICEPLUS.js" />
     <Content Include="Tests\TestCombatMovementAttack.js" />
+    <Content Include="Tests\TestExperience.js" />
     <Content Include="Tests\TestWinCombat.js" />
     <Content Include="Tests\TestGPDL.js" />
     <Content Include="Tests\TestLoadItems.js" />

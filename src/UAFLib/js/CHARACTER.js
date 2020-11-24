@@ -4098,6 +4098,55 @@ CHARACTER.prototype.ClearQueuedSpecAb = function() {
     this.specAbQueue.RemoveAll();
 }
 
+CHARACTER.prototype.GetCurrExp = function(baseclassID) {
+    var i;
+    var pStats;
+    i = this.LocateBaseclassStats(baseclassID);
+    if (i < 0) return 0;
+    pStats = this.PeekBaseclassStats(i);
+    if (pStats.previousLevel > 0) return 0;
+    return pStats.x_experience;
+}
+
+CHARACTER.prototype.SetCurrExp = function(baseclassID, exp) {
+    var pbcs;
+    pbcs = this.GetBaseclassStats(baseclassID);
+    if (pbcs == null) return 0;
+    if (pbcs.previousLevel > 0) return 0;
+    pbcs.x_experience = exp;
+    return exp;
+}
+
+CHARACTER.prototype.giveCharacterExperience = function(exppts, UseLimits) {
+    if (exppts == 0) return;
+    var pClass;
+    pClass = classData.PeekClass(this.classID);
+    if (pClass == null) return;
+    {
+        var i = 0, n = 0;
+        var curExp = 0;
+        n = pClass.GetCount();
+        curExp = (exppts + n - 1) / n;
+        for (i = 0; i < n; i++) {
+            var baseclassID;
+            baseclassID = pClass.PeekBaseclassID(i);
+            var pBaseclass;
+            pBaseclass = baseclassData.PeekBaseclass(baseclassID);
+            if (pBaseclass != null) {
+                this.IncCurrExp(baseclassID, curExp);
+            }
+        }
+    }
+}
+
+CHARACTER.prototype.IncCurrExp = function (baseclassID, exp) {
+    var pStats;
+    pStats = this.GetBaseclassStats(baseclassID);
+    if (pStats == null) return 0;
+    return pStats.IncCurExperience(exp);
+}
+
+
 CHARACTER.prototype.SetLevel = function (lvl) { throw "todo"; }
 CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };
 CHARACTER.prototype.GetBestMemorizedHealingSpell = function (pSpellID) { throw "todo"; };
@@ -4188,13 +4237,9 @@ CHARACTER.prototype.SetReadyToTrain = function (enable) { throw "todo"; }
 CHARACTER.prototype.IsAbleToTrade = function () { throw "todo"; }
 CHARACTER.prototype.SetAbleToTrade = function (enable) { throw "todo"; }
 CHARACTER.prototype.getCharExpWorth = function () { throw "todo"; }
-CHARACTER.prototype.giveCharacterExperience = function (exp, UseLimits) { if (UseLimits == undefined) { UseLimits = true; } };
-CHARACTER.prototype.GetCurrExp = function (baseclassID) { throw "todo"; }
-CHARACTER.prototype.SetCurrExp = function (baseclassID, exp) { throw "todo"; }
 CHARACTER.prototype.ClearLevels = function () { throw "todo"; }
 CHARACTER.prototype.GetCurrLevel = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.GetAllowedLevel = function (baseclassID) { throw "todo"; }
-CHARACTER.prototype.IncCurrExp = function (baseclassID, exp) { throw "todo"; }
 CHARACTER.prototype.GetAdjBaseclassExp = function (baseclassID, flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.GetBaseclassExp = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.SetSpecAb = function (sa, enable, flags) { throw "todo"; }

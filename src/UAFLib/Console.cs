@@ -41,9 +41,10 @@ namespace UAFLib
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadItems.js", @"..\..\..\UAFLib\Tests\TestInventory.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js", @"..\..\..\UAFLib\Tests\TestSimpleAttack.js" });
                 */
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestMultiRoundCombat.js" });
+                //runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestMultiRoundCombat.js" });
                 //runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestMonsterAttack.js" });
                 //runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestWinCombat.js" });
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestExperience.js" });
                 //runTest(new string[] { @"..\..\..\UAFLib\Tests\DemoCombat.js" });
                 //runTest(new string[] { @"..\..\..\UAFLib\Tests\TestGPDL.js" });
                 System.Console.WriteLine("Tests complete!  Press Any key.");
