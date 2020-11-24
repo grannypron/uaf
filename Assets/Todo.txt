@@ -1,4 +1,5 @@
-﻿- Check for winning in dyingcombatant won't work because the victor type is not set yet.  Will ahve to check when startround is called
+﻿- Probably a crash after returning from Inventory screen
+- Display and award XP and level
 - Ranged attacks
 - Dungeon Generation
 - Moving animations on player RigidBody

@@ -1,6 +1,14 @@
+/* 
+ * This layer should hold the logic that interfaces the engine with Unity.  To the extent possible, keep
+ * game-related logic out of this layer.  The point of this logic is to translate UI/Unity-level input/outputs with
+ * engine input/outputs 
+ */
 
-//Globals.SPECAB_HACKS = {};
-//Globals.SPECAB_HACKS["IsCombatReady"] = function (pkt) { Globals.debug("SPECAB_HACKS: IsCombatReady"); SPECAB.p_hook_parameters[0] = "1"; }  // This is to return 1 when COMBATANT.IsDone is called
+
+Globals.SPECAB_HACKS = {};
+// This stops free-attacks like when the player moves away from the monsters or vice-versa
+Globals.SPECAB_HACKS["FreeAttack-CanFreeAttack"] = function (pkt) { SPECAB.p_hook_parameters[0] = "N"; }
+
 
 UnityEngine = importNamespace("UnityEngine");  // For Jint to access C# library
 UAFLib = importNamespace("UAFLib");
@@ -8,6 +16,7 @@ UAFLib = importNamespace("UAFLib");
 Globals.debug = function (msg) {
     UnityEngine.Debug.Log(msg);
 }
+
 /** Load item database */
 itemData.LoadFromLoader(consoleResults.payload[0]);
 specialAbilitiesData.LoadFromLoader(consoleResults.payload[1]);
@@ -33,76 +42,57 @@ UIEventManager.CombatantDead = function (id, x, y) {
     unityUAFEventManager.CombatantDead(id, x, y);
 }
 
-function Deserialize(filename, debug) {
-var character = new CHARACTER();
-var path = "C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\Tests\\" + filename;
-var fs = System.IO.File.OpenRead(path);
-var ar = new CAR(fs, 6.0);
-
-//Read the first 16 header bytes because this isn't covered in the CHARACTER's serialize method
-ar.readInt(); ar.readInt(); ar.readInt(); ar.readInt();
-
-if (debug) {
-ar.MFCSerializer.debug = true;
-}
-character.SerializeCAR(ar, 6.0);
-fs.Close();
-return character;
-}
-
 function loadLibraryStub() {
-loadRaces();
-loadAbilities();
-loadClasses();
-loadMonsters();
+    loadRaces();
+    loadAbilities();
+    loadClasses();
+    loadMonsters();
 }
 
 function loadRaces() {
-var data = new RACE_DATA();
-data.m_name = "Monster";
-raceData.AddRace(data);
+    var data = new RACE_DATA();
+    data.m_name = "Monster";
+    raceData.AddRace(data);
 }
 
 function loadMonsters() {
+    monsterData.MonsterData[0] = new MONSTER_DATA();
+    monsterData.MonsterData[0].Name = "Kobold";
+    monsterData.MonsterData[0].monsterID = "Kobold";
+    monsterData.MonsterData[0].classID = "Fighter";
+    //icon file = icon_Kobold.png, 0, 2, 48, 48, 0, 1, 2
+    //miss sound = sound_Miss.wav
+    //hit sound = sound_Hit.wav
+    //move sound = sound_MonsterMoveStep.wav
+    //death sound = sound_MonsterDeathMedium.wav
+    monsterData.MonsterData[0].intelligence = 9;
+    monsterData.MonsterData[0].Armor_Class = 10;
+    monsterData.MonsterData[0].Movement = 6;
+    monsterData.MonsterData[0].Hit_Dice = 0.500000;
+    monsterData.MonsterData[0].UseHitDice = true;
+    monsterData.MonsterData[0].Hit_Dice_Bonus = 0;
+    monsterData.MonsterData[0].THAC0 = 20;
+    monsterData.MonsterData[0].Magic_Resistance = 0;
+    monsterData.MonsterData[0].Size = creatureSizeType.Medium;
+    monsterData.MonsterData[0].Morale = 25;
+    monsterData.MonsterData[0].XP_Value = 7;
+    monsterData.MonsterData[0].m_type = MONSTER_TYPE;
+    monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0] = new ATTACK_DETAILS()
+    monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].sides = 4;
+    monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].nbr = 1;
+    monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].bonus = 0;
 
-monsterData.MonsterData[0] = new MONSTER_DATA();
-monsterData.MonsterData[0].Name = "Kobold";
-monsterData.MonsterData[0].monsterID = "Kobold";
-monsterData.MonsterData[0].classID = "Fighter";
-//icon file = icon_Kobold.png, 0, 2, 48, 48, 0, 1, 2
-//miss sound = sound_Miss.wav
-//hit sound = sound_Hit.wav
-//move sound = sound_MonsterMoveStep.wav
-//death sound = sound_MonsterDeathMedium.wav
-monsterData.MonsterData[0].intelligence = 9;
-monsterData.MonsterData[0].Armor_Class = 10;
-monsterData.MonsterData[0].Movement = 6;
-monsterData.MonsterData[0].Hit_Dice = 0.500000;
-monsterData.MonsterData[0].UseHitDice = true;
-monsterData.MonsterData[0].Hit_Dice_Bonus = 0;
-monsterData.MonsterData[0].THAC0 = 20;
-monsterData.MonsterData[0].Magic_Resistance = 0;
-monsterData.MonsterData[0].Size = creatureSizeType.Medium;
-monsterData.MonsterData[0].Morale = 25;
-monsterData.MonsterData[0].XP_Value = 7;
-monsterData.MonsterData[0].m_type = MONSTER_TYPE;
-monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0] = new ATTACK_DETAILS()
-monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].sides = 4;
-monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].nbr = 1;
-monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].bonus = 0;
-
-//Class = Fighter
-monsterData.MonsterData[0].Race = RACE_DATA_TYPE.Monster;
-/*form = none
-penalty = GnomeTHAC0 + RangerDmg
-immunity = none
-Misc Options = can be held / charmed
-item = Dagger
-item = Buckler
-attack = 4, 1, 0, attacks,
-Undead = none
-*/
-
+    //Class = Fighter
+    monsterData.MonsterData[0].Race = RACE_DATA_TYPE.Monster;
+    /*form = none
+    penalty = GnomeTHAC0 + RangerDmg
+    immunity = none
+    Misc Options = can be held / charmed
+    item = Dagger
+    item = Buckler
+    attack = 4, 1, 0, attacks,
+    Undead = none
+    */
 }
 
 function loadClasses() {
@@ -142,31 +132,27 @@ function packageCombatantStatus(c) {
     data[4] = c.GetAdjAC();
     data[5] = c.GetNbrAttacks();
     data[6] = c.m_pCharacter.GetMaxMovement() - c.m_iMovement;
+    data[7] = c.m_pCharacter.monsterID;
     return data;
 }
 
-function packageMapAndCombatantStatus(c) {
-
-    var dataStr = "";
+function packageMapData() {
     var mapData = [];
     for (i = 0; i < Drawtile.MAX_TERRAIN_HEIGHT; i++) {
         mapData[i] = [];
         for (j = 0; j < Drawtile.MAX_TERRAIN_WIDTH; j++) {
-            dataStr += Drawtile.terrain[i][j].cell + ",";
             mapData[i][j] = Drawtile.terrain[i][j].tileIndex;
         }
-        dataStr += "]\n";
     }
-
-
-    //Globals.debug(dataStr);
-
-    var data = [];
-    data[0] = packageCombatantStatus(c);
-    data[1] = mapData;
-    return data;
+    return mapData;
 }
 
+function packageMapAndCombatantStatus(c) {
+    var data = [];
+    data[0] = packageCombatantStatus(c);
+    data[1] = packageMapData();
+    return data;
+}
 
 function makeInventoryList(c) {
     var str = "";
@@ -178,49 +164,36 @@ function makeInventoryList(c) {
 }
 
 
-Globals.SPECAB_HACKS = {};
-var setMonsterReady = -1;
-var callCount = 0;
-// This hack will make the m_isCombatReady flag set to each of them as set by the setMonsterReady variable
-Globals.SPECAB_HACKS["IsCombatReady"] = function (pkt) {
-    //Globals.debug("****SPECAB HACK: IsCombatReady:" + setMonsterReady);
-    if (setMonsterReady == -1) {
-        SPECAB.p_hook_parameters[0] = "";
-    } else if (setMonsterReady == -2) {
-        SPECAB.p_hook_parameters[0] = "1"; // Used for setting all to Done - so that they get their moves & such reset - called when starting a round
-    }else {
-        //Globals.debug("****SPECAB HACK: callCount:" + callCount);
-        if (callCount == (setMonsterReady - 1)) {
-            SPECAB.p_hook_parameters[0] = "";
-            callCount = 0;
-        } else {
-            SPECAB.p_hook_parameters[0] = "1";
-            callCount++;
-        }
+
+var combatantReady = -1;
+var ALL_READY = -2;
+COMBATANT.prototype.IsDone = function (freeAttack, comment) {
+    //Override IsDone so that I can control who moves
+    if (this.self == ALL_READY) {
+        return true;
+    } else if (this.self != combatantReady) {
+        return true;
     }
-    return CBRESULT.CBR_STOP;
+    return false;
 }
-
-
-
-Globals.SPECAB_HACKS["FreeAttack-CanFreeAttack"] = function (pkt) { SPECAB.p_hook_parameters[0] = "N"; }
 
 
 function startRound() {
     callCount = 0;
     DispText.CombatMsg = "";
+    UIEventManager.UpdateCombatMessage(DispText.CombatMsg);
 
     for (idx = 1; idx < combatData.NumCombatants(); idx++) {  // start at one and <= to skip the player
         combatData.m_aCombatants[idx].m_target = -1;
     }
     combatData.m_eSurprise = eventSurpriseType.PartySurprised;  // This will force the monsters to go first
-    setMonsterReady = -2;
+    combatantReady = ALL_READY;
     combatData.StartNewRound();
-    setMonsterReady = -1;
+    combatantReady = 0;
 }
 
 function moveMonster(idxMonster) {
-    setMonsterReady = idxMonster;    // Skip 0 - that is the player
+    combatantReady = idxMonster;    // Skip 0 - that is the player
     combatData.UpdateCombat();
     combatData.QComb.NotStartOfTurn();
     combatData.UpdateCombat();              // Why do I have to call this again?
@@ -246,7 +219,7 @@ Warrior.maxEncumbrance = 1000;
 
 var bcs = new BASECLASS_STATS();
 bcs.currentLevel = 1;
-bcs.baseclassID = "fighter";   // I think??
+bcs.baseclassID = "fighter";
 Warrior.baseclassStats.push(bcs);
 
 
@@ -263,9 +236,9 @@ combatEventData.monsters = new MONSTER_EVENT_DATA();
 var monsterEvent = new MONSTER_EVENT();
 monsterEvent.UseQty = MONSTER_EVENT.meUseQty;
 monsterEvent.UseQty = MONSTER_EVENT.meUsePercent;
-monsterEvent.qtyDiceSides = 4;
+monsterEvent.qtyDiceSides = 6;
 monsterEvent.qtyDiceQty = 1;
-monsterEvent.qtyBonus = 1;
+monsterEvent.qtyBonus = 2;
 monsterEvent.qty = 10;
 monsterEvent.qty = 3;
 monsterEvent.monsterID = "Kobold";

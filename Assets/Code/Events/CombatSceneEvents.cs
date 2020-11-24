@@ -3,10 +3,8 @@ using Jint.Runtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Xml;
 using UAFLib;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Tilemaps;
@@ -19,154 +17,126 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
     // player is placed in the middle of the battlefield at 25/25
 
     public static int BlockScaleFactor = 40;          //**TODO** - Idk why
+    public const float MONSTER_MOVE_SECONDS = .5f;    // How many seconds do we wait after the monster moves to show their status
+    public const float DISTANCE_NOTICE_THRESHOLD = 200.0f;  // Non-inclusive
     private int PlayerScaleFactor = -1;
-    private int centeringAdjustment = 25;
+    private Vector2Int centeringAdjustment = new Vector2Int(-32, -25);
     private const String CONFIG_FILE_URL = "https://raw.githubusercontent.com/grannypron/uaf/unity/config.xml";
     private const String ITEMS_DATA_URL = "https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/data/items.xml";
-    private Engine jintEngine;
-    private ConsoleResults engineOutput;
-    private bool mapPainted = false;
+    private bool firstMapPaint = false;
     private bool librariesLoaded = false;
     private bool registeredWalls = false;
-    private Dictionary<int, String> monsters = new Dictionary<int, string>();
+    private int blockedTileCount = 0;
     private string CombatMessageSuffix = "";
-    public const float MONSTER_MOVE_SECONDS = .5f;
 
     // Start is called before the first frame update
-    void Start()
+    IEnumerator Start()
     {
         PlayerScaleFactor = (int)Math.Floor(GameObject.Find("Player").GetComponent<Transform>().localScale.x);
         Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         DontDestroyOnLoad(GameObject.Find("pnlDead"));
-        DontDestroyOnLoad(GameObject.Find("pnlWin"));
         togglePanel("pnlDead", false);
-        togglePanel("pnlWin", false);
         DontDestroyOnLoad(this.gameObject);
         Text txtCombatantInfo = GameObject.Find("txtCombatantInfo").GetComponent<Text>();
         txtCombatantInfo.text = "";
         if (GameState.engine != null)
         {
-            this.jintEngine = GameState.engine;
-            this.engineOutput = GameState.engineOutput;
-            this.monsters = new Dictionary<int, string>();
             Text txtLoading = GameObject.Find("txtLoading").GetComponent<Text>();
             txtLoading.enabled = false;
             this.librariesLoaded = true;
             playerModelMove(new int[] { 0, 0 }); // little hack 🤷
+            yield break;
         }
-        else {
-            jintEngine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly, typeof(UnityEngine.Debug).Assembly));
-            /*
+        else
+        {
+            GameState.engine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly, typeof(UnityEngine.Debug).Assembly));
 
-            UnityWebRequest configHttpReq = UnityWebRequest.Get(CONFIG_FILE_URL);
-            yield return configHttpReq.SendWebRequest();
-
-            if (configHttpReq.isNetworkError || configHttpReq.isHttpError)
-            {
-                Debug.Log(configHttpReq.error);
-            }
-            else
-            {
-                // Show results as text
-                Debug.Log("Loaded config file from " + CONFIG_FILE_URL + ".  Length:" + configHttpReq.downloadHandler.text.Length);
-            }
-
-            UnityWebRequest itemDataHttpReq = UnityWebRequest.Get(ITEMS_DATA_URL);
-            yield return itemDataHttpReq.SendWebRequest();
-            XmlDocument itemDataDoc = new XmlDocument();
-            itemDataDoc.LoadXml(itemDataHttpReq.downloadHandler.text);
-            XmlDocument configDoc = new XmlDocument();
-            configDoc.LoadXml(configHttpReq.downloadHandler.text);
-            IEngineLoader loader = new GitHubEngineLoader();
-            */
-
-            /*
-            XmlDocument configDoc = new XmlDocument();
-            configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js</setupScript></config>");
-            IEngineLoader loader = new LocalEngineLoader(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\");
-            XmlDocument itemDataDoc = new XmlDocument();
-            itemDataDoc.Load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\items.xml");
-            XmlDocument specAbsDataDoc = new XmlDocument();
-            specAbsDataDoc.Load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\SpecialAbilities.xml");
-            */
-
-
-            IEngineLoader loader = new ResourceEngineLoader("js", "setup");
-            XmlDocument itemDataDoc = new XmlDocument();
-            itemDataDoc.LoadXml(((TextAsset) Resources.Load("data/items")).text);
-            XmlDocument specAbsDataDoc = new XmlDocument();
-            specAbsDataDoc.LoadXml(((TextAsset)Resources.Load("data/SpecialAbilities")).text);
-            XmlDocument configDoc = null;
-
-            UnityUAFEventManager unityUAFEventManager = new UnityUAFEventManager(this);
-
-            this.engineOutput = new ConsoleResults();
-
-            engineOutput.payload = new System.Object[] { new UAFLib.dataLoaders.ItemLoader().load(itemDataDoc), new UAFLib.dataLoaders.SpecabilityLoader().load(specAbsDataDoc) };
-            this.jintEngine.SetValue("consoleResults", engineOutput).SetValue("unityUAFEventManager", unityUAFEventManager);
-
-            StartCoroutine(loader.loadEngine(configDoc, this.jintEngine, unityUAFEventManager, delegate ()
+            StartCoroutine(getLoader("local", delegate ()
             {
                 Text txtLoading = GameObject.Find("txtLoading").GetComponent<Text>();
                 txtLoading.enabled = false;
                 this.librariesLoaded = true;
             }));
+            yield break;
+
+            
+            
         }
     }
 
     private void FixedUpdate()
     {
-        if (!this.mapPainted & this.librariesLoaded) {
-            paintMap();
-            this.mapPainted = true;
+        if (!this.firstMapPaint & this.librariesLoaded)
+        {
+            scanAndDrawCombatants();
+            randomizeAndPlaceMonsters();
+            this.firstMapPaint = true;
         }
 
     }
 
-    void paintMap()
+    /** 
+     * Scans the map and records blocked spaces from drawn map.  Also places players and monsters RigidBodys on map, 
+     * creating the monsters if necessary 
+     **/
+    void scanAndDrawCombatants()
     {
         Rigidbody2D player = GetComponent<Rigidbody2D>();
         Tilemap terrainTilemap = GameObject.Find("TerrainTilemap").GetComponent<Tilemap>();
-        Tile groundTile = (Tile)terrainTilemap.GetTile(new Vector3Int(-30, 11, 0));
-
         object[] returnData = (object[])getEngineData("packageMapAndCombatantStatus(combatData.m_aCombatants[" + GameState.monsterMoveIdx + "]);");
         object[] characterData = (object[])returnData[0];
         object[] mapData = (object[])returnData[1];
+        int tileIdx = 0; // Enumerates all tiles
 
-        for (int y = 0; y < mapData.Length; y++)
+        // Assume a square map
+        GameState.mapDataWidth = mapData.Length;
+        GameState.mapDataHeight = mapData.Length;
+
+        int totalNumMapTiles = GameState.mapDataWidth * GameState.mapDataHeight;
+        GameState.blockedSquares = new BitArray(totalNumMapTiles, false);
+
+        for (int y = 0; y < GameState.mapDataWidth; y++)
         {
             object[] column = (object[])mapData[y];
-            for (int x = 0; x < column.Length; x++)
+            Debug.Assert(column.Length == GameState.mapDataHeight);
+            Debug.Assert(column.Length == GameState.mapDataWidth);
+            for (int x = 0; x < GameState.mapDataHeight; x++)
             {
                 int cellValue = System.Int32.Parse(((object)column[x]).ToString());
-                int[] coords = new int[] { x - centeringAdjustment, y - centeringAdjustment };
+                int[] coords = new int[] { x + centeringAdjustment.x, y + centeringAdjustment.y };
                 if (cellValue < 0)
                 {
-                    if (!registeredWalls) {
+                    if (!registeredWalls)
+                    {
                         // This is just temporary - I am populating the engine's grid from the tiles I drew in the Unity tilemap. It should go the other way around
-                        if (x <= terrainTilemap.size.x && y <= terrainTilemap.size.y) {
-                            // 25, 25 is the center of the tilemap
-                            Tile thisTile = (Tile)terrainTilemap.GetTile(new Vector3Int(x - centeringAdjustment, y - centeringAdjustment, 0));
-                            if (thisTile == null || thisTile.name != "OpenGroundTile") {
-                                this.jintEngine.Execute("Drawtile.terrain[" + y + "][" + x + "].cell = -1;");
+                        if (x <= terrainTilemap.size.x && y <= terrainTilemap.size.y)
+                        {
+                            // adjust for the center of the tilemap
+                            Tile thisTile = (Tile)terrainTilemap.GetTile(new Vector3Int(x + centeringAdjustment.x, y + centeringAdjustment.y, 0));
+                            if (thisTile == null || thisTile.name != "OpenGroundTile")
+                            {
+                                GameState.engine.Execute("Drawtile.terrain[" + y + "][" + x + "].cell = -1;");
+                                GameState.blockedSquares.Set(tileIdx, true);
+                                blockedTileCount++;
                             }
                         }
                     }
-                    //terrainTilemap.SetTile(new Vector3Int(translatedCoords[0], translatedCoords[1], zIndex), groundTile);// for now, just leave what I have painted on the map
                 }
                 else if (cellValue == 0)
                 {
                     placePlayer(coords[0], coords[1]);
-                } else if (cellValue > 0)
+                }
+                else if (cellValue > 0)
                 {
-                    if (!monsters.ContainsKey(cellValue))
+                    if (!GameState.monsters.ContainsKey(cellValue))
                     {
                         string monsterID = RandoMonsterID();
                         newMonster(cellValue, monsterID);
-                        monsters.Add(cellValue, monsterID);
+                        GameState.monsters.Add(cellValue, monsterID);
                     }
                     placeMonster(coords[0], coords[1], cellValue);
                 }
+                tileIdx++;
             }
         }
         registeredWalls = true;
@@ -174,6 +144,43 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
 
     }
 
+    /** Generates random positions for all monsters and places them on the map **/
+    private void randomizeAndPlaceMonsters()
+    {
+        // Generate a number from 1 to the number of available cells.  One for each monster
+        int totalNumMapTiles = GameState.mapDataWidth * GameState.mapDataHeight;  // Assume a square map
+        BitArray monsterPositions = new BitArray(totalNumMapTiles - blockedTileCount, false);
+        for (int idxMonster = 1; idxMonster < GameState.monsters.Count; idxMonster++)
+        {
+            monsterPositions.Set(UnityEngine.Random.Range(0, totalNumMapTiles - blockedTileCount), true);
+        }
+
+        List<int[]> positions = new List<int[]>();
+        int monsterIdx = 0;       // will enumerate each monster id (+1 will be added to match the monster's id)
+        int availableCellIdx = 0; // will enumerate each cell that is not closed
+        int allCellIdx = 0;       // will enumerate all cells 
+        for (int y = 0; y < GameState.mapDataWidth && monsterIdx < GameState.monsters.Count; y++)
+        {
+            for (int x = 0; x < GameState.mapDataHeight && monsterIdx < GameState.monsters.Count; x++)
+            {
+                if (!GameState.blockedSquares.Get(allCellIdx))
+                {
+                    // If there is a monster that is supposed to be here, place him
+                    if (monsterPositions.Get(availableCellIdx))
+                    {
+                        ++monsterIdx;
+                        GameState.engine.Execute("combatData.m_aCombatants[" + monsterIdx + "].MoveCombatant(" + x + ", " + y + ", false);");
+                        int[] coords = new int[] { x + centeringAdjustment.x, y + centeringAdjustment.y };
+                        placeMonster(coords[0], coords[1], monsterIdx);
+                    }
+                    availableCellIdx++;
+                }
+                allCellIdx++;
+            }
+        }
+    }
+
+    /** Draw the player on the map **/
     private void placePlayer(int x, int y)
     {
         Grid combatGrid = GameObject.Find("CombatGrid").GetComponent<Grid>();
@@ -184,6 +191,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         playerTransform.localPosition = new Vector3Int(x, y, -2);
     }
 
+    /** Create a monster of a specific type and records their new random name / id in the engine **/
     private void newMonster(int id, string monsterType)
     {
         Grid combatGrid = GameObject.Find("CombatGrid").GetComponent<Grid>();
@@ -198,10 +206,10 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         BoxCollider2D boxCollider2D = monsterGO.AddComponent<BoxCollider2D>();
         monsterR2D.isKinematic = true;
         monsterR2D.mass = 5;
-        Debug.Log("----newMonster:" + id + "/" + monsterType);
-        this.jintEngine.Execute("combatData.m_aCombatants[" + id + "].m_pCharacter.name = '" + monsterType + "';combatData.m_aCombatants[" + id + "].m_pCharacter.monsterID = '" + monsterType + "';");
+        GameState.engine.Execute("combatData.m_aCombatants[" + id + "].m_pCharacter.name = '" + monsterType + "';combatData.m_aCombatants[" + id + "].m_pCharacter.monsterID = '" + monsterType + "';");
     }
 
+    /** Places a monster on the map **/
     void placeMonster(int x, int y, int id) {
         Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         GameObject monsterGO = GameObject.Find("Monster" + id);
@@ -214,49 +222,66 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
     {
     }
 
+    /** Move the player in the engine **/
     public void playerModelMove(int[] xy)
     {
-        this.jintEngine.Execute("cWarrior.m_isCombatReady = 1");
-        this.jintEngine.Execute("cWarrior.MoveCombatant(cWarrior.x + " + xy[0] + ", cWarrior.y + " + xy[1] + ", false);");
-        this.jintEngine.Execute("cWarrior.EndTurn();");
+        GameState.engine.Execute("cWarrior.m_isCombatReady = 1");
+        GameState.engine.Execute("cWarrior.MoveCombatant(cWarrior.x + " + xy[0] + ", cWarrior.y + " + xy[1] + ", false);");
+        GameState.engine.Execute("cWarrior.EndTurn();");
         GameState.allowInput = false;
-        paintMap();
+        scanAndDrawCombatants();
         int numCombatants = Int32.Parse(getEngineData("combatData.NumCombatants()").ToString());
-        Debug.Assert(numCombatants == monsters.Count + 1); // +1 to count the player
+        Debug.Assert(numCombatants == GameState.monsters.Count + 1); // +1 to count the player
         StartCoroutine(moveMonster());
     }
 
+    /** Called after all monsters have moved to start a new round in the engine **/
     private void endMonsterMoves()
     {
-        this.jintEngine.Execute("startRound();");
+        GameState.engine.Execute("startRound();");
         object[] characterData = (object[])getEngineData("packageCombatantStatus(combatData.m_aCombatants[0])");
         paintCharStatus(Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), characterData[2].ToString(), Int32.Parse(characterData[3].ToString()), Int32.Parse(characterData[4].ToString()), Int32.Parse(characterData[5].ToString()), Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), Int32.Parse(characterData[6].ToString()));
         GameState.allowInput = true;
     }
 
+    /** Moves a monster in the engine - recursive to call all monsters **/
     public IEnumerator moveMonster()
     {
-        if (GameState.monsterMoveIdx >= monsters.Count)
+        if (GameState.monsterMoveIdx >= GameState.monsters.Count)
         {
+            yield return new WaitForSeconds(MONSTER_MOVE_SECONDS);
             GameState.monsterMoveIdx = 0;
             endMonsterMoves();
             yield break;
         }
         else {
             GameState.monsterMoveIdx++;
-            if (GameState.deadMonsters.IndexOf(GameState.monsterMoveIdx) < 0) {
-                this.jintEngine.Execute("moveMonster(" + GameState.monsterMoveIdx + ");");
-                paintMap();   // Don't wait/paint for dead monsters
-                yield return new WaitForSeconds(MONSTER_MOVE_SECONDS);
+            if (GameState.deadMonsters.IndexOf(GameState.monsterMoveIdx) < 0)
+            {
+                if (monsterNoticesPlayer(GameState.monsterMoveIdx))
+                {
+                    yield return new WaitForSeconds(MONSTER_MOVE_SECONDS);
+                    GameState.engine.Execute("moveMonster(" + GameState.monsterMoveIdx + ");");
+                    scanAndDrawCombatants();   // Don't wait/paint for dead monsters
+                }
             }
             StartCoroutine(moveMonster());
         }
     }
 
+    // Determines if a monster should get a turn to move or not
+    private bool monsterNoticesPlayer(int id)
+    {
+        GameObject goMonster = GameObject.Find("Monster" + id);
+        Debug.Assert(goMonster != null, "monster with id " + id + " is null!  Already dead?");
+        float dist = Vector2.Distance(goMonster.GetComponent<Rigidbody2D>().position, GameObject.Find("Player").GetComponent<Rigidbody2D>().position);
+        return dist < DISTANCE_NOTICE_THRESHOLD;
+    }
+
     public object getEngineData(string expression)
     {
-        this.jintEngine.Execute("consoleResults.payload = " + expression + ";");
-        return (object)this.engineOutput.payload;
+        GameState.engine.Execute("consoleResults.payload = " + expression + ";");
+        return (object)GameState.engineOutput.payload;
     }
 
     string RandoMonsterID()
@@ -288,7 +313,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         //***TODO***:  Not the best plan to use the UI events to trigger model events.  This is done to bridge the gap between StartAttack and makeAttack since there is no sequencing of these events with a general event queue
         try
         {
-            this.jintEngine.Execute("var deathIndex = []; combatData.m_aCombatants[" + attacker + "].makeAttack(" + attacked + ", 0, deathIndex);");
+            GameState.engine.Execute("combatData.m_aCombatants[" + attacker + "].makeAttack(" + attacked + ", 0, -1);");
         } catch (JavaScriptException ex)
         {
             Debug.LogException(ex);
@@ -298,11 +323,6 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
 
     public void combatantDying(int id, int x, int y)
     {
-        if (GameState.deadMonsters.Count >= monsters.Count)
-        {
-            youWin();
-        }
-
         if (id == 0) {
             gameOver();
         } else { 
@@ -310,13 +330,6 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             GameState.deadMonsters.Add(id);
             this.RemoveCombatant(id);
         }
-    }
-
-    private void youWin()
-    {
-        GameState.monsterMoveIdx = int.MaxValue;
-        togglePanel("pnlWin", true);
-        GameState.allowInput = false;
     }
 
     private void gameOver()
@@ -336,7 +349,6 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
 
     public void OnEvent(string eventName, object data)
     {
-        ;
         switch (eventName) {
             case "UpdateCombatMessage":
                 GameObject.Find("txtCombatMessage").GetComponent<Text>().text = (string)data + this.CombatMessageSuffix;
@@ -367,8 +379,6 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
     public void Inventory()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("ViewInventoryScene");
-        GameState.engine = this.jintEngine;
-        GameState.engineOutput = this.engineOutput;
     }
 
     private void togglePanel(string panelName, bool on)
@@ -381,4 +391,62 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         }
 
     }
+
+    private IEnumerator getLoader(string type, InitComplete complete)
+    {
+        XmlDocument itemDataDoc;
+        XmlDocument configDoc;
+        XmlDocument specAbsDataDoc;
+        IEngineLoader loader;
+        if (type == "github")
+        {
+            UnityWebRequest configHttpReq = UnityWebRequest.Get(CONFIG_FILE_URL);
+            yield return configHttpReq.SendWebRequest();
+
+            if (configHttpReq.isNetworkError || configHttpReq.isHttpError)
+            {
+                Debug.Log(configHttpReq.error);
+            }
+            else
+            {
+                // Show results as text
+                Debug.Log("Loaded config file from " + CONFIG_FILE_URL + ".  Length:" + configHttpReq.downloadHandler.text.Length);
+            }
+
+            UnityWebRequest itemDataHttpReq = UnityWebRequest.Get(ITEMS_DATA_URL);
+            yield return itemDataHttpReq.SendWebRequest();
+            itemDataDoc = new XmlDocument();
+            itemDataDoc.LoadXml(itemDataHttpReq.downloadHandler.text);
+            configDoc = new XmlDocument();
+            configDoc.LoadXml(configHttpReq.downloadHandler.text);
+            loader = new GitHubEngineLoader();
+            specAbsDataDoc = new XmlDocument();
+        }
+        else if (type == "local") {
+
+            configDoc = new XmlDocument();
+            configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js</setupScript></config>");
+            loader = new LocalEngineLoader(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\");
+            itemDataDoc = new XmlDocument();
+            itemDataDoc.Load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\items.xml");
+            specAbsDataDoc = new XmlDocument();
+            specAbsDataDoc.Load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\SpecialAbilities.xml");
+        } else
+        {
+
+            loader = new ResourceEngineLoader("js", "setup");
+            itemDataDoc = new XmlDocument();
+            itemDataDoc.LoadXml(((TextAsset)Resources.Load("data/items")).text);
+            specAbsDataDoc = new XmlDocument();
+            specAbsDataDoc.LoadXml(((TextAsset)Resources.Load("data/SpecialAbilities")).text);
+            configDoc = null;
+        }
+
+        UnityUAFEventManager unityUAFEventManager = new UnityUAFEventManager(this);
+
+        GameState.engineOutput.payload = new System.Object[] { new UAFLib.dataLoaders.ItemLoader().load(itemDataDoc), new UAFLib.dataLoaders.SpecabilityLoader().load(specAbsDataDoc) };
+        GameState.engine.SetValue("consoleResults", GameState.engineOutput).SetValue("unityUAFEventManager", unityUAFEventManager);
+        loader.loadEngine(configDoc, GameState.engine, unityUAFEventManager, complete);
+    }
 }
+
