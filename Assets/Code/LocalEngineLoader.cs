@@ -26,7 +26,7 @@ public class LocalEngineLoader : IEngineLoader
         LoadFiles(jsIndexUrl, engine);
 
         String setupFileContents = "";
-        using (FileStream fs = new FileStream(@"C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js", FileMode.Open, FileAccess.Read))
+        using (FileStream fs = new FileStream(@"C:\Users\Shadow\Desktop\uaf.git\uaf-unity\engineManager.js", FileMode.Open, FileAccess.Read))
         {
             setupFileContents = new StreamReader(fs).ReadToEnd();
         }

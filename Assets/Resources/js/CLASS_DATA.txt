@@ -10,7 +10,11 @@
 };
 
 CLASS_DATA.prototype.GetCount = function () {
-    return this.m_baseclasses.length;
+    return this.m_baseclasses.GetCount();
+}
+
+CLASS_DATA.prototype.PeekBaseclassID = function (idx) {
+    return this.m_baseclasses.GetAtPos(idx);
 }
 
 CLASS_DATA.prototype.RunClassScripts = function(scriptName, fnc, pkt, comment) {

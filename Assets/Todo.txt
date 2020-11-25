@@ -1,7 +1,6 @@
-﻿- Probably a crash after returning from Inventory screen
-- Monsters seem to be starting inside the wall and then the wall is not blocking
-- When the game starts, a monster's data is painted on the char status screen
-- Display and award XP and level
+﻿- Reduce startup time
+- Probably a crash after returning from Inventory screen
+- Support diagonal moves
 - Ranged attacks
 - Dungeon Generation
 - Moving animations on player RigidBody
@@ -10,3 +9,4 @@
 - Move the window with the player smoothly when they get outiside of a certain box in the middle - e.g. x > 306 or x < 118.  Use Lerp.  See code in MainCameraEvents
 - Visit the shop(s?)!!!
 - Fog of war
+

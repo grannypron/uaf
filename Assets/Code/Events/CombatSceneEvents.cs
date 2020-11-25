@@ -69,9 +69,18 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         {
             scanAndDrawCombatants();
             randomizeAndPlaceMonsters();
+            // This is done because the monsters' moves paint their status on the screen, so let's replace it with the character's
+            paintCharStats();
             this.firstMapPaint = true;
             GameState.soundOn = true;
         }
+
+    }
+
+    private void paintCharStats()
+    {
+        object[] characterData = (object[])getEngineData("packageCombatantStatus(combatData.m_aCombatants[0])");
+        paintStatus(Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), characterData[2].ToString(), Int32.Parse(characterData[3].ToString()), Int32.Parse(characterData[4].ToString()), Int32.Parse(characterData[5].ToString()), Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), Int32.Parse(characterData[6].ToString()), Int32.Parse(characterData[8].ToString()));
 
     }
 
@@ -104,8 +113,22 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             {
                 int cellValue = System.Int32.Parse(((object)column[x]).ToString());
                 int[] coords = new int[] { x + centeringAdjustment.x, y + centeringAdjustment.y };
-                if (cellValue < 0)
+                if (cellValue == 0)
                 {
+                    placePlayer(coords[0], coords[1]);
+                }
+                else
+                {
+                    if (cellValue > 0)
+                    {
+                        if (!GameState.monsters.ContainsKey(cellValue))
+                        {
+                            string monsterID = RandoMonsterID();
+                            newMonster(cellValue, monsterID);
+                            GameState.monsters.Add(cellValue, monsterID);
+                        }
+                        placeMonster(coords[0], coords[1], cellValue);
+                    }
                     if (!registeredWalls)
                     {
                         // This is just temporary - I am populating the engine's grid from the tiles I drew in the Unity tilemap. It should go the other way around
@@ -121,26 +144,14 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
                             }
                         }
                     }
-                }
-                else if (cellValue == 0)
-                {
-                    placePlayer(coords[0], coords[1]);
-                }
-                else if (cellValue > 0)
-                {
-                    if (!GameState.monsters.ContainsKey(cellValue))
-                    {
-                        string monsterID = RandoMonsterID();
-                        newMonster(cellValue, monsterID);
-                        GameState.monsters.Add(cellValue, monsterID);
-                    }
-                    placeMonster(coords[0], coords[1], cellValue);
+                    // At this point, there may be a monster in a tile that is listed as blocked.  That is ok, they will
+                    // be moved by randomizeAndPlaceMonsters()
                 }
                 tileIdx++;
             }
         }
         registeredWalls = true;
-        paintCharStatus(Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), characterData[2].ToString(), Int32.Parse(characterData[3].ToString()), Int32.Parse(characterData[4].ToString()), Int32.Parse(characterData[5].ToString()), Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), Int32.Parse(characterData[6].ToString()), Int32.Parse(characterData[8].ToString()));
+        paintStatus(Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), characterData[2].ToString(), Int32.Parse(characterData[3].ToString()), Int32.Parse(characterData[4].ToString()), Int32.Parse(characterData[5].ToString()), Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), Int32.Parse(characterData[6].ToString()), Int32.Parse(characterData[8].ToString()));
 
     }
 
@@ -239,8 +250,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
     private void endMonsterMoves()
     {
         GameState.engineExecute("startRound();");
-        object[] characterData = (object[])getEngineData("packageCombatantStatus(combatData.m_aCombatants[0])");
-        paintCharStatus(Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), characterData[2].ToString(), Int32.Parse(characterData[3].ToString()), Int32.Parse(characterData[4].ToString()), Int32.Parse(characterData[5].ToString()), Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), Int32.Parse(characterData[6].ToString()), Int32.Parse(characterData[8].ToString()));
+        paintCharStats();
         GameState.allowInput = true;
     }
 
@@ -296,7 +306,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         //"CopperDragon", "GiantCrocodile", 
     }
 
-    void paintCharStatus(int x, int y, string name, int hp, int ac, int attacks, int cursorX, int cursorY, int movesLeft, int xp)
+    void paintStatus(int x, int y, string name, int hp, int ac, int attacks, int cursorX, int cursorY, int movesLeft, int xp)
     {
         Text txtCombatantInfo = GameObject.Find("txtCombatantInfo").GetComponent<Text>();
         txtCombatantInfo.enabled = true;
@@ -357,7 +367,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
                 break;
             case "CombatantMoved":
                 object[] aMove = (object[])data;
-                paintCharStatus((int)aMove[0], (int)aMove[1], (string)aMove[2], (int)aMove[3], (int)aMove[4], (int)aMove[5], (int)aMove[0], (int)aMove[1], (int)aMove[6], (int)aMove[7]);
+                paintStatus((int)aMove[0], (int)aMove[1], (string)aMove[2], (int)aMove[3], (int)aMove[4], (int)aMove[5], (int)aMove[0], (int)aMove[1], (int)aMove[6], (int)aMove[7]);
                 break;
             case "StartAttack":
                 int[] aAttack = (int[])data;
@@ -444,7 +454,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         else if (type == "local") {
 
             configDoc = new XmlDocument();
-            configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js</setupScript></config>");
+            configDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><config><jsLibraryIndex>" + @"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\UAFLib.csproj</jsLibraryIndex><setupScript>C:\Users\Shadow\Desktop\uaf.git\uaf-unity\engineManager.js</setupScript></config>");
             loader = new LocalEngineLoader(@"C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\");
             itemDataDoc = new XmlDocument();
             itemDataDoc.Load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\items.xml");
@@ -453,7 +463,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         } else
         {
 
-            loader = new ResourceEngineLoader("js", "setup");
+            loader = new ResourceEngineLoader("js", "engineManager");
             itemDataDoc = new XmlDocument();
             itemDataDoc.LoadXml(((TextAsset)Resources.Load("data/items")).text);
             specAbsDataDoc = new XmlDocument();

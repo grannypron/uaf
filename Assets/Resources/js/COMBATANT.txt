@@ -1002,7 +1002,6 @@ inline void SetAutomatic(BOOL flag) { m_pCharacter -> SetAutomatic(flag); };
 inline BYTE GetMaxMovement() const { return m_pCharacter-> GetMaxMovement(); };
 inline double GetNbrHD() const { return m_pCharacter-> GetNbrHD(); };
 inline void SetMaxMovement(BYTE val) { m_pCharacter -> SetMaxMovement(val); };
-inline int  getCharExpWorth() { return m_pCharacter -> getCharExpWorth(); };
 inline int  GetMaxHitPoints() const { return m_pCharacter-> GetMaxHitPoints();};
 inline int  GetEffectiveAC(void) const { return m_pCharacter-> GetEffectiveAC();};
 inline BOOL IsAlive() { return m_pCharacter -> IsAlive(); };
@@ -4179,4 +4178,8 @@ COMBATANT.prototype.TakeNextStep = function(allowZeroMoveAttack) {
 
 COMBATANT.prototype.OnEndTurn = function() {
     Globals.TRACE("OnEndTurn for " + this.self + "\n");
+}
+
+COMBATANT.prototype.getCharExpWorth = function() {
+    return this.m_pCharacter.getCharExpWorth();
 }

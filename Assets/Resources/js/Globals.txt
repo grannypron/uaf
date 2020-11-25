@@ -304,7 +304,7 @@ Globals.prototype.UpdateSkillValue = function(SC) {
             var baseclassID = "";
             var pBaseclass;
             SC.pClass.PeekBaseclassID(i);
-            if (SC.baseclassID.IsEmpty() || (SC.baseclassID == baseclassID)) {
+            if (UAFUtil.IsEmpty(SC.baseclassID) || (SC.baseclassID == baseclassID)) {
                 pBaseclass = baseclassData.PeekBaseclass(baseclassID);
                 if (pBaseclass == null) continue;
                 if (UAFUtil.IsEmpty(SC.baseclassID) || (SC.baseclassID == pBaseclass.BaseclassID())) {
@@ -379,6 +379,7 @@ Globals.prototype.GetEffectiveTargetAC = function(pTarget, pAttacker, itemID) {
 
 
 Globals.prototype.PlayCharMiss = function (play) {
+    if (play == null || play == undefined) { play = true; }       // Default parameter
     if (play && SoundMgr.PlaySoundEffects) {
         if (!SoundMgr.ValidSound(globalData.sounds.hCharMiss))
             globalData.sounds.hCharMiss = SoundMgr.LoadSound(globalData.sounds.CharMiss);
@@ -392,6 +393,7 @@ Globals.prototype.PlayCharMiss = function (play) {
 
 
 Globals.prototype.PlayCharHit = function(play) {
+    if (play == null || play == undefined) { play = true; }     // Default parameter
     if ((play) && SoundMgr.PlaySoundEffects) {
         if (!SoundMgr.ValidSound(globalData.sounds.hCharHit))
             globalData.sounds.hCharHit = SoundMgr.LoadSound(globalData.sounds.CharHit);
@@ -441,4 +443,13 @@ Globals.prototype.GetNumMonsterSlain = function () {
 
 Globals.prototype.EnableUserInput = function (val) {
     Globals.debug("EnableUserInput: " + val);
+}
+
+Globals.prototype.GetAllExpMod = function() {
+    var lvl = Globals.GetCurrSkillLevel();
+    if ((lvl < 0) || (lvl > 4)) return 0;
+    if (globalData.m_diffLvlData.m_data[lvl].m_ModifyAllExp)
+        return globalData.m_diffLvlData.m_data[lvl].m_AExpAmount;
+    else
+        return 0;
 }

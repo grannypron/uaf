@@ -7,7 +7,7 @@ Dir C:\Users\Shadow\Desktop\uaf.git\uaf-unity\Assets\Resources\js\*.js | rename-
 Dir C:\Users\Shadow\Desktop\uaf.git\uaf-unity\Assets\Resources\js\interop\*.js | rename-item -newname { [io.path]::ChangeExtension($_.name, "txt") }
 cp C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\data\items.xml C:\Users\Shadow\Desktop\uaf.git\uaf-unity\Assets\Resources\data\items.txt
 cp C:\Users\Shadow\Desktop\uaf.git\uaf-port\src\UAFLib\data\SpecialAbilities.xml C:\Users\Shadow\Desktop\uaf.git\uaf-unity\Assets\Resources\data\SpecialAbilities.txt
-cp C:\Users\Shadow\Desktop\uaf.git\uaf-unity\setup.js C:\Users\Shadow\Desktop\uaf.git\uaf-unity\Assets\Resources\setup.txt
+cp C:\Users\Shadow\Desktop\uaf.git\uaf-unity\engineManager.js C:\Users\Shadow\Desktop\uaf.git\uaf-unity\Assets\Resources\engineManager.txt
 
 
 
