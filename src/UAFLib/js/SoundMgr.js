@@ -16,7 +16,10 @@ SoundMgrObj.prototype.ClearSound = function (sound) {
     this.pSndMgr.RemoveSound(sound);
 }
 
-SoundMgrObj.prototype.LoadSound = function(file) {
+SoundMgrObj.prototype.LoadSound = function (file) {
+    var sb = new SOUND_BYTE();
+    sb.hSound = file;
+    return sb;
     /**TODO
     if (pSndMgr == NULL) return -1;
     BOOL ismidi = IsMIDIFile(file);
@@ -35,7 +38,6 @@ SoundMgrObj.prototype.ValidSound = function (sound) {
 }
 
 SoundMgrObj.prototype.PlaySound = function (file) {
-    /**TODO** Stub */
     UIEventManager.PlaySound(file);
     return true;
 }

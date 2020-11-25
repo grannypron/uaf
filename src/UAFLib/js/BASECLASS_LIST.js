@@ -10,6 +10,10 @@ BASECLASS_LIST.prototype.GetCount = function() {
     return this.baseclasses.length;
 }
 
+BASECLASS_LIST.prototype.GetAtPos = function (idx) {
+    return this.baseclasses[idx];
+}
+
 /**TODO
 void Remove(const BASECLASS_ID& baseclassID);
 void Serialize(CArchive & ar);

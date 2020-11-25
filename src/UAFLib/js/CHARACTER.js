@@ -3096,7 +3096,7 @@ CHARACTER.prototype.LocateBaseclassStats = function(baseclassID) {
     var i = 0, n = 0;
     n = this.baseclassStats.length;
     for (i = 0; i < n; i++) {
-        if (this.baseclassStats[i] == baseclassID) return i;
+        if (this.baseclassStats[i].baseclassID == baseclassID) return i;
     }
     return -1;
 }
@@ -4146,6 +4146,14 @@ CHARACTER.prototype.IncCurrExp = function (baseclassID, exp) {
     return pStats.IncCurExperience(exp);
 }
 
+CHARACTER.prototype.GetBaseclassStats = function (baseclassID) {
+    for (idx = 0; idx < this.baseclassStats.length; idx++) {
+        if (this.baseclassStats[idx].baseclassID == baseclassID) {
+            return this.baseclassStats[idx];
+        }
+    }
+    return null;
+} 
 
 CHARACTER.prototype.SetLevel = function (lvl) { throw "todo"; }
 CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };

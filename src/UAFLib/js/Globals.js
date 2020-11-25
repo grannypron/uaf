@@ -379,6 +379,7 @@ Globals.prototype.GetEffectiveTargetAC = function(pTarget, pAttacker, itemID) {
 
 
 Globals.prototype.PlayCharMiss = function (play) {
+    if (play == null || play == undefined) { play = true; }       // Default parameter
     if (play && SoundMgr.PlaySoundEffects) {
         if (!SoundMgr.ValidSound(globalData.sounds.hCharMiss))
             globalData.sounds.hCharMiss = SoundMgr.LoadSound(globalData.sounds.CharMiss);
@@ -392,6 +393,7 @@ Globals.prototype.PlayCharMiss = function (play) {
 
 
 Globals.prototype.PlayCharHit = function(play) {
+    if (play == null || play == undefined) { play = true; }     // Default parameter
     if ((play) && SoundMgr.PlaySoundEffects) {
         if (!SoundMgr.ValidSound(globalData.sounds.hCharHit))
             globalData.sounds.hCharHit = SoundMgr.LoadSound(globalData.sounds.CharHit);

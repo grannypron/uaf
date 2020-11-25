@@ -31,6 +31,7 @@ function loadClasses() {
     data2.m_name = "Thief";
     data2.m_baseclasses.baseclasses.push("thief");
     classData.AddClass(data2);
+
 }
 
 function loadAbilities() {
@@ -49,8 +50,17 @@ function loadAbility(abilityName) {
     abilityData.AddAbility(data);
 }
 
+
+var bcd = new BASE_CLASS_DATA();
+bcd.m_name = "fighter";
+baseclassData.Add(bcd);
+
 var Warrior = Deserialize("Warrior.chr");
 Warrior.SetStatus(charStatusType.Okay);
+var bcs = new BASECLASS_STATS();
+bcs.baseclassID = "fighter";
+bcs.pBaseclassData = bcd;
+Warrior.baseclassStats.push(bcs);
 
 loadLibraryStub();
 SPECAB.loadData(specialAbilitiesData, "C:\\Users\\Shadow\\Downloads\\Full_Release_191031\\TutorialDesign.dsn\\Data\\specialAbilities.dat");
@@ -60,8 +70,8 @@ Globals.logDebuggingInfo = true;
 
 party.addTempToParty(Warrior);
 
-Globals.ASSERT(Warrior.GetCurrExp("fighter") == 0);
+Globals.ASSERT(Warrior.GetCurrExp("fighter") == 0, "TestExperience.js - 1");
 
 Warrior.giveCharacterExperience(100, false);
 Globals.debug(Warrior.GetCurrExp("fighter"));
-Globals.ASSERT(Warrior.GetCurrExp("fighter") == 100);
+Globals.ASSERT(Warrior.GetCurrExp("fighter") == 100, "TestExperience.js - 2");

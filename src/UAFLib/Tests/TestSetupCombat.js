@@ -46,6 +46,8 @@ function loadMonsters() {
     monsterData.MonsterData[0].Size = creatureSizeType.Medium;
     monsterData.MonsterData[0].Morale = 25;
     monsterData.MonsterData[0].XP_Value = 7;
+    monsterData.MonsterData[0].MoveSound = new SOUND_BYTE();
+    monsterData.MonsterData[0].MoveSound.hSound = "sound_CharMove";
     monsterData.MonsterData[0].m_type = MONSTER_TYPE;
     monsterData.MonsterData[0].Race = RACE_DATA_TYPE.Monster;
     monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0] = new ATTACK_DETAILS()
@@ -123,11 +125,16 @@ globalData.SetMaxPCs(2);
 globalData.SetMinPCs(2);
 globalData.SetMaxPartySize(2);
 
+
 party.addTempToParty(Warrior);
 combatEventData.distance = eventDistType.UpClose;
 combatEventData.m_UseOutdoorMap = false; // only outdoor stub is in place right now
 combatEventData.direction = eventDirType.North;
 combatData.InitCombatData(combatEventData);
+
+combatData.m_hCharMoveSound = "sound_CharMove";
+globalData.sounds.hCharHit = "sound_Hit";
+globalData.sounds.hCharMiss = "sound_Miss";
 
 var dataStr = "";
 var data = [];

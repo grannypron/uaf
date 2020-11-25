@@ -87,6 +87,7 @@
     <Content Include="js\ACTIVE_SPELL_LIST.js" />
     <Content Include="js\AUTO_FLAGS.js" />
     <Content Include="js\BASECLASS_LIST.js" />
+    <Content Include="js\BASE_CLASS_DATA.js" />
     <Content Include="js\CPoint.js" />
     <Content Include="js\ERRORLOG.js" />
     <Content Include="js\Forth.js" />
