@@ -21,6 +21,7 @@ function loadLibraryStub() {
     loadAbilities();
     loadClasses();
     loadMonsters();
+    loadBaseClassStats();
 }
 
 function loadRaces() {
@@ -29,6 +30,11 @@ function loadRaces() {
     raceData.AddRace(data);
 }
 
+function loadBaseClassStats() {
+    var bcd = new BASE_CLASS_DATA();
+    bcd.m_name = "fighter";
+    baseclassData.Add(bcd);
+}
 function loadMonsters() {
 
     monsterData.MonsterData[0] = new MONSTER_DATA();

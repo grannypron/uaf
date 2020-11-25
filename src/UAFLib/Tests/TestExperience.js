@@ -108,12 +108,11 @@ Globals.logDebuggingInfo = true;
 
 party.addTempToParty(Warrior);
 
-Globals.ASSERT(Warrior.GetCurrExp("fighter") == 0, "TestExperience.js - 1");
+Globals.ASSERT(Warrior.GetCurrExp(Warrior.classID.toLowerCase()) == 0, "TestExperience.js - 1");
 Warrior.giveCharacterExperience(100, false);
-Globals.ASSERT(Warrior.GetCurrExp("fighter") == 100, "TestExperience.js - 2");
+Globals.ASSERT(Warrior.GetCurrExp(Warrior.classID.toLowerCase()) == 100, "TestExperience.js - 2");
 
 
-Globals.debug(Warrior.GetCurrExp("fighter"));
 
 
 

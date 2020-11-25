@@ -66,8 +66,6 @@
     int  GetMinExpForLevel(int level) const ;
     int  GetLevel(DWORD exp) const ;
 
-    //void ComputeCharSavingThrow(const CString& versus, int *result, int level) const;
-    void GetSkillValue(SKILL_COMPUTATION & SC) const ;
     */
 }
 
@@ -77,4 +75,55 @@ BASE_CLASS_DATA.prototype.GetCastingInfoCount = function () {
 
 BASE_CLASS_DATA.prototype.GetExpLevelsCount = function () {
     return this.m_expLevels.length;
+}
+
+BASE_CLASS_DATA.prototype.GetSkillValue = function(SC) {
+    var pSkill;
+    var indx = 0;
+    indx = this.LocateSkill(SC.skillID);
+    if (indx < 0) return SC;
+        pSkill = this.PeekSkill(indx);
+    if (SC.baseclassValue == NoSkill) {
+        SC.baseclassValue = pSkill.value;
+        if (SC.ppBestBaseclass != null) {
+            SC.ppBestBaseclass = this;
+        }
+    }
+    else {
+        if (SC.minimize) {
+            if (pSkill.value < SC.baseclassValue) {
+                if (SC.ppBestBaseclass != NULL) {
+                    SC.ppBestBaseclass = this;
+                }
+                SC.baseclassValue = pSkill.value;
+            }
+        }
+        else {
+            if (pSkill.value > SC.baseclassValue) {
+                if (SC.ppBestBaseclass != null) {
+                    SC.ppBestBaseclass = this;
+                }
+                SC.baseclassValue = pSkill.value;
+            }
+        }
+    }
+    return SC;
+}
+
+
+BASE_CLASS_DATA.prototype.LocateSkill = function(skillID) {
+    var i = 0, n = 0;
+    n = this.GetSkillCount();
+    for (i = 0; i < n; i++) {
+        if (this.PeekSkill(i).skillID == skillID) return i;
+    }
+    return -1;
+}
+
+BASE_CLASS_DATA.prototype.PeekSkill = function (idx) {
+    return this.m_skills[idx];
+}
+
+BASE_CLASS_DATA.prototype.GetSkillCount = function () {
+    return this.m_skills.length;
 }

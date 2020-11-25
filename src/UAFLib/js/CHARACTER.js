@@ -3522,7 +3522,7 @@ CHARACTER.prototype.GetAdjSkillValue = function (skillName, minimize, includeTem
 
 CHARACTER.prototype.PeekRaceData = function () {
     var pRace;
-    pRace = raceData.PeekRace(race);
+    pRace = raceData.PeekRace(this.race);
     if (pRace != null) return pRace;
     if (this == Globals.FakeCharacter) return raceData.PeekRace(0);
     if (!debugStrings.AlreadyNoted("CHARPRD")) {

@@ -304,7 +304,7 @@ Globals.prototype.UpdateSkillValue = function(SC) {
             var baseclassID = "";
             var pBaseclass;
             SC.pClass.PeekBaseclassID(i);
-            if (SC.baseclassID.IsEmpty() || (SC.baseclassID == baseclassID)) {
+            if (UAFUtil.IsEmpty(SC.baseclassID) || (SC.baseclassID == baseclassID)) {
                 pBaseclass = baseclassData.PeekBaseclass(baseclassID);
                 if (pBaseclass == null) continue;
                 if (UAFUtil.IsEmpty(SC.baseclassID) || (SC.baseclassID == pBaseclass.BaseclassID())) {
