@@ -444,3 +444,12 @@ Globals.prototype.GetNumMonsterSlain = function () {
 Globals.prototype.EnableUserInput = function (val) {
     Globals.debug("EnableUserInput: " + val);
 }
+
+Globals.prototype.GetAllExpMod = function() {
+    var lvl = Globals.GetCurrSkillLevel();
+    if ((lvl < 0) || (lvl > 4)) return 0;
+    if (globalData.m_diffLvlData.m_data[lvl].m_ModifyAllExp)
+        return globalData.m_diffLvlData.m_data[lvl].m_AExpAmount;
+    else
+        return 0;
+}

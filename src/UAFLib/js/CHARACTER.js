@@ -2629,7 +2629,7 @@ CHARACTER.prototype.generateNewCharacter = function (StartExperience, StartExpTy
                 var baseclassID = "";
                 baseclassID = pClass.PeekBaseclassID(i); // PORT NOTE:  CLASS_DATA has .m_baseclasses, a BASECLASS_LIST.  BASECLASS_LIST has .baseclasses, and array of BASECLASS_ID (which probably can just be strings).  So, CLASS_DATA.PeekBaseclassID(idx) is just .m_baseclasses[idx] //                 //classData is a global of CLASS_DATA_TYPE and it has .m_ClassData which is an array of CLASS_DATA //                 // So pClass here is a CLASS_DATA - why does it have multiple BaseclassIDs?  Maybe multiclass?
                 bcs.baseclassID = baseclassID;
-                baseclassStats.Add(bcs);
+                this.baseclassStats.push(bcs);
             };
         }
     };
@@ -2754,7 +2754,7 @@ CHARACTER.prototype.getNewCharLevel = function (pTrainableBaseclasses, maxLevelG
             var pstats;
             var pTrainableBaseclass;
             var pBaseclass;
-            pstats = this.GetBaseclassStats(i);
+            pstats = this.baseclassStats[i];
             if (pstats.currentLevel == 0) {
                 continue;  // To next baseclass
             };
@@ -4153,7 +4153,52 @@ CHARACTER.prototype.GetBaseclassStats = function (baseclassID) {
         }
     }
     return null;
-} 
+}
+
+CHARACTER.prototype.GetLevelCap = function (pBaseclass) {
+    return 999999999;
+    /**TODO**
+    SKILL_COMPUTATION SC(this, Skill_MaxLevel, true, true);
+    //Limit baseclass search to this one baseclass.
+
+
+    SC.baseclassID = pBaseclass -> BaseclassID();
+    // Should already have been done in SC constructor   SC.pRace = raceData.PeekRace(this->race);
+  :: GetAdjSkillValue(SC);
+    if (SC.finalAdjustedValue == NoSkillAdj) return NoSkill;
+    return SC.finalAdjustedValue + 0.5;*/
+}
+
+
+CHARACTER.prototype.getCharExpWorth = function () {
+    var totexp = 0;
+    if (this.type == NPC_TYPE) {
+        var parameter = "";
+        parameter = this.specAbs.GetString(SA_XP_Value);
+        totexp = parseInt(parameter); if (isNan(totexp)) { totexp = 0; }
+    }
+    else {
+        var i = 0, n = 0;
+        n = this.GetBaseclassStatsCount();
+        for (i = 0; i < n; i++) {
+            var pBaseclassStats;
+            pBaseclassStats = this.baseclassStats[i];
+            totexp += pBaseclassStats.CurExperience();
+        };
+    };
+
+    var pos = this.myItems.GetHeadPosition();
+    while (pos != null)
+        totexp += itemData.GetItemExpWorth(myItems.GetNext(pos).itemID);
+
+    var mod = Globals.GetAllExpMod();
+    if (mod != 0.0) totexp += ((mod / 100.0) * totexp);
+    if (totexp < 0) totexp = 0;
+
+    return totexp;
+}
+
+
 
 CHARACTER.prototype.SetLevel = function (lvl) { throw "todo"; }
 CHARACTER.prototype.CanMemorizeSpells = function (circumstance) { throw "todo"; };
@@ -4162,7 +4207,6 @@ CHARACTER.prototype.GetHealingPointsNeeded = function () { throw "todo"; };
 CHARACTER.prototype.giveCharacterDamage = function (eventSave, attackTHAC0, dmgDice, dmgDiceQty, dmgBonus, spellSave, saveBonus, pAttacker) { throw "todo"; };
 CHARACTER.prototype.giveCharacterDamage = function (damage) { throw "todo"; };
 CHARACTER.prototype.TakeDamage = function (dmg, IsNonLethal, invokeOptions, canFinishCasting, pDeathIndex) { throw "todo"; };
-CHARACTER.prototype.GetLevelCap = function (pBaseclass) { throw "todo"; };
 CHARACTER.prototype.CanBeModified = function () { throw "todo"; }
 CHARACTER.prototype.getAllowedAlignments = function () { throw "todo"; }
 CHARACTER.prototype.GetThiefBackstabDamageMultiplier = function () { throw "todo"; }
@@ -4244,7 +4288,6 @@ CHARACTER.prototype.GetAdjReadyToTrain = function (flags) { if (!flags) { flags 
 CHARACTER.prototype.SetReadyToTrain = function (enable) { throw "todo"; }
 CHARACTER.prototype.IsAbleToTrade = function () { throw "todo"; }
 CHARACTER.prototype.SetAbleToTrade = function (enable) { throw "todo"; }
-CHARACTER.prototype.getCharExpWorth = function () { throw "todo"; }
 CHARACTER.prototype.ClearLevels = function () { throw "todo"; }
 CHARACTER.prototype.GetCurrLevel = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.GetAllowedLevel = function (baseclassID) { throw "todo"; }

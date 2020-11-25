@@ -70,3 +70,11 @@
     void GetSkillValue(SKILL_COMPUTATION & SC) const ;
     */
 }
+
+BASE_CLASS_DATA.prototype.GetCastingInfoCount = function () {
+    return this.m_castingInfo.length;
+}
+
+BASE_CLASS_DATA.prototype.GetExpLevelsCount = function () {
+    return this.m_expLevels.length;
+}

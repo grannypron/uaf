@@ -19,6 +19,14 @@ function Deserialize(filename, debug) {
 function loadLibraryStub() {
     loadAbilities();
     loadClasses();
+    loadMonsters();
+    loadRaces();
+}
+
+function loadRaces() {
+    var data = new RACE_DATA();
+    data.m_name = "Monster";
+    raceData.AddRace(data);
 }
 
 function loadClasses() {
@@ -31,6 +39,36 @@ function loadClasses() {
     data2.m_name = "Thief";
     data2.m_baseclasses.baseclasses.push("thief");
     classData.AddClass(data2);
+
+}
+
+
+function loadMonsters() {
+
+    monsterData.MonsterData[0] = new MONSTER_DATA();
+    monsterData.MonsterData[0].Name = "Kobold";
+    monsterData.MonsterData[0].monsterID = "Kobold";
+    monsterData.MonsterData[0].classID = "Fighter";
+    monsterData.MonsterData[0].raceID = "Monster";
+    monsterData.MonsterData[0].intelligence = 9;
+    monsterData.MonsterData[0].Armor_Class = 10;
+    monsterData.MonsterData[0].Movement = 6;
+    monsterData.MonsterData[0].Hit_Dice = 0.500000;
+    monsterData.MonsterData[0].UseHitDice = true;
+    monsterData.MonsterData[0].Hit_Dice_Bonus = 0;
+    monsterData.MonsterData[0].THAC0 = 20;
+    monsterData.MonsterData[0].Magic_Resistance = 0;
+    monsterData.MonsterData[0].Size = creatureSizeType.Medium;
+    monsterData.MonsterData[0].Morale = 25;
+    monsterData.MonsterData[0].XP_Value = 7;
+    monsterData.MonsterData[0].MoveSound = new SOUND_BYTE();
+    monsterData.MonsterData[0].MoveSound.hSound = "sound_CharMove";
+    monsterData.MonsterData[0].m_type = MONSTER_TYPE;
+    monsterData.MonsterData[0].Race = RACE_DATA_TYPE.Monster;
+    monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0] = new ATTACK_DETAILS()
+    monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].sides = 4;
+    monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].nbr = 1;
+    monsterData.MonsterData[0].attackData.monsterAttackDetails.mList[0].bonus = 0;
 
 }
 
@@ -71,7 +109,38 @@ Globals.logDebuggingInfo = true;
 party.addTempToParty(Warrior);
 
 Globals.ASSERT(Warrior.GetCurrExp("fighter") == 0, "TestExperience.js - 1");
-
 Warrior.giveCharacterExperience(100, false);
-Globals.debug(Warrior.GetCurrExp("fighter"));
 Globals.ASSERT(Warrior.GetCurrExp("fighter") == 100, "TestExperience.js - 2");
+
+
+Globals.debug(Warrior.GetCurrExp("fighter"));
+
+
+
+
+var combatEventData = new COMBAT_EVENT_DATA();
+combatEventData.monsters = new MONSTER_EVENT_DATA();
+var monsterEvent = new MONSTER_EVENT();
+monsterEvent.UseQty = MONSTER_EVENT.meUseQty;
+monsterEvent.qty = 3;
+monsterEvent.monsterID = "Kobold";
+monsterEvent.m_type = MONSTER_TYPE;
+combatEventData.monsters.Add(monsterEvent);
+
+var combatData = new COMBAT_DATA();    // This is pretty much the combat "map" and all data on it
+party.Posx = 10;
+party.Posy = 10;
+globalData.SetMaxPCs(2);
+globalData.SetMinPCs(2);
+globalData.SetMaxPartySize(2);
+
+
+party.addTempToParty(Warrior);
+combatEventData.distance = eventDistType.UpClose;
+combatEventData.m_UseOutdoorMap = false; // only outdoor stub is in place right now
+combatEventData.direction = eventDirType.North;
+combatData.InitCombatData(combatEventData);
+
+
+
+Globals.ASSERT(combatData.m_aCombatants[1].getCharExpWorth() > 0);
