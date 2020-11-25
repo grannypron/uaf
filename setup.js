@@ -27,7 +27,7 @@ UIEventManager.UpdateCombatMessage = function () {
 
 UIEventManager.CombatantMoved = function (x, y, self, w, h) {
     var c = combatData.m_aCombatants[self];
-    unityUAFEventManager.CombatantMoved(x, y, c.GetName(), c.GetHitPoints(), c.GetAdjAC(), c.GetNbrAttacks(), c.m_pCharacter.GetMaxMovement() - c.m_iMovement);
+    unityUAFEventManager.CombatantMoved(x, y, c.GetName(), c.GetHitPoints(), c.GetAdjAC(), c.GetNbrAttacks(), c.m_pCharacter.GetMaxMovement() - c.m_iMovement, c.m_pCharacter.GetCurrExp(c.m_pCharacter.classID.toLowerCase()));
 }
 
 UIEventManager.StartAttack = function (attacker, attacked) {
@@ -39,6 +39,11 @@ UIEventManager.CombatantDying = function (id, x, y) {
 }
 
 UIEventManager.CombatantDead = function (id, x, y) {
+    /** TODO:  I don't love having the xp awarding happening at this layer.  It is here because the engine only awards xp
+     * after the battle is "over" via DetermineVictoryExpPoints(), but in this game, the battle is never over.  So that logic
+     * has to go somwhere and I figured here would be a better place than the UI layer */
+    var xp = combatData.m_aCombatants[id].getCharExpWorth();
+    combatData.m_aCombatants[0].m_pCharacter.giveCharacterExperience(xp, false);
     unityUAFEventManager.CombatantDead(id, x, y);
 }
 
@@ -51,6 +56,7 @@ function loadLibraryStub() {
     loadAbilities();
     loadClasses();
     loadMonsters();
+    loadBaseClassStats();
 }
 
 function loadRaces() {
@@ -64,6 +70,7 @@ function loadMonsters() {
     monsterData.MonsterData[0].Name = "Kobold";
     monsterData.MonsterData[0].monsterID = "Kobold";
     monsterData.MonsterData[0].classID = "Fighter";
+    monsterData.MonsterData[0].raceID = "Monster";
     //icon file = icon_Kobold.png, 0, 2, 48, 48, 0, 1, 2
     //miss sound = sound_Miss.wav
     //hit sound = sound_Hit.wav
@@ -111,6 +118,12 @@ function loadClasses() {
     classData.AddClass(data2);
 }
 
+function loadBaseClassStats() {
+    var bcd = new BASE_CLASS_DATA();
+    bcd.m_name = "fighter";
+    baseclassData.Add(bcd);
+}
+
 function loadAbilities() {
     loadAbility("Strength");
     loadAbility("Intelligence");
@@ -137,6 +150,7 @@ function packageCombatantStatus(c) {
     data[5] = c.GetNbrAttacks();
     data[6] = c.m_pCharacter.GetMaxMovement() - c.m_iMovement;
     data[7] = c.m_pCharacter.monsterID;
+    data[8] = c.m_pCharacter.GetCurrExp(c.m_pCharacter.classID.toLowerCase());
     return data;
 }
 
@@ -166,7 +180,6 @@ function makeInventoryList(c) {
     }
     return str;
 }
-
 
 
 var combatantReady = -1;

@@ -6,7 +6,7 @@
 - Dungeon Generation
 - Moving animations on player RigidBody
 - Comment the living hell out of everything
+- Leveling up - start at CHARACTER.prototype.GetLevelCap
 - Move the window with the player smoothly when they get outiside of a certain box in the middle - e.g. x > 306 or x < 118.  Use Lerp.  See code in MainCameraEvents
-- Find a better way to switch between loaders in CombatScreenEvents - including the fact that the return type of Start() has to change depending on which one we use
 - Visit the shop(s?)!!!
 - Fog of war

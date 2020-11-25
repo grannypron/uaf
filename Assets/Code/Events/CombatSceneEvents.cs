@@ -34,7 +34,6 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
     {
         PlayerScaleFactor = (int)Math.Floor(GameObject.Find("Player").GetComponent<Transform>().localScale.x);
         Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
-        DontDestroyOnLoad(GameObject.Find("pnlDead"));
         togglePanel("pnlDead", false);
         DontDestroyOnLoad(this.gameObject);
         Text txtCombatantInfo = GameObject.Find("txtCombatantInfo").GetComponent<Text>();
@@ -141,7 +140,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             }
         }
         registeredWalls = true;
-        paintCharStatus(Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), characterData[2].ToString(), Int32.Parse(characterData[3].ToString()), Int32.Parse(characterData[4].ToString()), Int32.Parse(characterData[5].ToString()), Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), Int32.Parse(characterData[6].ToString()));
+        paintCharStatus(Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), characterData[2].ToString(), Int32.Parse(characterData[3].ToString()), Int32.Parse(characterData[4].ToString()), Int32.Parse(characterData[5].ToString()), Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), Int32.Parse(characterData[6].ToString()), Int32.Parse(characterData[8].ToString()));
 
     }
 
@@ -241,7 +240,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
     {
         GameState.engineExecute("startRound();");
         object[] characterData = (object[])getEngineData("packageCombatantStatus(combatData.m_aCombatants[0])");
-        paintCharStatus(Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), characterData[2].ToString(), Int32.Parse(characterData[3].ToString()), Int32.Parse(characterData[4].ToString()), Int32.Parse(characterData[5].ToString()), Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), Int32.Parse(characterData[6].ToString()));
+        paintCharStatus(Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), characterData[2].ToString(), Int32.Parse(characterData[3].ToString()), Int32.Parse(characterData[4].ToString()), Int32.Parse(characterData[5].ToString()), Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), Int32.Parse(characterData[6].ToString()), Int32.Parse(characterData[8].ToString()));
         GameState.allowInput = true;
     }
 
@@ -297,13 +296,14 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         //"CopperDragon", "GiantCrocodile", 
     }
 
-    void paintCharStatus(int x, int y, string name, int hp, int ac, int attacks, int cursorX, int cursorY, int movesLeft)
+    void paintCharStatus(int x, int y, string name, int hp, int ac, int attacks, int cursorX, int cursorY, int movesLeft, int xp)
     {
         Text txtCombatantInfo = GameObject.Find("txtCombatantInfo").GetComponent<Text>();
         txtCombatantInfo.enabled = true;
         txtCombatantInfo.text = name + " (0:" + x + "," + y + ")\n";
         txtCombatantInfo.text += "HITPOINTS  " + hp + "\n";
         txtCombatantInfo.text += "AC   " + ac + "\n";
+        txtCombatantInfo.text += "XP   " + xp + "\n";
         //txtCombatantInfo.text += "Attacks: " + attacks + "\n";
         //txtCombatantInfo.text += "Cursor: " + y + ", " + x + "\n";   // x/y are flipped in combat engine position array
         //txtCombatantInfo.text += "Moves Left: " + movesLeft + "\n";
@@ -357,7 +357,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
                 break;
             case "CombatantMoved":
                 object[] aMove = (object[])data;
-                paintCharStatus((int)aMove[0], (int)aMove[1], (string)aMove[2], (int)aMove[3], (int)aMove[4], (int)aMove[5], (int)aMove[0], (int)aMove[1], (int)aMove[6]);
+                paintCharStatus((int)aMove[0], (int)aMove[1], (string)aMove[2], (int)aMove[3], (int)aMove[4], (int)aMove[5], (int)aMove[0], (int)aMove[1], (int)aMove[6], (int)aMove[7]);
                 break;
             case "StartAttack":
                 int[] aAttack = (int[])data;

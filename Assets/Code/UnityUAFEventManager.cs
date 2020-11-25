@@ -20,9 +20,9 @@ public class UnityUAFEventManager
         this.notifyAll("UpdateCombatMessage", message);
     }
 
-    public void CombatantMoved(int x, int y, string name, int hp, int ac, int attacks, int moves)
+    public void CombatantMoved(int x, int y, string name, int hp, int ac, int attacks, int moves, int xp)
     {
-        object[] data = new object[7];
+        object[] data = new object[8];
         data[0] = x;
         data[1] = y;
         data[2] = name;
@@ -30,6 +30,7 @@ public class UnityUAFEventManager
         data[4] = ac;
         data[5] = attacks;
         data[6] = moves;
+        data[7] = xp;
         this.notifyAll("CombatantMoved", data);
     }
 
