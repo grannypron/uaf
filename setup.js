@@ -42,6 +42,10 @@ UIEventManager.CombatantDead = function (id, x, y) {
     unityUAFEventManager.CombatantDead(id, x, y);
 }
 
+UIEventManager.PlaySound = function (soundName) {
+    unityUAFEventManager.PlaySound(soundName);
+}
+
 function loadLibraryStub() {
     loadRaces();
     loadAbilities();
@@ -243,6 +247,12 @@ monsterEvent.qty = 10;
 monsterEvent.qty = 3;
 monsterEvent.monsterID = "Kobold";
 monsterEvent.m_type = MONSTER_TYPE;
+monsterData.MonsterData[0].MoveSound = new SOUND_BYTE();
+monsterData.MonsterData[0].MoveSound.hSound = "sound_CharMove";
+monsterData.MonsterData[0].MissSound = new SOUND_BYTE();
+monsterData.MonsterData[0].MissSound.hSound = "sound_Miss";
+monsterData.MonsterData[0].HitSound = new SOUND_BYTE();
+monsterData.MonsterData[0].HitSound.hSound = "sound_Hit";
 combatEventData.distance = eventDistType.UpClose;
 combatEventData.monsters.Add(monsterEvent);
 //combatEventData.randomMonster = true;   // This seems to cause an NPE at Line 306 of COMBAT_DATA - "pSaveCharPointer is null"
@@ -261,6 +271,10 @@ combatEventData.distance = eventDistType.UpClose;
 combatEventData.m_UseOutdoorMap = false; // only outdoor stub is in place right now
 combatEventData.direction = eventDirType.North;
 combatData.InitCombatData(combatEventData);
+
+combatData.m_hCharMoveSound = "sound_CharMove";
+globalData.sounds.hCharHit = "sound_Hit";
+globalData.sounds.hCharMiss = "sound_Miss";
 
 cWarrior = combatData.m_aCombatants[0];
 

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Jint.Runtime;
 using UAFLib;
+using UnityEngine;
 
 public static class GameState
 {
@@ -18,4 +17,17 @@ public static class GameState
     public static List<int> deadMonsters = new List<int>();
     public static BitArray blockedSquares;
     public static int mapDataWidth, mapDataHeight;
+    public static bool soundOn = false;
+
+    public static void engineExecute(string expression)
+    {
+        try
+        {
+            engine.Execute(expression);
+        }
+        catch (Exception ex)
+        {
+            Debug.Log("Jint Exception.  Line: " + ex);
+        }
+    }
 }

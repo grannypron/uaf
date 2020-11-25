@@ -1,10 +1,11 @@
 ﻿- Probably a crash after returning from Inventory screen
+- Monsters seem to be starting inside the wall and then the wall is not blocking
+- When the game starts, a monster's data is painted on the char status screen
 - Display and award XP and level
 - Ranged attacks
 - Dungeon Generation
 - Moving animations on player RigidBody
 - Comment the living hell out of everything
-- Sounds!
 - Move the window with the player smoothly when they get outiside of a certain box in the middle - e.g. x > 306 or x < 118.  Use Lerp.  See code in MainCameraEvents
 - Find a better way to switch between loaders in CombatScreenEvents - including the fact that the return type of Start() has to change depending on which one we use
 - Visit the shop(s?)!!!

@@ -18,7 +18,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
 
     public static int BlockScaleFactor = 40;          //**TODO** - Idk why
     public const float MONSTER_MOVE_SECONDS = .5f;    // How many seconds do we wait after the monster moves to show their status
-    public const float DISTANCE_NOTICE_THRESHOLD = 200.0f;  // Non-inclusive
+    public const float DISTANCE_NOTICE_THRESHOLD = 170.0f;  // Non-inclusive
     private int PlayerScaleFactor = -1;
     private Vector2Int centeringAdjustment = new Vector2Int(-32, -25);
     private const String CONFIG_FILE_URL = "https://raw.githubusercontent.com/grannypron/uaf/unity/config.xml";
@@ -71,6 +71,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             scanAndDrawCombatants();
             randomizeAndPlaceMonsters();
             this.firstMapPaint = true;
+            GameState.soundOn = true;
         }
 
     }
@@ -113,9 +114,9 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
                         {
                             // adjust for the center of the tilemap
                             Tile thisTile = (Tile)terrainTilemap.GetTile(new Vector3Int(x + centeringAdjustment.x, y + centeringAdjustment.y, 0));
-                            if (thisTile == null || thisTile.name != "OpenGroundTile")
+                            if (thisTile == null || (thisTile.name != "OpenGroundTile" && thisTile.name != "stairs" && thisTile.name != "stonefloor"))
                             {
-                                GameState.engine.Execute("Drawtile.terrain[" + y + "][" + x + "].cell = -1;");
+                                GameState.engineExecute("Drawtile.terrain[" + y + "][" + x + "].cell = -1;");
                                 GameState.blockedSquares.Set(tileIdx, true);
                                 blockedTileCount++;
                             }
@@ -169,7 +170,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
                     if (monsterPositions.Get(availableCellIdx))
                     {
                         ++monsterIdx;
-                        GameState.engine.Execute("combatData.m_aCombatants[" + monsterIdx + "].MoveCombatant(" + x + ", " + y + ", false);");
+                        GameState.engineExecute("combatData.m_aCombatants[" + monsterIdx + "].MoveCombatant(" + x + ", " + y + ", false);");
                         int[] coords = new int[] { x + centeringAdjustment.x, y + centeringAdjustment.y };
                         placeMonster(coords[0], coords[1], monsterIdx);
                     }
@@ -206,7 +207,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         BoxCollider2D boxCollider2D = monsterGO.AddComponent<BoxCollider2D>();
         monsterR2D.isKinematic = true;
         monsterR2D.mass = 5;
-        GameState.engine.Execute("combatData.m_aCombatants[" + id + "].m_pCharacter.name = '" + monsterType + "';combatData.m_aCombatants[" + id + "].m_pCharacter.monsterID = '" + monsterType + "';");
+        GameState.engineExecute("combatData.m_aCombatants[" + id + "].m_pCharacter.name = '" + monsterType + "';combatData.m_aCombatants[" + id + "].m_pCharacter.monsterID = '" + monsterType + "';");
     }
 
     /** Places a monster on the map **/
@@ -225,9 +226,9 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
     /** Move the player in the engine **/
     public void playerModelMove(int[] xy)
     {
-        GameState.engine.Execute("cWarrior.m_isCombatReady = 1");
-        GameState.engine.Execute("cWarrior.MoveCombatant(cWarrior.x + " + xy[0] + ", cWarrior.y + " + xy[1] + ", false);");
-        GameState.engine.Execute("cWarrior.EndTurn();");
+        GameState.engineExecute("cWarrior.m_isCombatReady = 1");
+        GameState.engineExecute("cWarrior.MoveCombatant(cWarrior.x + " + xy[0] + ", cWarrior.y + " + xy[1] + ", false);");
+        GameState.engineExecute("cWarrior.EndTurn();");
         GameState.allowInput = false;
         scanAndDrawCombatants();
         int numCombatants = Int32.Parse(getEngineData("combatData.NumCombatants()").ToString());
@@ -238,7 +239,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
     /** Called after all monsters have moved to start a new round in the engine **/
     private void endMonsterMoves()
     {
-        GameState.engine.Execute("startRound();");
+        GameState.engineExecute("startRound();");
         object[] characterData = (object[])getEngineData("packageCombatantStatus(combatData.m_aCombatants[0])");
         paintCharStatus(Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), characterData[2].ToString(), Int32.Parse(characterData[3].ToString()), Int32.Parse(characterData[4].ToString()), Int32.Parse(characterData[5].ToString()), Int32.Parse(characterData[0].ToString()), Int32.Parse(characterData[1].ToString()), Int32.Parse(characterData[6].ToString()));
         GameState.allowInput = true;
@@ -261,7 +262,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
                 if (monsterNoticesPlayer(GameState.monsterMoveIdx))
                 {
                     yield return new WaitForSeconds(MONSTER_MOVE_SECONDS);
-                    GameState.engine.Execute("moveMonster(" + GameState.monsterMoveIdx + ");");
+                    GameState.engineExecute("moveMonster(" + GameState.monsterMoveIdx + ");");
                     scanAndDrawCombatants();   // Don't wait/paint for dead monsters
                 }
             }
@@ -280,7 +281,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
 
     public object getEngineData(string expression)
     {
-        GameState.engine.Execute("consoleResults.payload = " + expression + ";");
+        GameState.engineExecute("consoleResults.payload = " + expression + ";");
         return (object)GameState.engineOutput.payload;
     }
 
@@ -313,7 +314,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         //***TODO***:  Not the best plan to use the UI events to trigger model events.  This is done to bridge the gap between StartAttack and makeAttack since there is no sequencing of these events with a general event queue
         try
         {
-            GameState.engine.Execute("combatData.m_aCombatants[" + attacker + "].makeAttack(" + attacked + ", 0, -1);");
+            GameState.engineExecute("combatData.m_aCombatants[" + attacker + "].makeAttack(" + attacked + ", 0, -1);");
         } catch (JavaScriptException ex)
         {
             Debug.LogException(ex);
@@ -371,6 +372,10 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
                 int[] aDead = (int[])data;
                 combatantDying(aDead[0], aDead[1], aDead[2]);
                 break;
+            case "PlaySound":
+                string soundName = data.ToString();
+                playSound(soundName);
+                break;
             default:
                 break;
         }
@@ -390,6 +395,20 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             GameObject.Find(panelName).GetComponent<RectTransform>().localScale = new Vector3Int(1, 0, 0);
         }
 
+    }
+
+    private void playSound(string soundName)
+    {
+        if (!GameState.soundOn)
+        {
+            return;
+        }
+        AudioClip clip = Resources.Load<AudioClip>("Sounds/" + soundName);
+        if (clip == null)
+        {
+            Debug.Log("Sound could not be loaded: " + soundName);
+        }
+        GameObject.Find("Canvas").GetComponent<AudioSource>().PlayOneShot(clip);
     }
 
     private IEnumerator getLoader(string type, InitComplete complete)

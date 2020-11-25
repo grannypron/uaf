@@ -48,6 +48,11 @@ public class UnityUAFEventManager
         this.notifyAll("CombatantDead", new int[] { id, x, y });
     }
 
+    public void PlaySound(string soundName)
+    {
+        this.notifyAll("PlaySound", soundName);
+    }
+
     private void notifyAll(string eventName, object data)
     {
         foreach (IUIListener listener in listeners)
