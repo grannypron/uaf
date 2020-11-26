@@ -23,34 +23,39 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
     private Vector2Int centeringAdjustment = new Vector2Int(-32, -25);
     private const String CONFIG_FILE_URL = "https://raw.githubusercontent.com/grannypron/uaf/unity/config.xml";
     private const String ITEMS_DATA_URL = "https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/data/items.xml";
-    private bool firstMapPaint = false;
+    private bool firstMapPainted = false;
     private bool librariesLoaded = false;
     private bool registeredWalls = false;
     private int blockedTileCount = 0;
     private string CombatMessageSuffix = "";
+    private GameObject goPlayer;
 
     // Start is called before the first frame update
     IEnumerator Start()
     {
-        PlayerScaleFactor = (int)Math.Floor(GameObject.Find("Player").GetComponent<Transform>().localScale.x);
-        Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+
+        this.goPlayer = GameObject.Find("Player");
+        PlayerScaleFactor = (int)Math.Floor(this.goPlayer.GetComponent<Transform>().localScale.x);
         togglePanel("pnlDead", false);
         DontDestroyOnLoad(this.gameObject);
+        DontDestroyOnLoad(GameObject.Find("Canvas"));
         Text txtCombatantInfo = GameObject.Find("txtCombatantInfo").GetComponent<Text>();
         txtCombatantInfo.text = "";
         if (GameState.engine != null)
         {
             Text txtLoading = GameObject.Find("txtLoading").GetComponent<Text>();
             txtLoading.enabled = false;
+            this.firstMapPainted = true;
             this.librariesLoaded = true;
+            this.registeredWalls = false;
             playerModelMove(new int[] { 0, 0 }); // little hack 🤷
             yield break;
         }
         else
         {
             GameState.engine = new Engine(cfg => cfg.AllowClr(typeof(MFCSerializer).Assembly, typeof(UnityEngine.Debug).Assembly));
-
-            StartCoroutine(getLoader("local", delegate ()
+            
+            StartCoroutine(getLoader("resource", delegate ()
             {
                 Text txtLoading = GameObject.Find("txtLoading").GetComponent<Text>();
                 txtLoading.enabled = false;
@@ -65,13 +70,13 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
 
     private void FixedUpdate()
     {
-        if (!this.firstMapPaint & this.librariesLoaded)
+        if (!this.firstMapPainted & this.librariesLoaded)
         {
             scanAndDrawCombatants();
             randomizeAndPlaceMonsters();
             // This is done because the monsters' moves paint their status on the screen, so let's replace it with the character's
             paintCharStats();
-            this.firstMapPaint = true;
+            this.firstMapPainted = true;
             GameState.soundOn = true;
         }
 
@@ -195,7 +200,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
     private void placePlayer(int x, int y)
     {
         Grid combatGrid = GameObject.Find("CombatGrid").GetComponent<Grid>();
-        Rigidbody2D player = GameObject.Find("Player").GetComponent<Rigidbody2D>();
+        Rigidbody2D player = this.goPlayer.GetComponent<Rigidbody2D>();
         Transform playerTransform = player.GetComponent<Transform>();
         playerTransform.parent = combatGrid.transform;
         playerTransform.localScale = new Vector3Int(PlayerScaleFactor, PlayerScaleFactor, 1);
@@ -265,6 +270,10 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             yield break;
         }
         else {
+            //SpriteRenderer player = this.goPlayer.GetComponent<SpriteRenderer>();
+            //if (player.sprite.name != "icon_PC_FighterMale_0") { 
+            //    player.sprite = ((Tile)Resources.Load<Tile>("Sprites/icon_PC_FighterMale_0")).sprite;
+            //}
             GameState.monsterMoveIdx++;
             if (GameState.deadMonsters.IndexOf(GameState.monsterMoveIdx) < 0)
             {
@@ -284,7 +293,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
     {
         GameObject goMonster = GameObject.Find("Monster" + id);
         Debug.Assert(goMonster != null, "monster with id " + id + " is null!  Already dead?");
-        float dist = Vector2.Distance(goMonster.GetComponent<Rigidbody2D>().position, GameObject.Find("Player").GetComponent<Rigidbody2D>().position);
+        float dist = Vector2.Distance(goMonster.GetComponent<Rigidbody2D>().position, this.goPlayer.GetComponent<Rigidbody2D>().position);
         return dist < DISTANCE_NOTICE_THRESHOLD;
     }
 
@@ -324,6 +333,8 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         //***TODO***:  Not the best plan to use the UI events to trigger model events.  This is done to bridge the gap between StartAttack and makeAttack since there is no sequencing of these events with a general event queue
         try
         {
+            //SpriteRenderer player = this.goPlayer.GetComponent<SpriteRenderer>();
+            //player.sprite = ((Sprite)Resources.Load<Sprite>("PlayerAttack")).sprite;
             GameState.engineExecute("combatData.m_aCombatants[" + attacker + "].makeAttack(" + attacked + ", 0, -1);");
         } catch (JavaScriptException ex)
         {

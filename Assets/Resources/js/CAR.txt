@@ -34,7 +34,7 @@ CAR.prototype.Compress = function (compression) {
     this.m_compressType = 0;
     if (compression) {
         this.m_codes = new CODES();
-        this.m_w = 0xffff;
+        this.m_w = UAFUtil.ByteFromHexString("0xffff");
         this.m_bufferIndex = 0;
         this.m_stkLen = 0;
         this.m_OC = 0xffff;

@@ -67,7 +67,7 @@ PARTY.prototype.GetNextUniquePartyID = function () {
         }
         if (!found) return i;
     }
-    Globals.die(0xab529); // should not be possible to reach this
+    Globals.die(UAFUtil.ByteFromHexString("0xab529")); // should not be possible to reach this
     return this.numCharacters; // old default behavior
 }
 

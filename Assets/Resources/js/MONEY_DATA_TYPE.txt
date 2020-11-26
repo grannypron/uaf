@@ -37,7 +37,7 @@ MONEY_DATA_TYPE.prototype.GetIndex = function (type) {
         case itemClassType.CoinType9: return 8;
         case itemClassType.CoinType10: return 9;
     }
-    Globals.die(0xab526);
+    Globals.die(UAFUtil.ByteFromHexString("0xab526"));
     return 0;
 }
 

@@ -4,6 +4,10 @@
  * engine input/outputs 
  */
 
+// The lines below override LITTLE_RAN because the bit operations are causing it to crash with "float unrepresentable in integer range" in WebGL
+LITTLE_RAN.prototype.Init = function (seed) { }
+LITTLE_RAN.prototype.Random = function () { return Math.floor(Math.random() * Math.floor(1000)); }
+
 
 Globals.SPECAB_HACKS = {};
 // This stops free-attacks like when the player moves away from the monsters or vice-versa

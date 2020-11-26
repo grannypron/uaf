@@ -36,10 +36,10 @@ SPECIAL_ABILITIES.prototype.NextPos = function(pos) {
 SPECIAL_ABILITIES.prototype.SerializeCAR = function(ar, version, objName, objType) {
     if ((version <= 0.920) && !ar.IsStoring()) {
         if (ar.IsStoring()) {
-      /* Really */ Globals.NotImplemented(0x8da3f, false);
+      /* Really */ Globals.NotImplemented(UAFUtil.ByteFromHexString("0x8da3f"), false);
         }
         else {
-      /* Really */ Globals.NotImplemented(0x54fa23, false);
+      /* Really */ Globals.NotImplemented(UAFUtil.ByteFromHexString("0x54fa23"), false);
         };
     }
     else {
@@ -495,7 +495,7 @@ SPECAB.prototype.ScriptCallback_MinMax = function (func, scriptResult, pkt) {
         };
         if (pStr[0] == '<') {
             pStr++;
-            n = SUAFUtil.criptAtoI(pStr, minmax[0], 0x7fffffff);
+            n = SUAFUtil.criptAtoI(pStr, minmax[0], UAFUtil.ByteFromHexString("0x7fffffff"));
             minmax[1] = n;
             continue;
         };

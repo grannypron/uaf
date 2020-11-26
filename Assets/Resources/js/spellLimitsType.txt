@@ -13,7 +13,7 @@ spellLimitsType.prototype.SerializeCAR = function (ar, version) {
     }
     else {
         if (version < _VERSION_0780_) {
-      /* Really */ Globals.NotImplemented(0xbcbffa, false);
+      /* Really */ Globals.NotImplemented(UAFUtil.ByteFromHexString("0xbcbffa"), false);
         }
         else {
             if (version >= _VERSION_0780_) {

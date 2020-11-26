@@ -38,7 +38,7 @@
 MonsterArrangement.prototype.Activate = function (numCombatants) {
     var i;
     if (this.active) {
-        Globals.die(0xc3111a5);
+        Globals.die(UAFUtil.ByteFromHexString("0xc3111a5"));
     };
     this.numMonster[0] = 0; this.numMonster[1] = 0; this.numMonster[2] = 0; this.numMonster[3] = 0;
     this.numParty = 0;

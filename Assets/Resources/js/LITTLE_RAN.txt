@@ -20,6 +20,6 @@ LITTLE_RAN.prototype.Roll = function(sides, num, bonus) {
 LITTLE_RAN.prototype.Init = function(seed) {
     w = seed & UAFUtil.ByteFromHexString("0xffff");
     z = seed >> 16;
-    if (w == 0) w = 0xc451;
-    if (z == 0) z = 0x541b;
+    if (w == 0) w = UAFUtil.ByteFromHexString("0xc451");
+    if (z == 0) z = UAFUtil.ByteFromHexString("0x541b");
 }

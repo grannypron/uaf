@@ -32,7 +32,7 @@ GPDL.prototype.ExecuteScript = function (code, entryPointOrdinal) {
     var binaryCode;
     binaryCode = code;
     if (this.m_program != null) Globals.My_free(this.m_program);
-    numEntry = binaryCode[1] & 0xffffff;
+    numEntry = binaryCode[1] & UAFUtil.ByteFromHexString("0xffffff");
     this.m_H = binaryCode[4];
     if (entryPointOrdinal > numEntry) return m_false;
     if (entryPointOrdinal <= 0) return m_false;
@@ -46,8 +46,8 @@ GPDL.prototype.ExecuteScript = function (code, entryPointOrdinal) {
     this.m_pGPDLevent = null;
     this.m_RP = this.m_RP0;
     this.m_SP = this.m_SP0;
-    this.m_pushRP(0xffffffff);          // So we will know when we are done.
-    this.m_pushRP(0xffffffff);          // Old Frame Pointer
+    this.m_pushRP(UAFUtil.ByteFromHexString("0xffffffff"));          // So we will know when we are done.
+    this.m_pushRP(UAFUtil.ByteFromHexString("0xffffffff"));          // Old Frame Pointer
     this.m_string1 = this.m_false;
     this.m_pushSP(this.m_string1); // The empty string as default result.
     this.m_FP = this.m_SP;

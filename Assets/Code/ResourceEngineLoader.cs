@@ -42,7 +42,7 @@ public class ResourceEngineLoader : IEngineLoader
         List<string[]> lib = new List<string[]>();
         foreach (UnityEngine.Object jsAsset in jsAssets)
         {
-            if (((TextAsset)jsAsset).name.IndexOf("Tests/") < 0) { 
+            if (((TextAsset)jsAsset).name.IndexOf("Tests/") < 0) {
                 String fileContents = ((TextAsset)jsAsset).text;
                 lib.Add(new string[] { ((TextAsset)jsAsset).name, fileContents });
             }
@@ -52,6 +52,7 @@ public class ResourceEngineLoader : IEngineLoader
 
         foreach (string[] fileData in lib)
         {
+            UnityEngine.Debug.Log("L2oading " + fileData[0]);
             engine.Execute(fileData[1]);
         }
 
