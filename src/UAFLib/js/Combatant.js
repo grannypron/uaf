@@ -54,7 +54,7 @@ function COMBATANT() {
     this.m_specialActionIndex = 0;
 
     if (this.m_pCharacter != null) {
-        Globals.die(0xffd21c);
+        Globals.die(UAFUtil.ByteFromHexString("0xffd21c"));
     };
     this.combatantSA = new SPECIAL_ABILITIES();
     this.combatantSA.Clear();
@@ -207,17 +207,17 @@ COMBATANT.prototype.StartAttack = function(targ, additionalAttacks) {
     Globals.ASSERT(this.self != NO_DUDE, "Combatant.js::StartAttack");
     this.continueAttack = false;
     if (targ == NO_DUDE) {
-        Globals.die(0xab4c5);
+        Globals.die(UAFUtil.ByteFromHexString("0xab4c5"));
         Globals.WriteDebugString("StartAttack() for " + self + " called with invalid target\n");
         return false;
     }
     if (this.availAttacks + this.additionalAttacks <= 0) {
-        Globals.die(0xab4c6);
+        Globals.die(UAFUtil.ByteFromHexString("0xab4c6"));
         Globals.WriteDebugString("StartAttack() for " + self + " called with availAttacks=0\n");
         return false;
     }
     if (!this.charOnCombatMap(false, true)) {
-        Globals.die(0xab4c7);
+        Globals.die(UAFUtil.ByteFromHexString("0xab4c7"));
         Globals.WriteDebugString("StartAttack() for " + self + " called when combatant not on map\n",);
         return false;
     }
@@ -239,11 +239,11 @@ COMBATANT.prototype.StartAttack = function(targ, additionalAttacks) {
 
 COMBATANT.prototype.InitFromCharData = function(dude) {
     if (this.m_pCharacter != null) {
-        Globals.die(0x6659c);
+        Globals.die(UAFUtil.ByteFromHexString("0x6659c"));
     }
     this.m_pCharacter = party.characters[dude];
     if (this.m_pCharacter.m_pCombatant != null) {
-        Globals.die(0x5cbff);
+        Globals.die(UAFUtil.ByteFromHexString("0x5cbff"));
     };
     this.m_pCharacter.m_pCombatant = this;
     this.m_preCombatMorale = this.m_pCharacter.GetMorale();
@@ -329,7 +329,7 @@ COMBATANT.prototype.GetContextActor = function() {
             pActor.SetCombatNPCSrc(this.friendly);
         //#ifdef newCombatantx                            // PORT NOTE: ????
         else
-            Globals.die(0xea667);
+            Globals.die(UAFUtil.ByteFromHexString("0xea667"));
         //#endif
     }
     return pActor;
@@ -445,7 +445,7 @@ COMBATANT.prototype.InitFromMonsterDataID = function (monsterID, IsFriendly, ite
         pMonster = monsterData.PeekMonster(0);
         if (pMonster == null) {
             Globals.WriteDebugString("Combat with no monsters defined");
-            Globals.die(0x45acb);
+            Globals.die(UAFUtil.ByteFromHexString("0x45acb"));
         };
     }
     this.InitFromMonsterDataMonster(pMonster, IsFriendly, items, msack);
@@ -454,7 +454,7 @@ COMBATANT.prototype.InitFromMonsterDataID = function (monsterID, IsFriendly, ite
 
 COMBATANT.prototype.InitFromMonsterDataMonster = function (pMonster, IsFriendly, items, msack) {
     if (this.m_pCharacter != null) {
-        Globals.die(0xc33bd);
+        Globals.die(UAFUtil.ByteFromHexString("0xc33bd"));
     }
     this.m_pCharacter = new CHARACTER();
     this.m_pCharacter.m_pCombatant = this;  // Link the character and combatant one to another.
@@ -2058,7 +2058,7 @@ COMBATANT.prototype.CanTarget = function(freeAttack) {
     if (!freeAttack && this.IsDone(freeAttack, "Can combatant choose target")) return false;
 
     if ((this.State() == individualCombatantState.ICS_Casting) || (this.State() == individualCombatantState.ICS_Using)) {
-        Globals.die(0xab4c9); // spell targeting uses different data structures
+        Globals.die(UAFUtil.ByteFromHexString("0xab4c9")); // spell targeting uses different data structures
         return false;
     }
     else
@@ -2619,7 +2619,7 @@ COMBATANT.prototype.InstantSpellActivate = function (attackSpellID, itemSpellID,
 
     var pTarget = Globals.GetCombatantPtr(target);
     if (pTarget == null) {
-        Globals.die(0xab4c2);
+        Globals.die(UAFUtil.ByteFromHexString("0xab4c2"));
         return;
     }
 
@@ -2627,7 +2627,7 @@ COMBATANT.prototype.InstantSpellActivate = function (attackSpellID, itemSpellID,
     if (!UAFUtil.IsEmpty(attackSpellID)) pSdata = spellData.GetSpell(attackSpellID);
     if (!UAFUtil.IsEmpty(itemSpellID)) pSdata = spellData.GetSpell(itemSpellID);
     if (pSdata == null) {
-        Globals.die(0xab4c3);
+        Globals.die(UAFUtil.ByteFromHexString("0xab4c3"));
         return;
     }
 
@@ -2976,7 +2976,7 @@ COMBATANT.prototype.EndTurn = function(newState) {
     else {
         qcomb.Remove(this.self);
         if (qcomb.DelayedX() >= 0) {
-        /* Really */Globals.NotImplemented(0x43c6, false);
+        /* Really */Globals.NotImplemented(UAFUtil.ByteFromHexString("0x43c6"), false);
         };
         Globals.TRACE("Forced EndTurn(" + this.CombatantStateText[this.State()] + "), " + this.self + " done\n");
         turnIsDone = true;
@@ -3618,10 +3618,10 @@ COMBATANT.prototype.Think = function () {
                 };
                 return TRUE;
             case AT_Unknown:
-      /* Really */ Globals.NotImplemented(0xa88, false);
+      /* Really */ Globals.NotImplemented(UAFUtil.ByteFromHexString("0xa88"), false);
                 break;
             default:
-      /* Really */ Globals.NotImplemented(0x55ab, false);
+      /* Really */ Globals.NotImplemented(UAFUtil.ByteFromHexString("0x55ab"), false);
                 break;
         }
     }
@@ -4017,7 +4017,7 @@ COMBATANT.prototype.HandleCurrState = function(zeroMoveAttackOK) {
             break;
 
         default:
-            Globals.die(0xab4c4);
+            Globals.die(UAFUtil.ByteFromHexString("0xab4c4"));
             break;
     }
     return updateScreen;

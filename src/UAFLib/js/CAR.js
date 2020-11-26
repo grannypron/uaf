@@ -34,10 +34,10 @@ CAR.prototype.Compress = function (compression) {
     this.m_compressType = 0;
     if (compression) {
         this.m_codes = new CODES();
-        this.m_w = 0xffff;
+        this.m_w = UAFUtil.ByteFromHexString("0xffff");
         this.m_bufferIndex = 0;
         this.m_stkLen = 0;
-        this.m_OC = 0xffff;
+        this.m_OC = UAFUtil.ByteFromHexString("0xffff");
         this.m_numCode = 256;
         if (this.IsStoring()) {
             this.writeChar(2); // Compression type in clear
@@ -75,7 +75,7 @@ CAR.prototype.readString = function () {
         var temp = null;
         len = this.MFCSerializer.readInt();
         if (len > 1000000) {
-            throw (0x23);
+            throw (UAFUtil.ByteFromHexString("0x23"));
         };
         if (len == 0) {
             str = "";
@@ -104,7 +104,7 @@ CAR.prototype.readString = function () {
         return this;
     }
     if (index >= this.m_stringArray.length) {
-        throw 0x23;
+        throw UAFUtil.ByteFromHexString("0x23");
     }
     str = this.m_stringArray[index];
     return this;

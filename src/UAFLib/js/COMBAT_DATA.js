@@ -211,7 +211,7 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
     this.m_iStartTerrainY = 0;
     if (OBSTICAL_TYPE.OBSTICAL_none != Drawtile.ObsticalType(this.m_iPartyStartX, this.m_iPartyStartY, 1, 1, false, true, null)) {
         Globals.WriteDebugString("Starting x,y is not empty\n");
-        Globals.die(0xab4cb);
+        Globals.die(UAFUtil.ByteFromHexString("0xab4cb"));
     }
 
     this.m_iCurrInitiative = 1;  // Characters start with initiative=0 so we will need
@@ -304,7 +304,7 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
                 pSaveCombatantPointer = this.m_aCombatants[i];
                 pSaveCharPointer = pSaveCombatantPointer.m_pCharacter;
                 if (pSaveCharPointer.m_pCombatant != pSaveCombatantPointer) {
-                    Globals.die(0x3334d);
+                    Globals.die(UAFUtil.ByteFromHexString("0x3334d"));
                 };
                 pSaveCharPointer.m_pCombatant = null;
                 if (pSaveCombatantPointer.deleteChar) {
@@ -539,7 +539,7 @@ COMBAT_DATA.prototype.CheckAuraPlacement = function(pAURA, pMoveData) {
             case AURA_SHAPE.AURA_SHAPE_GLOBAL: this.DetermineGlobalCoverage(pAURA); break;
             case AURA_SHAPE.AURA_SHAPE_ANNULARSECTOR: this.DetermineAnnularCoverage(pAURA); break;
             default:
-      /* Really */ Globals.NotImplemented(0x5dd9, false);
+      /* Really */ Globals.NotImplemented(UAFUtil.ByteFromHexString("0x5dd9"), false);
                 DetermineNULLCoverage(pAURA);
                 break;
         };
@@ -1460,7 +1460,7 @@ COMBAT_DATA.prototype.GetCombatant = function (dude) {
     if ((this.m_aCombatants[dude].m_pCharacter != null)
         && (this.m_aCombatants[dude].m_pCharacter.m_pCombatant != this.m_aCombatants[dude])
     ) {
-        Globals.die(0x8ce2ab);
+        Globals.die(UAFUtil.ByteFromHexString("0x8ce2ab"));
     };
     return this.m_aCombatants[dude];
 }
@@ -1884,7 +1884,7 @@ COMBAT_DATA.prototype.MonsterPlacementCallback = function(turtlecode) {
                     cellsAttempted = [];
                     cellAttIndx = 2 * maxRadius * (maxRadius + 1);
                     if (cellsAttempted == null) {
-                        Globals.die(0x439805);
+                        Globals.die(UAFUtil.ByteFromHexString("0x439805"));
                     };
                     for (var idx = 0; idx < maxCells; idx++) { cellsAttempted[idx] = 0; } // PORT NOTE: takes the place of memset(cellsAttempted,0,maxCells);
                     this.FindCurrentMonsterToPlace();
@@ -2248,7 +2248,7 @@ COMBAT_DATA.prototype.getNextCombatant = function() {
             this.QComb.Pop();
             if (this.QComb.Top() != NO_DUDE) {
                 if (this.QComb.DelayedX() >= 0) {
-            /* Really */ Globals.NotImplemented(0x34c3, false);
+            /* Really */ Globals.NotImplemented(UAFUtil.ByteFromHexString("0x34c3"), false);
                 };
             };
         }
@@ -2271,7 +2271,7 @@ COMBAT_DATA.prototype.getNextCombatant = function() {
                     this.QComb.Pop();
                     if (this.QComb.Top() != NO_DUDE) {
                         if (this.QComb.DelayedX() >= 0) {
-                /* Really */ Globals.NotImplemented(0x34c4, false);
+                /* Really */ Globals.NotImplemented(UAFUtil.ByteFromHexString("0x34c4"), false);
                         };
                     };
                 }

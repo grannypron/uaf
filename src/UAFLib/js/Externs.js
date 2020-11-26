@@ -315,25 +315,25 @@ var _SPECIAL_ABILITIES_VERSION_   = _VERSION_0930;
 var _CELL_CONTENTS_VERSION = 5.0;
 
 
-var EA_NULL     = 0x000;
-var EA_ENEMY    = 0x001;
-var EA_ALLY     = 0x002;
-var EA_LOCATION = 0x004;
+var EA_NULL     = UAFUtil.ByteFromHexString("0x000");
+var EA_ENEMY    = UAFUtil.ByteFromHexString("0x001");
+var EA_ALLY     = UAFUtil.ByteFromHexString("0x002");
+var EA_LOCATION = UAFUtil.ByteFromHexString("0x004");
     
-var FLAG_COMBAT             = 0x001;
-var FLAG_NONCOMBAT          = 0x002;
-var FLAG_XY                 = 0x004;
-var FLAG_PARTY_MEMBER       = 0x008;
-var FLAG_ITEM               = 0x010;
-var FLAG_MONSTER            = 0x020;
-var FLAG_NPC                = 0x040;
-var FLAG_FAKE_COMBATANT     = 0x080;
-var FLAG_COMBATANT          = 0x100;      // Combatant versus character
-var FLAG_CREATED_CHARACTER  = 0x200;
-var FLAG_FAKE_CHARACTER     = 0x400;
-var FLAG_BISHOP             = 0x800;
+var FLAG_COMBAT             = UAFUtil.ByteFromHexString("0x001");
+var FLAG_NONCOMBAT          = UAFUtil.ByteFromHexString("0x002");
+var FLAG_XY                 = UAFUtil.ByteFromHexString("0x004");
+var FLAG_PARTY_MEMBER       = UAFUtil.ByteFromHexString("0x008");
+var FLAG_ITEM               = UAFUtil.ByteFromHexString("0x010");
+var FLAG_MONSTER            = UAFUtil.ByteFromHexString("0x020");
+var FLAG_NPC                = UAFUtil.ByteFromHexString("0x040");
+var FLAG_FAKE_COMBATANT     = UAFUtil.ByteFromHexString("0x080");
+var FLAG_COMBATANT          = UAFUtil.ByteFromHexString("0x100");      // Combatant versus character
+var FLAG_CREATED_CHARACTER  = UAFUtil.ByteFromHexString("0x200");
+var FLAG_FAKE_CHARACTER     = UAFUtil.ByteFromHexString("0x400");
+var FLAG_BISHOP             = UAFUtil.ByteFromHexString("0x800");
 
-var LEVEL_UNKNOWN           = 0xffffffff;
+var LEVEL_UNKNOWN           = UAFUtil.ByteFromHexString("0xffffffff");
 
 
 

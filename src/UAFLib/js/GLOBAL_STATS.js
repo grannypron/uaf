@@ -14,7 +14,7 @@ GLOBAL_STATS.prototype.GetMaxPartyMembers = function () {
 
 GLOBAL_STATS.prototype.GetMinPCs = function()         { return this.minPCs; };
 GLOBAL_STATS.prototype.GetMaxPartySize = function()   { return this.maxParty_maxPCs >> 16; };
-GLOBAL_STATS.prototype.GetMaxPCs = function()         { return this.maxParty_maxPCs & 0xffff; };
+GLOBAL_STATS.prototype.GetMaxPCs = function()         { return this.maxParty_maxPCs & UAFUtil.ByteFromHexString("0xffff"); };
 GLOBAL_STATS.prototype.SetMinPCs = function(n)       { this.minPCs = n; };
-GLOBAL_STATS.prototype.SetMaxPartySize = function(n) { this.maxParty_maxPCs = (this.maxParty_maxPCs & 0xffff) | (n << 16); };
-GLOBAL_STATS.prototype.SetMaxPCs = function(n)       { this.maxParty_maxPCs = (this.maxParty_maxPCs & 0xffff0000) | n; };
+GLOBAL_STATS.prototype.SetMaxPartySize = function(n) { this.maxParty_maxPCs = (this.maxParty_maxPCs & UAFUtil.ByteFromHexString("0xffff")) | (n << 16); };
+GLOBAL_STATS.prototype.SetMaxPCs = function(n)       { this.maxParty_maxPCs = (this.maxParty_maxPCs & UAFUtil.ByteFromHexString("0xffff0000")) | n; };

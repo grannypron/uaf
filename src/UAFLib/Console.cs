@@ -20,7 +20,6 @@ namespace UAFLib
             
             try
             {
-                /*
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestParseDice.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadItems.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadSAs.js" });
@@ -44,7 +43,6 @@ namespace UAFLib
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestMultiRoundCombat.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestMonsterAttack.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestWinCombat.js" });
-                */
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestExperience.js" });
                 //runTest(new string[] { @"..\..\..\UAFLib\Tests\DemoCombat.js" });
                 //runTest(new string[] { @"..\..\..\UAFLib\Tests\TestGPDL.js" });

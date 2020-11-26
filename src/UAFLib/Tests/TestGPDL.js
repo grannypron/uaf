@@ -7,7 +7,7 @@ scripts[0] = [256, 100663297, 393216, 1536, 6, 134217728, 524288, 2048, 8, 16777
 
 
 binaryCode = scripts[0];
-Globals.debug(binaryCode[1] & 0xffffff);
+Globals.debug(binaryCode[1] & UAFUtil.ByteFromHexString("0xffffff"));
 Globals.debug(binaryCode[4]);
 gpdlStack.activeGPDL().ExecuteScript(scripts[0], 1, null, 0);
 

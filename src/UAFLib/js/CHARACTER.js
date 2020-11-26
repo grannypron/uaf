@@ -2138,7 +2138,7 @@ CHARACTER.prototype.GetAdjMaxMovement = function (flags, comment) {
             };
             scriptContext.Clear();
             RunTimeIF.ClearCharContext();
-            if ((minmax[0] == -1) && (minmax[1] == 0x7fffffff)) return this.GetMaxMovement();
+            if ((minmax[0] == -1) && (minmax[1] == UAFUtil.ByteFromHexString("0x7fffffff"))) return this.GetMaxMovement();
             else return minmax[1];
         }
     }
@@ -2984,7 +2984,7 @@ CHARACTER.prototype.DetermineNewCharMaxHitPoints = function (randomSeed) {
             }
         }
     }
-    this.maxHitPoints = max(1, totalHP);
+    this.maxHitPoints = Math.max(1, totalHP);
 }
 
 CHARACTER.prototype.SetStatus = function (val) {

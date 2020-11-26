@@ -1,4 +1,4 @@
-
+Globals.debug(0x100000000);
 function Deserialize(filename, debug) {
     var character = new CHARACTER();
     var path = "C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\Tests\\" + filename;

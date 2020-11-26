@@ -4,7 +4,10 @@ function UAFUtil() {
 UAFUtil.prototype.ByteFromHexString = function (str) {
     var val = parseInt(str, 16);
     if ((str.substr(0, 3) == "0x8") > 0) {  /**TODO**: do this hack for two's complement a little better like if (var & 0x800000000 then...) */
-        val = val - 0x100000000;
+        //val = val - 4294967296; // is 0x100000000
+        for (idx = 0; idx < 32; idx++) {
+            val = val - 134217728;  //42949672960 is too big for WebGL player to handle;
+        }
     }
     return val;
 };
