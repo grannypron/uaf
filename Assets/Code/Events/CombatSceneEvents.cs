@@ -334,7 +334,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         try
         {
             //SpriteRenderer player = this.goPlayer.GetComponent<SpriteRenderer>();
-            //player.sprite = ((Sprite)Resources.Load<Sprite>("PlayerAttack")).sprite;
+            //player.sprite = ((Sprite)Resources.Load<Sprite>("Sprites/PlayerAttack")).sprite;
             GameState.engineExecute("combatData.m_aCombatants[" + attacker + "].makeAttack(" + attacked + ", 0, -1);");
         } catch (JavaScriptException ex)
         {

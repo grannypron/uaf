@@ -8,6 +8,9 @@
 LITTLE_RAN.prototype.Init = function (seed) { }
 LITTLE_RAN.prototype.Random = function () { return Math.floor(Math.random() * Math.floor(1000)); }
 
+// Another hack for WebGL :/
+CHARACTER.prototype.HasDeathImmunity = function() { return false; }
+
 Globals.SPECAB_HACKS = {};
 // This stops free-attacks like when the player moves away from the monsters or vice-versa
 Globals.SPECAB_HACKS["FreeAttack-CanFreeAttack"] = function (pkt) { SPECAB.p_hook_parameters[0] = "N"; }

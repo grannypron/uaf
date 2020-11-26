@@ -2905,6 +2905,7 @@ COMBATANT.prototype.TakeDamage = function(dmg, IsNonLethal, invokeOptions, canFi
     {
         this.StopCasting(false, canFinishCasting); // does not call EndTurn()
     };
+    Globals.debug("----WebGL10");
 
     this.UpdateSpellForDamage(dmg);
     return pDeathIndex;
@@ -2993,7 +2994,7 @@ COMBATANT.prototype.RemoveCurrTarget = function () {
 }
 
 COMBATANT.prototype.blitDyingSprite = function () {
-    UIEventManager.CombatantDying(this.self, this.x, this.y);
+    //UIEventManager.CombatantDying(this.self, this.x, this.y);
 }
 
 COMBATANT.prototype.CheckMorale = function () {
