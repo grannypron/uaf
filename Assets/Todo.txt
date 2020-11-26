@@ -1,11 +1,10 @@
-﻿- Working - Probably a crash after returning from Inventory screen
-- Working - Use the attack icon when player is attacking
-- Working - Player GameObject should be stored at a more global level to save calls to GameObject.Find
-- Reduce startup time - seems like this is mostly the specab loading code
+﻿- Reduce startup time - seems like this is mostly the specab loading code
 - Support diagonal moves
 - rename icon_PC_Fighter_Male_# sprite
 - Ranged attacks
+- Possible bug: randomizeAndPlaceMonsters could put two monsters in the same spot - check to see if the mosnterLocations.Get() is already set before using it
 - Dungeon Generation
+- Treasure chests!
 - Moving animations on player RigidBody
 - Comment the living hell out of everything
 - Leveling up - start at CHARACTER.prototype.GetLevelCap

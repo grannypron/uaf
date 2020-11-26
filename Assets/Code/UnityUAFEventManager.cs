@@ -9,15 +9,24 @@ using UnityEngine.UI;
 
 public class UnityUAFEventManager
 {
-    List<IUIListener> listeners = new List<IUIListener>();
+    Dictionary<string, IUIListener> listeners = new Dictionary<string, IUIListener>();
 
-    public UnityUAFEventManager(IUIListener listener) {
-        this.listeners.Add(listener);
+    public UnityUAFEventManager() {
     }
 
     public void UpdateCombatMessage(string message)
     {
         this.notifyAll("UpdateCombatMessage", message);
+    }
+
+    public void AddListener(IUIListener listener, string tag)
+    {
+        // Does not allow multiple listeners with the same tag
+        if (listeners.ContainsKey(tag))
+        {
+            listeners.Remove(tag);
+        }
+        this.listeners.Add(tag, listener);
     }
 
     public void CombatantMoved(int x, int y, string name, int hp, int ac, int attacks, int moves, int xp)
@@ -56,12 +65,16 @@ public class UnityUAFEventManager
 
     private void notifyAll(string eventName, object data)
     {
-        foreach (IUIListener listener in listeners)
+        foreach (IUIListener listener in listeners.Values)
         {
             listener.OnEvent(eventName, data);
         }
 
     }
+    public void clearAllListeners()
+    {
+        this.listeners = new Dictionary<string, IUIListener>();
 
+    }
 }
 

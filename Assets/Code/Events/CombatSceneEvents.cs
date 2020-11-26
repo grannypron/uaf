@@ -36,9 +36,8 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
 
         this.goPlayer = GameObject.Find("Player");
         PlayerScaleFactor = (int)Math.Floor(this.goPlayer.GetComponent<Transform>().localScale.x);
+        GameState.eventManager.AddListener(this, this.name);
         togglePanel("pnlDead", false);
-        DontDestroyOnLoad(this.gameObject);
-        DontDestroyOnLoad(GameObject.Find("Canvas"));
         Text txtCombatantInfo = GameObject.Find("txtCombatantInfo").GetComponent<Text>();
         txtCombatantInfo.text = "";
         if (GameState.engine != null)
@@ -48,6 +47,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             this.firstMapPainted = true;
             this.librariesLoaded = true;
             this.registeredWalls = false;
+            restoreMonsterModels();
             playerModelMove(new int[] { 0, 0 }); // little hack 🤷
             yield break;
         }
@@ -65,6 +65,15 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
 
             
             
+        }
+    }
+
+    // Creates the monster RigidBodys and puts them back on the canvas.  Necessary if we leave
+    // and return to this screen
+    private void restoreMonsterModels()
+    {
+        foreach (int key in GameState.monsters.Keys) { 
+            newMonster(key, GameState.monsters[key]);
         }
     }
 
@@ -166,7 +175,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         // Generate a number from 1 to the number of available cells.  One for each monster
         int totalNumMapTiles = GameState.mapDataWidth * GameState.mapDataHeight;  // Assume a square map
         BitArray monsterPositions = new BitArray(totalNumMapTiles - blockedTileCount, false);
-        for (int idxMonster = 1; idxMonster < GameState.monsters.Count; idxMonster++)
+        for (int idxMonster = 0; idxMonster < GameState.monsters.Count; idxMonster++)
         {
             monsterPositions.Set(UnityEngine.Random.Range(0, totalNumMapTiles - blockedTileCount), true);
         }
@@ -270,10 +279,6 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             yield break;
         }
         else {
-            //SpriteRenderer player = this.goPlayer.GetComponent<SpriteRenderer>();
-            //if (player.sprite.name != "icon_PC_FighterMale_0") { 
-            //    player.sprite = ((Tile)Resources.Load<Tile>("Sprites/icon_PC_FighterMale_0")).sprite;
-            //}
             GameState.monsterMoveIdx++;
             if (GameState.deadMonsters.IndexOf(GameState.monsterMoveIdx) < 0)
             {
@@ -333,14 +338,27 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         //***TODO***:  Not the best plan to use the UI events to trigger model events.  This is done to bridge the gap between StartAttack and makeAttack since there is no sequencing of these events with a general event queue
         try
         {
-            //SpriteRenderer player = this.goPlayer.GetComponent<SpriteRenderer>();
-            //player.sprite = ((Sprite)Resources.Load<Sprite>("Sprites/PlayerAttack")).sprite;
+            SpriteRenderer player = this.goPlayer.GetComponent<SpriteRenderer>();
+            player.sprite = ((Sprite)Resources.Load<Sprite>("Sprites/PlayerAttack"));
+            StartCoroutine(restoreCharacterSprite());
+
             GameState.engineExecute("combatData.m_aCombatants[" + attacker + "].makeAttack(" + attacked + ", 0, -1);");
         } catch (JavaScriptException ex)
         {
             Debug.LogException(ex);
             Debug.Log("Line:" + ex.LineNumber);
         }
+    }
+
+    private IEnumerator restoreCharacterSprite()
+    {
+        yield return new WaitForSeconds(MONSTER_MOVE_SECONDS);
+        SpriteRenderer player = this.goPlayer.GetComponent<SpriteRenderer>();
+        if (player.sprite.name != "icon_PC_FighterMale_0" && player.sprite.name != "Player")
+        {
+            player.sprite = (Sprite)Resources.Load<Sprite>("Sprites/Player");
+        }
+        yield break;
     }
 
     public void combatantDying(int id, int x, int y)
@@ -482,11 +500,9 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             configDoc = null;
         }
 
-        UnityUAFEventManager unityUAFEventManager = new UnityUAFEventManager(this);
-
         GameState.engineOutput.payload = new System.Object[] { new UAFLib.dataLoaders.ItemLoader().load(itemDataDoc), new UAFLib.dataLoaders.SpecabilityLoader().load(specAbsDataDoc) };
-        GameState.engine.SetValue("consoleResults", GameState.engineOutput).SetValue("unityUAFEventManager", unityUAFEventManager);
-        loader.loadEngine(configDoc, GameState.engine, unityUAFEventManager, complete);
+        GameState.engine.SetValue("consoleResults", GameState.engineOutput).SetValue("unityUAFEventManager", GameState.eventManager);
+        loader.loadEngine(configDoc, GameState.engine, GameState.eventManager, complete);
     }
 }
 

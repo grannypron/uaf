@@ -18,6 +18,7 @@ public static class GameState
     public static BitArray blockedSquares;
     public static int mapDataWidth, mapDataHeight;
     public static bool soundOn = false;
+    public static UnityUAFEventManager eventManager = new UnityUAFEventManager();
 
     public static void engineExecute(string expression)
     {
