@@ -422,6 +422,27 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
 
     public void Inventory()
     {
+        GameState.engineExecute(Const.ENGINE_MANAGER_OTHER_INV_NAME + " = null;");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("ViewInventoryScene");
+    }
+
+    public void OpenChest()
+    {
+        GameObject goTreasureChest = GameState.activeItemCollider;
+        if (goTreasureChest == null)
+        {
+            Debug.LogWarning("GameState.activeItemCollider is null.  Not opening inventory.");
+            return;
+        }
+        if (goTreasureChest.GetComponent<TreasureChestEvents>() == null)
+        {
+            Debug.LogWarning("Could not fetch TreasureChestEvents component from GameState.activeItemCollider.  Not opening inventory.");
+            return;
+        }
+        TreasureChestEvents chest = goTreasureChest.GetComponent<TreasureChestEvents>();
+        GameState.engine.SetValue("chestItems", chest.items);
+        GameState.engineExecute(Const.ENGINE_MANAGER_OTHER_INV_NAME + " = new ITEM_LIST();");
+        GameState.engineExecute("populateItemList(" + Const.ENGINE_MANAGER_OTHER_INV_NAME + ", chestItems);");
         UnityEngine.SceneManagement.SceneManager.LoadScene("ViewInventoryScene");
     }
 

@@ -225,6 +225,10 @@ function moveMonster(idxMonster) {
 }
 
 
+function populateItemList(listToPopulate, items) {
+
+}
+
 var Warrior = new CHARACTER();
 Warrior.name = "Hardest_Ken";
 Warrior.classID = "Fighter";
@@ -306,3 +310,6 @@ cWarrior.m_pCharacter.SetMaxMovement(2000);
 
 
 consoleResults.payload = packageMapAndCombatantStatus(cWarrior);
+
+// This will be used to hold items that are not the players but are being used - like in a treasure chest or a shop's inventory
+var otherInventory = new ITEM_LIST();
