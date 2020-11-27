@@ -31,7 +31,7 @@ public class TreasureChestEvents : MonoBehaviour
     [System.Serializable]
     public class ChestItem
     {
-        public string item;
+        public string itemID;
         public int qty;
     }
 }

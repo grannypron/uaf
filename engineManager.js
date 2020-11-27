@@ -176,11 +176,15 @@ function packageMapAndCombatantStatus(c) {
     return data;
 }
 
-function makeInventoryList(c) {
+function makeCharInventoryList(c) {
+    return makeInventoryList(c.m_pCharacter.myItems);
+}
+
+function makeInventoryList(itemList) {
     var str = "";
-    for (idx = 0; idx < c.m_pCharacter.myItems.m_items.GetCount(); idx++) {
-        str += c.m_pCharacter.myItems.IsReady(idx) ? "*" : " ";
-        str += c.m_pCharacter.myItems.GetItemIDByPos(idx) + "\n";
+    for (idx = 0; idx < itemList.m_items.GetCount(); idx++) {
+        str += itemList.IsReady(idx) ? "*" : " ";
+        str += itemList.GetItemIDByPos(idx) + "\n";
     }
     return str;
 }
@@ -226,7 +230,9 @@ function moveMonster(idxMonster) {
 
 
 function populateItemList(listToPopulate, items) {
-
+    for (idx = 0; idx < items.length; idx++) {
+        listToPopulate.addItem5(items[idx].itemID, items[idx].qty, 0, false, 0);
+    }
 }
 
 var Warrior = new CHARACTER();

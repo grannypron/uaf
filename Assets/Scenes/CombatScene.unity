@@ -12761,6 +12761,31 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 847076980}
     m_Modifications:
+    - target: {fileID: 234827316910185440, guid: 3b414fee1cea557499c9372efeeca1d4,
+        type: 3}
+      propertyPath: items.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 234827316910185440, guid: 3b414fee1cea557499c9372efeeca1d4,
+        type: 3}
+      propertyPath: items.Array.data[0].itemID
+      value: Long Sword
+      objectReference: {fileID: 0}
+    - target: {fileID: 234827316910185440, guid: 3b414fee1cea557499c9372efeeca1d4,
+        type: 3}
+      propertyPath: items.Array.data[0].qty
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 234827316910185440, guid: 3b414fee1cea557499c9372efeeca1d4,
+        type: 3}
+      propertyPath: items.Array.data[1].itemID
+      value: Dagger
+      objectReference: {fileID: 0}
+    - target: {fileID: 234827316910185440, guid: 3b414fee1cea557499c9372efeeca1d4,
+        type: 3}
+      propertyPath: items.Array.data[1].qty
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 788071627784310784, guid: 3b414fee1cea557499c9372efeeca1d4,
         type: 3}
       propertyPath: m_Name

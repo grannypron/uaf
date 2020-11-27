@@ -1,10 +1,11 @@
-﻿- Reduce startup time - seems like this is mostly the specab loading code - try packaging all .js together into a single file and see if that makes it faster - use timestamps in Unity to measure
+﻿- MacOS build does nothing much
+- Add a Take All option on the inventory menu scene whenever the otherINventory is not null
+- Reduce startup time - seems like this is mostly the specab loading code - try packaging all .js together into a single file and see if that makes it faster - use timestamps in Unity to measure
 - Support diagonal moves
 - rename icon_PC_Fighter_Male_# sprite
 - Ranged attacks
-- Possible bug: randomizeAndPlaceMonsters could put two monsters in the same spot - check to see if the mosnterLocations.Get() is already set before using it
+- Possible bug: randomizeAndPlaceMonsters could put two monsters in the same spot - check to see if the mosnterLocations.Get() is already set before using it - Also they can spawn in the same place as the player!
 - Dungeon Generation
-- Treasure chests!
 - Moving animations on player RigidBody
 - Comment the living hell out of everything
 - Leveling up - start at CHARACTER.prototype.GetLevelCap
@@ -12,3 +13,5 @@
 - Visit the shop(s?)!!!
 - Fog of war
 
+Done:
+- Allow holding down of move key

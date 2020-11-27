@@ -7,35 +7,47 @@ using UnityEngine.UI;
 public class InventorySceneEvents : MonoBehaviour
 {
 
-    bool painted = false;
+    bool dirty = true;
     // Start is called before the first frame update
     void Start()
     {
-
+        this.dirty = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!painted)
+        if (dirty)
         {
-            paintInventory();
-            painted = true;
+            paint();
+            dirty = false;
         }
 
         if (Input.GetKeyDown(KeyCode.X))
-            BackToCombat();
+            Exit();
 
     }
-
-    public void paintInventory()
+    public void paint()
     {
-        Text txtInventoryList = GameObject.Find("txtInventoryList").GetComponent<Text>();
-        GameState.engine.Execute("consoleResults.payload = makeInventoryList(cWarrior);");
-        txtInventoryList.text = GameState.engineOutput.payload.ToString();
+        paintPlayerInventory();
+        paintOtherInventory();
     }
 
-    public void BackToCombat()
+    public void paintPlayerInventory()
+    {
+        Text txtInventoryList = GameObject.Find("txtPlayerInventory").GetComponent<Text>();
+        GameState.engine.Execute("consoleResults.payload = makeCharInventoryList(cWarrior);");
+        txtInventoryList.text = "Your inventory: \n" + GameState.engineOutput.payload.ToString();
+    }
+
+    public void paintOtherInventory()
+    {
+        Text txtInventoryList = GameObject.Find("txtOtherInventory").GetComponent<Text>();
+        GameState.engine.Execute("consoleResults.payload = makeInventoryList(" + Const.ENGINE_MANAGER_OTHER_INV_NAME + ");");
+        txtInventoryList.text = "Other: \n" + GameState.engineOutput.payload.ToString();
+    }
+
+    public void Exit()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("CombatScene");
     }

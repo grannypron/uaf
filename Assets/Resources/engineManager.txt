@@ -3,13 +3,11 @@
  * game-related logic out of this layer.  The point of this logic is to translate UI/Unity-level input/outputs with
  * engine input/outputs 
  */
- 
+
 // The lines below override LITTLE_RAN because the bit operations are causing it to crash with "float unrepresentable in integer range" in WebGL
 LITTLE_RAN.prototype.Init = function (seed) { }
 LITTLE_RAN.prototype.Random = function () { return Math.floor(Math.random() * Math.floor(1000)); }
 
-// Another hack for WebGL :/
-CHARACTER.prototype.HasDeathImmunity = function() { return false; }
 
 Globals.SPECAB_HACKS = {};
 // This stops free-attacks like when the player moves away from the monsters or vice-versa
@@ -178,11 +176,15 @@ function packageMapAndCombatantStatus(c) {
     return data;
 }
 
-function makeInventoryList(c) {
+function makeCharInventoryList(c) {
+    return makeInventoryList(c.m_pCharacter.myItems);
+}
+
+function makeInventoryList(itemList) {
     var str = "";
-    for (idx = 0; idx < c.m_pCharacter.myItems.m_items.GetCount(); idx++) {
-        str += c.m_pCharacter.myItems.IsReady(idx) ? "*" : " ";
-        str += c.m_pCharacter.myItems.GetItemIDByPos(idx) + "\n";
+    for (idx = 0; idx < itemList.m_items.GetCount(); idx++) {
+        str += itemList.IsReady(idx) ? "*" : " ";
+        str += itemList.GetItemIDByPos(idx) + "\n";
     }
     return str;
 }
@@ -226,6 +228,12 @@ function moveMonster(idxMonster) {
     combatData.m_aCombatants[combatData.GetCurrCombatant()].EndTurn();
 }
 
+
+function populateItemList(listToPopulate, items) {
+    for (idx = 0; idx < items.length; idx++) {
+        listToPopulate.addItem5(items[idx].itemID, items[idx].qty, 0, false, 0);
+    }
+}
 
 var Warrior = new CHARACTER();
 Warrior.name = "Hardest_Ken";
@@ -308,3 +316,6 @@ cWarrior.m_pCharacter.SetMaxMovement(2000);
 
 
 consoleResults.payload = packageMapAndCombatantStatus(cWarrior);
+
+// This will be used to hold items that are not the players but are being used - like in a treasure chest or a shop's inventory
+var otherInventory = new ITEM_LIST();

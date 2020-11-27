@@ -21,24 +21,36 @@ public class UserInputEvents : MonoBehaviour
     {
         if (GameState.allowInput)
         {
-            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+            {
+                GameState.allowInput = false;
                 movePlayer(-1, 0);
-            else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            }
+            else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+            {
+                GameState.allowInput = false;
                 movePlayer(1, 0);
-            else if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+            }
+            else if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+            {
+                GameState.allowInput = false;
                 movePlayer(0, 1);
-            else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+            }
+            else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+            {
+                GameState.allowInput = false;
                 movePlayer(0, -1);
+            }
             else
             {
                 foreach (KeyCode key in menuHotkeys)
                 {
-                    if (Input.GetKeyDown(key))
+                    if (Input.GetKey(key))
                     {
+                        GameState.allowInput = false;
                         GameObject.Find("EventSystem").SendMessage(MENU_MESSAGES[key], null);
                     }
                 }
-
             }
         }
     }
