@@ -1,10 +1,13 @@
-﻿- MacOS build does nothing much
-- Add a Take All option on the inventory menu scene whenever the otherINventory is not null
-- Reduce startup time - seems like this is mostly the specab loading code - try packaging all .js together into a single file and see if that makes it faster - use timestamps in Unity to measure
+﻿- Player is stuck after opening treasure chest - probably the playerModelMove(0,0) hack after returning from inventory screen
+- One of the test cases is failing - "value is null"
+- MacOS build does nothing much - try building on a Linux VM
+- Reduce startup time - It is mostly happening in the item library - I cut off a second by using the protobuf serialization routine, but a lot of time is being taken in ITEM_DATA_TYPE.LoadFromLoader - try moving itemData into the C# scope and loading it there and returning it to the engine.  Will have to deal with ExpandoObject
+- Possible bug: randomizeAndPlaceMonsters could put two monsters in the same spot - check to see if the mosnterLocations.Get() is already set before using it - Also they can spawn in the same place as the player!
 - Support diagonal moves
+- CombatMenuHandler and InventoryMenuHandler should inherit from a base class to limit code duplication
+- Really need to refactor UserInputEvents and InventorySceneEvents to tie into the CombatMenuHandler/InventoryMenuHandler - having two points of processing for the keystrokes is confusing and really they should mostly be tied together with the one exception of the Movement keys
 - rename icon_PC_Fighter_Male_# sprite
 - Ranged attacks
-- Possible bug: randomizeAndPlaceMonsters could put two monsters in the same spot - check to see if the mosnterLocations.Get() is already set before using it - Also they can spawn in the same place as the player!
 - Dungeon Generation
 - Moving animations on player RigidBody
 - Comment the living hell out of everything
@@ -12,6 +15,3 @@
 - Move the window with the player smoothly when they get outiside of a certain box in the middle - e.g. x > 306 or x < 118.  Use Lerp.  See code in MainCameraEvents
 - Visit the shop(s?)!!!
 - Fog of war
-
-Done:
-- Allow holding down of move key

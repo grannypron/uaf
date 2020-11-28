@@ -8,10 +8,14 @@ public class InventorySceneEvents : MonoBehaviour
 {
 
     bool dirty = true;
+    bool menuNeedsRefresh = true;
+    List<string> activeMenuButtons = new List<string>();
+
     // Start is called before the first frame update
     void Start()
     {
         this.dirty = true;
+        activeMenuButtons.Add("btnExit");
     }
 
     // Update is called once per frame
@@ -23,8 +27,16 @@ public class InventorySceneEvents : MonoBehaviour
             dirty = false;
         }
 
+        if (this.menuNeedsRefresh)
+        {
+            RefreshMenu();
+            this.menuNeedsRefresh = false;
+        }
+
         if (Input.GetKeyDown(KeyCode.X))
             Exit();
+        if (Input.GetKeyDown(KeyCode.A))
+            TakeAll();
 
     }
     public void paint()
@@ -44,11 +56,53 @@ public class InventorySceneEvents : MonoBehaviour
     {
         Text txtInventoryList = GameObject.Find("txtOtherInventory").GetComponent<Text>();
         GameState.engine.Execute("consoleResults.payload = makeInventoryList(" + Const.ENGINE_MANAGER_OTHER_INV_NAME + ");");
-        txtInventoryList.text = "Other: \n" + GameState.engineOutput.payload.ToString();
+        object engineOutput = GameState.engineOutput.payload;
+        if (engineOutput != null && engineOutput.ToString() != "") {
+            txtInventoryList.text = "Other: \n" + engineOutput.ToString();
+            activeMenuButtons.Add("btnTakeAll");
+            this.menuNeedsRefresh = true;
+        } else
+        {
+            txtInventoryList.text = "";
+            activeMenuButtons.Remove("btnTakeAll");
+        }
     }
 
     public void Exit()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("CombatScene");
+    }
+
+    public void TakeAll()
+    {
+        // Update the engine
+        GameState.engine.Execute("transferAllToPlayer(" + Const.ENGINE_MANAGER_OTHER_INV_NAME + ");");
+
+        // Update the menu & the listing on the screen
+        this.dirty = true;
+        this.menuNeedsRefresh = true;
+
+    }
+
+    public void RefreshMenu()
+    {
+        HorizontalLayoutGroup menuPanel = GameObject.Find("MenuButtons").GetComponent<HorizontalLayoutGroup>();
+        menuPanel.childScaleWidth = false;
+        menuPanel.childScaleWidth = true;
+        for (int idxMenuItem = 0; idxMenuItem < menuPanel.transform.childCount; idxMenuItem++)
+        {
+            Transform transButton = menuPanel.transform.GetChild(idxMenuItem);
+            RectTransform rectButton = transButton.GetComponent<RectTransform>();
+            if (activeMenuButtons.Contains(transButton.name))
+            {
+                rectButton.sizeDelta = new Vector2Int(100, 30);
+                rectButton.localScale = new Vector3Int(1, 1, 1);
+            }
+            else
+            {
+                rectButton.sizeDelta = new Vector2Int(0, 0);
+                rectButton.localScale = new Vector3Int(0, 0, 0);
+            }
+        }
     }
 }

@@ -26,7 +26,11 @@ public class ResourceEngineLoader : IEngineLoader
 
     public IEnumerator loadEngine(XmlDocument configDoc, Engine engine, UnityUAFEventManager unityUAFEventManager, InitComplete initComplete)
     {
+        var watch = new System.Diagnostics.Stopwatch();
         LoadFiles(this.mJSFolder, engine);
+        watch.Stop();
+        Debug.Log($"Engine load time: {watch.ElapsedMilliseconds} ms");
+
         TextAsset setupAsset = (TextAsset)Resources.Load(this.mSetupPath);
         engine.Execute(setupAsset.text);
         initComplete.Invoke();
@@ -52,10 +56,9 @@ public class ResourceEngineLoader : IEngineLoader
 
         foreach (string[] fileData in lib)
         {
-            UnityEngine.Debug.Log("L2oading " + fileData[0]);
+            UnityEngine.Debug.Log("Loading " + fileData[0]);
             engine.Execute(fileData[1]);
         }
 
     }
-
 }

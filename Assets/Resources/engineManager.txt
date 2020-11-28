@@ -181,6 +181,9 @@ function makeCharInventoryList(c) {
 }
 
 function makeInventoryList(itemList) {
+    if (itemList == null) {
+        return "";      // Jint did not like this being null - NullReferenceException
+    }
     var str = "";
     for (idx = 0; idx < itemList.m_items.GetCount(); idx++) {
         str += itemList.IsReady(idx) ? "*" : " ";
@@ -233,6 +236,24 @@ function populateItemList(listToPopulate, items) {
     for (idx = 0; idx < items.length; idx++) {
         listToPopulate.addItem5(items[idx].itemID, items[idx].qty, 0, false, 0);
     }
+}
+
+function itemListAsArray(itemList) {
+    var result = [];
+    for (idx = 0; idx < itemList.m_items.GetCount(); idx++) {
+        var item = ["" + itemList.GetAtPos(idx).itemID, "" + itemList.GetAtPos(idx).qty];
+        result.push(item);
+    }
+    return result;
+}
+
+
+function transferAllToPlayer(itemList) {
+    var player = combatData.m_aCombatants[0].m_pCharacter;
+    for (var idx = 0; idx < itemList.m_items.GetCount(); idx++) {
+        player.addCharacterItem(itemList.GetAtPos(idx).itemID, itemList.GetAtPos(idx).qty, 0, 0, 0);
+    }
+    itemList.Clear();
 }
 
 var Warrior = new CHARACTER();

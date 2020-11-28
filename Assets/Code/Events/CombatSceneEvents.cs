@@ -37,6 +37,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
         this.goPlayer = GameObject.Find("Player");
         PlayerScaleFactor = (int)Math.Floor(this.goPlayer.GetComponent<Transform>().localScale.x);
         GameState.eventManager.AddListener(this, this.name);
+
         togglePanel("pnlDead", false);
         Text txtCombatantInfo = GameObject.Find("txtCombatantInfo").GetComponent<Text>();
         txtCombatantInfo.text = "";
@@ -48,6 +49,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             this.librariesLoaded = true;
             this.registeredWalls = false;
             restoreMonsterModels();
+            GameState.monsterMoveIdx = 0;
             playerModelMove(new int[] { 0, 0 }); // little hack 🤷
             yield break;
         }
@@ -423,6 +425,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
     public void Inventory()
     {
         GameState.engineExecute(Const.ENGINE_MANAGER_OTHER_INV_NAME + " = null;");
+        GameState.activeItemCollider = null;  // We are just looking at inventory, not interacting with an object on the map.  If we do not "inactivate" the activeItemCollider, its presence will indicate that we are interacting with the collided object
         UnityEngine.SceneManagement.SceneManager.LoadScene("ViewInventoryScene");
     }
 
@@ -474,6 +477,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
     private IEnumerator getLoader(string type, InitComplete complete)
     {
         XmlDocument itemDataDoc;
+        byte[] itemBinaryData = new byte[0];
         XmlDocument configDoc;
         XmlDocument specAbsDataDoc;
         IEngineLoader loader;
@@ -515,15 +519,17 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
 
             loader = new ResourceEngineLoader("js", "engineManager");
             itemDataDoc = new XmlDocument();
-            itemDataDoc.LoadXml(((TextAsset)Resources.Load("data/items")).text);
+            //itemDataDoc.LoadXml(((TextAsset)Resources.Load("data/items")).text);
+            itemBinaryData = ((TextAsset)Resources.Load("data/items")).bytes;
             specAbsDataDoc = new XmlDocument();
             specAbsDataDoc.LoadXml(((TextAsset)Resources.Load("data/SpecialAbilities")).text);
             configDoc = null;
         }
 
-        GameState.engineOutput.payload = new System.Object[] { new UAFLib.dataLoaders.ItemLoader().load(itemDataDoc), new UAFLib.dataLoaders.SpecabilityLoader().load(specAbsDataDoc) };
+        GameState.engineOutput.payload = new System.Object[] { new UAFLib.dataLoaders.ItemLoader().loadFromBinary(itemBinaryData), new UAFLib.dataLoaders.SpecabilityLoader().load(specAbsDataDoc) };
         GameState.engine.SetValue("consoleResults", GameState.engineOutput).SetValue("unityUAFEventManager", GameState.eventManager);
         loader.loadEngine(configDoc, GameState.engine, GameState.eventManager, complete);
     }
+
 }
 
