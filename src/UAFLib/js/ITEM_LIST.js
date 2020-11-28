@@ -5,7 +5,8 @@ function ITEM_LIST() {
 }
 
 ITEM_LIST.prototype.Clear = function () {
-    /**TODO**/
+    this.rdyItems_Deprecated = new READY_ITEMS();
+    this.m_items = new OrderedQueue();
 }
 
 

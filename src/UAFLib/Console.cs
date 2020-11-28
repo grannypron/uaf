@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Xml;
+using UAFLib.serialization;
 
 namespace UAFLib
 {
@@ -17,9 +18,14 @@ namespace UAFLib
 
         public void helloWorld()
         {
-            
+
+            Stopwatch watch = new Stopwatch();
             try
             {
+                watch.Start();
+                //loadAndSerializeObjects();  // Used to make bin versions of lookup collections
+                /*
+                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadItems.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestParseDice.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadItems.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadSAs.js" });
@@ -37,6 +43,7 @@ namespace UAFLib
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js", @"..\..\..\UAFLib\Tests\TestSimpleUnarmedAttack.js" });
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js", @"..\..\..\UAFLib\Tests\TestSimpleUnarmedAttack.js", @"..\..\..\UAFLib\Tests\TestKill.js" });
+                */
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadItems.js", @"..\..\..\UAFLib\Tests\TestInventory.js" });
                 
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js", @"..\..\..\UAFLib\Tests\TestSimpleAttack.js" });
@@ -46,7 +53,9 @@ namespace UAFLib
                 runTest(new string[] { @"..\..\..\UAFLib\Tests\TestExperience.js" });
                 //runTest(new string[] { @"..\..\..\UAFLib\Tests\DemoCombat.js" });
                 //runTest(new string[] { @"..\..\..\UAFLib\Tests\TestGPDL.js" });
-                System.Console.WriteLine("Tests complete!  Press Any key.");
+                
+                watch.Stop();
+                System.Console.WriteLine("Tests complete!  " + watch.ElapsedMilliseconds + " milliseconds.  Press Any key.");
             }
             catch (JavaScriptException ex)
             {
@@ -65,7 +74,7 @@ namespace UAFLib
             List<string> strs = new List<string>();
             for (int idx = 0; idx < paths.Length; idx++) {
                 string path = paths[idx];
-                strs.Add(LoadFileFromString(path));
+                strs.Add(LoadFileContents(path));
             }
             return runTestFromStrings(strs.ToArray());
         }
@@ -94,7 +103,7 @@ namespace UAFLib
             return results;
         }
 
-        private string LoadFileFromString(string path)
+        private string LoadFileContents(string path)
         {
             StreamReader sr = new StreamReader(path);
             string str = sr.ReadToEnd();
@@ -107,7 +116,7 @@ namespace UAFLib
             LibraryInfo lib = new LibraryInfo();
             foreach (string file in Directory.GetFiles(path, "*.js", SearchOption.AllDirectories))
             {
-                String fileContents = LoadFileFromString(file);
+                String fileContents = LoadFileContents(file);
                 int lineCount = fileContents.Split('\n').Length;
                 lib.Add(new LibraryFile(file, lineCount, fileContents));
             }
@@ -154,6 +163,23 @@ namespace UAFLib
 
 
             return lib;
+        }
+
+
+        private void loadAndSerializeObjects()
+        {
+            UAFLib.dataLoaders.ItemLoader loader = new UAFLib.dataLoaders.ItemLoader();
+            Dictionary<string, object> loadedData = loader.load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\items.xml");
+            Dictionary<string, Dictionary<string, List<string>>> castLoadedData = new Dictionary<string, Dictionary<string, List<string>>>();
+            foreach (string key in loadedData.Keys)
+            {
+                castLoadedData[key] = (Dictionary<string, List<string>>)loadedData[key];
+            }
+
+            using (var file = File.Create("items.bin"))
+            {
+                ProtoBuf.Serializer.Serialize(file, castLoadedData);
+            }
         }
     }
 

@@ -175,54 +175,56 @@ ITEM_DATA_TYPE.prototype.AddAmmoType = function(data) {
 
 ITEM_DATA_TYPE.prototype.LoadFromLoader = function (data) {
     var enumerator = data.Keys.GetEnumerator();
+    var performanceIdxCounter = 0;
     while (enumerator.MoveNext()) {
+        var startTime;
         key = enumerator.Current;
         var itemRecord = data[key];
-        if (itemRecord["id_name"] == null || itemRecord["id_name"] == "") { continue; }
+        if (itemRecord["id_name"][0] == null || itemRecord["id_name"][0] == "") { continue; }
         var itemData = new ITEM_DATA();
-        itemData.m_uniqueName = itemRecord["name"];
-        itemData.m_commonName = itemRecord["id_name"];
-        itemData.m_idName = itemRecord["name"];
-        itemData.AmmoType = itemRecord["ammo_type"];
-        itemData.HitSound = itemRecord["hit_sound"];
-        itemData.MissSound = itemRecord["miss_sound"];
-        itemData.LaunchSound = itemRecord["launch_sound"];
-        itemData.Experience = parseInt(itemRecord["experience"]);
-        itemData.Cost = parseInt(itemRecord["cost"]);
-        itemData.Encumbrance = parseInt(itemRecord["encumbrance"]);
-        itemData.Attack_Bonus = parseInt(itemRecord["attack_bonus"]);
-        itemData.Cursed = itemRecord["cursed"] == "yes";
-        itemData.Bundle_Qty = parseInt(itemRecord["bundle_quantity"]);
-        itemData.Num_Charges = parseInt(itemRecord["number_of_charges"]);
-        itemData.Location_Readied = Items.GetReadiedLocationByString(itemRecord["readied_location"]);
-        itemData.Hands_to_Use = parseInt(itemRecord["hands_to_carry"]);
-        var sm_dice = UAFUtil.parseDice(itemRecord["small_medium_damage_dice"]);
+        itemData.m_uniqueName = itemRecord["name"][0];
+        itemData.m_commonName = itemRecord["id_name"][0];
+        itemData.m_idName = itemRecord["name"][0];
+        itemData.AmmoType = itemRecord["ammo_type"][0];
+        itemData.HitSound = itemRecord["hit_sound"][0];
+        itemData.MissSound = itemRecord["miss_sound"][0];
+        itemData.LaunchSound = itemRecord["launch_sound"][0];
+        itemData.Experience = parseInt(itemRecord["experience"][0]);
+        itemData.Cost = parseInt(itemRecord["cost"][0]);
+        itemData.Encumbrance = parseInt(itemRecord["encumbrance"][0]);
+        itemData.Attack_Bonus = parseInt(itemRecord["attack_bonus"][0]);
+        itemData.Cursed = itemRecord["cursed"][0] == "yes";
+        itemData.Bundle_Qty = parseInt(itemRecord["bundle_quantity"][0]);
+        itemData.Num_Charges = parseInt(itemRecord["number_of_charges"][0]);
+        itemData.Location_Readied = Items.GetReadiedLocationByString(itemRecord["readied_location"][0]);
+        itemData.Hands_to_Use = parseInt(itemRecord["hands_to_carry"][0]);
+        var sm_dice = UAFUtil.parseDice(itemRecord["small_medium_damage_dice"][0]);
         itemData.Dmg_Dice_Sm = sm_dice.die;
         itemData.Nbr_Dice_Sm = sm_dice.nbr;
         itemData.Dmg_Bonus_Sm = sm_dice.bonus;
-        var lg_dice = UAFUtil.parseDice(itemRecord["large_damage_dice"]);
+        var lg_dice = UAFUtil.parseDice(itemRecord["large_damage_dice"][0]);
         itemData.Dmg_Dice_Lg = lg_dice.die;
         itemData.Nbr_Dice_Lg = lg_dice.nbr;
         itemData.Dmg_Bonus_Lg = lg_dice.bonus;
-        itemData.ROF_Per_Round = parseFloat(itemRecord["ROF_per_round"]);
-        itemData.Protection_Base = parseInt(itemRecord["AC_base"]);
-        itemData.Protection_Bonus = parseInt(itemRecord["AC_bonus"]);
-        itemData.Wpn_Type = weaponClassType.getByString(itemRecord["weapon_type"]);
+        itemData.ROF_Per_Round = parseFloat(itemRecord["ROF_per_round"][0]);
+        itemData.Protection_Base = parseInt(itemRecord["AC_base"][0]);
+        itemData.Protection_Bonus = parseInt(itemRecord["AC_bonus"][0]);
+        itemData.Wpn_Type = weaponClassType.getByString(itemRecord["weapon_type"][0]);
         itemData.m_priorityAI = 0; // Not serialized.  Initialized from Special Ability.
         itemData.m_usageFlags = 0;
-        itemData.USAGE_usable = itemRecord["usable"] == "yes";
-        itemData.USAGE_scribable = itemRecord["scribtable"] == "yes";
-        itemData.USAGE_notMagical = itemRecord["not_magical"] == "yes";
-        itemData.CanBeHalvedJoined = itemRecord["CanHalveJoin"] == "yes";
-        itemData.CanBeTradeDropSoldDep = itemRecord["can_drop"] == "yes";
-        itemData.RangeMax = parseInt(itemRecord["combat_range"]);
+        itemData.USAGE_usable = itemRecord["usable"][0] == "yes";
+        itemData.USAGE_scribable = itemRecord["scribtable"][0] == "yes";
+        itemData.USAGE_notMagical = itemRecord["not_magical"][0] == "yes";
+        itemData.CanBeHalvedJoined = itemRecord["CanHalveJoin"][0] == "yes";
+        itemData.CanBeTradeDropSoldDep = itemRecord["can_drop"][0] == "yes";
+        itemData.RangeMax = parseInt(itemRecord["combat_range"][0]);
         itemData.RangeShort = (this.RangeMax + 2) / 3; // These may be overridden by $AI_ShortRange
         itemData.RangeMedium = 2 * this.RangeMax / 3;  // and $AI_MediumRange Special Abilities. 
-        itemData.ExamineEvent = parseInt(itemRecord["Examine_Event_ID"]);  //DWORD
-        itemData.ExamineLabel = itemRecord["Examine_Label"];
+        itemData.ExamineEvent = parseInt(itemRecord["Examine_Event_ID"][0]);  //DWORD
+        itemData.ExamineLabel = itemRecord["Examine_Label"][0];
         itemData.attackMsg = "";
-        itemData.Recharge_Rate = itemRechargeRate.GetByString(itemRecord["recharge_rate"]);
-        itemData.IsNonLethal = itemRecord["non_lethal"] == "yes";
+        itemData.Recharge_Rate = itemRechargeRate.GetByString(itemRecord["recharge_rate"][0]);
+        itemData.IsNonLethal = itemRecord["non_lethal"][0] == "yes";
         itemData.usableByBaseclass = [];
         var baseClasses = itemRecord["BaseClasses"];
         for (var idx = 0; idx < baseClasses.Count; idx++) {
@@ -237,7 +239,7 @@ ITEM_DATA_TYPE.prototype.LoadFromLoader = function (data) {
         item.specAbs = new SPECIAL_ABILITIES(true);
         */
         this.AddItem(itemData);
-
+        performanceIdxCounter++;
     }
 }
 

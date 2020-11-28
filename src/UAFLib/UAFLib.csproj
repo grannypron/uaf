@@ -49,8 +49,18 @@
     <Reference Include="Jint, Version=0.0.0.0, Culture=neutral, PublicKeyToken=2e92ba9c8d81157f, processorArchitecture=MSIL">
       <HintPath>packages\Jint.3.0.0-beta-1828\lib\net461\Jint.dll</HintPath>
     </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>packages\protobuf-net.3.0.62\lib\net461\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net.Core">
+      <HintPath>packages\protobuf-net.Core.3.0.62\lib\net461\protobuf-net.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -71,8 +81,10 @@
     <Compile Include="MFCSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="dataLoaders\SpecabilityLoader.cs" />
+    <Compile Include="serialization\Item.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\items.bin" />
     <None Include="packages.config" />
     <None Include="SaveB.pty" />
     <None Include="Tests\Druid.chr" />

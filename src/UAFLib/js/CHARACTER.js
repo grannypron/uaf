@@ -1023,6 +1023,7 @@ CHARACTER.prototype.getItemList = function (id) {
 };
 
 CHARACTER.prototype.addCharacterItem = function (itemID, qty, numCharges, id, cost) {
+    Globals.debug("----CHARACTER.prototype.addCharacterItem");
     if ((itemData.getItemEncumbrance(itemID, qty) + this.GetEncumbrance()) > this.GetAdjMaxEncumbrance()) {
         Globals.SetMiscError(miscErrorType.TooMuchWeight);
         return false;

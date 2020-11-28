@@ -1,13 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Xml;
-using UAFLib.dataLoaders;
+using UAFLib.serialization;
 
 namespace UAFLib.dataLoaders
 {
     public class ItemLoader : BaseLoader
     {
+
+        // This method is primary used in testing
+        public Dictionary<string, Dictionary<string, List<string>>> loadFromBinaryFile(string path)
+        {
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                byte[] data = new byte[fs.Length];
+                fs.Read(data, 0, (int)fs.Length);
+                return loadFromBinary(data);
+            }
+        }
+
+        public Dictionary<string, Dictionary<string, List<string>>> loadFromBinary(byte[] data)
+        {
+            MemoryStream source = new MemoryStream(data);
+            Dictionary<string, Dictionary<string, List<string>>> items = ProtoBuf.Serializer.Deserialize<Dictionary<string, Dictionary<string, List<string>>>>(source);
+            return items;
+
+        }
 
         public override Dictionary<string, object> load(XmlDocument doc)
         {
@@ -16,10 +35,10 @@ namespace UAFLib.dataLoaders
 
             foreach (XmlNode node in items)
             {
-                Dictionary<string, object> itemData = new Dictionary<string, object>();
+                Dictionary<string, List<String>> itemData = new Dictionary<string, List<String>>();
                 foreach (XmlAttribute attribute in node.Attributes)
                 {
-                    itemData[attribute.Name] = attribute.Value;
+                    itemData[attribute.Name] = new List<String>() {attribute.Value};
                 }
 
                 List<string> specAbs = new List<string>();
@@ -35,7 +54,7 @@ namespace UAFLib.dataLoaders
                     baseClasses.Add(baseClassNode.InnerText);
                 }
                 itemData["BaseClasses"] = baseClasses;
-                returnData[itemData["id_name"].ToString()] = itemData;
+                returnData[itemData["id_name"][0].ToString()] = itemData;
             }
             return returnData;
         }
