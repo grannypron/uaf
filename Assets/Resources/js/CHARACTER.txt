@@ -1027,7 +1027,6 @@ CHARACTER.prototype.addCharacterItem = function (itemID, qty, numCharges, id, co
         Globals.SetMiscError(miscErrorType.TooMuchWeight);
         return false;
     }
-
     if (!(this.myItems.addItem5(itemID, qty, numCharges, id, cost) >=0)) {  // PORT NOTE:  Had to add >=0 since 0 is an ok index, but is also == false
         Globals.WriteDebugString("Failed to addItem to character\n");
         return false;

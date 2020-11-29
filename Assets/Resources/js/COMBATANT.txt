@@ -2905,7 +2905,6 @@ COMBATANT.prototype.TakeDamage = function(dmg, IsNonLethal, invokeOptions, canFi
     {
         this.StopCasting(false, canFinishCasting); // does not call EndTurn()
     };
-    Globals.debug("----WebGL10");
 
     this.UpdateSpellForDamage(dmg);
     return pDeathIndex;

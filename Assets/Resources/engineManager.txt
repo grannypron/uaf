@@ -269,6 +269,10 @@ Warrior.alignment = 0;
 Warrior.encumbrance = 10;
 Warrior.maxEncumbrance = 1000;
 
+for (var idxCoin = 0; idxCoin < 10; idxCoin++) {
+    Warrior.money.Coins[idxCoin] = 0;
+}
+
 var bcs = new BASECLASS_STATS();
 bcs.currentLevel = 1;
 bcs.baseclassID = "fighter";
