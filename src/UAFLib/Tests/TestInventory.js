@@ -27,3 +27,5 @@ Globals.ASSERT(Warrior.toggleReadyItem(0));
 Globals.ASSERT(!Warrior.myItems.IsReady(0), "TestInventory.js - 2.5");
 Globals.ASSERT(Warrior.myItems.PeekAtPos(0).itemID == "Long Sword", "TestInventory.js - 4");
 
+Globals.ASSERT(Warrior.maxMovement > 1, "TestInventory.js - 5");  // Shouldn't be completely weighed down
+
