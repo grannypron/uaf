@@ -104,6 +104,7 @@ public:
 	//BOOL	m_Ranger;
 	//BOOL	m_Thief;
 	//}}AFX_DATA
+	CString	m_Description;
 
 
 // Overrides

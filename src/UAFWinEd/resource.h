@@ -301,8 +301,8 @@
 #define IDC_CHOOSE_ITEMS                1096
 #define IDC_RETAILER                    1098
 #define IDC_DELAY                       1098
-#define IDS_HELP_spell_Name             1100
 #define IDS_HELP_spell_Description      1099
+#define IDS_HELP_spell_Name             1100
 #define IDC_RENAMELEVEL                 1101
 #define IDS_HELP_spell_CastingSound     1101
 #define IDC_USEBG2                      1102
@@ -1705,6 +1705,7 @@
 #define IDC_Local                       2247
 #define IDC_LevelSelect                 2250
 #define IDC_EDIT1                       2253
+#define IDC_DESC                        2253
 #define IDC_ItemTriggerTag              2254
 #define IDC_SpItemTriggerTag            2255
 #define IDC_SpKeyTriggerTag             2256
@@ -1861,7 +1862,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        317
+#define _APS_NEXT_RESOURCE_VALUE        318
 #define _APS_NEXT_COMMAND_VALUE         32887
 #define _APS_NEXT_CONTROL_VALUE         2268
 #define _APS_NEXT_SYMED_VALUE           101

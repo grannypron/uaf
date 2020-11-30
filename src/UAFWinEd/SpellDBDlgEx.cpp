@@ -62,6 +62,7 @@ CSpellDBDlgEx::CSpellDBDlgEx(SPELL_DATA &data, CWnd* pParent /*=NULL*/)
   m_canTargetEnemy = TRUE;
 	m_Level = 1;
 	m_Name = _T("New Spell");
+    m_Description = _T("");
 	//m_NumTargetText = _T("");
 	m_TargetP1Text = _T("");
 	//m_TargetRangeText = _T("");
@@ -174,7 +175,7 @@ void CSpellDBDlgEx::DoDataExchange(CDataExchange* pDX)
     m_Name           = m_SpellData.Name;
     m_Lingers        = m_SpellData.Lingers;
     m_LingerOnceOnly = m_SpellData.LingerOnceOnly;
-
+    m_Description     = m_SpellData.Description;
     if (m_Lingers) m_AllowedInCamp = FALSE;
     
     if (m_Name.GetLength() > MAX_SPELL_NAME) m_Name.SetAt(MAX_SPELL_NAME,'\0');
@@ -711,7 +712,8 @@ void CSpellDBDlgEx::DoDataExchange(CDataExchange* pDX)
 	//DDX_Check(pDX, IDC_RANGER, m_Ranger);
 	//DDX_Check(pDX, IDC_THIEF, m_Thief);
 	//}}AFX_DATA_MAP
-  
+    DDX_Text(pDX, IDC_DESC, m_Description);
+
   if (pDX->m_bSaveAndValidate)
   {
     m_SpellData.CastMsg = m_CastMsg;
@@ -730,6 +732,7 @@ void CSpellDBDlgEx::DoDataExchange(CDataExchange* pDX)
     m_SpellData.Level = m_Level;
     if (m_Name.GetLength() > MAX_SPELL_NAME) m_Name.SetAt(MAX_SPELL_NAME,'\0');
     m_SpellData.Name = m_Name;
+    m_SpellData.Description = m_Description;
     m_SpellData.Cast_Cost = m_Price;
     m_SpellData.Cast_Priority = m_priority;
     m_SpellData.Duration_Rate = (spellDurationType)m_DurationRate.GetCurSel();
