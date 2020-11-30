@@ -402,20 +402,28 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
                 break;
             case "StartAttack":
                 int[] aAttack = (int[])data;
+                Debug.Log("----StartAttack");
                 GameObject.Find("txtCombatMessage").GetComponent<Text>().text = "Combatant " + aAttack[0] + " attacks Combatant " + aAttack[1];
                 playerAttack(aAttack[0], aAttack[1]);
+                Debug.Log("----StartAttack Done");
                 break;
             case "CombatantDying":
+                Debug.Log("----CombatantDying");
                 int[] aDying = (int[])data;
                 combatantDying(aDying[0], aDying[1], aDying[2]);
+                Debug.Log("----CombatantDying Done");
                 break;
             case "CombatantDead":
+                Debug.Log("----CombatantDead");
                 int[] aDead = (int[])data;
                 combatantDying(aDead[0], aDead[1], aDead[2]);
+                Debug.Log("----CombatantDead Done");
                 break;
             case "PlaySound":
+                Debug.Log("----PlaySound");
                 string soundName = data.ToString();
-                playSound(soundName);
+                //playSound(soundName);
+                Debug.Log("----PlaySound Done");
                 break;
             default:
                 break;
@@ -519,14 +527,14 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
 
             loader = new ResourceEngineLoader("js", "engineManager");
             itemDataDoc = new XmlDocument();
-            //itemDataDoc.LoadXml(((TextAsset)Resources.Load("data/items")).text);
-            itemBinaryData = ((TextAsset)Resources.Load("data/items")).bytes;
+            itemDataDoc.LoadXml(((TextAsset)Resources.Load("data/items_xml")).text);
+            //itemBinaryData = ((TextAsset)Resources.Load("data/items")).bytes;
             specAbsDataDoc = new XmlDocument();
             specAbsDataDoc.LoadXml(((TextAsset)Resources.Load("data/SpecialAbilities")).text);
             configDoc = null;
         }
 
-        GameState.engineOutput.payload = new System.Object[] { new UAFLib.dataLoaders.ItemLoader().loadFromBinary(itemBinaryData), new UAFLib.dataLoaders.SpecabilityLoader().load(specAbsDataDoc) };
+        GameState.engineOutput.payload = new System.Object[] { new UAFLib.dataLoaders.ItemLoader().load(itemDataDoc), new UAFLib.dataLoaders.SpecabilityLoader().load(specAbsDataDoc) };
         GameState.engine.SetValue("consoleResults", GameState.engineOutput).SetValue("unityUAFEventManager", GameState.eventManager);
         loader.loadEngine(configDoc, GameState.engine, GameState.eventManager, complete);
     }

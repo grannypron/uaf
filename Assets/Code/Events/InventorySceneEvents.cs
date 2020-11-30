@@ -86,23 +86,31 @@ public class InventorySceneEvents : MonoBehaviour
 
     public void RefreshMenu()
     {
+        Debug.Log("In RefreshMenu");
         HorizontalLayoutGroup menuPanel = GameObject.Find("MenuButtons").GetComponent<HorizontalLayoutGroup>();
         menuPanel.childScaleWidth = false;
         menuPanel.childScaleWidth = true;
         for (int idxMenuItem = 0; idxMenuItem < menuPanel.transform.childCount; idxMenuItem++)
         {
+            Debug.Log("In RefreshMenu2");
+
             Transform transButton = menuPanel.transform.GetChild(idxMenuItem);
             RectTransform rectButton = transButton.GetComponent<RectTransform>();
             if (activeMenuButtons.Contains(transButton.name))
             {
+                Debug.Log("In RefreshMenu3");
+
                 rectButton.sizeDelta = new Vector2Int(100, 30);
                 rectButton.localScale = new Vector3Int(1, 1, 1);
             }
             else
             {
+                Debug.Log("In RefreshMenu4");
+
                 rectButton.sizeDelta = new Vector2Int(0, 0);
                 rectButton.localScale = new Vector3Int(0, 0, 0);
             }
+
         }
     }
 }

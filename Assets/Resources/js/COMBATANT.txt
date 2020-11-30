@@ -2285,7 +2285,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
             targCOMBATANT.UpdateSpellForAttacks(1);
 
             this.PlayHit();
-
+            Globals.debug("----COMBATANT.makeAttack1");
             {
                 pDeathIndex = targCOMBATANT.TakeDamage(damageComputation.Damage(),
                     damageComputation.IsNonLethal(),
@@ -2298,6 +2298,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                     this.RemoveCurrTarget();
                 }
             };
+            Globals.debug("----COMBATANT.makeAttack2");
             {
                 if (spellData.IsValidSpell(damageComputation.SpellID())) {
                     var samsg = "";
@@ -2315,7 +2316,8 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                         DispText.CombatMsg = samsg;
                     }
                 };
-                if (UAFUtil.IsEmpty(DispText.CombatMsg)) {
+           Globals.debug("----COMBATANT.makeAttack3");
+                 if (UAFUtil.IsEmpty(DispText.CombatMsg)) {
                     if (UAFUtil.IsEmpty(damageComputation.Message())) {
                         if (toHitComputation.IsBackStab()) {
                             DispText.CombatMsg = "Rolls " + toHitComputation.Rolled() + " and BackStabs for " + damageComputation.Damage() + " dmg";
@@ -2332,17 +2334,21 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
             // Condition added 20110413 PRS......
             // Manikus said that auto combatants should get multiple attacks even after a successful hit.
             //continueAttack=FALSE;
-
+           Globals.debug("----COMBATANT.makeAttack4");
+ 
             // Changed again 20110522.
             // Manikus tells me that multiple attacks should ALWAYS be possible
             // if (!OnAuto(false)) continueAttack=FALSE; else continueAttack=TRUE;
         }
         else {
-            toHitComputation.SetSuccessful(0);
+           Globals.debug("----COMBATANT.makeAttack5");
+             toHitComputation.SetSuccessful(0);
         };
-    }
+           Globals.debug("----COMBATANT.makeAttack6");
+     }
     else {
-        toHitComputation.SetSuccessful(0);
+           Globals.debug("----COMBATANT.makeAttack7");
+         toHitComputation.SetSuccessful(0);
     };
     if (!toHitComputation.GetSuccessful()) {
 /*#ifdef TraceFreeAttacks
@@ -2360,8 +2366,10 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         };
         continueAttack = true;
     }
-    UIEventManager.UpdateCombatMessage();
-
+           Globals.debug("----COMBATANT.makeAttack8");
+     UIEventManager.UpdateCombatMessage();
+                Globals.debug("----COMBATANT.makeAttack9");
+ 
 
 
 
@@ -2369,7 +2377,8 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
     }
     else {
     };
-    FormattedText.combatTextData = FormattedText.FormatCombatText(FormattedText.combatTextData, DispText.CombatMsg);
+           Globals.debug("----COMBATANT.makeAttack10");
+     FormattedText.combatTextData = FormattedText.FormatCombatText(FormattedText.combatTextData, DispText.CombatMsg);
 
     if (decQty)  // wpn and giID refer to either the weapon or the ammo consumed by the weapon
     {
@@ -2408,22 +2417,26 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
             this.determineMaxMovement();
         }
     }
-
+               Globals.debug("----COMBATANT.makeAttack11");
+ 
 
     // make sure combatants are facing towards each other
     this.FaceOpponent(targ);
     if (!toHitComputation.IsBackStab()) targCOMBATANT.FaceOpponent(this.self);
 
-
+           Globals.debug("----COMBATANT.makeAttack12");
+ 
     targCOMBATANT.m_iLastAttacker = this.self;
     targCOMBATANT.m_eLastAction = LASTACTION.LA_Defend;
     this.m_iLastAttacked = targCOMBATANT.self;
     this.m_eLastAction = LASTACTION.LA_Attack;
 
-
+           Globals.debug("----COMBATANT.makeAttack13");
+ 
     RunTimeIF.ClearTargetContext();
     RunTimeIF.ClearCharContext();
-    return -1;
+           Globals.debug("----COMBATANT.makeAttack14");
+     return -1;
 }
 
 COMBATANT.prototype.MakeTargetKey = function (dude, dist) {
