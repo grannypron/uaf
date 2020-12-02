@@ -1485,6 +1485,10 @@ FORMATTED_TEXT::FTStatus FORMATTED_TEXT::NextChar(void)
       m_currentColorNum = silverColor;
       m_currentColorChar = 'S'; 
       break;
+    case 'H': case 'h':
+        m_currentColorChar = 'H';
+        GraphicsMgr.HighlightText(true);  // This will be turned off in Graphics.DrawText after this string has been processed
+        break;
     case 'C': case 'c':
       m_customColorActive = TRUE;
       // What are we to do?  There are as many as 100 different fonts.
@@ -1557,6 +1561,7 @@ FORMATTED_TEXT::FTStatus FORMATTED_TEXT::NextChar(void)
     die(0x551b0a);
     return FTEOF;
   };
+
 //  die(0x551ca8);
 };
 

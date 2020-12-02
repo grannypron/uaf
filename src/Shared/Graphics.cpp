@@ -2040,6 +2040,7 @@ BOOL Graphics::DrawFont(int X, int Y,
   if (SlowText)
     delay = INTER_CHARACTER_DELAY;
 
+  bool WasHighlightOn = HighlightOn;
 
   FT.Initialize(pText, 999999, 'w', defaultColorNum, baseFontNumber, 0);
   while (((ftstat = FT.NextChar()) != FORMATTED_TEXT::FTEOF) && success)
@@ -2125,7 +2126,7 @@ BOOL Graphics::DrawFont(int X, int Y,
     default:
       NotImplemented(0xea91e0, false);
     };
-  };
+ };
   /*
   while ((*pText != '\0') && (success))
   { // One character at a time.  
@@ -2388,6 +2389,7 @@ BOOL Graphics::DrawFont(int X, int Y,
   }
   */
   DETAILTRACE(0x4c1129,0);
+  HighlightOn = WasHighlightOn; // The iteration over FormattedText can turn the highlight on temporarily.  We restore it to its original setting here
 
   //MouseRender.ShowMouseCursor(TRUE);
   return success;
