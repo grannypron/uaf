@@ -4082,6 +4082,8 @@ void GLOBAL_STATS::Serialize(CArchive &ar)
   CombatWallArt.Serialize(ar);
   CombatCursorArt.Serialize(ar);
   CombatDeathIconArt.Serialize(ar);
+  if (version >= _VERSION_526 || ar.IsStoring())
+      CharViewFrameVPArt.Serialize(ar);
   if (version >= 0.930204)
       CombatPetrifiedIconArt.Serialize(ar);
   CombatDeathArt.Serialize(ar);
@@ -4487,6 +4489,8 @@ void GLOBAL_STATS::Serialize(CAR& car)
   CombatWallArt.Serialize(car);
   CombatCursorArt.Serialize(car);
   CombatDeathIconArt.Serialize(car);
+  if (version >= _VERSION_526 || car.IsStoring())
+      CharViewFrameVPArt.Serialize(car);
   if (version >= 0.930204)
       CombatPetrifiedIconArt.Serialize(car);
   CombatDeathArt.Serialize(car);
@@ -4675,6 +4679,7 @@ const char *JKEY_COMBATCURSORART = "combatCursorArt";
 const char *JKEY_COMBATDEATHICONART = "combatDeathIcon";
 const char *JKEY_COMBATPETRIFIEDICONART = "combatPetrifidIcon";
 const char *JKEY_COMBATDEATHART = "combatDeathArt";
+const char* JKEY_CHARVIEWFRAMEVPART = "charViewFrameVPArt";
 const char *JKEY_CURSORART = "cursorArt";
 const char *JKEY_SMALLPICS = "smallPics";
 const char *JKEY_ICONPICS = "iconPics";
@@ -4786,6 +4791,7 @@ CONFIG_ITEM_STATUS GLOBAL_STATS::Export(JWriter& jw)
   CombatDeathIconArt.Export(jw,JKEY_COMBATDEATHICONART);
   CombatPetrifiedIconArt.Export(jw, JKEY_COMBATPETRIFIEDICONART);
   CombatDeathArt.Export(jw, JKEY_COMBATDEATHART);
+  CharViewFrameVPArt.Export(jw, JKEY_CHARVIEWFRAMEVPART);
   CursorArt.Export(jw, JKEY_CURSORART);
   sounds.Export(jw);
   keyData.Export(jw, JKEY_SPECIALKEYS);
@@ -4919,6 +4925,7 @@ CONFIG_ITEM_STATUS GLOBAL_STATS::Import(JReader& jr, BOOL quiet)
   CombatDeathIconArt.Import(jr,JKEY_COMBATDEATHICONART);
   CombatPetrifiedIconArt.Import(jr, JKEY_COMBATPETRIFIEDICONART);
   CombatDeathArt.Import(jr, JKEY_COMBATDEATHART);
+  CharViewFrameVPArt.Import(jr, JKEY_CHARVIEWFRAMEVPART);
   CursorArt.Import(jr, JKEY_CURSORART);
   sounds.Import(jr);
   keyData.Import(jr, JKEY_SPECIALKEYS);
@@ -5716,6 +5723,7 @@ void GLOBAL_STATS::SaveArt()
    ::SaveArt(CombatDeathIconArt.name    ,CommonDib      , GLOBAL_ART, TRUE, rte.CombatArtDir());
    ::SaveArt(CombatPetrifiedIconArt.name,CommonDib      , GLOBAL_ART, TRUE, rte.CombatArtDir());
    ::SaveArt(CombatDeathArt.name        ,CommonDib      , GLOBAL_ART, TRUE, rte.CombatArtDir());
+   ::SaveArt(CharViewFrameVPArt.name    ,CommonDib      , GLOBAL_ART, TRUE, rte.WindowArtDir());
    ::SaveArt(CursorArt.filename         ,CommonDib      , GLOBAL_ART, TRUE, rte.CursorArtDir());
    ::SaveArt(m_MapArt                   ,CommonDib      , GLOBAL_ART, TRUE, rte.MapArtDir());
    ::SaveArt(IconBgArt                  ,CommonDib      , GLOBAL_ART, TRUE, rte.IconArtDir());   ::SaveArt(BackgroundArt              ,TransBufferDib , GLOBAL_ART, TRUE, rte.BackgroundArtDir());

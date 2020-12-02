@@ -10,9 +10,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LocalDebuggerCommandArguments>
     </LocalDebuggerCommandArguments>
-    <LocalDebuggerWorkingDirectory>E:\UAF\Outstanding\200203_Spells_MINI-MOD</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>C:\Users\Shadow\Downloads\Full_Release_191031\uaf_00011\editor\</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerEnvironment>E:\UAF\Outstanding\171227_SkillAdj_MINI-MOD</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>C:\Users\Shadow\Downloads\Full_Release_191031\uaf_00011\editor\</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup>
     <ShowAllFiles>false</ShowAllFiles>

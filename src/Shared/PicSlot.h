@@ -319,6 +319,7 @@ extern PicDataType CombatCursorArt;
 extern PicDataType CombatDeathIconArt;
 extern PicDataType CombatPetrifiedIconArt;
 extern PicDataType CombatDeathArt;
+extern PicDataType CharViewFrameVPArt;
 
 void SaveArt(CString &filename, SurfaceType type, int level, BOOL alterPath, const CString& destDir);
 void deleteAllLevelArt(int level);

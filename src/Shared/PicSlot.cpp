@@ -95,6 +95,7 @@ PicDataType CombatCursorArt;
 PicDataType CombatDeathIconArt;
 PicDataType CombatPetrifiedIconArt;
 PicDataType CombatDeathArt;
+PicDataType CharViewFrameVPArt;
 
 CString DEFAULT_TITLE_BG = "Title.png";
 CString DEFAULT_CREDITS_BG = "Credits.png";
@@ -1124,6 +1125,7 @@ void clearArtSlots(void)
    CombatDeathIconArt.Clear();
    CombatPetrifiedIconArt.Clear();
    CombatDeathArt.Clear();
+   CharViewFrameVPArt.Clear();
    CursorArt.Clear();
 
   for (i=0; i<MAX_WALLSETS;i++)

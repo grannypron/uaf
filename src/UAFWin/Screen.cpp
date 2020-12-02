@@ -71,6 +71,7 @@ extern const char *SAentries[2];
 extern A_CStringPAIR_L globalSA_debug;
 #endif
 
+extern RECT CharViewViewportFrameSrc;
 
 #ifdef TRACE_TIMER_DETAILS
 #define DETAILTRACE(a,b) detailTrace.trace((a),(b));
@@ -620,7 +621,7 @@ void UpdateViewCharacterScreen(void)
 {
   GraphicsMgr.ClearAdventureBackground(BACKBUFFERNUM);
   drawBorder();
-  drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset);
+  drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset, &CharViewFrameVPArt, &CharViewViewportFrameSrc);
   if (currPic.key > 0)
   {
     if (currPic.picType == SmallPicDib)
@@ -636,7 +637,7 @@ void UpdateCombatViewCharacterScreen(void)
 {  
   GraphicsMgr.ClearAdventureBackground(BACKBUFFERNUM);
   drawBorder();
-  drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset);
+  drawViewportFrame(VPFrameXOffset, VPFrameY+VPFrameYOffset, &CharViewFrameVPArt, &CharViewViewportFrameSrc);
   if (currPic.key > 0)
   {
     if (currPic.picType == SmallPicDib)

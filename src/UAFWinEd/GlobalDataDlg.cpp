@@ -174,6 +174,7 @@ BEGIN_MESSAGE_MAP(CGlobalDataDlg, CDialog)
 	ON_BN_CLICKED(IDC_FIXSPELLS, OnFixspells)
   ON_BN_CLICKED(IDC_AreaViewArt, OnAreaViewArt)
 	//}}AFX_MSG_MAP
+    ON_BN_CLICKED(IDC_SELECTCHARFRAME, &CGlobalDataDlg::OnSelectcharframe)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -726,3 +727,19 @@ void CGlobalDataDlg::OnFixspells()
     dlg.GetSpellList(m_data.fixSpellBook);
 }
 
+
+
+void CGlobalDataDlg::OnSelectcharframe()
+{
+    CScrollPicDlg dlg(CharViewFrameVPArt.name, rte.WindowArtDir(), "");
+
+    DWORD result = dlg.DoModal();
+
+    if (result == IDOK)
+    {
+        CharViewFrameVPArt.name = dlg.m_Filename;
+        char name[MAX_MEDITBUTTON_TEXT + 1];
+        getBaseName(dlg.m_Filename, name, MAX_MEDITBUTTON_TEXT);
+        m_Frame.SetWindowText(name);
+    }
+}
