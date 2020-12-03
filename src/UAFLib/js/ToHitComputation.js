@@ -153,8 +153,7 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
                 SPECAB.ScriptCallback_RunAllScripts,
                 "YN",
                 "To-Hit versus THAC0");
-        result = resultObj.scriptResult;
-        if (!UAFUtil.IsEmpty(result)) finalResult = result;
+        if (!UAFUtil.IsEmpty(resultObj)) finalResult = resultObj;
         result = pAttacker.m_pCharacter.RunCharacterScripts
             (SPECAB.DOES_ATTACK_SUCCEED,
                 SPECAB.ScriptCallback_RunAllScripts,

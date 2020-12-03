@@ -16,7 +16,7 @@ function Deserialize(filename, debug) {
     return character;
 }
 
-SPECAB.loadData(specialAbilitiesData, "C:\\Users\\Shadow\\Downloads\\Full_Release_191031\\TutorialDesign.dsn\\Data\\specialAbilities.dat");
+SPECAB.loadData(specialAbilitiesData);
 
 */
 
@@ -38,5 +38,5 @@ while (enumerator.MoveNext()) {
 }
 
 //specialAbilitiesData.InsertString()
-Globals.ASSERT(data.Keys.length == 432, "data.Keys.length == 432");
+Globals.ASSERT(data.Keys.length > 1, "data.Keys.length > 1");
 Globals.ASSERT(specialAbilitiesData.FindAbility("Global_Display") != null, "specialAbilitiesData.FindAbility(\"Global_Display\") != null");

@@ -94,12 +94,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\items.xml" />
+    <Content Include="data\SpecialAbilities-full.xml" />
     <Content Include="js\ABILITY_DATA.js" />
     <Content Include="js\ABILITY_DATA_TYPE.js" />
     <Content Include="js\ACTIVE_SPELL_LIST.js" />
     <Content Include="js\AUTO_FLAGS.js" />
     <Content Include="js\BASECLASS_LIST.js" />
     <Content Include="js\BASE_CLASS_DATA.js" />
+    <Content Include="js\BINOPS.js" />
     <Content Include="js\CPoint.js" />
     <Content Include="js\ERRORLOG.js" />
     <Content Include="js\Forth.js" />
@@ -119,6 +121,7 @@
     <Content Include="js\PENDING_SPELL_LIST.js" />
     <Content Include="js\QueuedCombatant.js" />
     <Content Include="js\spellDurationType.js" />
+    <Content Include="js\SUBOPS.js" />
     <Content Include="js\WhatSprite.js" />
     <Content Include="js\DamageComputation.js" />
     <Content Include="js\DispText.js" />
@@ -255,6 +258,8 @@
     <Content Include="js\DICEPLUS.js" />
     <Content Include="Tests\TestCombatMovementAttack.js" />
     <Content Include="Tests\TestExperience.js" />
+    <Content Include="Tests\TestRangedAttack.js" />
+    <Content Include="Tests\TestSpecialAbilities.js" />
     <Content Include="Tests\TestWinCombat.js" />
     <Content Include="Tests\TestGPDL.js" />
     <Content Include="Tests\TestLoadItems.js" />

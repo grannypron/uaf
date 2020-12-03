@@ -108,7 +108,7 @@ var Rogue = Deserialize("Rogue.chr");
 //var cWarrior = new COMBATANT();
 //cWarrior.m_pCharacter = Warrior;
 loadLibraryStub();
-SPECAB.loadData(specialAbilitiesData, "C:\\Users\\Shadow\\Downloads\\Full_Release_191031\\TutorialDesign.dsn\\Data\\specialAbilities.dat");
+SPECAB.loadData(specialAbilitiesData);
 var loader = new UAFLib.dataLoaders.ItemLoader();
 var data = loader.load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\items.xml");
 itemData.LoadFromLoader(data);

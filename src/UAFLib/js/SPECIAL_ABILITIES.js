@@ -91,9 +91,11 @@ SPECIAL_ABILITIES.prototype.RunScripts = function (scriptName, fnc, pkt, comment
         pSpecString = pSpecAb.Find(scriptName);
         if (pSpecString == null) continue;
         if (numScript >= SPECAB.MAX_SPEC_AB) continue;
-        // PORT NOTE: Here is where the special ability scripts get compiled if they have not been already
-        // 
-        /* TODO: Stub for now
+
+        /* 
+         * PORT NOTE: Here is where the special ability scripts get compiled if they have not been already
+         * I have removed this in favor of a JavaScript method of scripting
+         * 
         if (pSpecString.Flags() == SPECAB_STRING_TYPE.SPECAB_SCRIPT) {
             var gpdlcomp = new GPDLCOMP();
             binScript = gpdlcomp.CompileScript(frontEnd + pSpecString.Value() + backEnd, SAentries);
@@ -108,7 +110,7 @@ SPECIAL_ABILITIES.prototype.RunScripts = function (scriptName, fnc, pkt, comment
             pSpecString.Flags(SPECAB_STRING_TYPE.SPECAB_BINARYCODE);
             pSpecAb.Insert(scriptName, binScript, SPECAB_STRING_TYPE.SPECAB_BINARYCODE);
             
-        };
+        }
         if (pSpecString.Flags() != SPECAB_STRING_TYPE.SPECAB_BINARYCODE) continue;
         */
         saAbility[numScript] = pAbility;
@@ -123,28 +125,14 @@ SPECIAL_ABILITIES.prototype.RunScripts = function (scriptName, fnc, pkt, comment
             pScriptContext.SetSA_Source_Type(sourceType);
             pScriptContext.SetSA_Source_Name(sourceName);
             pScriptContext.SetSA_ScriptName(pSpecString.Key());
-            /** TODO
-            //gpdlStack.Push();
-            //SPECAB.p_hook_parameters[0] = gpdlStack.activeGPDL().ExecuteScript(scripts[i].Value(), 1, null, 0);
-            //gpdlStack.Pop();
-             **/
-            SPECAB.p_hook_parameters[0] = "1";
+            Globals.debug("----SPECIAL_ABILITIES.prototype.RunScripts:" + scriptName + " / " + sourceName);
+            gpdlStack.Push();
+            SPECAB.p_hook_parameters[0] = gpdlStack.activeGPDL().ExecuteScript(scripts[i].Value(), 1, null, 0);
+            gpdlStack.Pop();
             pScriptContext.ClearAbility();
             callbackResultObj = fnc(CBFUNC.CBF_EXAMINESCRIPT, SPECAB.p_hook_parameters[0], pkt);
             callbackResult = callbackResultObj.CBRESULT;                                // PORT NOTE:  Handling output parameters
             SPECAB.p_hook_parameters[0] = callbackResultObj.scriptResult;
-            /**TODO
-            if ((globalLoggingFlags & 1) || (globalSA_debug.Find(saAbility[i].Key()) != NULL)) {
-                WriteDebugString("@@SA \"%s\" Script \"%s\": %s%s returned \"%s\"\n",
-                    saAbility[i].Key(),
-                    scripts[i].Key(),
-                    pScriptContext.GetSourceTypeName(),
-                    sourceName,
-                    SPECAB.p_hook_parameters[0]);
-            };
-            */
-            //**TODO: This is a hack where I can control the SA scripts for now:**/
-            if (Globals.SPECAB_HACKS != null && Globals.SPECAB_HACKS[scriptName] != null) { callbackResult = Globals.SPECAB_HACKS[scriptName](pkt); }
             if (callbackResult == CBRESULT.CBR_STOP) {
                 return SPECAB.p_hook_parameters[0];
             }
@@ -512,16 +500,13 @@ SPECAB.prototype.ScriptCallback_MinMax = function (func, scriptResult, pkt) {
 
 }
 
-
-//*** LEFT OFF HERE - the problem is that scriptResult is PBR and they are using that ***/
-
 SPECAB.prototype.ScriptCallback_LookForChar = function(func, scriptResult, pkt)
 {
     var lookFor = "" + pkt;   // PORT NOTE:  Was  char *lookFor = (char *)pkt;
     var indx = 0;
     switch (func) {
         case CBFUNC.CBF_EXAMINESCRIPT:
-            indx = scriptResult.indexOf(lookFor);
+            indx = UAFUtil.IsEmpty(scriptResult) ? -1 : scriptResult.indexOf(lookFor);
             if (indx < 0) {
                 return { CBRESULT: CBRESULT.CBR_CONTINUE, scriptResult: scriptResult };
             };
@@ -540,6 +525,14 @@ SPECAB.prototype.ScriptCallback_LookForChar = function(func, scriptResult, pkt)
 
 SPECAB.prototype.ConvertSpecAbToRuntimeIfText = function(sa) {
     return sa;      // PORT NOTE:  This seems to not have a definition in the C++ source
+}
+
+SPECIAL_ABILITIES.prototype.GetString = function(sa) {
+    var noSuch = this.NO_SUCH_SA;
+    var pEntry;
+    pEntry = this.m_specialAbilities.Find(sa);
+    if (pEntry == null) return noSuch;
+    return pEntry.Value();
 }
 
 

@@ -1056,7 +1056,6 @@ void InstantSpellActivate(const SPELL_ID& attackSpellID,
 BOOL IsSpellPending();
 void FaceLocation(int x, int y);
 BOOL CheckForGuardingEnemy();
-BOOL CheckOpponentFreeAttack(int oldX, int oldY, int newX, int newY);
 void FillTargeterList(PATH_DIR dir);
 void PlayLaunch() const ;
 void PlayCombatDeath() const ;
@@ -1682,7 +1681,7 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
                                 SPECAB.GUARDING_CAN_GUARD_ATTACK,
                                 SPECAB.ScriptCallback_RunAllScripts,
                                 null,
-                                "Check opponent free attack");
+                                "Check opponent free attack")
 //#ifdef TraceFreeAttacks
 //                            WriteDebugString("TFA - script 'Guarding-CanGuardAttack' returned \"%s\"\n", result);
 //#endif
@@ -1690,10 +1689,11 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
                             if (!UAFUtil.IsEmpty(result)) {
                                 if (result[0] == 'Y') {
                                     performGuardAttack = true;
-                                };
-                            };
+                                }
+                            }
 
-                        };
+                        }
+
                         if (performGuardAttack) {
 //#ifdef TraceFreeAttacks
 //                            WriteDebugString("TFA - queueing %s to make guard attack\n", GetCombatantPtr(dude) -> GetName());
@@ -1711,7 +1711,7 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
                                 this.x = oldX;
                                 this.y = oldY;
                                 Drawtile.placeCombatant(this.x, this.y, this.self, this.width, this.height); // added 20160927 PRS
-                            };
+                            }
                             // queue up the attackers
                             qcomb.Push(dude, false, 0, 1);
                             // give self as target to each attacker
@@ -1732,9 +1732,9 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
                 else {
                     WriteDebugString("TFA - But they are friends\n");
 #endif*/
-                };
-            };
-        };
+                }
+            }
+        }
     }
     for (dude = 0; dude <= maxDude; dude++) {
         if (wasAdjacent[dude] && !willBeAdjacent[dude]) {

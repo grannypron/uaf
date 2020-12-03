@@ -86,3 +86,7 @@ CList.prototype.AddHead = function (newElement) {
 CList.prototype.GetHead = function () {
     return this.mList[0];
 }
+
+CList.prototype.RemoveAt = function (idx) {
+    this.mList.splice(idx, 1);
+}

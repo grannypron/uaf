@@ -1,7 +1,15 @@
 ﻿function SCRIPT_CONTEXT() {
-    this.m_prevScriptContext = null;
-    this.m_prevScriptContext = SPECAB.pScriptContext;
-    this.pScriptContext = this;
+
+    // The global variable uses this constructor as well as all the other script contexts.
+    // So if this is the first/global construction, then initialize appropriately
+    if (!pScriptContext) {
+        this.m_prevScriptContext = null;
+    } else {
+        this.m_prevScriptContext = pScriptContext;
+        // Now the global variable is the one that I just created
+        pScriptContext = this;
+    }
+
     this.scriptSourceType = 0;   // eg: CHARACTER or SPELL or CLASS or EVENT
     this.sourceName = "";            // eg: if sourcetype implies a named Special Ability
     //        then SA name: "George" or "Heal"
@@ -34,7 +42,7 @@
     this.eventY = -1;
     this.eventID = -1;
     this.eventLevel = -1;
-};
+}
 
 SCRIPT_CONTEXT.prototype.SetCombatantContext = function (pCombatant) {
     var actor;
@@ -154,4 +162,96 @@ SCRIPT_CONTEXT.prototype.SetAttackerContext = function(pCombatant)
     var actor;
     actor = pCombatant.GetContextActor();
     this.attackerContext = actor.ToString();
+}
+
+
+SCRIPT_CONTEXT.prototype.GetCharacterContext = function(msg) {
+    if (UAFUtil.IsEmpty(this.characterContext))
+    {
+        this.MsgBoxErrorAlert(msg);
+    };
+    return this.characterContext;
+}
+
+SCRIPT_CONTEXT.prototype.GetCombatantContext = function (msg) {
+    if (UAFUtil.IsEmpty(this.combatantContext))
+    {
+        this.MsgBoxErrorAlert(msg);
+    }
+    return this.combatantContext;
+}
+
+
+// PORT NOTE: Scaled down
+SCRIPT_CONTEXT.prototype.MsgBoxErrorAlert = function (msg) {
+    Globals.debug(msg);
+}
+
+SCRIPT_CONTEXT.prototype.GetMonsterTypeContext = function(msg) {
+    if (this.pMonstertypeContext == null) {
+        this.MsgBoxErrorAlert(msg);
+        return bogusMonsterType;
+    }
+    return this.pMonstertypeContext;
+}
+
+$GET_MONSTERTYPE_SA = function (monsterID, sa) {
+    var pMonsterData;
+    pMonsterData = monsterData.GetMonster(monsterID);
+    if (pMonsterData == null) {
+        return this.NO_SUCH_SA;
+    } else {
+        var csp;
+        csp = pMonsterData.specAbs.FindAbility(sa);
+        if (csp == null) 
+            return this.NO_SUCH_SA;
+        else
+            return csp.Value();
+    }
+}
+
+function $GET_HOOK_PARAM(idx) {
+    return SPECAB.p_hook_parameters[idx];
+}
+
+function $NextCreatureIndex(filter, idx) {
+
+    if (UAFUtil.IsEmpty(idx)) {
+        idx = 0;
+    } else {
+        idx++;
+    }
+
+    if (Globals.IsCombatActive()) {
+        for (; idx < combatData.NumCombatants(); idx++) {
+            var pCOMBATANT;
+            pCOMBATANT = combatData.GetCombatant(idx);
+            if (filter & 1) {
+                if (!pCOMBATANT.IsAlive()) continue;
+            };
+            if (filter & 2) {
+                if (pCOMBATANT.friendly) continue;
+            };
+            if (filter & 4) {
+                if (!pCOMBATANT.friendly) continue;
+            };
+            if (filter & 8) {
+                if (!pCOMBATANT.charOnCombatMap(false, true)) continue;
+            };
+            break;
+        }
+        if (idx >= combatData.NumCombatants()) {
+            return "";
+        }
+        else {
+            idx;
+        }
+    }
+
+}
+
+
+
+function $SET_HOOK_PARAM(idx, val) {
+    SPECAB.p_hook_parameters[idx] = val;
 }

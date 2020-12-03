@@ -201,7 +201,7 @@ cWarrior.self = 0;
 //cWarrior.StartAttack(1);
 
 loadLibraryStub();
-//SPECAB.loadData(specialAbilitiesData, "C:\\Users\\Shadow\\Downloads\\Full_Release_191031\\TutorialDesign.dsn\\Data\\specialAbilities.dat");
+//SPECAB.loadData(specialAbilitiesData, );
 Globals.logDebuggingInfo = true;
 
 var combatEventData = new COMBAT_EVENT_DATA();

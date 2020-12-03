@@ -101,7 +101,10 @@ bcs.pBaseclassData = bcd;
 Warrior.baseclassStats.push(bcs);
 
 loadLibraryStub();
-SPECAB.loadData(specialAbilitiesData, "C:\\Users\\Shadow\\Downloads\\Full_Release_191031\\TutorialDesign.dsn\\Data\\specialAbilities.dat");
+
+var loader = new UAFLib.dataLoaders.SpecabilityLoader();
+var data = loader.load("C:\\Users\\Shadow\\Desktop\\uaf.git\\uaf-port\\src\\UAFLib\\data\\SpecialAbilities.xml");
+SPECAB.loadData(specialAbilitiesData);
 
 Globals.logDebuggingInfo = true;
 

@@ -47,8 +47,8 @@ A_CStringPAIR_L.prototype.InsertKeyValue = function (key, value) {
 A_CStringPAIR_L.prototype.SerializeCAR = function (car) {
     if (car.IsStoring()) {
         for (var i = 0; i < this.mItems.length; i++) {
-            car.writeString(this.m_items[i].m_key);
-            car.writeString(this.m_items[i].m_value);
+            car.writeString(this.mItems[i].m_key);
+            car.writeString(this.mItems[i].m_value);
         };
         return car;
     }
@@ -66,4 +66,15 @@ A_CStringPAIR_L.prototype.SerializeCAR = function (car) {
         };
         return car;
     };
+}
+
+
+// PORT NOTE:  Simplified the Find() function
+A_CStringPAIR_L.prototype.Find = function (key) {
+    for (var i = 0; i < this.mItems.length; i++) {
+        if (key == this.mItems[i].m_key) {
+            return this.mItems[i];
+        }
+    }
+    return null;
 }

@@ -1,3 +1,8 @@
-﻿- Make a monster library loader, class library loader, etc.
+﻿- Ranged combat
+- implement a simple spell like magic missile
+- Design an API for a wrapper that would simplify the combat rounds.  Then build it.
+- TestCombatMovementAttack.js - 2 test case for Guarding-CanGuardAttack could be a little better - maybe after the status is set, the UpdateCombat() or HandleTimeDelayMsgBegin() gets called to let the guarder attack
+- Take a look at the CombatPlacement / MonsterPlacement special ability.  See if we can get that to be used in the way it was intended
+- Make a monster library loader, class library loader, etc.
 - Test case(s) for inventory management of Joinable items
 - go back through the C++ source and find all instances of "delete" and re-insert them back with calls to a MemoryManager() class.  Apparently jint responds to delete statements, although all engines might not

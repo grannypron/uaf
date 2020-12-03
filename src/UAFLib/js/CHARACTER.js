@@ -1023,7 +1023,6 @@ CHARACTER.prototype.getItemList = function (id) {
 };
 
 CHARACTER.prototype.addCharacterItem = function (itemID, qty, numCharges, id, cost) {
-    Globals.debug("----CHARACTER.prototype.addCharacterItem");
     if ((itemData.getItemEncumbrance(itemID, qty) + this.GetEncumbrance()) > this.GetAdjMaxEncumbrance()) {
         Globals.SetMiscError(miscErrorType.TooMuchWeight);
         return false;
@@ -4199,6 +4198,13 @@ CHARACTER.prototype.getCharExpWorth = function () {
     return totexp;
 }
 
+CHARACTER.prototype.GetCurrLevel = function (baseclassID) {
+    var pStats;
+    pStats = this.PeekBaseclassStats(baseclassID);
+    if (pStats == null) return -1;
+    if (pStats.previousLevel > 0) return 0;
+    return pStats.currentLevel;
+}
 
 
 CHARACTER.prototype.SetLevel = function (lvl) { throw "todo"; }
@@ -4290,7 +4296,6 @@ CHARACTER.prototype.SetReadyToTrain = function (enable) { throw "todo"; }
 CHARACTER.prototype.IsAbleToTrade = function () { throw "todo"; }
 CHARACTER.prototype.SetAbleToTrade = function (enable) { throw "todo"; }
 CHARACTER.prototype.ClearLevels = function () { throw "todo"; }
-CHARACTER.prototype.GetCurrLevel = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.GetAllowedLevel = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.GetAdjBaseclassExp = function (baseclassID, flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.GetBaseclassExp = function (baseclassID) { throw "todo"; }

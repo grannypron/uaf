@@ -2,6 +2,8 @@
 
 var Globals = new Globals();
 
+var BINOPS = new BINOPS();
+var SUBOPS = new SUBOPS();
 var gpdlStack = new GPDL_STACK();
 var GPDL_STATE = new GPDL_STATE();
 var miscErrorType = new miscErrorTypeObj();
@@ -76,6 +78,8 @@ var RunTimeIF = new RunTimeIF();
 var RNG = new DefaultRNG();
 
 var DEFAULT_SPELL_EFFECT_FLAGS = SPELL_EFFECTS_DATA.ALL_TARG_TYPES;
+
+var bogusMonsterType = new MONSTER_DATA();
 
 
 var UAFLib = importNamespace("UAFLib");  // For Jint to access C# library
