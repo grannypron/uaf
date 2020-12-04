@@ -327,6 +327,24 @@ ITEM_DATA.prototype.PeekBaseclass = function (i) {
     return this.usableByBaseclass[i];
 }
 
+ITEM_DATA.prototype.PlayHit = function() {
+    if (!Globals.PlaySoundEffects) return;
+    if (this.HitSound == "") return;
+    if (!SoundMgr.ValidSound(this.hHitSound))
+        hHitSound = SoundMgr.LoadSound(this.HitSound);
+    if (!SoundMgr.PlaySound(this.hHitSound, false))
+        hHitSound = -1;
+}
+
+
+ITEM_DATA.prototype.PlayMiss = function() {
+    if (!Globals.PlaySoundEffects) return;
+    if (this.MissSound == "") return;
+    if (!SoundMgr.ValidSound(this.hMissSound))
+        hMissSound = SoundMgr.LoadSound(this.MissSound);
+    if (!SoundMgr.PlaySound(this.hMissSound, false))
+        hMissSound = -1;
+}
 
 ITEM_DATA.prototype.RunItemScripts = function(scriptName, fnc, pkt, comment) {
         return this.specAbs.RunScripts(
@@ -355,8 +373,6 @@ ITEM_DATA.prototype.RunItemScripts = function(scriptName, fnc, pkt, comment) {
     void Clear(BOOL ctor = FALSE);
     bool operator == (const ITEM_DATA& src) const ;
     int  GetDataSize(void) const ;
-    void PlayHit();
-    void PlayMiss();
     void PlayLaunch();
     void LoadArt();
     void ClearArt(); // release surface and clear pic data

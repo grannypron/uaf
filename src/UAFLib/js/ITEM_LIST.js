@@ -87,6 +87,7 @@ ITEM_LIST.prototype.SetReady = function(index, rdyLoc) {
 
 ITEM_LIST.prototype.IsReady = function(index) {
     var pos;
+    Globals.debug("----:index:" + index);
     if ((pos = this.m_items.FindKeyPos(index)) != null)
         return !itemReadiedLocation.NotReady.Equals(this.m_items.PeekAtPos(pos).GetReadyLocation());
     else
@@ -106,9 +107,10 @@ ITEM_LIST.prototype.GetReadiedItem = function (rdyLoc, readiedItemCount) {
     var pos = null;
     var pCharItem;
     pos = this.GetHeadPosition();
-    for (pCharItem = this.PeekNext(pos); pCharItem != null; pCharItem = this.PeekNext(pos)) {
-        pos = this.NextPos();           //  PORT NOTE:  Added this - no "auto"-increment because no pass-by-reference
-        if (pCharItem.GetReadyLocation() == rdyLoc) {
+    //PORT NOTE: I don't know why the pCharItem is being set to PeekNext here.  It seems like the item at the head position would never be checked.  Changed in my code, but the original line is below
+    // for (pCharItem=PeekNext(pos); pCharItem!=NULL; pCharItem=PeekNext(pos))
+    for (pCharItem = this.PeekAtPos(pos); pCharItem != null; pCharItem = this.PeekAtPos(pos)) {
+        if (pCharItem.GetReadyLocation().EqualsDWORD(rdyLoc)) {
             if (readiedItemCount == 0) {
                 return pos;//pCharItem.key;     // PORT NOTE:  Changed to use array-index based indexing
             }
@@ -116,6 +118,7 @@ ITEM_LIST.prototype.GetReadiedItem = function (rdyLoc, readiedItemCount) {
                 readiedItemCount--;
             }
         }
+        pos = this.NextPos(pos);           //  PORT NOTE:  Added this - no "auto"-increment because no pass-by-reference
     }
 
     return NO_READY_ITEM;
@@ -144,7 +147,8 @@ ITEM_LIST.prototype.PeekNext = function (pos) {
 }
 
 ITEM_LIST.prototype.GetItem = function (index) {
-    return this.m_items.PeekAtPos(index);    // PORT NOTE:  Simplified with array indexing scheme
+    var item = this.m_items.PeekAtPos(index);
+    return item;    // PORT NOTE:  Simplified with array indexing scheme
 }
 
 ITEM_LIST.prototype.SerializeCAR = function(ar, version) {
@@ -404,4 +408,13 @@ ITEM_LIST.prototype.IsCursed = function (index) {
 ITEM_LIST.prototype.GetKeyAt = function (index) {
     //PORT NOTE:  Simplified this by just indexing the array by its indices and not separate keys
     return index;
+}
+
+// PORT NOTE: Simplified some - eliminated keys
+ITEM_LIST.prototype.GetQty = function(index) {
+    var item = this.GetAtPos(index);
+    if (item != null)
+        return item.qty;
+    else
+        return 0; 
 }

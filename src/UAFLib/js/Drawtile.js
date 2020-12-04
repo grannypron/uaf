@@ -166,7 +166,7 @@ Drawtile.prototype.GenerateIndoorCombatMap = function (partyX, partyY, dir) {
             this.CurrentTileData[this.CurrentTileCount] = new TILE_DATA();
             this.CurrentTileData[this.CurrentTileCount].tile_posy = j;
             this.CurrentTileData[this.CurrentTileCount].tile_posx = i;
-            this.CurrentTileData[this.CurrentTileCount].tile_invisible = 0;
+            this.CurrentTileData[this.CurrentTileCount].tile_invisible = 1;         // I'm not so sure about this, but I looked at the value at runtime and it was indeed set to 1 for "empty" tiles.
             this.CurrentTileData[this.CurrentTileCount].tile_passable = 1;
             this.CurrentTileData[this.CurrentTileCount].tile_enabled = 1;
             this.terrain[i][j].cell = this.CurrentTileCount;
@@ -1147,6 +1147,7 @@ Drawtile.prototype.Distance4 = function(sx, sy, dx, dy)
 }
 
 Drawtile.prototype.HaveLineOfSight = function(x0, y0, x1, y1, reflects) {
+    Globals.debug("----Drawtile.prototype.HaveLineOfSight:1");
     // starting point of line
     var x = x0, y = y0;
 
@@ -1171,11 +1172,14 @@ Drawtile.prototype.HaveLineOfSight = function(x0, y0, x1, y1, reflects) {
     switch ( _var ) {
         case 0:  // single-step in x-direction
             for (decy = ay - dx; ; x += sx, decy += ay) {
+                Globals.debug("----Drawtile.prototype.HaveLineOfSight:0:" + x + " / " + y);
                 // process pixel
                 if (!(x == x0 && y == y0) && !(x == x1 && y == y1)) {
                     var result = Drawtile.HaveVisibility(y, x, reflects); reflects = result.reflects;
-                    if (!result.returnVal)
+                    if (!result.returnVal) {
+                        Globals.debug("----Drawtile.prototype.HaveLineOfSight:2:" + x + " / " + y);
                         return false;
+                    }
                 }
 
                 // take Bresenham step
@@ -1188,8 +1192,10 @@ Drawtile.prototype.HaveLineOfSight = function(x0, y0, x1, y1, reflects) {
                 // process pixel
                 if (!(x == x0 && y == y0) && !(x == x1 && y == y1)) {
                     var result = Drawtile.HaveVisibility(y, x, reflects); reflects = result.reflects
-                    if (!result.returnVal)
+                    if (!result.returnVal) {
+                        Globals.debug("----Drawtile.prototype.HaveLineOfSight:3");
                         return false;
+                    }
                 }
 
                 // take Bresenham step
@@ -1263,16 +1269,22 @@ Drawtile.prototype.EnsureVisible = function(tx, ty, forceCenter)
 
 
 Drawtile.prototype.HaveVisibility = function(y, x, reflects) {
+    Globals.debug("----Drawtile.prototype.HaveVisibility:1:" + reflects);
     if (reflects != null) {
         reflects = false;
     }
     if (!this.ValidCoords(y, x)) return { returnVal: false, reflects: reflects };
+    Globals.debug("----Drawtile.prototype.HaveVisibility:2:");
     var cell = this.terrain[y][x].cell;
+    Globals.debug("----Drawtile.prototype.HaveVisibility:3:");
     if ((cell < 1) || (cell > this.CurrentTileCount)) return { returnVal: false, reflects: reflects };
+    Globals.debug("----Drawtile.prototype.HaveVisibility:3.5:" + this.CurrentTileData[cell].tile_invisible);
     if (this.CurrentTileData[cell].tile_invisible > 0) {
+        Globals.debug("----Drawtile.prototype.HaveVisibility:4:");
         return { returnVal: true, reflects: reflects };
     }
     else {
+        Globals.debug("----Drawtile.prototype.HaveVisibility:5:");
         if (reflects != null) {
             reflects = true;
         };

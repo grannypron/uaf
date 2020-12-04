@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="data\items.bin" />
+    <None Include="GlobalsDebugSnippet.snippet" />
     <None Include="packages.config" />
     <None Include="SaveB.pty" />
     <None Include="Tests\Druid.chr" />

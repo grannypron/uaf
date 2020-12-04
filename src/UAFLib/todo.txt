@@ -1,6 +1,13 @@
 ﻿- Ranged combat
+- Changes to make TestRangedAttack.js have caused a few other cases to fail
 - implement a simple spell like magic missile
 - Design an API for a wrapper that would simplify the combat rounds.  Then build it.
+- itemID.SpellID() is not supported so SCRIPT_CONTEXT.SetItemContext doesn't really allow the spellContext to be set like it should.  This probably affects items that have spells "attached" to them somehow
+- Test case where there is no line of sight to the target - Combatant.canAttack should fail because Drawtile.HaveVisibility should fail
+- There is an Items.WeaponHand and an itemReadiedLocation.WeaponHand.  Investigate
+- In Ready
+- Take off the item != null check in ITEM_LIST.prototype.GetItem and watch the crash in the test cases.  Null should probably not be getting passed in there.  Investigate
+- Look for all for loops that do not have "var" before their iterator index and put it in there - this is a hidden source of trouble
 - TestCombatMovementAttack.js - 2 test case for Guarding-CanGuardAttack could be a little better - maybe after the status is set, the UpdateCombat() or HandleTimeDelayMsgBegin() gets called to let the guarder attack
 - Take a look at the CombatPlacement / MonsterPlacement special ability.  See if we can get that to be used in the way it was intended
 - Make a monster library loader, class library loader, etc.

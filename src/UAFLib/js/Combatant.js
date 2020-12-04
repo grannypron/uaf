@@ -1030,15 +1030,11 @@ inline void InitTargeting(spellTargetingType ttype,
 };
 inline int  GetThiefBackstabDamageMultiplier() const { return m_pCharacter-> GetThiefBackstabDamageMultiplier();};
 inline void UpdateSpellForDamage(int DamageTaken) { m_pCharacter -> UpdateSpellForDamage(DamageTaken); };
-inline CString  GetUndeadType() const { return m_pCharacter-> GetUndeadType(); };
-inline BOOL IsAnimal() const { return m_pCharacter-> IsAnimal();};
 inline BOOL IsAlwaysLarge() const { return m_pCharacter-> IsAlwaysLarge();};
 inline BOOL HasVorpalImmunity() const { return m_pCharacter-> HasVorpalImmunity();};
 inline void ComputeCharacterViewValues(void) { m_pCharacter -> ComputeCharacterViewValues(); };
 inline int GetAdjTHAC0(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjTHAC0(flags);};
 inline BOOL GetAdjAllowPlayerControl(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) { return m_pCharacter -> GetAdjAllowPlayerControl(flags); };
-inline BOOL GetAdjDetectingInvisible(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjDetectingInvisible(flags);};
-enum { MAX_COMBAT_TARGETS = 100 };
 int GetUniqueId() { return self; }
 void InitFromNPCData(const CHARACTER_ID& characterID, BOOL IsFriendly, const ITEM_LIST & items, const MONEY_SACK & msack);
 void GetContext(ActorType * pActor, const BASECLASS_ID& baseclassID) const ;
@@ -1857,7 +1853,6 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
 COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttacks, DistanceFunction, canAttackSelf) {
     if (this.availAttacks + additionalAttacks <= 0)
         return false;
-
     if (targ == NO_DUDE)
         return false;
 
@@ -1908,17 +1903,17 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
     if (mywpnitemidx != NO_READY_ITEM) {
         // using a weapon rather than natural attack types (ie claws/jaws/fists)
         var wpn_ID;
-        wpn_ID = this.m_pCharacter.myItems.GetItem(mywpnitemidx);
+        wpn_ID = this.m_pCharacter.myItems.GetItem(mywpnitemidx).itemID;    // PORT NOTE:  Using .itemID here because of itemID/string differences
 
         if (this.m_pCharacter.myItems.GetQty(mywpnitemidx) <= 0)
             return false;
 
+        Globals.debug("----canAttack:1: ");
         if (!Items.WpnCanAttackAtRange(wpn_ID, dis))
             return false;
 
         switch (itemData.GetWpnType(wpn_ID)) {
             case weaponClassType.NotWeapon: // not weapon, must be used, invokes special abilities
-                //if (isMagical(wpn_giID))
                 if (Items.isMagical(wpn_ID)) {
                     if (this.m_pCharacter.myItems.GetCharges(mywpnitemidx) <= 0)
                         return false;
@@ -1947,11 +1942,11 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
                     if (myammoitemidx == NO_READY_ITEM)
                         return false;
 
-                    var ammo_ID = this.m_pCharacter.myItems.GetItem(myammoitemidx);
+                    var ammo_ID = this.m_pCharacter.myItems.GetItem(myammoitemidx).itemID;
 
                     if (itemData.GetWpnType(ammo_ID) != weaponClassType.Ammo)
                         return false;
-
+                    
                     // ammo class must match between weapon and ammo
                     var myammoclass = this.m_pCharacter.myItems.GetAmmoClass(myammoitemidx);
                     if (UAFUtil.IsEmpty(myammoclass)) return false; // might be wand,potion,amulet,etc
@@ -1984,7 +1979,6 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
         if (dis > 1)                // PORT NOTE:  - I think this may be a bug.  Should be able to move into a diagonal attack - which would make the distance 2?
             return false;
     }
-
     // passed all tests so far, now check for line of sight
     if (!Drawtile.HaveLineOfSight(this.GetCenterX(), this.GetCenterY(), targetX, targetY, null))
         return false;
@@ -1994,16 +1988,16 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
     if (dis > 1) {
         if (!this.GetAdjDetectingInvisible()) {
             // cannot attack invisible targets with ranged weapons
-            if (targCOMBATANT.GetAdjSpecAb(SPECAB.SA_Invisible))
+            if (targCOMBATANT.GetAdjSpecAb(SPECAB.SA_Invisible).returnVal)
                 return false;
 
             if (!UAFUtil.IsEmpty(this.GetUndeadType())) {
-                if (targCOMBATANT.GetAdjSpecAb(SPECAB.SA_InvisibleToUndead))
+                if (targCOMBATANT.GetAdjSpecAb(SPECAB.SA_InvisibleToUndead).returnVal)
                     return false;
             }
 
             if (this.IsAnimal()) {
-                if (targCOMBATANT.GetAdjSpecAb(SPECAB.SA_InvisibleToAnimals))
+                if (targCOMBATANT.GetAdjSpecAb(SPECAB.SA_InvisibleToAnimals).returnVal)
                     return false;
             }
         }
@@ -2196,7 +2190,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         if (decQty && !wpnConsumesSelfAsAmmo) {
             // ammo is readied and must be decremented
             wpn = this.m_pCharacter.myItems.GetReadiedItem(Items.AmmoQuiver, 0);
-            itemID = this.m_pCharacter.myItems.GetItem(wpn);
+            itemID = this.m_pCharacter.myItems.GetItem(wpn).itemID;
         }
     }
 
@@ -2209,7 +2203,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
     };
     var pWeapon = null;
     if (!(itemData.IsNoItem(itemID))) {
-        pWeapon = itemData.GetItemFromID(itemID);
+        pWeapon = itemData.GetItemFromID(itemID.itemID);
     };
 
     toHitComputation.Compute4(this, targ, targCOMBATANT, wpn);
@@ -2524,7 +2518,7 @@ COMBATANT.prototype.GetAdjSpecAb = function (sa, pSource, pSpellName) {
 COMBATANT.prototype.PlayMiss = function() {
 //#ifdef newCombatant                                   // PORT NOTE:  I believe this is on
     if (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM) {
-        itemData.PlayMiss(this.m_pCharacter.myItems.GetItem(m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)));
+        itemData.PlayMiss(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)).itemID);
     }
 //#else
 //    if (myItems.GetReadiedItem(WeaponHand, 0) != NO_READY_ITEM) {
@@ -2769,7 +2763,7 @@ COMBATANT.prototype.ModifyAttackDamageDiceForItemAsTarget = function(pAttacker, 
     // if vorpal item readied (attacker has ability enabled), and using item that confers ability
     if ((toHitRolled == 20)
         && (pa.GetAdjSpecAb(SA_VorpalAttack, src, spellID))
-        && (pItem.specAbs.HaveSpecAb(SPECAB.SA_VorpalAttack))) {
+        && (pItem.specAbs.HaveSpecAb(SPECAB.SA_VorpalAttack).returnVal)) {
         if (!this.HasVorpalImmunity()) {
             pBonus = this.GetHitPoints() + 1; // make sure this attack kills target
             pa.m_pCharacter.QueueUsedSpecAb(SPECAB.SA_VorpalAttack, src, spellID);
@@ -2781,7 +2775,7 @@ COMBATANT.prototype.ModifyAttackDamageDiceForItemAsTarget = function(pAttacker, 
 COMBATANT.prototype.PlayHit = function() {
     if (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM)
     {
-        itemData.PlayHit(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)));
+        itemData.PlayHit(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)).itemID);
     }
     else
     {
@@ -4182,4 +4176,17 @@ COMBATANT.prototype.OnEndTurn = function() {
 
 COMBATANT.prototype.getCharExpWorth = function() {
     return this.m_pCharacter.getCharExpWorth();
+}
+
+COMBATANT.prototype.GetAdjDetectingInvisible = function (flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    return this.m_pCharacter.GetAdjDetectingInvisible(flags);
+}
+
+COMBATANT.prototype.GetUndeadType = function () {
+    return this.m_pCharacter.GetUndeadType();
+}
+
+COMBATANT.prototype.IsAnimal = function () {
+    return this.m_pCharacter.IsAnimal();
 }

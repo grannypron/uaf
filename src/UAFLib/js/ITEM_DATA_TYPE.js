@@ -80,6 +80,7 @@ ITEM_DATA_TYPE.prototype.WpnConsumesSelfAsAmmoType = function(type) {
     return false;
 }
 
+/**PARAMCHECK: WeaponID should be a string **/
 ITEM_DATA_TYPE.prototype.WpnConsumesAmmoAtRange = function(weaponID, Range)
 {
     if (this.IsMoneyItem(weaponID))
@@ -297,6 +298,8 @@ ITEM_DATA_TYPE.prototype.itemUsesRdySlot = function(pItem) {
 }
 
 ITEM_DATA_TYPE.prototype.WpnCanAttackAtRange = function(weaponID, Range) {
+    if (weaponID != null) { Globals.ASSERT(!weaponID.itemID, "ITEM_DATA_TYPE.WpnCanAttackAtRange - parameter is of an incorrect type"); }  // PORT NOTE: Check for wrong type of ID passed in
+
     if (this.IsMoneyItem(weaponID))
         return false;
 
@@ -339,6 +342,7 @@ ITEM_DATA_TYPE.prototype.WpnCanAttackAtRange = function(weaponID, Range) {
 }
 
 ITEM_DATA_TYPE.prototype.GetItemRange = function(itemID) {
+    if (itemID != null) { Globals.ASSERT(!itemID.itemID, "ITEM_DATA_TYPE.GetItemRange - parameter is of an incorrect type"); }  // PORT NOTE: Check for wrong type of ID passed in
     var pItem;
     pItem = this.PeekItem(itemID);
     if (pItem != null) {
@@ -349,6 +353,7 @@ ITEM_DATA_TYPE.prototype.GetItemRange = function(itemID) {
 }
 
 ITEM_DATA_TYPE.prototype.WpnUsesAmmo = function (itemID) {
+    if (itemID != null) { Globals.ASSERT(!itemID.itemID, "ITEM_DATA_TYPE.WpnUsesAmmo - parameter is of an incorrect type"); }  // PORT NOTE: Check for wrong type of ID passed in
     if (this.IsMoneyItem(itemID))
         return false;
     return (this.WpnUsesAmmoType(itemData.GetWpnType(itemID)));
@@ -374,4 +379,34 @@ ITEM_DATA_TYPE.prototype.WpnUsesAmmoType = function (type) {
             break;
     }
     return false;
+}
+
+ITEM_DATA_TYPE.prototype.GetAmmoClass = function (itemID) {
+    if (itemID != null) { Globals.ASSERT(!itemID.itemID, "ITEM_DATA_TYPE.GetAmmoClass - parameter is of an incorrect type"); }  // PORT NOTE: Check for wrong type of ID passed in
+    var pItem;
+    pItem = this.PeekItem(itemID);
+    if (pItem != null) {
+        return pItem.AmmoType;
+    }
+    else
+        return "";
+}
+
+
+ITEM_DATA_TYPE.prototype.PlayHit = function(itemID) {
+    if (itemID != null) { Globals.ASSERT(!itemID.itemID, "ITEM_DATA_TYPE.PlayHit - parameter is of an incorrect type"); }  // PORT NOTE: Check for wrong type of ID passed in
+    var pItem;
+    pItem = this.GetItemFromID(itemID);
+    if (pItem != null) {
+        pItem.PlayHit();
+    }
+}
+
+ITEM_DATA_TYPE.prototype.PlayMiss = function(itemID) {
+    if (itemID != null) { Globals.ASSERT(!itemID.itemID, "ITEM_DATA_TYPE.PlayMiss - parameter is of an incorrect type"); }  // PORT NOTE: Check for wrong type of ID passed in
+    var pItem;
+    pItem = this.GetItemFromID(itemID);
+    if (pItem != null) {
+        pItem.PlayMiss();
+    }
 }

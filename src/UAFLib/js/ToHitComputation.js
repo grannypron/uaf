@@ -135,13 +135,13 @@ ToHitComputation.prototype.Compute4 = function(pAttacker, targetIndex, pTarget, 
         var hookParameters = new HOOK_PARAMETERS();
         var scriptContext = new SCRIPT_CONTEXT();
         var pItem;
-        scriptContext.SetItemContext(itemID == "" ? null : itemID);  // Includes spell Context!    // PORT NOTE:  Had to modify since itemID is just a string now
+        scriptContext.SetItemContext(itemData.GetItemFromID(itemID));  // Includes spell Context!    // PORT NOTE:  Used a slightly different mutator of the same name here
         scriptContext.SetItemContextKey(wpn);
         scriptContext.SetTargetContextCOMBATANT(pTarget);
         scriptContext.SetAttackerContext(pAttacker);
 
         if (itemData.IsValidItem(itemID)) {
-            itemName = scriptContext.GetItemContext("Bogus Item Context").UniqueName();
+            itemName = scriptContext.GetItemContext("Bogus Item Context");//  PORT NOTE: Left this off since we are just using strings for now .UniqueName();
         }
         else {
             itemName = "Bogus Item";
