@@ -2462,7 +2462,7 @@ CHARACTER.prototype.determineNbrAttacks = function () {
         this.SetNbrAttacks(monsterData.GetMonsterNbrAttacks(this.monsterID));
 
     if (this.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM) {
-        var wpnAttacks = itemData.GetItemFromIDROF(this.myItems.GetItem(this.myItems.GetReadiedItem(Items.WeaponHand, 0)));
+        var wpnAttacks = itemData.GetItemFromID(this.myItems.GetAtPos(this.myItems.GetReadiedItem(Items.WeaponHand, 0)).itemID).ROF_Per_Round;   // PORT NOTE: Slight change here to use a different accessor
         if (wpnAttacks < 1.0) wpnAttacks = 1.0;
         this.SetNbrAttacks(wpnAttacks);
         // check for sweeps
@@ -3983,7 +3983,7 @@ CHARACTER.prototype.HasDeathImmunity = function () {
         return ((monsterData.GetMonsterImmunityFlags(this.monsterID) & MonsterImmunityType.ImmuneDeath) == MonsterImmunityType.ImmuneDeath);
     }
 
-    return FALSE;
+    return false;
 }
 
 CHARACTER.prototype.GetAdjMaxEncumbrance = function (flags) {

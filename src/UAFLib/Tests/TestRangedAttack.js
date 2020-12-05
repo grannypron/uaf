@@ -45,3 +45,6 @@ Globals.ASSERT(canAttack, "TestRangedAttack.js - 5");
 numAttacks = 0;
 cWarrior.makeAttack(1, 0, 0);
 Globals.ASSERT(numAttacks > 0, "TestRangedAttack.js - 6");
+
+// Should have one less arrow now
+Globals.ASSERT(cWarrior.m_pCharacter.myItems.GetQty(1) == 49, "TestRangedAttack.js - 7");

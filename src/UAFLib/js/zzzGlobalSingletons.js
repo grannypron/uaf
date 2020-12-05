@@ -70,6 +70,7 @@ var pScriptContext = new SCRIPT_CONTEXT();
 var activeSpellList = new ACTIVE_SPELL_LIST();
 var AUTO_FLAGS = new AUTO_FLAGS();
 var FLEEING_FLAGS = new FLEEING_FLAGS();
+var MonsterImmunityType = new MonsterImmunityType();
 
 var pathMgr = new PATH_MANAGER(1000);
 
