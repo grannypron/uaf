@@ -46,6 +46,10 @@ ASLENTRY.prototype.Key = function () {
     return this.m_key;
 }
 
+ASLENTRY.prototype.Value = function() {
+    return this.m_value;
+}
+
 /**
  *  TODO
 ASLENTRY.prototype.Serialize = function (ar) { }

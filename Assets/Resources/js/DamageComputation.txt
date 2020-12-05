@@ -72,7 +72,7 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
                     this.m_isNonLethal,
                     toHitRoll);
     dmgDiceBonus = result.pBonus; // PORT NOTE:  Handling pass-by-reference params
-
+    
     this.m_damage = Globals.RollDice(dmgDiceSides, dmgDiceQty, dmgDiceBonus);
 
     if (this.m_damage <= 0)
@@ -90,9 +90,9 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
             var hookParameters = new HOOK_PARAMETERS();
             var scriptContext = new SCRIPT_CONTEXT();
             var pWeapon = null;
-            scriptContext.SetItemContext(itemID);
-            if (!itemData.IsNoItem(itemID)) {
-                pWeapon = itemData.GetItemFromID(itemID);
+            scriptContext.SetItemContext(itemData.GetItemFromID(itemID.itemID));
+            if (!itemData.IsNoItem(itemID.itemID)) {
+                pWeapon = itemData.GetItemFromID(itemID.itemID);
             };
             hookParameters[2] = "" + this.m_damage;
             if (pWeapon != null) {
@@ -104,13 +104,13 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
                         var launchID = "";
                         var pLauncher;
                         launchID = pAttacker.m_pCharacter.myItems.GetItem(launchWpnIndex);
-                        pLauncher = itemData.GetItemFromID(launchID);
+                        pLauncher = itemData.GetItemFromID(launchID.itemID);
                         hookParameters[3] = "" + pLauncher.Attack_Bonus;
                         this.m_damage += pLauncher.Attack_Bonus;
                     };
                 }
                 hookParameters[4] = "" + pWeapon.Attack_Bonus;
-                m_damage += pWeapon.Attack_Bonus;
+                this.m_damage += pWeapon.Attack_Bonus;
             };
             hookParameters[5] = "" + this.m_damage;
             hookParameters[6] = "" + this.m_isNonLethal;

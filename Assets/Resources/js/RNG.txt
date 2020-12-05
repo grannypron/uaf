@@ -7,6 +7,6 @@ DefaultRNG.prototype.newDWORD = function () {
 
 DefaultRNG.prototype.newInt = function () {
     var min = 0;
-    var max = Number.MAX_SAFE_INTEGER;
+    var max = 100000;
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }

@@ -50,22 +50,9 @@ ActorType.prototype.SetPartySrc = function (friendly) {
     Flags = FLAG_NONCOMBAT | FLAG_PARTY_MEMBER;
 }
 ActorType.prototype.ToString = function() {
-    //return CString((LPCTSTR)(this), sizeof(ActorType));    // PORT NOTE:  Changed this - I think this was maybe getting the address in memory as a string?
-    return this.EnemyAlly + " | " +
-            this.Flags + " | " +
-            this.Instance + " | " +
-            this.Level + " | " +
-            this.instanceType + " | " +
-            this.m_classID + " | " +
-            this.m_itemID + " | " +
-            this.m_monsterID + " | " +
-            this.m_characterID + " | " +
-            this.m_raceID + " | " +
-            this.m_spellID + " | " +
-            this.m_schoolID + " | " + 
-            this.m_canFinishCasting;
-
-};
+    //return CString((LPCTSTR)(this), sizeof(ActorType));    // PORT NOTE:  Not exactly sure about this trick, but I think it is just a way of pointing to the object on the heap.  Idk why they would use a string pointer, but ok
+    return this;    
+}
 
 /**TODO
 ActorType(int iEnemyAlly, ActorInstanceType iInstanceType)

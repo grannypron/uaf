@@ -1030,15 +1030,11 @@ inline void InitTargeting(spellTargetingType ttype,
 };
 inline int  GetThiefBackstabDamageMultiplier() const { return m_pCharacter-> GetThiefBackstabDamageMultiplier();};
 inline void UpdateSpellForDamage(int DamageTaken) { m_pCharacter -> UpdateSpellForDamage(DamageTaken); };
-inline CString  GetUndeadType() const { return m_pCharacter-> GetUndeadType(); };
-inline BOOL IsAnimal() const { return m_pCharacter-> IsAnimal();};
 inline BOOL IsAlwaysLarge() const { return m_pCharacter-> IsAlwaysLarge();};
 inline BOOL HasVorpalImmunity() const { return m_pCharacter-> HasVorpalImmunity();};
 inline void ComputeCharacterViewValues(void) { m_pCharacter -> ComputeCharacterViewValues(); };
 inline int GetAdjTHAC0(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjTHAC0(flags);};
 inline BOOL GetAdjAllowPlayerControl(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) { return m_pCharacter -> GetAdjAllowPlayerControl(flags); };
-inline BOOL GetAdjDetectingInvisible(DWORD flags = DEFAULT_SPELL_EFFECT_FLAGS) const { return m_pCharacter-> GetAdjDetectingInvisible(flags);};
-enum { MAX_COMBAT_TARGETS = 100 };
 int GetUniqueId() { return self; }
 void InitFromNPCData(const CHARACTER_ID& characterID, BOOL IsFriendly, const ITEM_LIST & items, const MONEY_SACK & msack);
 void GetContext(ActorType * pActor, const BASECLASS_ID& baseclassID) const ;
@@ -1056,7 +1052,6 @@ void InstantSpellActivate(const SPELL_ID& attackSpellID,
 BOOL IsSpellPending();
 void FaceLocation(int x, int y);
 BOOL CheckForGuardingEnemy();
-BOOL CheckOpponentFreeAttack(int oldX, int oldY, int newX, int newY);
 void FillTargeterList(PATH_DIR dir);
 void PlayLaunch() const ;
 void PlayCombatDeath() const ;
@@ -1682,7 +1677,7 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
                                 SPECAB.GUARDING_CAN_GUARD_ATTACK,
                                 SPECAB.ScriptCallback_RunAllScripts,
                                 null,
-                                "Check opponent free attack");
+                                "Check opponent free attack")
 //#ifdef TraceFreeAttacks
 //                            WriteDebugString("TFA - script 'Guarding-CanGuardAttack' returned \"%s\"\n", result);
 //#endif
@@ -1690,10 +1685,11 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
                             if (!UAFUtil.IsEmpty(result)) {
                                 if (result[0] == 'Y') {
                                     performGuardAttack = true;
-                                };
-                            };
+                                }
+                            }
 
-                        };
+                        }
+
                         if (performGuardAttack) {
 //#ifdef TraceFreeAttacks
 //                            WriteDebugString("TFA - queueing %s to make guard attack\n", GetCombatantPtr(dude) -> GetName());
@@ -1711,7 +1707,7 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
                                 this.x = oldX;
                                 this.y = oldY;
                                 Drawtile.placeCombatant(this.x, this.y, this.self, this.width, this.height); // added 20160927 PRS
-                            };
+                            }
                             // queue up the attackers
                             qcomb.Push(dude, false, 0, 1);
                             // give self as target to each attacker
@@ -1732,9 +1728,9 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
                 else {
                     WriteDebugString("TFA - But they are friends\n");
 #endif*/
-                };
-            };
-        };
+                }
+            }
+        }
     }
     for (dude = 0; dude <= maxDude; dude++) {
         if (wasAdjacent[dude] && !willBeAdjacent[dude]) {
@@ -1857,7 +1853,6 @@ COMBATANT.prototype.CheckOpponentFreeAttack = function(oldX, oldY, newX, newY) {
 COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttacks, DistanceFunction, canAttackSelf) {
     if (this.availAttacks + additionalAttacks <= 0)
         return false;
-
     if (targ == NO_DUDE)
         return false;
 
@@ -1908,7 +1903,7 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
     if (mywpnitemidx != NO_READY_ITEM) {
         // using a weapon rather than natural attack types (ie claws/jaws/fists)
         var wpn_ID;
-        wpn_ID = this.m_pCharacter.myItems.GetItem(mywpnitemidx);
+        wpn_ID = this.m_pCharacter.myItems.GetItem(mywpnitemidx).itemID;    // PORT NOTE:  Using .itemID here because of itemID/string differences
 
         if (this.m_pCharacter.myItems.GetQty(mywpnitemidx) <= 0)
             return false;
@@ -1918,7 +1913,6 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
 
         switch (itemData.GetWpnType(wpn_ID)) {
             case weaponClassType.NotWeapon: // not weapon, must be used, invokes special abilities
-                //if (isMagical(wpn_giID))
                 if (Items.isMagical(wpn_ID)) {
                     if (this.m_pCharacter.myItems.GetCharges(mywpnitemidx) <= 0)
                         return false;
@@ -1947,11 +1941,11 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
                     if (myammoitemidx == NO_READY_ITEM)
                         return false;
 
-                    var ammo_ID = this.m_pCharacter.myItems.GetItem(myammoitemidx);
+                    var ammo_ID = this.m_pCharacter.myItems.GetItem(myammoitemidx).itemID;
 
                     if (itemData.GetWpnType(ammo_ID) != weaponClassType.Ammo)
                         return false;
-
+                    
                     // ammo class must match between weapon and ammo
                     var myammoclass = this.m_pCharacter.myItems.GetAmmoClass(myammoitemidx);
                     if (UAFUtil.IsEmpty(myammoclass)) return false; // might be wand,potion,amulet,etc
@@ -1984,7 +1978,6 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
         if (dis > 1)                // PORT NOTE:  - I think this may be a bug.  Should be able to move into a diagonal attack - which would make the distance 2?
             return false;
     }
-
     // passed all tests so far, now check for line of sight
     if (!Drawtile.HaveLineOfSight(this.GetCenterX(), this.GetCenterY(), targetX, targetY, null))
         return false;
@@ -1994,16 +1987,16 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
     if (dis > 1) {
         if (!this.GetAdjDetectingInvisible()) {
             // cannot attack invisible targets with ranged weapons
-            if (targCOMBATANT.GetAdjSpecAb(SPECAB.SA_Invisible))
+            if (targCOMBATANT.GetAdjSpecAb(SPECAB.SA_Invisible).returnVal)
                 return false;
 
             if (!UAFUtil.IsEmpty(this.GetUndeadType())) {
-                if (targCOMBATANT.GetAdjSpecAb(SPECAB.SA_InvisibleToUndead))
+                if (targCOMBATANT.GetAdjSpecAb(SPECAB.SA_InvisibleToUndead).returnVal)
                     return false;
             }
 
             if (this.IsAnimal()) {
-                if (targCOMBATANT.GetAdjSpecAb(SPECAB.SA_InvisibleToAnimals))
+                if (targCOMBATANT.GetAdjSpecAb(SPECAB.SA_InvisibleToAnimals).returnVal)
                     return false;
             }
         }
@@ -2182,21 +2175,22 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
     var decQty = false;
     var wpn = 0;
     wpn = this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0);
+
     var itemID = "";
     itemID = "";
 
     if (wpn != NO_READY_ITEM) {
-        itemID = this.m_pCharacter.myItems.GetItem(wpn);
+        itemID = this.m_pCharacter.myItems.GetAtPos(wpn);
         var dist = Drawtile.Distance6(this.self, this.x, this.y,
             targCOMBATANT.self, targCOMBATANT.x, targCOMBATANT.y);
-        decQty = itemData.WpnConsumesAmmoAtRange(itemID, dist);
+        decQty = itemData.WpnConsumesAmmoAtRange(itemID.itemID, dist);
 
         // do we decrement weapon qty or ammo qty?
-        wpnConsumesSelfAsAmmo = itemData.WpnConsumesSelfAsAmmo(itemID);
+        wpnConsumesSelfAsAmmo = itemData.WpnConsumesSelfAsAmmo(itemID.itemID);
         if (decQty && !wpnConsumesSelfAsAmmo) {
             // ammo is readied and must be decremented
             wpn = this.m_pCharacter.myItems.GetReadiedItem(Items.AmmoQuiver, 0);
-            itemID = this.m_pCharacter.myItems.GetItem(wpn);
+            itemID = this.m_pCharacter.myItems.GetAtPos(wpn);
         }
     }
 
@@ -2208,8 +2202,8 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         RunTimeIF.SetTargetContext(actor);
     };
     var pWeapon = null;
-    if (!(itemData.IsNoItem(itemID))) {
-        pWeapon = itemData.GetItemFromID(itemID);
+    if (!(itemData.IsNoItem(itemID.itemID))) {
+        pWeapon = itemData.GetItemFromID(itemID.itemID);
     };
 
     toHitComputation.Compute4(this, targ, targCOMBATANT, wpn);
@@ -2240,9 +2234,9 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                     if (!debugStrings.AlreadyNoted("WNHUSN")) {
                         msg = "A Weapon named:\n" + pWeapon.UniqueName() + "\nhas an undefined spell named\n" + pWeapon.SpellID();
                         Globals.MsgBoxInfo(msg, "Warning");
-                    };
-                };
-            };
+                    }
+                }
+            }
         }
         else {
             if (this.GetType() == MONSTER_TYPE) {
@@ -2255,8 +2249,8 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                 Globals.ASSERT(pMonster != null, "pMonster != null");
 
                 attackSpellID = pMonster.attackData.PeekMonsterAttackDetails(currAttack).spellID;
-            };
-        };
+            }
+        }
 
 
 
@@ -2285,7 +2279,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
             targCOMBATANT.UpdateSpellForAttacks(1);
 
             this.PlayHit();
-            Globals.debug("----COMBATANT.makeAttack1");
+
             {
                 pDeathIndex = targCOMBATANT.TakeDamage(damageComputation.Damage(),
                     damageComputation.IsNonLethal(),
@@ -2298,7 +2292,6 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                     this.RemoveCurrTarget();
                 }
             };
-            Globals.debug("----COMBATANT.makeAttack2");
             {
                 if (spellData.IsValidSpell(damageComputation.SpellID())) {
                     var samsg = "";
@@ -2316,8 +2309,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                         DispText.CombatMsg = samsg;
                     }
                 };
-           Globals.debug("----COMBATANT.makeAttack3");
-                 if (UAFUtil.IsEmpty(DispText.CombatMsg)) {
+                if (UAFUtil.IsEmpty(DispText.CombatMsg)) {
                     if (UAFUtil.IsEmpty(damageComputation.Message())) {
                         if (toHitComputation.IsBackStab()) {
                             DispText.CombatMsg = "Rolls " + toHitComputation.Rolled() + " and BackStabs for " + damageComputation.Damage() + " dmg";
@@ -2334,21 +2326,17 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
             // Condition added 20110413 PRS......
             // Manikus said that auto combatants should get multiple attacks even after a successful hit.
             //continueAttack=FALSE;
-           Globals.debug("----COMBATANT.makeAttack4");
- 
+
             // Changed again 20110522.
             // Manikus tells me that multiple attacks should ALWAYS be possible
             // if (!OnAuto(false)) continueAttack=FALSE; else continueAttack=TRUE;
         }
         else {
-           Globals.debug("----COMBATANT.makeAttack5");
-             toHitComputation.SetSuccessful(0);
+            toHitComputation.SetSuccessful(0);
         };
-           Globals.debug("----COMBATANT.makeAttack6");
-     }
+    }
     else {
-           Globals.debug("----COMBATANT.makeAttack7");
-         toHitComputation.SetSuccessful(0);
+        toHitComputation.SetSuccessful(0);
     };
     if (!toHitComputation.GetSuccessful()) {
 /*#ifdef TraceFreeAttacks
@@ -2366,10 +2354,8 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         };
         continueAttack = true;
     }
-           Globals.debug("----COMBATANT.makeAttack8");
-     UIEventManager.UpdateCombatMessage();
-                Globals.debug("----COMBATANT.makeAttack9");
- 
+    UIEventManager.UpdateCombatMessage();
+
 
 
 
@@ -2377,8 +2363,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
     }
     else {
     };
-           Globals.debug("----COMBATANT.makeAttack10");
-     FormattedText.combatTextData = FormattedText.FormatCombatText(FormattedText.combatTextData, DispText.CombatMsg);
+    FormattedText.combatTextData = FormattedText.FormatCombatText(FormattedText.combatTextData, DispText.CombatMsg);
 
     if (decQty)  // wpn and giID refer to either the weapon or the ammo consumed by the weapon
     {
@@ -2386,7 +2371,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         if (wpn != NO_READY_ITEM) {
             if (wpnConsumesSelfAsAmmo) {
                 var myItem = new ITEM();
-                myItem = this.m_pCharacter.myItems.GetItem(wpn);
+                myItem = this.m_pCharacter.myItems.GetAtPos(wpn);
                 myItem.qty = 1;
                 combatData.hurledWeapons.AddItem(myItem);
             };
@@ -2417,26 +2402,22 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
             this.determineMaxMovement();
         }
     }
-               Globals.debug("----COMBATANT.makeAttack11");
- 
+
 
     // make sure combatants are facing towards each other
     this.FaceOpponent(targ);
     if (!toHitComputation.IsBackStab()) targCOMBATANT.FaceOpponent(this.self);
 
-           Globals.debug("----COMBATANT.makeAttack12");
- 
+
     targCOMBATANT.m_iLastAttacker = this.self;
     targCOMBATANT.m_eLastAction = LASTACTION.LA_Defend;
     this.m_iLastAttacked = targCOMBATANT.self;
     this.m_eLastAction = LASTACTION.LA_Attack;
 
-           Globals.debug("----COMBATANT.makeAttack13");
- 
+
     RunTimeIF.ClearTargetContext();
     RunTimeIF.ClearCharContext();
-           Globals.debug("----COMBATANT.makeAttack14");
-     return -1;
+    return -1;
 }
 
 COMBATANT.prototype.MakeTargetKey = function (dude, dist) {
@@ -2463,7 +2444,7 @@ COMBATANT.prototype.GetAttackBonus = function (weaponID, distance) {
     var bonus = 0;
 
     if (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM) {
-        var idata = itemData.GetItemFromID(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)));
+        var idata = itemData.GetItemFromID(this.m_pCharacter.myItems.GetAtPos(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)).itemID);
         if (idata != null) {
             bonus += idata.Attack_Bonus;
         }
@@ -2537,7 +2518,7 @@ COMBATANT.prototype.GetAdjSpecAb = function (sa, pSource, pSpellName) {
 COMBATANT.prototype.PlayMiss = function() {
 //#ifdef newCombatant                                   // PORT NOTE:  I believe this is on
     if (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM) {
-        itemData.PlayMiss(this.m_pCharacter.myItems.GetItem(m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)));
+        itemData.PlayMiss(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)).itemID);
     }
 //#else
 //    if (myItems.GetReadiedItem(WeaponHand, 0) != NO_READY_ITEM) {
@@ -2658,7 +2639,7 @@ COMBATANT.prototype.GetDamageDice = function(wpn, pNum, pSides, pBonus, pNonLeth
     pNonLethal = false;
     pSpellName = "";
     if (wpn != NO_READY_ITEM) {
-        var idata = itemData.GetItemFromID(this.m_pCharacter.myItems.GetItem(wpn));
+        var idata = itemData.GetItemFromID(this.m_pCharacter.myItems.GetItem(wpn).itemID);
 
         if (idata != null) {      
             pNonLethal = idata.IsNonLethal;
@@ -2782,7 +2763,7 @@ COMBATANT.prototype.ModifyAttackDamageDiceForItemAsTarget = function(pAttacker, 
     // if vorpal item readied (attacker has ability enabled), and using item that confers ability
     if ((toHitRolled == 20)
         && (pa.GetAdjSpecAb(SA_VorpalAttack, src, spellID))
-        && (pItem.specAbs.HaveSpecAb(SPECAB.SA_VorpalAttack))) {
+        && (pItem.specAbs.HaveSpecAb(SPECAB.SA_VorpalAttack).returnVal)) {
         if (!this.HasVorpalImmunity()) {
             pBonus = this.GetHitPoints() + 1; // make sure this attack kills target
             pa.m_pCharacter.QueueUsedSpecAb(SPECAB.SA_VorpalAttack, src, spellID);
@@ -2794,7 +2775,7 @@ COMBATANT.prototype.ModifyAttackDamageDiceForItemAsTarget = function(pAttacker, 
 COMBATANT.prototype.PlayHit = function() {
     if (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM)
     {
-        itemData.PlayHit(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)));
+        itemData.PlayHit(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)).itemID);
     }
     else
     {
@@ -3006,7 +2987,7 @@ COMBATANT.prototype.RemoveCurrTarget = function () {
 }
 
 COMBATANT.prototype.blitDyingSprite = function () {
-    //UIEventManager.CombatantDying(this.self, this.x, this.y);
+    UIEventManager.CombatantDying(this.self, this.x, this.y);
 }
 
 COMBATANT.prototype.CheckMorale = function () {
@@ -4195,4 +4176,17 @@ COMBATANT.prototype.OnEndTurn = function() {
 
 COMBATANT.prototype.getCharExpWorth = function() {
     return this.m_pCharacter.getCharExpWorth();
+}
+
+COMBATANT.prototype.GetAdjDetectingInvisible = function (flags) {
+    if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; }
+    return this.m_pCharacter.GetAdjDetectingInvisible(flags);
+}
+
+COMBATANT.prototype.GetUndeadType = function () {
+    return this.m_pCharacter.GetUndeadType();
+}
+
+COMBATANT.prototype.IsAnimal = function () {
+    return this.m_pCharacter.IsAnimal();
 }

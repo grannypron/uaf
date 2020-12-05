@@ -1,878 +1,746 @@
 ﻿<abilities>
+
   <item>
-<name>$EVENT_WhoTries_Attempt</name>
-<asl>
-<script name="Ability"><![CDATA[$VAR abLevel;
--$VAR abName;
--$VAR me; // character who is trying
--$VAR abNeed;
--$VAR abDie;
--abName = $GET_HOOK_PARAM(5);
--abNeed = $GET_HOOK_PARAM(6);
--me = $IndexOf($CharacterContext());
--$SWITCH (abName)
--	{
--		$CASE "Strength": abLevel = $GET_CHAR_LIMITED_STR(me);$BREAK;
--		$CASE "Intelligence": abLevel = $GET_CHAR_LIMITED_INT(me);$BREAK;
--		$CASE "Wisdom": abLevel = $GET_CHAR_LIMITED_WIS(me);$BREAK;
--		$CASE "Dexterity": abLevel = $GET_CHAR_LIMITED_DEX(me);$BREAK;
--		$CASE "Constitution": abLevel = $GET_CHAR_LIMITED_CON(me);$BREAK;
--		$CASE "Charisma": abLevel = $GET_CHAR_LIMITED_CHA(me);$BREAK;
--		$CASE "StrengthMod": abLevel = $GET_CHAR_LIMITED_STRMOD(me);$BREAK;
--		$DEFAULT: $RETURN "N";
--	} $ENDSWITCH;
--$IF (abNeed <# 0)
--	{
--		abDie = $RANDOM (0 -# abNeed);
--		$IF (abLevel <# abDie){$RETURN "N";};
--	};
--$IF (abLevel <# abNeed){$RETURN "N";};
-OldAbility = $VAR abLevel;
--$VAR abName;
--$VAR me; // character who is trying
--$VAR abNeed;
--$VAR abDie;
--abName = $GET_HOOK_PARAM(5);
--abNeed = $GET_HOOK_PARAM(6);
--me = $IndexOf($CharacterContext());
--$IF (abName == "Strength"){abLevel = $GET_CHAR_LIMITED_STR(me);};
--$IF (abName == "Intelligence"){abLevel = $GET_CHAR_LIMITED_INT(me);};
--$IF (abName == "Wisdom"){abLevel = $GET_CHAR_LIMITED_WIS(me);};
--$IF (abName == "Dexterity"){abLevel = $GET_CHAR_LIMITED_DEX(me);};
--$IF (abName == "Constitution"){abLevel = $GET_CHAR_LIMITED_CON(me);};
--$IF (abName == "Charisma"){abLevel = $GET_CHAR_LIMITED_CHA(me);};
--$IF (abName == "StrengthMod"){abLevel = $GET_CHAR_LIMITED_STRMOD(me);};
--$IF (abLevel == "") {$RETURN "N";};
--$IF (abNeed <# 0)
--	{
--		abDie = $RANDOM (0 -# abNeed);
--		$IF (abLevel <# abDie){$RETURN "N";};
--	};
--$IF (abLevel <# abNeed){$RETURN "N";};
-]]></script><script name="Experience"><![CDATA[$VAR me;
--$VAR cls; // class
--$VAR lvl; // level
--$VAR par0;
--$VAR par5;
--$VAR par6;
--me = $MyIndex();
--cls = $GetHighestLevelBaseclass(me);
--lvl = $GetBaseclassLevel(me,cls);
--par0 = $GET_HOOK_PARAM(0);
--par5 = $GET_HOOK_PARAM(5);
--par6 = $GET_HOOK_PARAM(6);
--$IF (lvl <# par6){$RETURN "N";};
-]]></script><script name="NightSkill"><![CDATA[$VAR time;
--$VAR par0;
--$VAR skillName;
--$VAR skillLevel;
--$VAR skillNeed;
--$VAR skillDie;
--time = $GET_PARTY_HOURS();
--par0 = $GET_HOOK_PARAM(0);
--skillName = $GET_HOOK_PARAM(5);
--skillLevel = $SkillAdj($CharacterContext(),skillName,"","F",0);
--skillNeed = $GET_HOOK_PARAM(6);
--$IF (skillNeed <# 0)
--	{
--		skillDie = $RANDOM (0 -# skillNeed);
--		$IF (skillLevel <# skillDie){$RETURN "N";};
--	};
--$IF (time ># 6 && time <# 18){$RETURN "N";};
--$IF (skillLevel <# skillNeed){$RETURN "N";};
-]]></script><script name="Skill"><![CDATA[$VAR skillLevel;
--$VAR skillName;
--$VAR skillNeed;
--$VAR skillDie;
--skillName = $GET_HOOK_PARAM(5);
--skillNeed = $GET_HOOK_PARAM(6);
--skillLevel = $SkillAdj($CharacterContext(),skillName , "", "F", 0 );
--$IF (skillNeed <# 0)
--	{
--		skillDie = $RANDOM (0 -# skillNeed);
--		$IF (skillLevel <# skillDie){$RETURN "N";};
--	};
--$IF (skillLevel <# skillNeed){$RETURN "N";};
+    <name>Competing</name>
+    <asl>
+      <script name="AdjustInitiative">
+        <![CDATA[RETURN_VAL = (function () {
+/**TODO: Taking this all out for now.  Don't think it's fundamental to D20 and can be scripted in
+var me; var dex; var p5; var list; var adj; var redo; var un;
+me = $IndexOf($CombatantContext());
+dex = $GET_CHAR_LIMITED_DEX(me);
+p5 = $GET_HOOK_PARAM(5);
+list = "$3$3$3$3$2$1$0$0$0$0$0$0$0$0$0$0$-1$-2$-3$-3$-3$-4$-4$-4$-5$-5";
+adj = $DelimitedStringSubstring(list,dex);
+un = $GET_COMBATANT_SA($CombatantContext(),"class_Unsurprised");
+if (!($GetCombatRound()))//Past round 1
+	{return adj;};
+if (p5 != 18)// adjustment for unsurprised
+	{return adj;};
+if (adj <# "-1" || adj ==# "-1" && un != "-?-?-")// negate surprise for -2 or better
+	{redo = 1;};
+if (un != "-?-?-" || dex == 16)// 50% negate surprise for -1 or ranger
+	{redo = $RANDOM(2);};
+if (redo ==# 1)// set new random initiative if not surprised
+	{return $RANDOM(10) +# 9 +# adj -# 18;}
+$ELSE {return 5;}; // set to surprised
+*/
+})();]]>
+      </script>
+      <script name="AutoAction">
+        <![CDATA[RETURN_VAL = (function () {
+/**TODO: Taking this all out for now.  Don't think it's fundamental to D20 and can be scripted in
+return $GET_COMBATANT_SA($CombatantContext(),"playerControl");
+*/
+})();]]>
+      </script>
+      <script name="CombatMainMenu">
+        <![CDATA[var adj; var count; var t; var tgt; var bc; var lvl;
+bc = $GET_CHARACTER_SA($CharacterContext(),"class_Sweep");
+if (bc != "-?-?-") {lvl = $GET_CHAR_Lvl($MyIndex(),bc);};
+if (lvl ># 1)
+	{
+		adj = $ListAdjacentCombatants($MyIndex());
+		t = 0;
+		count = $DelimitedStringCount(adj);
+		$WHILE (count >=# 0)
+			{
+				tgt = $DelimitedStringSubstring(adj,count);
+				if ($GET_MONSTERTYPE_SA($GET_CHAR_NAME(tgt),"monster_Swept") != "-?-?-" && $GET_CHAR_STATUS(tgt) ==# 0){t = t +# 1;};
+				count = count -# 1;
+			};
+		if (t ># 1)
+			{
+				$SET_HOOK_PARAM(6, "SWEEP");
+				$SET_HOOK_PARAM(7, 0);
+				$SET_COMBATANT_SA($CombatantContext(),"IsSweeping",lvl);
+			};
+	};
+]]>
+      </script>
+      <script name="DoesAttackSucceed">
+        <![CDATA[RETURN_VAL = (function () {
+var par5;
+par5 = $GET_HOOK_PARAM(5);
+if (par5 == 20) {return "Y";};
+if (par5 == 1) {return "N";};
+})();]]>
+      </script>
+      <script name="FreeAttack-AttackOver">
+        <![CDATA[$SET_HOOK_PARAM(7,"0");
+return;
+]]>
+      </script>
+      <script name="FreeAttack-CanFreeAttack">
+        <![CDATA[var rangeWpn; var par8;
+rangeWpn = $GET_ITEM_SA($GET_CHAR_Ready($AttackerContext(), "WEAPON", 0),"item_CombatAim");
+par8 = $GET_HOOK_PARAM(8);
+if (rangeWpn != "-?-?-"){return "N";};
+return par8;
+]]>
+      </script>
+      <script name="GetNumberOfAttacks">
+        <![CDATA[RETURN_VAL = (function () {
+				// This is bugged in the version I have and the default returns 1.0 anyway
+        return "";
+})();
+]]>
+      </script>
+      <script name="Guarding-AttackOver">
+        <![CDATA[return;
+]]>
+      </script>
+      <script name="Guarding-BeginCombat">
+        <![CDATA[RETURN_VAL = (function() {
+        return "N";
+        })();
+				]]>
+      </script>
+      <script name="Guarding-CanGuard">
+        <![CDATA[var rangeWpn;
+rangeWpn = $GET_ITEM_SA($GET_CHAR_Ready($CombatantContext(), "WEAPON",0),"item_CombatAim");
+if (rangeWpn != "-?-?-"){return "N";};
+if($GET_HOOK_PARAM(5) ==# 2){return "Y";};
+]]>
+      </script>
+      <script name="Guarding-CanGuardAttack">
+        <![CDATA[RETURN_VAL = (function () {
+return "Y";
+/*var par5;
+par5 = $GET_HOOK_PARAM(5);
+var attackerIdx = pScriptContext.GetCombatantContext().Instance;
+Globals.debug("----Guarding-CanGuardAttack:" + attackerIdx);
+if (attackerIdx != null && attackerIdx > 0) {
+	if (combatData.GetCombatant(attackerIdx).State() != individualCombatantState.ICS_Guarding){return "N";};
+	if (par5 > 0){return "Y";}
+}*/
+})();]]>
+      </script>
+      <script name="Guarding-Guard">
+        <![CDATA[RETURN_VAL = (function () {return;})();]]>
+      </script>
+      <script name="Guarding-StartOfRound">
+        <![CDATA[RETURN_VAL = (function () {
+var par5;
+var par6;
+par5 = $GET_HOOK_PARAM(5);
+par6 = $GET_HOOK_PARAM(6);
+if (par5 == 3){$SET_HOOK_PARAM(6,"G");};
+})();]]>
+      </script>
+      <script name="IsCombatReady">
+        <![CDATA[RETURN_VAL = (function () {return;})();]]>
+      </script>
+      <script name="OnStartCombat">
+        <![CDATA[RETURN_VAL = (function () {
+/**TODO: Taking this all out for now.  Don't think it's fundamental to D20 and can be scripted in
+var name; var name1; var me;
+var lvl; var lead; var controlNPC;
+var idx1; var idx4; var modCha;
+me = combatData.GetCombatant(pScriptContext.GetCombatantContext().Instance).m_pCharacter;
+name = me.Name;
+idx1 = $NextCreatureIndex("", 1);
+idx4 = $NextCreatureIndex("", 4);
+$SET_CHARACTER_SA($CharacterContext(  ),"turnUndead","");
+if ($NextCreatureIndex(me -# 1, 4) == me)
+	{
+		$SET_CHARACTER_SA($CharacterContext(),"side",1);
+		$SET_CHAR_ASL(me,"side",1);
+	}
+$ELSE
+	{
+		$SET_CHARACTER_SA($CharacterContext(),"side",2);
+		$SET_CHAR_ASL(me,"side",2);
+	};
+name1 = $GET_CHAR_NAME(idx1);
+if (name != name1 && $GET_MONSTERTYPE_SA(name1,"range") != "-?-?-")
+	{
+		$SET_CHARACTER_SA($CharacterContext(),"range" + name1,1);
+	};
+$RUN_CHAR_SCRIPTS(me,"spawn");
+if ($GetCombatRound() ># 0) {$SET_COMBATANT_SA($CharacterContext(),"Summoned","spell");};
+// Paladin Leadership
+controlNPC = 0;
+$SET_CHARACTER_SA($CharacterContext(),"endControl", 1);
+lead = $GET_CHARACTER_SA($CharacterContext(),"class_Leader");
+lvl = $GET_CHAR_Lvl(me,lead);
+if ($InParty($CharacterContext()) != "" && lvl ># 0)
+	{
+		modCha = ($GET_CHAR_LIMITED_CHA(me) -# 13) *# 5;
+		if (lvl >=# 3){controlNPC = modCha +# 79;};
+		if (lvl ==# 2){controlNPC = modCha +# 39;};
+		if (lvl ==# 1){controlNPC = modCha +# 19;};
+		$SET_PARTY_ASL("controlNPC",controlNPC);
+	};
+if ($GET_CHARACTER_SA($CharacterContext(),"side") == 1 && $RANDOM(100) <# $GET_PARTY_ASL("controlNPC"))
+	{
+		$SET_CHARACTER_SA($CharacterContext(),"playerControl","CP");
+	};*/
+  })();
+]]>
+      </script>
+      <script name="OnStep">
+        <![CDATA[RETURN_VAL = (function () {
+var me;
+var it;
+me = combatData.GetCombatant(pScriptContext.GetCombatantContext().Instance);
+it = $NextCreatureIndex("", 1);
+if (it != me && it != null)
+{
+	it = combatData.GetCombatant(it);
+	$SET_HOOK_PARAM(5, it);
+	$SET_HOOK_PARAM(6, me);
+	it.RunCombatantScripts("CheckProximity", ScriptCallback_RunAllScripts, "N", "Script function $RUN_CHAR_SCRIPTS()");
+	me.RunCombatantScripts("CheckProximity", ScriptCallback_RunAllScripts, "N", "Script function $RUN_CHAR_SCRIPTS()");
+}
+})();]]>
+      </script>
+      <script name="PreStartCombat">
+        <![CDATA[RETURN_VAL = (function () {
+var par5;
+var char;
+var clazz;
+par5 = $GET_HOOK_PARAM(5);
+char = combatData.GetCombatant(pScriptContext.GetCombatantContext().Instance).m_pCharacter;
+if (char.GetClass() == "Paladin") {return par5 + 10000;}
+
+})();
+]]>
+      </script>
+      <script name="StartCombatRound">
+        <![CDATA[RETURN_VAL = (function () {})();]]>
+      </script>
+    </asl>
+  </item>
+
+  <item>
+    <name>Global_Combat</name>
+    <asl>
+      <script name="PartyArrangement">
+        <![CDATA[if ($GET_HOOK_PARAM(5) == "I")
+  {
+    return "ABABBBbBABBBABBBBCCCbBABBBBCCCbBABBBACCCBCbBABBBCBACCCBCbBABBBCBACDCBCCCcBbBABBBCBACDCBCCCcBbBABBBCBbCACDCBCCCcBbBABBBCBDBbCACDCBCCCcBbBABBBCBDBbCACDCBCECCCbAbAABcbbAABbAABcAbBcbbAABcAbBcbbAABdbbBcAcbbAABBCdbbBcAcbbAABBCdbACcAbBdccbbAABBCdbACcAbBdccbbAABBCecACdbcAbBdccbbAABBCCDecACdbcAbBdccbbAABBCCDecBDdbcAbBACAAAAbABAAAbAAAbAbbcbBAAAbAbbcbBAAAbAAbcbbbCABAAAbAAbcbbbCABAAAbABbcbAbbbCABAAAbAcABbcbAbbbCABAAAbAcABbdbcbAbbbDACABAAAbAcABbdbcbAbbbDACABAAAbAcACbdbBbcbAbbbBBBBAACCBBAABBAACBBACCBBAACBBACCBBAADCBACBCCBBAAbbDCBACBCCBBAAbbDCAbCBBACCBBAAbbccDCAbCBBACCBBAAbbccDCbcAbCBBADDCCBBAAbbccDCbcAbCBBADDCCBBAAbbccEDbcAbDCCBBA";
+  }
+$ELSE
+  {
+    return "ABABBBbBABBBbBABBBCBcBbBABBBCBcBbbABBBCBDBdBcBbBABBBCBDBeBdBcBbBABBBCBDBeBdBcBbBABBBCBDBEBfBeBdBcBbBABBBCBDBEBfBeBdBcBbBABBBCBDBEBFBgBfBeBdBcBbBABBBCBDBEBFBbAbAABcbbAABcbbAABBCdccbbAABBCdccbbAABBCCDeddccbbAABBCCDeddccbbAABBCCDDEfeeddccbbAABBCCDDEfeeddccbbAABBCCDDEEFgffeeddccbbAABBCCDDEEFgffeeddccbbAABBCCDDEEFFGAAAAbABAAAbACABAAAbACABAAAbAbADACABAAAbAcADACABAAAbAcAdAEADACABAAAbAcAdAEADACABAAAbAcAdAeAFAEADACABAAAbAcAdAeAFAEADACABAAAbAcAdAeAfAGAFAEADACABAAAbAcAdAeAfABBBBAACCBBAACCBBAAbbDDCCBBAAbbDDCCBBAAbbccEEDDCCBBAAbbccEEDDCCBBAAbbccddFFEEDDCCBBAAbbccddFFEEDDCCBBAAbbccddeeGGFFEEDDCCBBAAbbccddeeGGFFEEDDCCBBAAbbccddeeff";
+  };
+]]>
+      </script>
+      <script name="PartyOriginEast">
+        <![CDATA[$SET_HOOK_PARAM(5,"-1");
+]]>
+      </script>
+      <script name="PartyOriginNorth">
+        <![CDATA[$SET_HOOK_PARAM(5,"-1");
+]]>
+      </script>
+      <script name="PartyOriginSouth">
+        <![CDATA[$SET_HOOK_PARAM(5,"-1");
+]]>
+      </script>
+      <script name="PartyOriginWest">
+        <![CDATA[$SET_HOOK_PARAM(5,"-1");
 \(END)
 
-]]></script>
-</asl>
-</item>
-<item>
-<name>AbilityAdjustments</name>
-><asl>
-  <script name="idk"><![CDATA[
-<DexInit> = 3
--2
--1
--0
--0
--0
--0
--0
--0
--0
--0
--0
--0
---1
---2
---3
---3
---3
---4
---4
---4
---5
---5
-<IntSpellsMax> = 6
--7
--7
--7
--9
--9
--11
--11
--14
--18
--255
--255
--255
--255
--255
--255
--255
-<IntSpellsMin> = 4
--5
--5
--5
--6
--6
--7
--7
--8
--9
--10
--12
--13
--14
--15
--16
--17
-<IntSpellsSuccess> = 35
--45
--45
--45
--55
--55
--65
--65
--75
--85
--95
--96
--97
--98
--99
--100
--100
+]]>
+      </script>
+    </asl>
+  </item>
+  
+  <item>
+    <name>Global_CreateCharacter</name>
+    <asl>
+      <script name="PostCreateCharacter">
+        <![CDATA[var char;
+char = $IndexOf($CharacterContext());
+$SET_CHARACTER_SA($CharacterContext(), "pcSTR", $GET_CHAR_PERM_STR(char));
+$SET_CHARACTER_SA($CharacterContext(), "pcSTRMOD", $GET_CHAR_PERM_STRMOD(char));
+$SET_CHARACTER_SA($CharacterContext(), "pcINT", $GET_CHAR_PERM_INT(char));
+$SET_CHARACTER_SA($CharacterContext(), "pcWIS", $GET_CHAR_PERM_WIS(char));
+$SET_CHARACTER_SA($CharacterContext(), "pcDEX", $GET_CHAR_PERM_DEX(char));
+$SET_CHARACTER_SA($CharacterContext(), "pcCON", $GET_CHAR_PERM_CON(char));
+$SET_CHARACTER_SA($CharacterContext(), "pcCHA", $GET_CHAR_PERM_CHA(char));
 \(END)
 
-]]></script>
-</asl>
-</item>
-<item>
-<name>baseclass_NameSuppress</name>
-<asl>
-<script name="DisplayCharacterBaseclass"><![CDATA[$VAR par;
--par = $SA_PARAM_GET();
--$IF (par != "-?-?-")
--	{
--		$SET_HOOK_PARAM(5,"Level/XP");
--		$RETURN;
--	};
+]]>
+      </script>
+    </asl>
+  </item>
+
+  <item>
+    <name>Global_CreateMonsterCombatant</name>
+    <asl>
+      <script name="CreateMonsterCombatant">
+        <![CDATA[var tbl;
+var levelTbl;
+var i;
+var monster;
+var level;
+var monRace;
+tbl = "/$17$3$4$5$4$6/$15$4$5$6$4$7/$13$5$6$7$5$8/$11$7$8$9$8$10/$9$8$9$10$9$11/$7$10$11$12$12$13/$5$11$12$13$13$14/$3$13$14$15$16$16/$1$14$15$16$17$17/$0$16$17$18$20$19";
+monster = $IndexOf($CharacterContext());
+level = $SA_MONSTERTYPE_GET("monsterLevel");
+$SET_CHARACTER_SA($CharacterContext(), "class_baseName", $SA_MONSTERTYPE_GET("class_baseName"));
+$SET_CHAR_Lvl(monster,$GetHighestLevelBaseclass(monster),level);
+i = 0;
+$WHILE (1)
+	{
+		levelTbl = $DelimitedStringSubstring(tbl, i);
+		if (levelTbl == "") {return;}; // Protects us from bad Special Saves
+		if (level >=# $DelimitedStringSubstring(levelTbl, 0))
+			{
+				$SkillAdj($CharacterContext(), "Save Vs BR", "", "=", $DelimitedStringSubstring(levelTbl, 1));
+				$SkillAdj($CharacterContext(), "Save Vs PP", "", "=", $DelimitedStringSubstring(levelTbl, 2));
+				$SkillAdj($CharacterContext(), "Save Vs PPDM", "", "=", $DelimitedStringSubstring(levelTbl, 4));
+				$SkillAdj($CharacterContext(), "Save Vs RSW", "", "=", $DelimitedStringSubstring(levelTbl, 3));
+				$SkillAdj($CharacterContext(), "Save Vs SP", "", "=", $DelimitedStringSubstring(levelTbl, 5));
+				return;
+			};
+		i = i +# 1;
+	};
 \(END)
 
-]]></script>
-</asl>
-</item>
-<item>
-<name>baseclassWitch</name>
-<asl>
-<script name="IsBaseclassAllowed"><![CDATA[$VAR par5;
--par5 = $GET_HOOK_PARAM(5);
--$IF (par5 != "F"){$RETURN "N";};
+]]>
+      </script>
+    </asl>
+  </item>
+
+  <item>
+    <name>Global_Display</name>
+    <asl>
+      <script name="FacingText">
+        <![CDATA[$SET_HOOK_PARAM(5,650);
+$SET_HOOK_PARAM(6,490);
+return;
+]]>
+      </script>
+      <script name="LocationText">
+        <![CDATA[$SET_HOOK_PARAM(5,440);
+$SET_HOOK_PARAM(6,275);
+$SET_HOOK_PARAM(8,"Yellow");
+return;
+]]>
+      </script>
+      <script name="SearchingText">
+        <![CDATA[var look;
+look = $GET_HOOK_PARAM(1);
+$SET_HOOK_PARAM(5,360);
+$SET_HOOK_PARAM(6,275);
+if (look !=# "0"){$SET_HOOK_PARAM( 7,"Scanning");};
+$SET_HOOK_PARAM( 8, "Yellow" );
+return;
+]]>
+      </script>
+      <script name="TimeText">
+        <![CDATA[var p1; var p2; var p3; var day; var dayList; var dow;
+$SET_HOOK_PARAM(5,480);
+$SET_HOOK_PARAM(6,275);
+p1 = $GET_HOOK_PARAM(1);
+p2 = $GET_HOOK_PARAM(2);
+p3 = $GET_HOOK_PARAM(3);
+dow = p1 %# 7;
+dayList = "$Sunday$Monday$Tuesday$Wednesday$Thursday$Friday$Saturday";
+day = $DelimitedStringSubstring(dayList, dow);
+$SET_HOOK_PARAM(8,"Yellow");
+if (p2 <# 13)
+	{
+		if (p2 ==# 0)
+			{
+				if (p3 <# 10)
+					{$SET_HOOK_PARAM(7,"12" + ":" + "0" + p3 + " am" + "  " + day);}
+				$ELSE
+					{$SET_HOOK_PARAM(7,"12" + ":" + p3 + " am" + "  " + day);};
+				return;
+			};
+		if (p2 <# 10)
+			{
+				if (p3 <# 10)
+					{$SET_HOOK_PARAM(7," " + p2 + ":" + "0" + p3 + " am" + "  " + day);}
+				$ELSE
+					{$SET_HOOK_PARAM(7," " + p2 + ":" + p3 + " am" + "  " + day);};
+				return;
+			};
+		if (p2 <# 12)
+			{
+				if (p3 <# 10)
+					{$SET_HOOK_PARAM(7,p2 + ":" + "0" + p3 + " am" + "  " + day);}
+				$ELSE
+					{$SET_HOOK_PARAM(7,p2 + ":" + p3 + " am" + "  " + day);};
+				return;
+			}
+		$ELSE
+			{
+				if (p3 <# 10)
+					{$SET_HOOK_PARAM(7,p2 + ":" + "0" + p3 + " pm" + "  " + day);}
+				$ELSE
+					{$SET_HOOK_PARAM(7,p2 + ":" + p3 + " pm" + "  " + day);};
+				return;
+			};
+	}
+$ELSE
+	{
+		if (p2 <# 22)
+			{
+				if (p3 <# 10)
+					{$SET_HOOK_PARAM(7," " + p2 %# 12 + ":" + "0" + p3 + " pm" + "  " + day);}
+				$ELSE
+					{$SET_HOOK_PARAM(7," " + p2 %# 12 + ":" + p3 + " pm" + "  " + day);};
+				return;
+			}
+		$ELSE
+			{
+				if (p3 <# 10)
+					{$SET_HOOK_PARAM(7,p2 %# 12 + ":" + "0" + p3 + " pm" + "  " + day);}
+				$ELSE
+					{$SET_HOOK_PARAM(7,p2 %# 12 + ":" + p3 + " pm" + "  " + day);};
+				return;
+			};
+	};
+]]>
+      </script>
+      <script name="CharacterViewScreen">
+        <![CDATA[var char; // character
+var name;
+var age; var sex;
+var align; var alignList; var alignName;
+var class;
+var cbnList; // class_baseName parameter
+var cbnCount; // number of baseclasses
+var cbn; // first baseclass
+var cbn2; // second baseclass
+var cbn3; // third baseclass
+var hbl; // highest baseclass level
+var hbn; // highest baseclass name
+var lvl; var lvl2; var lvl3;
+var xp; var xp2; var xp3;
+var status;
+var hp; var maxHp;
+var race;
+var ac; var acEff; var acAdj;
+var thac0; var thac0Adj;
+var str; var strMod; var int; var wis; var dex; var con; var cha;
+var dmgList; // weapon
+var dmg1; var dmg2; var dmg3;
+var dmgPlus; // weapon plus if applicable
+var dmgBns; // damage bonus
+var enc;	// encumbrance
+var mvmt;
+var weight; var height;
+var wpn; var shield; var armor;
+var sWidth; // screen width
+var psnd; // Poisoned
+var skilled;
+var mpc; var mp;
+char = $IndexOf($CharacterContext());
+name = $GET_CHAR_NAME(char);
+age = $GET_CHAR_AGE(char); sex = $GET_CHAR_SEX(char);
+align = $GET_CHAR_ALIGNMENT(char);
+alignList = "$LAWFUL GOOD$NEUTRAL GOOD$CHAOTIC GOOD$LAWFUL NEUTRAL$TRUE NEUTRAL$CHAOTIC NEUTRAL$LAWFUL EVIL$NEUTRAL EVIL$CHAOTIC EVIL";
+alignName = $DelimitedStringSubstring(alignList,align);		
+class = $GET_CHAR_CLASS(char);
+cbnList = $DAT_Class_Baseclasses(class);
+cbnCount = $DelimitedStringCount(cbnList);
+cbn = $DelimitedStringSubstring(cbnList,0);
+cbn2 = $DelimitedStringSubstring(cbnList,1);
+cbn3 = $DelimitedStringSubstring(cbnList,2);
+hbn = $GetHighestLevelBaseclass(char);
+hbl = $GetBaseclassLevel(char,hbn);
+xp = $GET_CHAR_Exp(char,cbn); xp2 = $GET_CHAR_Exp(char,cbn2); xp3 = $GET_CHAR_Exp(char,cbn3);
+lvl = $GetBaseclassLevel(char,cbn); lvl2 = $GetBaseclassLevel(char,cbn2); lvl3 = $GetBaseclassLevel(char,cbn3);
+status = $GET_CHAR_STATUS(char);
+hp = $GET_CHAR_HITPOINTS(char); maxHp = $GET_CHAR_MAXHITPOINTS(char);
+race = $GET_CHAR_RACE(char);
+ac = $GET_CHAR_AC(char); acEff = $GET_CHAR_EFFAC(char); acAdj = $GET_CHAR_ADJAC (char);
+thac0 = $GET_CHAR_THAC0(char);
+thac0Adj = $GET_CHAR_ADJTHAC0(char);
+str = $GET_CHAR_LIMITED_STR(char); strMod = $GET_CHAR_LIMITED_STRMOD(char);
+int = $GET_CHAR_LIMITED_INT(char); wis = $GET_CHAR_LIMITED_WIS(char);
+dex = $GET_CHAR_LIMITED_DEX(char); con = $GET_CHAR_LIMITED_CON(char);
+cha = $GET_CHAR_LIMITED_CHA(char);
+wpn = $GET_CHAR_Ready($CharacterContext(),"WEAPON",0);
+shield = $GET_CHAR_Ready($CharacterContext(),"SHIELD",0);
+armor = $GET_CHAR_Ready($CharacterContext(),"ARMOR",0);
+sWidth = $GET_CONFIG("Screen_Width");
+psnd = $GET_CHARACTER_SA($CharacterContext(),"IsPoisoned");
+dmgList = $DAT_Item_DamageSmall(wpn);
+dmg1 = $DelimitedStringSubstring(dmgList,0);
+dmg2 = $DelimitedStringSubstring(dmgList,1);
+dmg3 = $DelimitedStringSubstring(dmgList,2);
+dmgPlus = $DAT_Item_AttackBonus(wpn);
+dmgBns = $GET_CHAR_DAMAGEBONUS(char);
+enc = $GET_CHAR_ENC(char);
+mvmt = $GET_CHAR_MAXMOVE(char);
+weight = $GET_CHAR_ASL(char,"charWeight");
+height = $GET_CHAR_ASL(char,"charHeight");
+if (weight == "")
+	{
+		$SET_CHAR_ASL(char,"charWeight",$DAT_Race_Weight($CharacterContext()));
+		weight = $GET_CHAR_ASL(char,"charWeight");
+	};
+if (height == "")
+	{
+		$SET_CHAR_ASL(char,"charHeight",$DAT_Race_Height($CharacterContext()));
+		height = $GET_CHAR_ASL(char,"charHeight");
+	};
+mpc = $GET_CHARACTER_SA($CharacterContext(),"charManaPointsCurrent");
+mp = $GET_CHARACTER_SA($CharacterContext(),"charManaPoints");
+//mp = $GET_CLASS_SA($ClassContext(),"charManaPoints");
+
+$GrSet("LeftCol",18, 18);
+$GrSet("RightCol", 220, 18);
+$GrSet("Skills", 417, 270);
+$GrSet("Ability", 50, 0);
+$GrSet("StatusTab", 105, 0);
+$GrSet("SkillsTab", 125, 0);
+$GrSet("EncumbTab",125, 0);
+$GrSet("TextHeight", 0, 18);
+$GrSet("ManaPool",425,270);
+$GrSetLinefeed("TextHeight");
+
+if ($GET_CHAR_TYPE(char) != "@PC@" && $GET_CHAR_TYPE(char) != "@NPC@")
+	{
+		$GrMoveTo("LeftCol");
+		$GrFormat("SL");
+		$GrColor("YELLOW");
+		$GrPrtLF($UpCase(name));
+		$GrMark("Level");
+		$GrMoveTo("RightCol");
+		$GrColor("WHITE");
+		$GrPrint("STATUS");
+		if (status >=# 9) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("DYING");};
+		if (status ==# 8) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("RUNNING");};
+		if (status ==# 7) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("TEMPGONE");};
+		if (status ==# 6) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("ANIMATED");};
+		if (status ==# 5) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("GONE");};
+		if (status ==# 4) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("PETRIFIED");};
+		if (status ==# 3) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("FLED");};
+		if (status ==# 2) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("DEAD");};
+		if (status ==# 1) {$GrColor("ORANGE"); $GrTab("StatusTab"); $GrPrtLF("UNCONSCIOUS");};
+		if (status ==# 0) {$GrColor("GREEN"); $GrTab("StatusTab"); $GrPrtLF("OKAY");};
+		$GrColor("WHITE");
+		$GrPrint("HIT POINTS");
+		if (hp <=# 0) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrint(hp);};
+		if ((hp >=# 1) && (hp <# maxHp)) {$GrColor("ORANGE"); $GrTab("StatusTab"); $GrPrint(hp);};
+		if (hp ==# maxHp) {$GrColor("GREEN"); $GrTab("StatusTab"); $GrPrint(hp);};
+		$GrColor("GREEN");
+		$GrPrtLF("/" + maxHp);
+		$GrColor("WHITE");
+		$GrPrtLF($UpCase(race));
+		$GrMoveTo("Level");
+		$GrMove("TextHeight"); 
+		$GrMove("TextHeight"); 
+		$GrMove("TextHeight"); 
+		$GrMove("TextHeight"); 
+		$GrColor("WHITE");
+		$GrMark("Strength");
+		$GrPrtLF(" ");
+		$GrPrtLF("INT");
+		$GrPrtLF(" ");
+		$GrPrtLF(" ");
+		$GrPrtLF(" ");
+		$GrPrtLF(" ");
+		$GrMark("Armor");
+		$GrMoveTo("Strength");
+		$GrMove("Ability");
+		$GrColor("GREEN");
+		$GrPrtLF(" ");
+		$GrPrtLF(int);
+		$GrPrtLF(" ");
+		$GrPrtLF(" ");
+		$GrPrtLF(" ");
+		$GrPrtLF(" ");
+		$GrMoveTo("Armor");
+		$GrMove("TextHeight"); 
+		$GrColor("WHITE");
+		$GrPrint("ARMOR CLASS");
+		if (ac !=# acEff) {$GrColor("ORANGE"); $GrTab("StatusTab"); $GrPrtLF(acEff);};
+		if (ac ==# acEff) {$GrColor("GREEN"); $GrTab("StatusTab"); $GrPrtLF(ac);};
+		$GrColor("WHITE");
+		$GrPrint("THAC0");
+		if (thac0 !=# thac0Adj) {$GrColor("ORANGE"); $GrTab("StatusTab"); $GrPrtLF(thac0Adj);};
+		if (thac0 ==# thac0Adj) {$GrColor("GREEN"); $GrTab("StatusTab"); $GrPrtLF(thac0);};
+		return;
+	};
+
+$GrMoveTo("LeftCol");
+$GrFormat("SL");
+$GrColor("YELLOW");
+$GrPrtLF($UpCase(name));
+$GrColor("WHITE");
+$GrPrint($UpCase(sex));
+$GrTab("StatusTab");
+$GrColor("GREEN");
+$GrPrint(age);
+$GrColor("WHITE");
+$GrPrtLF(" YEARS");
+$GrPrtLF(alignName);
+$GrPrtLF($UpCase(class));
+if (cbnCount ==# 3)
+	{
+		$GrPrint("LEVEL/XP " + lvl + "/" + xp);
+		$GrPrint(" " + lvl2 + "/" + xp2);
+		$GrPrtLF(" " + lvl3 + "/" + xp3);
+	};
+if (cbnCount ==# 2 && cbnList != "-?-?-")
+	{
+		$GrPrint("LEVEL/XP " + lvl + "/" + xp);
+		$GrPrtLF(" " + lvl2 + "/" + xp2);
+	};
+if (cbnCount ==# 1)
+	{
+		$GrPrtLF("LEVEL/XP " + lvl + "/" + xp);
+	};
+$GrMark("Level");
+
+$GrMoveTo("RightCol");
+$GrColor("WHITE");
+$GrPrint("STATUS");
+if (status >=# 9) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("DYING");};
+if (status ==# 8) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("RUNNING");};
+if (status ==# 7) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("TEMPGONE");};
+if (status ==# 6) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("ANIMATED");};
+if (status ==# 5) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("GONE");};
+if (status ==# 4) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("PETRIFIED");};
+if (status ==# 3) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("FLED");};
+if (status ==# 2) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrtLF("DEAD");};
+if (status ==# 1) {$GrColor("ORANGE"); $GrTab("StatusTab"); $GrPrtLF("UNCONSCIOUS");};
+if (status ==# 0) {$GrColor("GREEN"); $GrTab("StatusTab"); $GrPrtLF("OKAY");};
+$GrColor("WHITE");
+$GrPrint("HIT POINTS");
+if (hp <=# 0) {$GrColor("RED"); $GrTab("StatusTab"); $GrPrint(hp);};
+if ((hp >=# 1) && (hp <# maxHp)) {$GrColor("ORANGE"); $GrTab("StatusTab"); $GrPrint(hp);};
+if (hp ==# maxHp) {$GrColor("GREEN"); $GrTab("StatusTab"); $GrPrint(hp);};
+$GrColor("GREEN");
+$GrPrtLF("/" + maxHp);
+$GrColor("WHITE");
+$GrPrtLF($UpCase(race));
+$GrColor("GREEN");
+$GrPrint(weight);
+$GrColor("WHITE");
+$GrPrint(" LBS");
+$GrColor("GREEN");
+$GrTab("StatusTab");
+$GrPrint(height /# 12);
+$GrColor("WHITE");
+$GrPrint("'");
+$GrColor("GREEN");
+$GrPrint(height %# 12);
+$GrColor("WHITE");
+$GrPrtLF("\"");
+$GrMoveTo("Level");
+$GrMove("TextHeight"); 
+$GrColor("WHITE");
+$GrMark("Strength");
+$GrPrtLF("STR");
+$GrPrtLF("INT");
+$GrPrtLF("WIS");
+$GrPrtLF("DEX");
+$GrPrtLF("CON");
+$GrPrtLF("CHA");
+$GrMark("Armor");
+$GrMoveTo("Strength");
+$GrMove("Ability");
+$GrColor("GREEN");
+if (strMod >=# 1){$GrPrtLF(str + "(" + strMod + ")");}
+$ELSE{$GrPrtLF(str);};
+$GrPrtLF(int);
+$GrPrtLF(wis);
+$GrPrtLF(dex);
+$GrPrtLF(con);
+$GrPrtLF(cha);
+
+$GrMoveTo("Armor");
+$GrMove("TextHeight"); 
+$GrColor("WHITE");
+$GrPrint("ARMOR CLASS");
+if (ac !=# acEff) {$GrColor("ORANGE"); $GrTab("StatusTab"); $GrPrtLF(acEff);}
+$ELSE {$GrColor("GREEN"); $GrTab("StatusTab"); $GrPrtLF(ac);};
+$GrColor("WHITE");
+$GrPrint("THAC0");
+if (thac0 !=# thac0Adj) {$GrColor("ORANGE"); $GrTab("StatusTab"); $GrPrtLF(thac0Adj);}
+$ELSE {$GrColor("GREEN"); $GrTab("StatusTab"); $GrPrtLF(thac0);};
+$GrColor("WHITE");
+$GrPrint("DAMAGE");
+$GrColor("GREEN");
+$GrTab("StatusTab");
+if (wpn == ""){$GrPrtLF("1D2+" + dmgBns);};
+if (wpn != "") {$GrPrtLF(dmg1 + "d" + dmg2 + "+" + (dmgBns +# dmgPlus +# dmg3));};
+$GrColor("WHITE");
+$GrMove("TextHeight"); 
+
+if ((wpn == "") && (shield == "") && (armor == "")){$GrPrtLF("NONE");};
+if (wpn != ""){$GrPrtLF($UpCase($DAT_Item_IDName(wpn)));};
+if (shield != ""){$GrPrtLF($UpCase($DAT_Item_IDName(shield)));};
+if (armor != ""){$GrPrtLF($UpCase($DAT_Item_IDName(armor)));};
+$GrSet("Encumbrance", "RightCol", "Armor");
+$GrMoveTo("Encumbrance");
+$GrMove("TextHeight");
+$GrColor("WHITE");
+$GrPrint("ENCUMBRANCE");
+$GrColor("GREEN");
+$GrTab("EncumbTab");
+$GrPrtLF(enc);
+$GrColor("WHITE");
+$GrPrint("MOVEMENT");
+$GrColor("GREEN");
+$GrTab("EncumbTab");
+$GrPrtLF(mvmt);
+
+skilled = $GET_CHARACTER_SA($CharacterContext(),"class_ThievingSkills");
+if (skilled != "-?-?-")
+	{
+		$GrMoveTo("Skills");
+		$GrColor("WHITE");
+		$GrPrtLF("SKILLS");
+		$GrMark("Pick");
+		$GrPrtLF("Pick Pockets");
+		$GrPrtLF("Open Locks");
+		$GrPrtLF("Find Traps");
+		$GrPrtLF("Move Silently");
+		$GrPrtLF("Hide in Shadows");
+		$GrPrtLF("Hear Noise");
+		$GrPrtLF("Climb Walls");
+		$GrPrtLF("Read Languages");
+		$GrMoveTo("Pick");
+		$GrMove("SkillsTab");
+		$GrColor("GREEN");
+		$GrPrtLF($SkillAdj($CharacterContext(),"PickPockets","","F",""));
+		$GrPrtLF($SkillAdj($CharacterContext(),"OpenLocks","","F",""));
+		$GrPrtLF($SkillAdj($CharacterContext(),"FindTraps","","F",""));
+		$GrPrtLF($SkillAdj($CharacterContext(),"MoveSilent","","F",""));
+		$GrPrtLF($SkillAdj($CharacterContext(),"HideInShadows","","F",""));
+		$GrPrtLF($SkillAdj($CharacterContext(),"HearNoise","","F",""));
+		$GrPrtLF($SkillAdj($CharacterContext(),"ClimbWalls","","F",""));
+		$GrPrtLF($SkillAdj($CharacterContext(),"ReadLanguages","","F",""));
+	};
+
+//$GrMoveTo("ManaPool");
+//$GrColor("GREEN");$GrPrint("Mana Pool ");$GrColor("YELLOW");$GrPrint(mpc);$GrColor("GREEN");$GrPrint(" / ");$GrColor("YELLOW");$GrPrtLF(mp);
 \(END)
 
-]]></script>
-</asl>
-</item>
-<item>
-<name>baseclassWizard</name>
-<asl>
-<script name="IsBaseclassAllowed"><![CDATA[$VAR par5;
--par5 = $GET_HOOK_PARAM(5);
--$IF (par5 != "M"){$RETURN "N";};
+]]>
+      </script>
+    </asl>
+  </item>
+
+  <item>
+    <name>Global_Transfer</name>
+    <asl>
+      <script name="EachPartyMember">
+        <![CDATA[$ForEachPossession($CharacterContext(), "item_DrowEquipment");
+return "1";
+]]>
+      </script>
+      <script name="TransferModule">
+        <![CDATA[$ForEachPartyMember("Global_Transfer", "EachPartyMember");
+if ($GET_HOOK_PARAM(5) ==# "1"){$SET_HOOK_PARAM(6,"Your drow equipment dissolves.");};
+return;
 \(END)
 
-]]></script>
-</asl>
-</item>
-<item>
-<name>casterLevel</name>
-<asl>
-<script name="SpellCasterLevel"><![CDATA[$VAR atk; // attacker
--$VAR nom;
--$VAR list;
--$VAR cls; // class of spell caster
--$VAR adj; // level modifier
--$VAR lvl; // level
--atk = $IndexOf($AttackerContext());
--nom = $GET_CHAR_NAME(atk);
--list = $SA_PARAM_GET();
--cls = $DelimitedStringSubstring(list,0);
--adj = $DelimitedStringSubstring(list,1);
--lvl = $GET_CHAR_Lvl(atk,cls) -# adj;
--$IF (cls == "monster"){$RETURN $GET_MONSTERTYPE_SA(nom,"monsterLevel");};
--$IF (cls == "item"){$RETURN adj;}
--$ELSE {$RETURN lvl;};
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>ChangeClassAssassin</name>
-<asl>
-<script name="CanChangeFromClass"><![CDATA[$RETURN "Y";
-]]></script><script name="CanChangeToClass"><![CDATA[$VAR me; $VAR align;
--me = $IndexOf($CharacterContext());
--align = $GET_CHAR_ALIGNMENT(me);
--$IF (align >=# 6) {$RETURN "Y";};
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>ChangeClassCleric</name>
-<asl>
-<script name="CanChangeFromClass"><![CDATA[$VAR me; $VAR WIS;
--me = $IndexOf($CharacterContext());
--WIS = $GET_CHAR_LIMITED_WIS(me);
--$IF (WIS >=# 15) {$RETURN "Y";};
-]]></script><script name="CanChangeToClass"><![CDATA[$VAR me; $VAR WIS;
--me = $IndexOf($CharacterContext());
--WIS = $GET_CHAR_LIMITED_WIS(me);
--$IF (WIS >=# 17) {$RETURN "Y";};
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>ChangeClassDruid</name>
-<asl>
-<script name="CanChangeFromClass"><![CDATA[$VAR me; $VAR WIS; $VAR CHA;
--me = $IndexOf($CharacterContext());
--WIS = $GET_CHAR_LIMITED_WIS(me);
--CHA = $GET_CHAR_LIMITED_CHA(me);
--$IF ((WIS >=# 15) && (CHA >=# 15)) {$RETURN "Y";};
-]]></script><script name="CanChangeToClass"><![CDATA[$VAR me; $VAR WIS; $VAR CHA; $VAR align;
--me = $IndexOf($CharacterContext());
--WIS = $GET_CHAR_LIMITED_WIS(me);
--CHA = $GET_CHAR_LIMITED_CHA(me);
--align = $GET_CHAR_ALIGNMENT(me);
--$IF ((WIS >=# 15) && (CHA >=# 17) && (align ==# 4)) {$RETURN "Y";};
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>ChangeClassFighter</name>
-<asl>
-<script name="CanChangeFromClass"><![CDATA[$VAR me; $VAR STR;
--me = $IndexOf($CharacterContext());
--STR = $GET_CHAR_LIMITED_STR(me);
--$IF (STR >=# 15) {$RETURN "Y";};
-]]></script><script name="CanChangeToClass"><![CDATA[$VAR me; $VAR STR;
--me = $IndexOf($CharacterContext());
--STR = $GET_CHAR_LIMITED_STR(me);
--$IF (STR >=# 17) {$RETURN "Y";};
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>ChangeClassMagicUser</name>
-<asl>
-<script name="CanChangeFromClass"><![CDATA[$VAR me; $VAR INT;
--me = $IndexOf($CharacterContext());
--INT = $GET_CHAR_LIMITED_INT(me);
--$IF (INT >=# 15) {$RETURN "Y";};
-]]></script><script name="CanChangeToClass"><![CDATA[$VAR me; $VAR INT;
--me = $IndexOf($CharacterContext());
--INT = $GET_CHAR_LIMITED_INT(me);
--$IF (INT >=# 17) {$RETURN "Y";};
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>ChangeClassPaladin</name>
-<asl>
-<script name="CanChangeFromClass"><![CDATA[$VAR me; $VAR STR; $VAR WIS;
--me = $IndexOf($CharacterContext());
--STR = $GET_CHAR_LIMITED_STR(me);
--WIS = $GET_CHAR_LIMITED_WIS(me);
--$IF ((STR >=# 15) && (WIS >=# 15)) {$RETURN "Y";};
-]]></script><script name="CanChangeToClass"><![CDATA[$VAR me; $VAR STR; $VAR WIS; $VAR CHA; $VAR INT; $VAR CON; $VAR align;
--me = $IndexOf($CharacterContext());
--STR = $GET_CHAR_LIMITED_STR(me);
--WIS = $GET_CHAR_LIMITED_WIS(me);
--CHA = $GET_CHAR_LIMITED_CHA(me);
--INT = $GET_CHAR_LIMITED_INT(me);
--CON = $GET_CHAR_LIMITED_CON(me);
--align = $GET_CHAR_ALIGNMENT(me);
--$DEBUG("paladin align= "+align);
--$IF ((STR >=# 17) && (WIS >=# 17) && (CHA >=# 17) && (INT >=# 9) && (CON >=# 9) && (align ==# 0)) {$RETURN "Y";};
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>ChangeClassRanger</name>
-<asl>
-<script name="CanChangeFromClass"><![CDATA[$VAR me; $VAR STR; $VAR INT; $VAR WIS;
--me = $IndexOf($CharacterContext());
--STR = $GET_CHAR_LIMITED_STR(me);
--INT = $GET_CHAR_LIMITED_INT(me);
--WIS = $GET_CHAR_LIMITED_WIS(me);
--$IF ((STR >=# 15) && (INT >=# 15) && (WIS >=# 15)) {$RETURN "Y";};
-]]></script><script name="CanChangeToClass"><![CDATA[$VAR me; $VAR STR; $VAR INT; $VAR WIS; $VAR CON; $VAR align;
--me = $IndexOf($CharacterContext());
--STR = $GET_CHAR_LIMITED_STR(me);
--INT = $GET_CHAR_LIMITED_INT(me);
--WIS = $GET_CHAR_LIMITED_WIS(me);
--CON = $GET_CHAR_LIMITED_CON(me);
--align = $GET_CHAR_ALIGNMENT(me);
--$IF ((STR >=# 17) && (INT >=# 17) && (WIS >=# 17) && (WIS >=# 14) && (align <=# 2)) {$RETURN "Y";};
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>ChangeClassThief</name>
-<asl>
-<script name="CanChangeFromClass"><![CDATA[$VAR me; $VAR DEX;
--me = $IndexOf($CharacterContext());
--DEX = $GET_CHAR_LIMITED_DEX(me);
--$IF (DEX >=# 15) {$RETURN "Y";};
-]]></script><script name="CanChangeToClass"><![CDATA[$VAR me; $VAR DEX; $VAR align;
--me = $IndexOf($CharacterContext());
--DEX = $GET_CHAR_LIMITED_DEX(me);
--align = $GET_CHAR_ALIGNMENT(me);
--$IF ((DEX >=# 17) && (align !=# 0)) {$RETURN "Y";};
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>class_Assassin</name>
-><asl>
-  <script name="idk">
-    <![CDATA[\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>class_baseName</name>
-<asl>
-<script name="PostCreateCharacter"><![CDATA[$SET_CHARACTER_SA($CharacterContext(), "class_baseName", $SA_PARAM_GET());
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>class_ClassSuppress</name>
-<asl>
-<script name="SelectCharacterClass"><![CDATA[$RETURN "Y";
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>class_Druid</name>
-<asl>
-<script name="CharDisplayStatus"><![CDATA[$SET_HOOK_PARAM(7,"Immune to Woodland Creature Charm");
--$SET_HOOK_PARAM(6,"");
--$RETURN 1;
-TrainingCharacter $VAR me;
--me = $IndexOf($CharacterContext());
--$IF ($GET_CHARACTER_SA($CharacterContext(),"IsDruidImmuneWoodlandCharm") != "-?-?-") {$RETURN;};
--$IF ($GET_CHAR_Lvl(me,"druid") ># 6)
--	{
--		$SET_CHARACTER_SA($CharacterContext(),"IsDruidImmuneWoodlandCharm","");
--		$SET_CHARACTER_SA($CharacterContext(),"IsDruidShapeChanger","");
--`};
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>class_MageScribe</name>
-<asl>
-<script name="CanScribeOrWhatever"><![CDATA[$SET_HOOK_PARAM(5,"SCRIBE");
--$SET_HOOK_PARAM(6,0);
-]]></script><script name="KnowableSpells"><![CDATA[$RETURN "100";
-]]></script><script name="KnowableSpellsMinMax"><![CDATA[$SET_HOOK_PARAM(7,"999999");
--$SET_HOOK_PARAM(8,"999999");
--$SET_HOOK_PARAM(9,"999999");
-]]></script><script name="AD&amp;DKnowableSpellsMinMax"><![CDATA[$VAR param;
--$VAR par4;
--$VAR par5;
--$VAR par6;
--$VAR intMin;
--$VAR intMax;
--$VAR char;
--$VAR muLvl;
--param = $SA_PARAM_GET();
--par4 = $GET_HOOK_PARAM(4);
--par4 = $GET_HOOK_PARAM(5);
--par6 = $GET_HOOK_PARAM(6);
--intMin = $IntegerTable("AbilityAdjustments","IntSpellsMin",par5 -# 9,"Index");
--intMax = $IntegerTable("AbilityAdjustments","IntSpellsMax",par5 -# 9,"Index");
--char = $IndexOf($CharacterContext());
--muLvl = $GET_CHAR_Lvl(char,param);
--$IF (par4 == "I")
--	{
--		$IF (par6 !=# 1)
--			{
--				$SET_HOOK_PARAM(7, intMin);
--				$SET_HOOK_PARAM(8, intMax);
--				$SET_HOOK_PARAM(9, "999999");
--				$RETURN "2";
--			}
--		$ELSE
--			{
--				$SET_HOOK_PARAM(7, intMin -# 2);
--				$SET_HOOK_PARAM(8, intMax -# 2);
--				$SET_HOOK_PARAM(9, "999999");
--				$RETURN "1";
--			};
--	};
--$IF (par4 == "L")
--	{
--		$IF (muLvl ># 18){muLvl = 19;};
--		$IF (par6 !=# $IntegerTable("class_Spells","magicUserTrain",muLvl -# 1,"Index"))
--			{
--				$SET_HOOK_PARAM(7, 0);
--				$SET_HOOK_PARAM(8, 0);
--				$SET_HOOK_PARAM(9, "999999");
--				$RETURN "0";
--			}
--		$ELSE
--			{
--				$SET_HOOK_PARAM(7, intMin);
--				$SET_HOOK_PARAM(8, intMax);
--				$SET_HOOK_PARAM(9, "999999");
--				$RETURN "0";
--			};
--	};
-]]></script><script name="LearnSpells"><![CDATA[$VAR spl;
--spl = $GET_SPELL_SA($SpellContext(),"spellClass");
--$IF (spl != "-?-?-"){$RETURN "100";}
--$ELSE {$RETURN "0";};
-]]></script><script name="LearnSpellsNum"><![CDATA[$VAR char;
--$VAR param;
--$VAR muLvl;
--$VAR canKnow;
--$VAR lvl;
--$VAR spl;
--$VAR sLvl;
--$VAR par4;
--$VAR par6;
--char = $IndexOf($CharacterContext());
--param = $SA_PARAM_GET();
--muLvl = $GET_CHAR_Lvl(char,param);
--canKnow = "#$2$0$0$0$0$0$0$0$0#$3$0$0$0$0$0$0$0$0#$3$2$0$0$0$0$0$0$0#$4$3$0$0$0$0$0$0$0#$4$3$2$0$0$0$0$0$0#$5$3$3$0$0$0$0$0$0#$5$4$3$2$0$0$0$0$0#$5$4$4$3$0$0$0$0$0#$5$5$4$3$2$0$0$0$0#$6$5$4$3$3$0$0$0$0#$6$6$5$4$4$0$0$0$0#$6$6$5$5$5$2$0$0$0#$7$6$6$5$5$3$0$0$0#$7$7$6$5$5$3$2$0$0#$7$7$6$6$6$4$2$0$0#$7$8$6$6$6$4$3$2$0#$7$8$6$6$6$4$4$3$0#$7$8$6$6$6$4$4$3$2#$7$8$7$6$6$4$4$4$2#$7$8$7$6$6$5$4$4$3#$7$8$7$6$6$5$5$5$3#$7$8$7$6$6$6$5$5$4#$7$8$7$6$6$6$6$6$4#$7$8$7$6$6$6$6$6$5#$7$9$7$6$6$6$6$6$6#$8$9$8$7$6$6$6$6$6#$8$9$8$7$7$7$7$6$6#$8$9$8$7$7$7$7$7$7#$9$10$9$8$7$7$7$7$7#$9$10$9$8$8$8$8$7$7#$9$10$9$8$8$8$8$8$8#$10$11$10$9$8$8$8$8$8#$10$11$10$9$9$9$9$8$8#$11$12$11$10$9$9$9$9$9#$11$12$12$11$9$9$9$9$9#$11$12$12$11$10$10$10$9$9#$11$12$12$11$10$10$10$10$10#$12$13$12$11$10$10$10$10$10#$12$13$12$11$11$11$11$10$10#$12$13$12$11$11$11$11$11$11";
--lvl = $DelimitedStringSubstring(canKnow,muLvl -# 1);
--sLvl = $IntegerTable("class_Spells","magicUserLvl",muLvl -# 1,"Index");
--par4 = $GET_HOOK_PARAM(4);
--par6 = $GET_HOOK_PARAM(6);
--$IF (par6 ==# 0) {$SET_HOOK_PARAM(8, 0); $RETURN;};
--spl = $DelimitedStringSubstring(lvl,par6 -# 1);
--$IF (par4 == "I")
--	{
--		$SET_HOOK_PARAM(8,spl);
--		$SET_HOOK_PARAM(9,1);
--		$RETURN "1";
--	};
--$IF (par4 == "L")
--	{
--		$IF (par6 <=# sLvl)
--			{
--				$SET_HOOK_PARAM(8,1);
--				$SET_HOOK_PARAM(9,1);
--			}
--		$ELSE
--			{
--				$SET_HOOK_PARAM(8,0);
--			};
--		$RETURN "1";
--	};
-]]></script><script name="ScribeOrWhatever"><![CDATA[$SET_HOOK_PARAM(5, "Scribe");
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>class_NoSpells</name>
-<asl>
-<script name="CanCastSpells"><![CDATA[$IF ($SpellContext() == "WandMagicMissile"){$RETURN;}
--$ELSE {$RETURN "N";};
-]]></script><script name="CanMemorizeSpells"><![CDATA[$RETURN "N";
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>class_Paladin</name>
-<asl>
-<script name="CanCureOrWhatever"><![CDATA[$VAR tgt;
--$VAR prevTime; // hours
--$VAR curTime;
--$VAR elapsedTime;
--$VAR waitTime;
--$VAR paladinLvl;
--$VAR paladinDiv;
--tgt = $IndexOf($CharacterContext());
--prevTime = $GET_CHARACTER_SA($CharacterContext(),"paladinCureTime");
--curTime = $GET_PARTY_TIME();
--$IF(prevTime != "-?-?-"){elapsedTime = curTime -# prevTime;}
--$ELSE{elapsedTime = 999;};
--paladinLvl = $GET_CHAR_Lvl(tgt,"paladin");
--paladinDiv = (paladinLvl +#4) /# 5;
--$IF (paladinDiv <# 1){paladinDiv = 1;};
--$IF (paladinDiv ># 8){paladinDiv = 8;};
--waitTime = 10080 /# paladinDiv;
--$IF ((elapsedTime >= 0) && (elapsedTime <# waitTime)) {$RETURN;};
--$SET_HOOK_PARAM( 5, "CURE DISEASE" );
--$SET_HOOK_PARAM( 6, "0");
-]]></script><script name="CanLayOrWhatever"><![CDATA[$VAR prevTime;
--$VAR curTime;
--$VAR elapsedTime;
--prevTime = $GET_CHARACTER_SA($CharacterContext(),"paladinLayTime");
--curTime = $GET_PARTY_TIME();
--$IF(prevTime)  // First time fudge.
--{elapsedTime = curTime -# prevTime;}
--$ELSE{elapsedTime = 999;};
--$IF ((elapsedTime >= 0) && (elapsedTime <# 1440)) {$RETURN;};
--$SET_HOOK_PARAM( 5, "LAY ON HANDS" );
--$SET_HOOK_PARAM( 6, "0");
-]]></script><script name="CreateMonsterCombatant"><![CDATA[$VAR char; // character being created
--$VAR cls;
--char = $IndexOf($CharacterContext());
--cls = $GET_CHAR_Lvl(char,"paladin");
--$IF (cls ># 0)
--	{
--		$SET_CHARACTER_SA($CharacterContext(),"IsPaladinImmuneDisease","paladin");
--		$SET_CHARACTER_SA($CharacterContext(),"IsPaladinProtectedFromEvil","paladin");
--		$SkillAdj($CharacterContext(),"Save Vs BR","paladinProtEvil","-","2");
--		$SkillAdj($CharacterContext(),"Save Vs PP","paladinProtEvil","-","2");
--		$SkillAdj($CharacterContext(),"Save Vs PPDM","paladinProtEvil","-","2");
--		$SkillAdj($CharacterContext(),"Save Vs RSW","paladinProtEvil","-","2");
--		$SkillAdj($CharacterContext(),"Save Vs SP","paladinProtEvil","-","2");
--	};
-]]></script><script name="CureOrWhatever"><![CDATA[$VAR curTime;
--curTime = $GET_PARTY_TIME();
--$SET_CHARACTER_SA($CharacterContext(),"paladinCureTime",curTime);
--$SET_HOOK_PARAM(1,"paladinCureDisease");
--$RETURN "CastSpell";
-]]></script><script name="LayOrWhatever"><![CDATA[$VAR curTime;
--curTime = $GET_PARTY_TIME();
--$SET_CHARACTER_SA($Myself(),"paladinLayTime",curTime);
--$SET_HOOK_PARAM(1,"paladinLayOnHands");
--$RETURN "CastSpell";
-]]></script><script name="PostCreateCharacter"><![CDATA[$SET_CHARACTER_SA($CharacterContext(),"IsPaladinImmuneDisease","paladin");
--$SET_CHARACTER_SA($CharacterContext(),"IsPaladinProtectedFromEvil","paladin");
--$SkillAdj($CharacterContext(),"Save Vs BR","paladinProtEvil","-","2");
--$SkillAdj($CharacterContext(),"Save Vs PP","paladinProtEvil","-","2");
--$SkillAdj($CharacterContext(),"Save Vs PPDM","paladinProtEvil","-","2");
--$SkillAdj($CharacterContext(),"Save Vs RSW","paladinProtEvil","-","2");
--$SkillAdj($CharacterContext(),"Save Vs SP","paladinProtEvil","-","2");
-]]></script><script name="SpellCasterLevel"><![CDATA[$VAR atk; // attacker
--$VAR cls;
--$VAR lvl;
--atk = $IndexOf($AttackerContext());
--cls = $GetHighestLevelBaseclass(atk);
--lvl = $GetBaseclassLevel(atk,cls);
--$RETURN lvl;
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>class_Spells</name>
-><asl>
-  <script name="idk">
-    <![CDATA[
-<magicUserLvl> = 1
--1
--2
--2
--3
--3
--4
--4
--5
--5
--5
--6
--6
--7
--7
--8
--8
--9
--9
-<magicUserTrain> = 1
--0
--2
--0
--3
--0
--4
--0
--5
--0
--0
--6
--0
--7
--0
--8
--0
--9
--0
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>class_Thief</name>
-><asl>
-  <script name="idk">
-    <![CDATA[\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>CombatPlacement</name>
-<asl>
-<script name="PlaceMonsterClose">$IF($GET_PARTY_FACING() ><![CDATA[=#2){$MonsterPlacement("FbPV500E");}
--$ELSE{$MonsterPlacement("bPV500E");};
-]]></script><script name="PlaceMonsterFar">$IF($GET_PARTY_FACING() ><![CDATA[=#2){$MonsterPlacement("17FbPV500E");}
--$ELSE{$MonsterPlacement("16FbPV500E");};
-]]></script><script name="PlaceMonsterNear">$IF($GET_PARTY_FACING() ><![CDATA[=#2){$MonsterPlacement("10FbPV500E");}
--$ELSE{$MonsterPlacement("9FbPV500E");};
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>CombatRoundStart</name>
-<asl>
-<script name="StartCombatRound"><![CDATA[$SA_PARAM_SET("0");
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>CombatRoundStart1</name>
-<asl>
-<script name="StartCombatRound"><![CDATA[$SA_PARAM_SET("-?-?-");
-\(END)
-
-]]></script>
-</asl>
-</item>
-<item>
-<name>Competing</name>
-<asl>
-<script name="AdjustInitiative"><![CDATA[$VAR me; $VAR dex; $VAR p5; $VAR list; $VAR adj; $VAR redo; $VAR un;
--me = $IndexOf($CombatantContext());
--dex = $GET_CHAR_LIMITED_DEX(me);
--p5 = $GET_HOOK_PARAM(5);
--list = "$3$3$3$3$2$1$0$0$0$0$0$0$0$0$0$0$-1$-2$-3$-3$-3$-4$-4$-4$-5$-5";
--adj = $DelimitedStringSubstring(list,dex);
--un = $GET_COMBATANT_SA($CombatantContext(),"class_Unsurprised");
--$IF ($NOT($GetCombatRound()))//Past round 1
--	{$RETURN adj;};
--$IF (p5 != 18)// adjustment for unsurprised
--	{$RETURN adj;};
--$IF (adj <# "-1" || adj ==# "-1" && un != "-?-?-")// negate surprise for -2 or better
--	{redo = 1;};
--$IF (un != "-?-?-" || dex == 16)// 50% negate surprise for -1 or ranger
--	{redo = $RANDOM(2);};
--$IF (redo ==# 1)// set new random initiative if not surprised
--	{$RETURN $RANDOM(10) +# 9 +# adj -# 18;}
--$ELSE {$RETURN 5;}; // set to surprised
-]]></script><script name="AutoAction"><![CDATA[$RETURN $GET_COMBATANT_SA($CombatantContext(),"playerControl");
-]]></script><script name="CombatMainMenu"><![CDATA[$VAR adj; $VAR count; $VAR t; $VAR tgt; $VAR bc; $VAR lvl;
--bc = $GET_CHARACTER_SA($CharacterContext(),"class_Sweep");
--$IF (bc != "-?-?-") {lvl = $GET_CHAR_Lvl($MyIndex(),bc);};
--$IF (lvl ># 1)
--	{
--		adj = $ListAdjacentCombatants($MyIndex());
--		t = 0;
--		count = $DelimitedStringCount(adj);
--		$WHILE (count >=# 0)
--			{
--				tgt = $DelimitedStringSubstring(adj,count);
--				$IF ($GET_MONSTERTYPE_SA($GET_CHAR_NAME(tgt),"monster_Swept") != "-?-?-" && $GET_CHAR_STATUS(tgt) ==# 0){t = t +# 1;};
--				count = count -# 1;
--			};
--		$IF (t ># 1)
--			{
--				$SET_HOOK_PARAM(6, "SWEEP");
--				$SET_HOOK_PARAM(7, 0);
--				$SET_COMBATANT_SA($CombatantContext(),"IsSweeping",lvl);
--			};
--	};
-]]></script><script name="DoesAttackSucceed"><![CDATA[$VAR par5;
--par5 = $GET_HOOK_PARAM(5);
--$IF (par5 ==# 20) {$RETURN "Y";};
--$IF (par5 ==# 1) {$RETURN "N";};
-]]></script><script name="FreeAttack-AttackOver"><![CDATA[$SET_HOOK_PARAM(7,"0");
--$RETURN;
-]]></script><script name="FreeAttack-CanFreeAttack"><![CDATA[$VAR rangeWpn; $VAR par8;
--rangeWpn = $GET_ITEM_SA($GET_CHAR_Ready($AttackerContext(), "WEAPON", 0),"item_CombatAim");
--par8 = $GET_HOOK_PARAM(8);
--$IF (rangeWpn != "-?-?-"){$RETURN "N";};
--$RETURN par8;
-]]></script><script name="GetNumberOfAttacks"><![CDATA[$VAR com; $VAR bc; $VAR lvl; $VAR adj; $VAR adjLvl;
--com = $IndexOf($CombatantContext());
--bc = $GET_CHARACTER_SA($CharacterContext(),"class_AttacksPerRound");
--// monk starts
--$IF ($GET_CHAR_Lvl(com,"monk") ># 0)
--	{
--		lvl = $GET_CHAR_Lvl(com,"monk");
--		$IF (lvl >=# 16) {$RETURN 4;};
--		$IF (lvl >=# 14) {$RETURN 3;};
--		$IF (lvl >=# 11) {$IF ((($GetCombatRound() +# 1) %# 2) ==# 0) {$RETURN 2;}
--						  $ELSE {$RETURN 3;};};
--		$IF (lvl >=# 9) {$RETURN 2;};
--		$IF (lvl >=# 6) {$RETURN (($GetCombatRound() +# 1) %# 2) +# 1;};
--		$IF (lvl >=# 4) {$IF ((($GetCombatRound() +# 1) %# 4) ==# 0) {$RETURN 2;};};
--// monk ends
--	};
--$IF (bc == "-?-?-") {$RETURN;};
--adj = $GET_CHARACTER_SA($CharacterContext(),"class_AttacksPerRoundAdj");
--$IF (adj != "-?-?-") {adjLvl = ($GET_CHAR_Lvl(com,bc) -# 1) /# 7;}
--$ELSE {adjLvl = 0;};
--lvl = $GET_CHAR_Lvl(com,bc) -# adjLvl;
--$IF ($GET_MONSTERTYPE_SA($MonsterTypeContext(),"monsterLevel") != "-?-?-"){$RETURN;};
--$IF (lvl >=# 13) {$RETURN 2;};
--$IF (lvl >=# 7) {$RETURN (($GetCombatRound() +# 1) %# 2) +# 1;};
-]]></script><script name="Guarding-AttackOver"><![CDATA[$RETURN;
-]]></script><script name="Guarding-BeginCombat"><![CDATA[$RETURN "N";
-]]></script><script name="Guarding-CanGuard"><![CDATA[$VAR rangeWpn;
--rangeWpn = $GET_ITEM_SA($GET_CHAR_Ready($CombatantContext(), "WEAPON",0),"item_CombatAim");
--$IF (rangeWpn != "-?-?-"){$RETURN "N";};
--$IF($GET_HOOK_PARAM(5) ==# 2){$RETURN "Y";};
-]]></script><script name="Guarding-CanGuardAttack"><![CDATA[$VAR par5;
--par5 = $GET_HOOK_PARAM(5);
--$IF ($GetCombatantState($AttackerContext()) != "ICS_Guarding"){$RETURN "N";};
--$IF (par5 ># 0){$RETURN "Y";};
-]]></script><script name="Guarding-Guard"><![CDATA[$RETURN;
-]]></script><script name="Guarding-StartOfRound"><![CDATA[$VAR par5;
--$VAR par6;
--par5 = $GET_HOOK_PARAM(5);
--par6 = $GET_HOOK_PARAM(6);
--$IF (par5 ==# 3){$SET_HOOK_PARAM(6,"G");};
-]]></script><script name="IsCombatReady"><![CDATA[$RETURN;
-]]></script><script name="OnStartCombat"><![CDATA[$VAR name; $VAR name1; $VAR me;
--$VAR lvl; $VAR lead; $VAR controlNPC;
--$VAR idx1; $VAR idx4; $VAR modCha;
--me = $IndexOf($CharacterContext());
--name = $GET_CHAR_NAME(me);
--idx1 = $NextCreatureIndex("", 1);
--idx4 = $NextCreatureIndex("", 4);
--$SET_CHARACTER_SA($CharacterContext(  ),"turnUndead","");
--$IF ($NextCreatureIndex(me -# 1, 4) == me)
--	{
--		$SET_CHARACTER_SA($CharacterContext(),"side",1);
--		$SET_CHAR_ASL(me,"side",1);
--	}
--$ELSE
--	{
--		$SET_CHARACTER_SA($CharacterContext(),"side",2);
--		$SET_CHAR_ASL(me,"side",2);
--	};
--name1 = $GET_CHAR_NAME(idx1);
--$IF (name != name1 && $GET_MONSTERTYPE_SA(name1,"range") != "-?-?-")
--	{
--		$SET_CHARACTER_SA($CharacterContext(),"range" + name1,1);
--	};
--$RUN_CHAR_SCRIPTS(me,"spawn");
--$IF ($GetCombatRound() ># 0) {$SET_COMBATANT_SA($CharacterContext(),"Summoned","spell");};
--// Paladin Leadership
--controlNPC = 0;
--$SET_CHARACTER_SA($CharacterContext(),"endControl", 1);
--lead = $GET_CHARACTER_SA($CharacterContext(),"class_Leader");
--lvl = $GET_CHAR_Lvl(me,lead);
--$IF ($InParty($CharacterContext()) != "" && lvl ># 0)
--	{
--		modCha = ($GET_CHAR_LIMITED_CHA(me) -# 13) *# 5;
--		$IF (lvl >=# 3){controlNPC = modCha +# 79;};
--		$IF (lvl ==# 2){controlNPC = modCha +# 39;};
--		$IF (lvl ==# 1){controlNPC = modCha +# 19;};
--		$SET_PARTY_ASL("controlNPC",controlNPC);
--	};
--$IF ($GET_CHARACTER_SA($CharacterContext(),"side") == 1 && $RANDOM(100) <# $GET_PARTY_ASL("controlNPC"))
--	{
--		$SET_CHARACTER_SA($CharacterContext(),"playerControl","CP");
--	};
-]]></script><script name="OnStep"><![CDATA[$VAR me;
--$VAR it;
--me = $IndexOf($CombatantContext());
--it = $NextCreatureIndex("", 1);
--$IF (it != me)
--	{
--		$SET_HOOK_PARAM(5, it);
--		$SET_HOOK_PARAM(6, me);
--		$RUN_CHAR_SCRIPTS(it,"CheckProximity");
--		$RUN_CHAR_SCRIPTS(me,"CheckProximity");
--	};
-]]></script><script name="PreStartCombat"><![CDATA[$VAR par5;
--$VAR char;
--$VAR class;
--par5 = $GET_HOOK_PARAM(5);
--char = $IndexOf($CharacterContext());
--class = $GET_CHAR_CLASS(char);
--$IF (class == "Paladin") {$RETURN par5 +# 10000;};
-]]></script><script name="StartCombatRound"><![CDATA[$RETURN;
-\(END)
-
-]]></script>
-</asl>
-</item>
+]]>
+      </script>
+    </asl>
+  </item>
+  
 </abilities>

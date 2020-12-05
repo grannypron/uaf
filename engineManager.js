@@ -5,8 +5,6 @@
  */
 
 // The lines below override LITTLE_RAN because the bit operations are causing it to crash with "float unrepresentable in integer range" in WebGL
-LITTLE_RAN.prototype.Init = function (seed) { }
-LITTLE_RAN.prototype.Random = function () { return Math.floor(Math.random() * Math.floor(1000)); }
 // I really need to make a way to do the bitwise operations so that they don't crash in WebGL
 CHARACTER.prototype.HasDeathImmunity = function () { return false; }
 

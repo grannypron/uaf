@@ -1027,6 +1027,7 @@ CHARACTER.prototype.addCharacterItem = function (itemID, qty, numCharges, id, co
         Globals.SetMiscError(miscErrorType.TooMuchWeight);
         return false;
     }
+
     if (!(this.myItems.addItem5(itemID, qty, numCharges, id, cost) >=0)) {  // PORT NOTE:  Had to add >=0 since 0 is an ok index, but is also == false
         Globals.WriteDebugString("Failed to addItem to character\n");
         return false;
@@ -1057,16 +1058,16 @@ CHARACTER.prototype.buyItem = function (itemID, type) {
 
     if (this.GetAdjStatus() != charStatusType.Okay) {
         switch (this.GetAdjStatus()) {
-            case charStatusType.Unconscious: Globals.SetMiscError(Globals.miscErrorType.UnconsciousChar); break;
-            case charStatusType.Dead: Globals.SetMiscError(Globals.miscErrorType.DeadChar); break;
-            case charStatusType.Fled: Globals.SetMiscError(Globals.miscErrorType.FledChar); break;
-            case charStatusType.Petrified: Globals.SetMiscError(Globals.miscErrorType.PetrifiedChar); break;
-            case charStatusType.Gone: Globals.SetMiscError(Globals.miscErrorType.GoneChar); break;
-            case charStatusType.Animated: Globals.SetMiscError(Globals.miscErrorType.AnimatedChar); break;
-            case charStatusType.TempGone: Globals.SetMiscError(Globals.miscErrorType.TempGoneChar); break;
-            case charStatusType.Running: Globals.SetMiscError(Globals.miscErrorType.RunningChar); break;
-            case charStatusType.Dying: Globals.SetMiscError(Globals.miscErrorType.DyingChar); break;
-            default: Globals.SetMiscError(Globals.miscErrorType.UnknownError); break;
+            case charStatusType.Unconscious: Globals.SetMiscError(miscErrorType.UnconsciousChar); break;
+            case charStatusType.Dead: Globals.SetMiscError(miscErrorType.DeadChar); break;
+            case charStatusType.Fled: Globals.SetMiscError(miscErrorType.FledChar); break;
+            case charStatusType.Petrified: Globals.SetMiscError(miscErrorType.PetrifiedChar); break;
+            case charStatusType.Gone: Globals.SetMiscError(miscErrorType.GoneChar); break;
+            case charStatusType.Animated: Globals.SetMiscError(miscErrorType.AnimatedChar); break;
+            case charStatusType.TempGone: Globals.SetMiscError(miscErrorType.TempGoneChar); break;
+            case charStatusType.Running: Globals.SetMiscError(miscErrorType.RunningChar); break;
+            case charStatusType.Dying: Globals.SetMiscError(miscErrorType.DyingChar); break;
+            default: Globals.SetMiscError(miscErrorType.UnknownError); break;
         }
         return;
     }
@@ -1078,16 +1079,16 @@ CHARACTER.prototype.buyItem = function (itemID, type) {
     var cost = this.ApplyCostFactor(cf, data.Cost);
 
     if (!this.enoughMoney(cost, 0, 0, globalData.moneyData.GetDefaultType())) {
-        Globals.SetMiscError(Globals.miscErrorType.NotEnoughMoney);
+        Globals.SetMiscError(miscErrorType.NotEnoughMoney);
         return;
     }
 
     if ((itemData.getItemEncumbrance(itemID, 1) + this.GetEncumbrance()) > this.GetAdjMaxEncumbrance())
-        Globals.SetMiscError(Globals.miscErrorType.TooMuchWeight);
+        Globals.SetMiscError(miscErrorType.TooMuchWeight);
     else {
         var bundle = Math.max(data.Bundle_Qty, 1);
         if (!this.addCharacterItem(itemID, bundle, data.Num_Charges, true, cost))
-            Globals.SetMiscError(Globals.miscErrorType.MaxItemsReached);
+            Globals.SetMiscError(miscErrorType.MaxItemsReached);
         else
             this.payForItem(cost, globalData.moneyData.GetDefaultType());
     }
@@ -1336,14 +1337,14 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
     if (IdxToUse == NO_READY_ITEM)
         return;
 
-    data = itemData.GetItemFromID(this.myItems.GetItem(IdxToUse));
+    data = this.myItems.GetItem(IdxToUse).itemID;   // PORT NOTE:  Unwrapping itemID because of ID/string differences
     if (data != null) {
         if (data.Hands_to_Use > 1)
-            myItems.UnReady(this.myItems.GetReadiedItem(Items.ShieldHand, 0));
+            this.myItems.UnReady(this.myItems.GetReadiedItem(Items.ShieldHand, 0));
     }
 
     this.ReadyWeaponScript(IdxToUse);
-    if (itemData.WpnUsesAmmo(this.myItems.GetItem(IdxToUse)))
+    if (itemData.WpnUsesAmmo(this.myItems.GetItem(IdxToUse).itemID))
         this.ReadyBestAmmo(isLargeTarget);
 };
 
@@ -1368,7 +1369,7 @@ CHARACTER.prototype.ReadyBestShield = function () {
             if (data.Location_Readied == Items.ShieldHand) {
                 var err;
                 err = this.myItems.CanReadyItem(myItems.PeekAtPos(pos), this);
-                if (err == Globals.miscErrorType.NoError) {
+                if (err == miscErrorType.NoError) {
                     if (data.Protection_Base + data.Protection_Bonus < def) {
                         def = data.Protection_Base + data.Protection_Bonus;
                         defIdx = myItems.GetKeyAt(pos);
@@ -1409,7 +1410,7 @@ CHARACTER.prototype.ReadyBestArmor = function () {
             if (data.Location_Readied == Items.BodyArmor) {
                 var err;
                 err = this.myItems.CanReadyItem(myItems.PeekAtPos(pos), this);
-                if (err == Globals.miscErrorType.NoError) {
+                if (err == miscErrorType.NoError) {
                     if (data.Protection_Base + data.Protection_Bonus < def) {
                         def = data.Protection_Base + data.Protection_Bonus;
                         defIdx = myItems.GetKeyAt(pos);
@@ -1453,7 +1454,7 @@ CHARACTER.prototype.ReadyBestAmmo = function (isLargeTarget) {
 
         var err;
         err = this.myItems.CanReadyItem(this.myItems.PeekAtPos(pos), this);
-        if ((err == Globals.miscErrorType.NoError) && ((data = itemData.GetItemFromID(this.myItems.PeekAtPos(pos).itemID)) != null)) {
+        if ((err == miscErrorType.NoError) && ((data = itemData.GetItemFromID(this.myItems.PeekAtPos(pos).itemID)) != null)) {
             if ((data.Location_Readied == Items.AmmoQuiver) && (data.Wpn_Type == Items.Ammo)) {
                 if (data.Protection_Base + data.Protection_Bonus <= def) {
                     def = data.Protection_Base + data.Protection_Bonus;
@@ -1479,11 +1480,11 @@ CHARACTER.prototype.ReadyBestAmmo = function (isLargeTarget) {
                 }
             }
         }
-        this.myItems.GetNext(pos);
+        pos = this.myItems.NextPos(pos);
     }
 
     // clear miscError that may have been set by CanReady()
-    Globals.SetMiscError(Globals.miscErrorType.NoError);
+    Globals.SetMiscError(miscErrorType.NoError);
 
     // for now, choose item with most damage
     if (dmgIdx != NO_READY_ITEM) {
@@ -1562,7 +1563,6 @@ CHARACTER.prototype.ReadyItemByLocation = function (rdyLoc, index, specAbsOK) {
 };
 
 CHARACTER.prototype.UnreadyItemByLocation = function (rdyLoc, specAbsOK) {
-    //int myitemidx = myItems.GetReady(loctype);
     var myitemidx = this.myItems.GetReadiedItem(rdyLoc, 0);
 
     var pData = itemData.GetItemFromID(this.myItems.GetItem(myitemidx));
@@ -2137,7 +2137,7 @@ CHARACTER.prototype.GetAdjMaxMovement = function (flags, comment) {
             };
             scriptContext.Clear();
             RunTimeIF.ClearCharContext();
-            if ((minmax[0] == -1) && (minmax[1] == 0x7fffffff)) return this.GetMaxMovement();
+            if ((minmax[0] == -1) && (minmax[1] == UAFUtil.ByteFromHexString("0x7fffffff"))) return this.GetMaxMovement();
             else return minmax[1];
         }
     }
@@ -2462,7 +2462,7 @@ CHARACTER.prototype.determineNbrAttacks = function () {
         this.SetNbrAttacks(monsterData.GetMonsterNbrAttacks(this.monsterID));
 
     if (this.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM) {
-        var wpnAttacks = itemData.GetItemFromIDROF(this.myItems.GetItem(this.myItems.GetReadiedItem(Items.WeaponHand, 0)));
+        var wpnAttacks = itemData.GetItemFromID(this.myItems.GetAtPos(this.myItems.GetReadiedItem(Items.WeaponHand, 0)).itemID).ROF_Per_Round;   // PORT NOTE: Slight change here to use a different accessor
         if (wpnAttacks < 1.0) wpnAttacks = 1.0;
         this.SetNbrAttacks(wpnAttacks);
         // check for sweeps
@@ -2983,7 +2983,7 @@ CHARACTER.prototype.DetermineNewCharMaxHitPoints = function (randomSeed) {
             }
         }
     }
-    this.maxHitPoints = max(1, totalHP);
+    this.maxHitPoints = Math.max(1, totalHP);
 }
 
 CHARACTER.prototype.SetStatus = function (val) {
@@ -3690,9 +3690,9 @@ CHARACTER.prototype.GetAdjSize = function (flags) {
     if ((val < 0) || (val >= GameRules.NUM_SIZE_TYPES))
         val = this.GetSize();
     // lookup sa's Enlarge and Reduce
-    if (this.GetAdjSpecAb(SPECAB.SA_Enlarge))
+    if (this.GetAdjSpecAb(SPECAB.SA_Enlarge).returnVal)
         val++;
-    if (this.GetAdjSpecAb(SPECAB.SA_Reduce))
+    if (this.GetAdjSpecAb(SPECAB.SA_Reduce).returnVal)
         val--;
 
     if (val < creatureSizeType.Small) val = creatureSizeType.Small;
@@ -3920,7 +3920,7 @@ CHARACTER.prototype.SetHitPoints = function (val) {
     // are we healing this character?
     if ((val > 0) && (val > this.hitPoints)) {
         // disallow if diseased
-        if (this.GetAdjSpecAb(SA_Diseased)) {
+        if (this.GetAdjSpecAb(SA_Diseased).returnVal) {
             if (val > 1)
                 val = 1;
         }
@@ -3983,7 +3983,7 @@ CHARACTER.prototype.HasDeathImmunity = function () {
         return ((monsterData.GetMonsterImmunityFlags(this.monsterID) & MonsterImmunityType.ImmuneDeath) == MonsterImmunityType.ImmuneDeath);
     }
 
-    return FALSE;
+    return false;
 }
 
 CHARACTER.prototype.GetAdjMaxEncumbrance = function (flags) {
@@ -4197,6 +4197,21 @@ CHARACTER.prototype.getCharExpWorth = function () {
     return totexp;
 }
 
+CHARACTER.prototype.GetCurrLevel = function (baseclassID) {
+    var pStats;
+    pStats = this.PeekBaseclassStats(baseclassID);
+    if (pStats == null) return -1;
+    if (pStats.previousLevel > 0) return 0;
+    return pStats.currentLevel;
+}
+
+CHARACTER.prototype.IsAnimal = function () {
+    if (this.GetType() == MONSTER_TYPE) {
+        return ((monsterData.GetMonsterFormFlags(this.monsterID) & MonsterFormType.FormAnimal) == MonsterFormType.FormAnimal);
+    }
+
+    return false;
+}
 
 
 CHARACTER.prototype.SetLevel = function (lvl) { throw "todo"; }
@@ -4288,13 +4303,11 @@ CHARACTER.prototype.SetReadyToTrain = function (enable) { throw "todo"; }
 CHARACTER.prototype.IsAbleToTrade = function () { throw "todo"; }
 CHARACTER.prototype.SetAbleToTrade = function (enable) { throw "todo"; }
 CHARACTER.prototype.ClearLevels = function () { throw "todo"; }
-CHARACTER.prototype.GetCurrLevel = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.GetAllowedLevel = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.GetAdjBaseclassExp = function (baseclassID, flags) { if (!flags) { flags = DEFAULT_SPELL_EFFECT_FLAGS; } throw "todo"; };
 CHARACTER.prototype.GetBaseclassExp = function (baseclassID) { throw "todo"; }
 CHARACTER.prototype.SetSpecAb = function (sa, enable, flags) { throw "todo"; }
 CHARACTER.prototype.IsMammal = function () { throw "todo"; }
-CHARACTER.prototype.IsAnimal = function () { throw "todo"; }
 CHARACTER.prototype.IsSnake = function () { throw "todo"; }
 CHARACTER.prototype.IsGiant = function () { throw "todo"; }
 CHARACTER.prototype.HasDwarfTHAC0Penalty = function () { throw "todo"; }

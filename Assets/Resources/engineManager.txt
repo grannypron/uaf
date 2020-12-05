@@ -5,10 +5,6 @@
  */
 
 // The lines below override LITTLE_RAN because the bit operations are causing it to crash with "float unrepresentable in integer range" in WebGL
-LITTLE_RAN.prototype.Init = function (seed) { }
-LITTLE_RAN.prototype.Random = function () { return Math.floor(Math.random() * Math.floor(1000)); }
-// I really need to make a way to do the bitwise operations so that they don't crash in WebGL
-CHARACTER.prototype.HasDeathImmunity = function () { return false; }
 
 Globals.SPECAB_HACKS = {};
 // This stops free-attacks like when the player moves away from the monsters or vice-versa
@@ -328,6 +324,8 @@ combatData.InitCombatData(combatEventData);
 combatData.m_hCharMoveSound = "sound_CharMove";
 globalData.sounds.hCharHit = "sound_Hit";
 globalData.sounds.hCharMiss = "sound_Miss";
+itemData.GetItemFromID("Long Sword").hHitSound = "sound_Hit";
+itemData.GetItemFromID("Long Sword").hMissSound = "sound_Miss";
 
 cWarrior = combatData.m_aCombatants[0];
 

@@ -1,5 +1,4 @@
 ﻿- MacOS build does nothing much - try building on a Linux VM
-- Find a general way to handle bitwise operations in JavaScript on WebGL build so that we don't get the "float unrepresentable in integer range" error
 - Reduce startup time - It is mostly happening in the item library - I cut off a second by using the protobuf serialization routine, but a lot of time is being taken in ITEM_DATA_TYPE.LoadFromLoader - try moving itemData into the C# scope and loading it there and returning it to the engine.  Will have to deal with ExpandoObject
 - Possible bug: randomizeAndPlaceMonsters could put two monsters in the same spot - check to see if the mosnterLocations.Get() is already set before using it - Also they can spawn in the same place as the player!
 - Support diagonal moves

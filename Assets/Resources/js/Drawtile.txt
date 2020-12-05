@@ -166,7 +166,7 @@ Drawtile.prototype.GenerateIndoorCombatMap = function (partyX, partyY, dir) {
             this.CurrentTileData[this.CurrentTileCount] = new TILE_DATA();
             this.CurrentTileData[this.CurrentTileCount].tile_posy = j;
             this.CurrentTileData[this.CurrentTileCount].tile_posx = i;
-            this.CurrentTileData[this.CurrentTileCount].tile_invisible = 0;
+            this.CurrentTileData[this.CurrentTileCount].tile_invisible = 1;         // I'm not so sure about this, but I looked at the value at runtime and it was indeed set to 1 for "empty" tiles.
             this.CurrentTileData[this.CurrentTileCount].tile_passable = 1;
             this.CurrentTileData[this.CurrentTileCount].tile_enabled = 1;
             this.terrain[i][j].cell = this.CurrentTileCount;
@@ -1174,8 +1174,9 @@ Drawtile.prototype.HaveLineOfSight = function(x0, y0, x1, y1, reflects) {
                 // process pixel
                 if (!(x == x0 && y == y0) && !(x == x1 && y == y1)) {
                     var result = Drawtile.HaveVisibility(y, x, reflects); reflects = result.reflects;
-                    if (!result.returnVal)
+                    if (!result.returnVal) {
                         return false;
+                    }
                 }
 
                 // take Bresenham step
@@ -1188,8 +1189,9 @@ Drawtile.prototype.HaveLineOfSight = function(x0, y0, x1, y1, reflects) {
                 // process pixel
                 if (!(x == x0 && y == y0) && !(x == x1 && y == y1)) {
                     var result = Drawtile.HaveVisibility(y, x, reflects); reflects = result.reflects
-                    if (!result.returnVal)
+                    if (!result.returnVal) {
                         return false;
+                    }
                 }
 
                 // take Bresenham step

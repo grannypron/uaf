@@ -422,7 +422,7 @@ public class CombatSceneEvents : MonoBehaviour, IUIListener
             case "PlaySound":
                 Debug.Log("----PlaySound");
                 string soundName = data.ToString();
-                //playSound(soundName);
+                playSound(soundName);
                 Debug.Log("----PlaySound Done");
                 break;
             default:

@@ -1,4 +1,7 @@
 ﻿function GPDL() {
+    this.DBG_messageBox	   = 1;
+    this.DBG_functionTrace = 2;
+
     this.m_program = null;
     this.m_globals = new GPDL_GLOBALS();
     this.m_index = new INDEX();
@@ -27,6 +30,11 @@
 }
 
 GPDL.prototype.ExecuteScript = function (code, entryPointOrdinal) {
+
+    var RETURN_VAL = null;
+    eval(code);
+    return RETURN_VAL;   // This is set in the special ability code (or not)
+    /*
     var status;
     var numEntry = 0;
     var binaryCode;
@@ -57,6 +65,7 @@ GPDL.prototype.ExecuteScript = function (code, entryPointOrdinal) {
     if (this.status != GPDL_STATE.GPDL_IDLE) return this.m_false;
     this.m_popString1();
     return this.m_string1;
+    */
 }
 
 GPDL.prototype.m_pushRP = function(n) {
@@ -84,150 +93,136 @@ GPDL.prototype.SetIntermediateResult = function (val) {
 GPDL.prototype.m_interpret = function() {
     var i = 0;
     this.m_interpStatus = GPDL_STATE.GPDL_OK;
-/*
- *  while (m_interpStatus == GPDL_OK) {
-        m_interpretCount++;
-        if (m_interpretCount > 1000000) {
-            m_interpStatus = GPDL_EXCESSCPU;
-            return m_interpStatus;
+
+    while (this.m_interpStatus == GPDL_STATE.GPDL_OK) {
+        this.m_interpretCount++;
+        if (this.m_interpretCount > 1000000) {
+            this.m_interpStatus = GPDL_STATE.GPDL_EXCESSCPU;
+            return this.m_interpStatus;
         };
-        m_executionAddress = m_PC; // for error printout
+        this.m_executionAddress = this.m_PC; // for error printout
         // 19 Apr PRS m_bincode=m_code.peek(m_PC++);
-        m_bincode = Peek(m_PC++);
-        m_opcode = (m_bincode >> 24) & 0xff;
-        m_subop = m_bincode & 0xffffff; // Also might be an address
-        switch (m_opcode) {
-            case BINOP_LOCALS:
+        /*
+        this.m_bincode = GPDL_GLOBALS.Peek(this.m_PC++);
+        this.m_opcode = (this.m_bincode >> 24) & 0xff;
+        this.m_subop = m_bincode & 0xffffff; // Also might be an address
+        switch (this.m_opcode) {
+            case BINOPS.BINOP_LOCALS:
                 for (i = 0; i < m_subop; i++)
-                    m_pushSP(m_false);
+                    this.m_pushSP(m_false);
                 break;
-            case BINOP_JUMP:
-                m_PC = m_subop;
+            case BINOPS.BINOP_JUMP:
+                this.m_PC = m_subop;
                 break;
-            case BINOP_ReferenceGLOBAL:
+            case BINOPS.BINOP_ReferenceGLOBAL:
                 {
-                    int index;
-                    index = m_subop;
+                    var index = 0;
+                    index = this.m_subop;
                     if (index & 0x800000) {
-                        m_globals.Set(index & 0x7fffff, m_popSP());
+                        this.m_globals.Set(index & 0x7fffff, this.m_popSP());
                     }
                     else {
-                        m_pushSP(m_globals.peek(index));
+                        this.m_pushSP(this.m_globals.peek(index));
                     };
                 };
                 break;
-            case BINOP_FETCHTEXT:
-                m_string1 = ((char *)m_program) + (m_bincode & 0xffffff);
-                m_pushString1();
+            case BINOPS.BINOP_FETCHTEXT:
+                this.m_string1 = (""+this.m_program) + (this.m_bincode & 0xffffff);
+                this.m_pushString1();
                 break;
-            case BINOP_CALL:
-                m_pushPC();
-                m_pushFP();
-                m_FP = m_SP;
-                m_PC = m_subop;
-                if (m_debugLevel & DBG_functionTrace) {
-                    int openParenLoc, LSP;
-                    unsigned int numPar;
-                    m_string1 = m_globals.peek(Peek(m_PC) & 0xffffff);
-                    openParenLoc = m_string1.Find('(');
+            case BINOPS.BINOP_CALL:
+                this.m_pushPC();
+                this.m_pushFP();
+                this.m_FP = this.m_SP;
+                this.m_PC = this.m_subop;
+                if (this.m_debugLevel & this.DBG_functionTrace) {
+                    var openParenLoc = 0, LSP = 0;
+                    var numPar = 0;
+                    this.m_string1 = this.m_globals.peek(GPDL_GLOBALS.Peek(this.m_PC) & 0xffffff);
+                    openParenLoc = this.m_string1.Find('(');
                     if (openParenLoc < 0) {
-                        m_errorLog.log("Function has illegal entry");
-                        INTERP_RETURN(GPDL_ILLFUNC);
+                        this.m_errorLog.log("Function has illegal entry");
+                        this.INTERP_RETURN(GPDL_STATE.GPDL_ILLFUNC);
                     };
-                    m_string2.Format("0x%06x call ", m_returnStack[m_RP + 1] - 1);
-                    m_string2 += m_string1.Left(openParenLoc + 1);
+                    this.m_string2.Format("0x%06x call ", m_returnStack[m_RP + 1] - 1);
+                    this.m_string2 += m_string1.Left(openParenLoc + 1);
                     numPar = 0xffffff;
-                    sscanf((LPCTSTR)m_string1 + openParenLoc + 1, "%d",& numPar);
+                    var parseValue = parseInt(m_string1 + openParenLoc + 1); if (!isNaN(parseValue)) { numPar = parseValue; }
                     if (numPar > 10) numPar = 10;
-                    LSP = m_SP;
-                    for (unsigned int j = 0; j < numPar; LSP++, j++)
+                    LSP = this.m_SP;
+                    for (var j = 0; j < numPar; LSP++, j++)
                     {
-                        m_string1 = m_dataStack[LSP];
-                        if (m_string1.GetLength() > 20) m_string1 = m_string1.Left(20);
-                        m_string2 += CString("\"") + m_string1 + CString("\"");
-                        if (j != numPar - 1) m_string2 += ',';
+                        this.m_string1 = this.m_dataStack[LSP];
+                        if (this.m_string1.GetLength() > 20) this.m_string1 = this.m_string1.Left(20);
+                        this.m_string2 += "\"" + this.m_string1 + "\"";
+                        if (j != numPar - 1) this.m_string2 += ',';
                     };
-                    m_string2 += CString(")");
-                    m_errorLog.log(m_string2);
+                    this.m_string2 += ")";
+                    this.m_errorLog.log(m_string2);
                 };
-                m_PC++; // skip over entry information.
+                this.m_PC++; // skip over entry information.
                 break;
-            case BINOP_FETCH_FP:
-                m_subop -= (m_subop & 0x800000) << 1;
-                m_pushSP(m_dataStack[m_FP + m_subop]);
+            case BINOPS.BINOP_FETCH_FP:
+                this.m_subop -= (this.m_subop & 0x800000) << 1;
+                this.m_pushSP(this.m_dataStack[this.m_FP + this.m_subop]);
                 break;
-            case BINOP_JUMPFALSE:
-                m_popString1();
-                if ((m_string1 == m_false) || (m_string1 == "0")) m_PC = m_subop;
+            case BINOPS.BINOP_JUMPFALSE:
+                this.m_popString1();
+                if ((this.m_string1 == m_false) || (this.m_string1 == "0")) this.m_PC = this.m_subop;
                 break;
-            case BINOP_RETURN:
-                m_SP = m_FP;
-                m_popFP();
-                m_popPC();
-                for (; m_subop & 0xfff; m_subop--) m_popString1();
+            case BINOPS.BINOP_RETURN:
+                this.m_SP = this.m_FP;
+                this.m_popFP();
+                this.m_popPC();
+                for (; this.m_subop & 0xfff; this.m_subop--) this.m_popString1();
                 // Leave the parameters behind.
-                if (m_PC == 0xffffffff) {
-                    m_state = GPDL_IDLE;
-                    m_discourseText.Clear();
-                    INTERP_RETURN(GPDL_IDLE);
+                if (this.m_PC == 0xffffffff) {
+                    this.m_state = GPDL_STATE.GPDL_IDLE;
+                    this.m_discourseText.Clear();
+                    this.INTERP_RETURN(GPDL_STATE.GPDL_IDLE);
                 };
-                if (m_debugLevel & DBG_functionTrace) {
-                    m_string1 = "          return ";
-                    m_string1 += CString("\"") + m_dataStack[m_SP] + CString("\"");
-                    m_errorLog.log(m_string1);
+                if (this.m_debugLevel & this.DBG_functionTrace) {
+                    this.m_string1 = "          return ";
+                    this.m_string1 += "\"" + this.m_dataStack[this.m_SP] + "\"";
+                    this.m_errorLog.log(this.m_string1);
                 };
                 break;
-            case BINOP_STORE_FP:
-                m_subop -= (m_subop & 0x800000) << 1;
-                m_dataStack[m_FP + m_subop] = m_popSP();
+            case BINOPS.BINOP_STORE_FP:
+                this.m_subop -= (this.m_subop & 0x800000) << 1;
+                this.m_dataStack[this.m_FP + this.m_subop] = this.m_popSP();
                 break;
-            case BINOP_SUBOP:
-                switch (m_subop) {
-                    case SUBOP_AddCombatant:
-                        m_popInteger1();  // Friendly flag
-                        m_popString1();  // monster name
-#ifdef UAFEngine
-                        combatData.AddMonsterToCombatants(m_string1, m_Integer1);
-#endif
-                        m_pushSP(m_false);
+            case BINOPS.BINOP_SUBOP:
+                switch (this.m_subop) {
+                    case SUBOPS.SUBOP_AddCombatant:
+                        this.m_popInteger1();  // Friendly flag
+                        this.m_popString1();  // monster name
+                        this.m_pushSP(m_false);
                         break;
-                    case SUBOP_ToHitComputation_Roll:
-                        m_Integer1 = 10;
-#ifdef UAFEngine
-                        if (pScriptContext -> pToHitComputationContext != NULL) {
-                            m_Integer1 = pScriptContext -> pToHitComputationContext -> Rolled();
-                        }
-                        else {
-                            if (!debugStrings.AlreadyNoted(CString("SRNTHC"))) {
-                                writeDebugDialog = WRITE_DEBUG_DIALOG_WARNING;
-                                debugSeverity = 5;
-                                WriteDebugString("Script Referenced Non-existent ToHitContext\n");
-                            };
-                        };
-#endif
-                        m_pushInteger1();
+                    case SUBOPS.SUBOP_ToHitComputation_Roll:
+                        this.m_Integer1 = 10;
+                        this.m_pushInteger1();
                         break;
-                    case SUBOP_Alignment:
-                        m_popString1();
-                        m_string2 = m_Alignment(m_string1);
-                        m_pushString2();
+                    case SUBOPS.SUBOP_Alignment:
+                        this.m_popString1();
+                        this.m_string2 = this.m_Alignment(this.m_string1);
+                        this.m_pushString2();
                         break;
-                    case SUBOP_AlignmentGood:
-                        m_popString1();
-                        m_string2 = m_AlignmentGood(m_string1);
-                        m_pushString2();
+                    case SUBOPS.SUBOP_AlignmentGood:
+                        this.m_popString1();
+                        this.m_string2 = this.m_AlignmentGood(this.m_string1);
+                        this.m_pushString2();
                         break;
-                    case SUBOP_AlignmentEvil:
-                        m_popString1();
-                        m_string2 = m_AlignmentEvil(m_string1);
-                        m_pushString2();
+                    case SUBOPS.SUBOP_AlignmentEvil:
+                        this.m_popString1();
+                        this.m_string2 = this.m_AlignmentEvil(this.m_string1);
+                        this.m_pushString2();
                         break;
-                    case SUBOP_AlignmentLawful:
-                        m_popString1();
-                        m_string2 = m_AlignmentLawful(m_string1);
-                        m_pushString2();
+                    case SUBOPS.SUBOP_AlignmentLawful:
+                        this.m_popString1();
+                        this.m_string2 = this.m_AlignmentLawful(this.m_string1);
+                        this.m_pushString2();
                         break;
-                    case SUBOP_AlignmentNeutral:
+/*                    case SUBOPS.SUBOP_AlignmentNeutral:
                         m_popString1();
                         m_string2 = m_AlignmentNeutral(m_string1);
                         m_pushString2();
@@ -237,43 +232,23 @@ GPDL.prototype.m_interpret = function() {
                         m_string2 = m_AlignmentChaotic(m_string1);
                         m_pushString2();
                         break;
-                    case SUBOP_GET_CHARACTER_SA:
+                    case SUBOPS.SUBOP_GET_CHARACTER_SA:
                         {
                             m_popString2();  // SA name
-#ifdef UAFEngine
-                            CHARACTER * pCharacter = m_popCharacterActor();
-                            if (pCharacter != NULL) {
-                                m_string3 = pCharacter -> specAbs.GetString(m_string2);
-                            };
-#endif
                             m_pushString3();
                         };
                         break;
-                    case SUBOP_SET_CHARACTER_SA:
+                    case SUBOPS.SUBOP_SET_CHARACTER_SA:
                         {
                             m_popString1();  // Parameter
                             m_popString2();  // name
-         // m_popInteger1(); // Index
-#ifdef UAFEngine
-                            CHARACTER * pDude = m_popCharacterActor();
-                            if (pDude != NULL) {
-                                pDude -> specAbs.InsertAbility(m_string2, m_string1, "Script Add SA to char ", pDude -> GetName());
-                            };
-#else
                             m_popString3();
-#endif
                         };
                         m_pushString1();
                         break;
-                    case SUBOP_DELETE_CHARACTER_SA:
+                    case SUBOPS.SUBOP_DELETE_CHARACTER_SA:
                         {
                             m_popString2();  // SA name
-#ifdef UAFEngine
-                            CHARACTER * pCharacter = m_popCharacterActor();
-                            if (pCharacter != NULL) {
-                                m_string3 = pCharacter -> specAbs.DeleteAbility(m_string2);
-                            };
-#endif
                             m_pushString3();
                         };
                         break;
@@ -4240,14 +4215,15 @@ GPDL.prototype.m_interpret = function() {
                 break;
             default:
                 {
-                    CString msg;
-                    msg.Format("Illegal opcode\n0x%02x", m_opcode);
-                    m_interpretError(msg);
-                };
-                return BreakExecute();
-        };
-    };
-    // Some sort of error must have occurred.
-    INTERP_RETURN(m_interpStatus);
+                    var msg = "";
+                    msg = "Illegal opcode\n0x%02x";
+                    this.m_interpretError(msg);
+                }
+                return this.BreakExecute();
+        }
 */
+    }
+    // Some sort of error must have occurred.
+    this.INTERP_RETURN(m_interpStatus);
+
 }
