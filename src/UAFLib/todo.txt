@@ -1,9 +1,15 @@
-﻿- Ranged combat
+﻿- Create routines for bitwise operations for webgl.  Build test cases around it
+- Add clause to TestRangedAttack to make sure that arrows have decreased
+- TEst cases to make sure that thrown axes and such decrease in quantity
 - Changes to make TestRangedAttack.js have caused a few other cases to fail
 - implement a simple spell like magic missile
 - Design an API for a wrapper that would simplify the combat rounds.  Then build it.
 - itemID.SpellID() is not supported so SCRIPT_CONTEXT.SetItemContext doesn't really allow the spellContext to be set like it should.  This probably affects items that have spells "attached" to them somehow
 - Test case where there is no line of sight to the target - Combatant.canAttack should fail because Drawtile.HaveVisibility should fail
+- Corner test cases:
+	- Ranger damage specialties
+	- Vorpal weapons
+- There are several accessors in ITEM_LIST that do the same thing.  All the calls should be consolidated into one method
 - There is an Items.WeaponHand and an itemReadiedLocation.WeaponHand.  Investigate
 - In Ready
 - Take off the item != null check in ITEM_LIST.prototype.GetItem and watch the crash in the test cases.  Null should probably not be getting passed in there.  Investigate

@@ -3,6 +3,8 @@ combatData.m_aCombatants[0].m_isCombatReady = -1;
 
 var numAttacks = 0;
 // Inject a proxy to determine how many attacks were made - I go by the sound here because it's just easier ¯\_(:)_/¯
+itemData.GetItemFromID("Long Bow").hHitSound = "sound_Hit";
+itemData.GetItemFromID("Long Bow").hMissSound = "sound_Miss";
 var origPlaySound = SoundMgrObj.prototype.PlaySound;
 SoundMgrObj.prototype.PlaySound = function (file) {
     if (file == "sound_Hit" || file == "sound_Miss") {
@@ -27,9 +29,7 @@ Globals.ASSERT(canAttack == false, "TestRangedAttack.js - 1");
 
 cWarrior.m_pCharacter.addCharacterItem("Long Bow", 1, 0, 0, 0);
 cWarrior.m_pCharacter.addCharacterItem("Arrow", 50, 0, 0, 0);
-Globals.debug("----:" + cWarrior.m_pCharacter.myItems.GetItem(0));
 cWarrior.m_pCharacter.ReadyBestWpn(5, false);
-Globals.debug("----:" + cWarrior.m_pCharacter.myItems.GetItem(0));
 cWarrior.m_pCharacter.myItems.SetReady(1, itemReadiedLocation.AmmoQuiver.location);
 // Are the items that we readied ready?
 Globals.ASSERT(cWarrior.m_pCharacter.myItems.IsReady(0), "TestRangedAttack.js - 2");

@@ -87,7 +87,6 @@ ITEM_LIST.prototype.SetReady = function(index, rdyLoc) {
 
 ITEM_LIST.prototype.IsReady = function(index) {
     var pos;
-    Globals.debug("----:index:" + index);
     if ((pos = this.m_items.FindKeyPos(index)) != null)
         return !itemReadiedLocation.NotReady.Equals(this.m_items.PeekAtPos(pos).GetReadyLocation());
     else
@@ -147,8 +146,7 @@ ITEM_LIST.prototype.PeekNext = function (pos) {
 }
 
 ITEM_LIST.prototype.GetItem = function (index) {
-    var item = this.m_items.PeekAtPos(index);
-    return item;    // PORT NOTE:  Simplified with array indexing scheme
+    return this.GetAtPos(index);    // PORT NOTE:  Simplified with array indexing scheme
 }
 
 ITEM_LIST.prototype.SerializeCAR = function(ar, version) {
@@ -417,4 +415,30 @@ ITEM_LIST.prototype.GetQty = function(index) {
         return item.qty;
     else
         return 0; 
+}
+
+ITEM_LIST.prototype.AdjustQty = function(index, qty) {
+    var pos;
+    if ((pos = this.m_items.FindKeyPos(index)) != null) {
+        this.m_items.GetAtPos(pos).qty += qty;
+        qty = this.m_items.PeekAtPos(pos).qty;
+        if (qty < 0) qty = 0;
+        if (qty == 0) {
+            if (this.UnReady(index))
+                this.DeleteItem(index);
+        }
+        return qty;
+    }
+    return -1;
+}
+
+ITEM_LIST.prototype.HaveItem = function (itemID) {
+    var pos;
+    pos = this.GetHeadPosition();
+    while (pos != null) {
+        if (this.m_items.GetNext(pos).itemID == itemID)
+            return true;
+        pos = this.m_items.NextPos(pos);
+    }
+    return false;
 }

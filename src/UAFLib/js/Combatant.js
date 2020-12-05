@@ -1908,7 +1908,6 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
         if (this.m_pCharacter.myItems.GetQty(mywpnitemidx) <= 0)
             return false;
 
-        Globals.debug("----canAttack:1: ");
         if (!Items.WpnCanAttackAtRange(wpn_ID, dis))
             return false;
 
@@ -2176,21 +2175,22 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
     var decQty = false;
     var wpn = 0;
     wpn = this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0);
+
     var itemID = "";
     itemID = "";
 
     if (wpn != NO_READY_ITEM) {
-        itemID = this.m_pCharacter.myItems.GetItem(wpn);
+        itemID = this.m_pCharacter.myItems.GetAtPos(wpn);
         var dist = Drawtile.Distance6(this.self, this.x, this.y,
             targCOMBATANT.self, targCOMBATANT.x, targCOMBATANT.y);
-        decQty = itemData.WpnConsumesAmmoAtRange(itemID, dist);
+        decQty = itemData.WpnConsumesAmmoAtRange(itemID.itemID, dist);
 
         // do we decrement weapon qty or ammo qty?
-        wpnConsumesSelfAsAmmo = itemData.WpnConsumesSelfAsAmmo(itemID);
+        wpnConsumesSelfAsAmmo = itemData.WpnConsumesSelfAsAmmo(itemID.itemID);
         if (decQty && !wpnConsumesSelfAsAmmo) {
             // ammo is readied and must be decremented
             wpn = this.m_pCharacter.myItems.GetReadiedItem(Items.AmmoQuiver, 0);
-            itemID = this.m_pCharacter.myItems.GetItem(wpn).itemID;
+            itemID = this.m_pCharacter.myItems.GetAtPos(wpn);
         }
     }
 
@@ -2202,7 +2202,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         RunTimeIF.SetTargetContext(actor);
     };
     var pWeapon = null;
-    if (!(itemData.IsNoItem(itemID))) {
+    if (!(itemData.IsNoItem(itemID.itemID))) {
         pWeapon = itemData.GetItemFromID(itemID.itemID);
     };
 
@@ -2234,9 +2234,9 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                     if (!debugStrings.AlreadyNoted("WNHUSN")) {
                         msg = "A Weapon named:\n" + pWeapon.UniqueName() + "\nhas an undefined spell named\n" + pWeapon.SpellID();
                         Globals.MsgBoxInfo(msg, "Warning");
-                    };
-                };
-            };
+                    }
+                }
+            }
         }
         else {
             if (this.GetType() == MONSTER_TYPE) {
@@ -2249,8 +2249,8 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
                 Globals.ASSERT(pMonster != null, "pMonster != null");
 
                 attackSpellID = pMonster.attackData.PeekMonsterAttackDetails(currAttack).spellID;
-            };
-        };
+            }
+        }
 
 
 
@@ -2371,7 +2371,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         if (wpn != NO_READY_ITEM) {
             if (wpnConsumesSelfAsAmmo) {
                 var myItem = new ITEM();
-                myItem = this.m_pCharacter.myItems.GetItem(wpn);
+                myItem = this.m_pCharacter.myItems.GetAtPos(wpn);
                 myItem.qty = 1;
                 combatData.hurledWeapons.AddItem(myItem);
             };
@@ -2444,7 +2444,7 @@ COMBATANT.prototype.GetAttackBonus = function (weaponID, distance) {
     var bonus = 0;
 
     if (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM) {
-        var idata = itemData.GetItemFromID(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)));
+        var idata = itemData.GetItemFromID(this.m_pCharacter.myItems.GetAtPos(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)).itemID);
         if (idata != null) {
             bonus += idata.Attack_Bonus;
         }
@@ -2639,7 +2639,7 @@ COMBATANT.prototype.GetDamageDice = function(wpn, pNum, pSides, pBonus, pNonLeth
     pNonLethal = false;
     pSpellName = "";
     if (wpn != NO_READY_ITEM) {
-        var idata = itemData.GetItemFromID(this.m_pCharacter.myItems.GetItem(wpn));
+        var idata = itemData.GetItemFromID(this.m_pCharacter.myItems.GetItem(wpn).itemID);
 
         if (idata != null) {      
             pNonLethal = idata.IsNonLethal;

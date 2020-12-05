@@ -355,6 +355,11 @@ ITEM_DATA.prototype.RunItemScripts = function(scriptName, fnc, pkt, comment) {
             SPECAB.ScriptSourceType_Item,
             this.m_uniqueName);
 }
+
+ITEM_DATA.prototype.IsUsable = function () {
+    return (this.m_usageFlags & this.USAGE_usable) != 0;
+}
+
 /**TODO
     CString IdName(void)const { return m_idName; }
     ITEM_DATA(ITEM_DATA & src) :
@@ -386,7 +391,6 @@ CString  CommonName(void)const { return m_commonName;}; //Not serialized.//     
 void SetUniqueName(const CString& name);                           //        **
 BOOL IsUsableByBaseclass(const BASECLASS_ID& baseclassID) const ;
     inline BOOL IsUsable(void) const { return (m_usageFlags & USAGE_usable) != 0;};
-inline void IsUsable(BOOL usable){ if (usable) m_usageFlags |= USAGE_usable; else m_usageFlags &= ~USAGE_usable; };
 inline BOOL IsScribable(void) const { return (m_usageFlags & USAGE_scribable) != 0;};
 inline BOOL IsNotMagical(void) const { return (m_usageFlags & USAGE_notMagical) != 0;};
 inline void IsNotMagical(BOOL t){ if (t) m_usageFlags |= USAGE_notMagical; else m_usageFlags &= ~USAGE_notMagical; };

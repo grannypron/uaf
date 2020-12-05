@@ -125,7 +125,7 @@ SPECIAL_ABILITIES.prototype.RunScripts = function (scriptName, fnc, pkt, comment
             pScriptContext.SetSA_Source_Type(sourceType);
             pScriptContext.SetSA_Source_Name(sourceName);
             pScriptContext.SetSA_ScriptName(pSpecString.Key());
-            Globals.debug("----SPECIAL_ABILITIES.prototype.RunScripts:" + scriptName + " / " + sourceName);
+            //Globals.debug("----SPECIAL_ABILITIES.prototype.RunScripts:" + scriptName + " / " + sourceName);
             gpdlStack.Push();
             SPECAB.p_hook_parameters[0] = gpdlStack.activeGPDL().ExecuteScript(scripts[i].Value(), 1, null, 0);
             gpdlStack.Pop();
