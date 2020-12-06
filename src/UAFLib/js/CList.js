@@ -50,7 +50,7 @@ CList.prototype.NextPos = function (idx) {
 }
 
 CList.prototype.FindKeyPos = function (key) {
-    for (idx = 0; idx < this.mList.length; idx++) {
+    for (var idx = 0; idx < this.mList.length; idx++) {
         if (this.mList[idx] == key) {
             return idx;
         }

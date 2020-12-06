@@ -15,7 +15,7 @@ A_SPECABILITY_DEF_L.prototype.FindAbility = function (key) {
 }
 
 A_SPECABILITY_DEF_L.prototype.FindAbilityIdx = function (key) {
-    for (idx = 0; idx < this.mItems.length; idx++) {
+    for (var idx = 0; idx < this.mItems.length; idx++) {
         if (this.mItems[idx].m_specAbName == key) {
             return idx;
         }

@@ -165,7 +165,7 @@ ITEM_LIST.prototype.SerializeCAR = function(ar, version) {
     else {
         this.Clear();
         count = ar.readInt();
-        for (i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
             var pItem = new ITEM_DATA();
             data.SerializeCAR(ar, ver);

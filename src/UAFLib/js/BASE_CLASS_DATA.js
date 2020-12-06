@@ -6,11 +6,11 @@
     this.m_allowedRaces = [];    // of RACE_ID
     this.m_expLevels = [];  // of DWORD
     this.m_castingInfo = [];    // of CASTING_INFO
-    this.THAC0 = []; for (idx = 0; idx < HIGHEST_CHARACTER_LEVEL; idx++) { this.THAC0[idx] = 0; }   // of char
+    this.THAC0 = []; for (var idx = 0; idx < HIGHEST_CHARACTER_LEVEL; idx++) { this.THAC0[idx] = 0; }   // of char
 
     this.m_allowedAlignments = 0; // Bitmap of 1 << alignmentType
     this.m_specAbs = new SPECIAL_ABILITIES();
-    //this.hitDice = []; for (idx = 0; idx < HIGHEST_CHARACTER_LEVEL; idx++) { this.hitDice[idx] = new DICEDATA(); };
+    //this.hitDice = []; for (var idx = 0; idx < HIGHEST_CHARACTER_LEVEL; idx++) { this.hitDice[idx] = new DICEDATA(); };
  
     this.m_skills = [];    // SKILL
     this.m_skillAdjustmentsAbility = [];   // of SKILL_ADJUSTMENT_ABILITY

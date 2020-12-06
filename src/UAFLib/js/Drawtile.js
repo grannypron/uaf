@@ -156,7 +156,7 @@ Drawtile.prototype.FaceDirToPathDir = function(dir) {
 Drawtile.prototype.GenerateIndoorCombatMap = function (partyX, partyY, dir) {
     //STUB:
 
-    for (i = 0; i < this.MAX_TERRAIN_HEIGHT; i++) {
+    for (var i = 0; i < this.MAX_TERRAIN_HEIGHT; i++) {
         this.terrain[i] = [];
         for (j = 0; j < this.MAX_TERRAIN_WIDTH; j++) {
             this.terrain[i][j] = new TERRAIN_CELL();

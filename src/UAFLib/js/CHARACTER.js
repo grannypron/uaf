@@ -3753,7 +3753,7 @@ CHARACTER.prototype.ModifyAttackDamageDice = function(pTarget, num, sides, pBonu
             scriptContext.SetTargetContext(pTarget);
             hookParameters[5] = "" + rangerBonus;
             numBaseclass = pClass.GetCount();
-            for (i = 0; i < numBaseclass; i++) {
+            for (var i = 0; i < numBaseclass; i++) {
                 var skillID = "";
                 skillID = Globals.Skill_RangerBonusLevel;
                 pBaseclass = baseclassData.PeekBaseclass(pClass.PeekBaseclassID(i));
@@ -4146,7 +4146,7 @@ CHARACTER.prototype.IncCurrExp = function (baseclassID, exp) {
 }
 
 CHARACTER.prototype.GetBaseclassStats = function (baseclassID) {
-    for (idx = 0; idx < this.baseclassStats.length; idx++) {
+    for (var idx = 0; idx < this.baseclassStats.length; idx++) {
         if (this.baseclassStats[idx].baseclassID == baseclassID) {
             return this.baseclassStats[idx];
         }

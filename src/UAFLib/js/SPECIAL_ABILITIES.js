@@ -14,7 +14,7 @@ SPECIAL_ABILITIES.prototype.GetHeadPosition = function () {
 }
 
 SPECIAL_ABILITIES.prototype.FindAbility = function (key) {
-    for (i = 0; i < this.m_specialAbilities; i++) {
+    for (var i = 0; i < this.m_specialAbilities; i++) {
         if (this.m_specialAbilities[i] != null && this.m_specialAbilities[i].m_key == key) {
             return this.m_specialAbilities[i];
         }
@@ -321,7 +321,7 @@ function SPECAB() {
     this.numDefaultGlobalScripts = this.defaultGlobalScripts.length;
 
     this.RunGlobalScript = function (SAname, scriptName, nullSA) {
-        var saAbility = []; for (i = 0; i < SPECAB.MAX_SPEC_AB; i++) { saAbility[i] = ["", ""]; }
+        var saAbility = []; for (var i = 0; i < SPECAB.MAX_SPEC_AB; i++) { saAbility[i] = ["", ""]; }
         var binScript;
         var pSpecAb = null;
         pSpecString = null;

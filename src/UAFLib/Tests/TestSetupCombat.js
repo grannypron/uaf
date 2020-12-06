@@ -144,7 +144,7 @@ globalData.sounds.hCharMiss = "sound_Miss";
 
 var dataStr = "";
 var data = [];
-for (i = 0; i < Drawtile.MAX_TERRAIN_HEIGHT; i++) {
+for (var i = 0; i < Drawtile.MAX_TERRAIN_HEIGHT; i++) {
     dataStr += "[";
     data[i] = [];
     for (j = 0; j < Drawtile.MAX_TERRAIN_WIDTH; j++) {

@@ -77,7 +77,7 @@ PARTY.prototype.addTempToParty = function(luckyDude)
     // only allow up to GetMaxPartyCharacters() of player
     // created characters into the party list.
     //
-    for (i = 0; i < this.numCharacters; i++)
+    for (var i = 0; i < this.numCharacters; i++)
     {
         if (this.characters[i].IsSameCharacter(luckyDude))
             return this.characters[i];

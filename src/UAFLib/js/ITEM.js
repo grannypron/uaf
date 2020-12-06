@@ -43,7 +43,7 @@ ITEM.prototype.SerializeCAR = function (ar, ver) {
     else {
         this.Clear();
         count = ar.readInt();
-        for (i = 0; i < count; i++) {
+        for (var i = 0; i < count; i++) {
             var pItem = new ITEM_DATA();
             data.SerializeCAR(ar, ver);
             pItem = ITEM_DATA.GetItem(data.itemID);

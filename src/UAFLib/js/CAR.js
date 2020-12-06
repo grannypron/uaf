@@ -41,7 +41,7 @@ CAR.prototype.Compress = function (compression) {
         this.m_numCode = 256;
         if (this.IsStoring()) {
             this.writeChar(2); // Compression type in clear
-            var bufferLen = this.m_buffer.length; for (i = 0; i < bufferLen; i++) { this.m_buffer[i] = 0; };  //takes the place of memset(m_buffer,0,sizeof(m_buffer));
+            var bufferLen = this.m_buffer.length; for (var i = 0; i < bufferLen; i++) { this.m_buffer[i] = 0; };  //takes the place of memset(m_buffer,0,sizeof(m_buffer));
             this.m_compressType = 2;
             this.m_cData = new CDATA(); // Compression Data
         }

@@ -37,7 +37,7 @@ BLOCKAGE_STATUS.prototype.SerializeCAR = function (ar) {
         var count;
         count = ar.readInt();
 
-        for (i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
             temp.SerializeCAR(ar);
             this.data.AddTail(temp);

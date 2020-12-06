@@ -146,9 +146,9 @@ function packageMapAndCombatantStatus(c) {
 
     var dataStr = "";
     var mapData = [];
-    for (i = 0; i < Drawtile.MAX_TERRAIN_HEIGHT; i++) {
+    for (var i = 0; i < Drawtile.MAX_TERRAIN_HEIGHT; i++) {
         mapData[i] = [];
-        for (j = 0; j < Drawtile.MAX_TERRAIN_WIDTH; j++) {
+        for (var j = 0; j < Drawtile.MAX_TERRAIN_WIDTH; j++) {
             dataStr += Drawtile.terrain[i][j].tileIndex + ",";
             mapData[i][j] = Drawtile.terrain[i][j].tileIndex;
         }
@@ -167,7 +167,7 @@ function packageMapAndCombatantStatus(c) {
 
 function makeInventoryList(c) {
     var str = "";
-    for (idx = 0; idx < c.m_pCharacter.myItems.m_items.GetCount(); idx++) {
+    for (var idx = 0; idx < c.m_pCharacter.myItems.m_items.GetCount(); idx++) {
         str += c.m_pCharacter.myItems.IsReady(idx) ? "*" : " ";
         str += c.m_pCharacter.myItems.GetItemIDByPos(idx) + "\n";
     }

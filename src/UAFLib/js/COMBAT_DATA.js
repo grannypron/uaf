@@ -240,10 +240,10 @@ COMBAT_DATA.prototype.InitCombatData = function (event) {
 
         for (i = 0; i < this.m_iNumCombatants; i++) {
             //Globals.WriteDebugString("DEBUG - Combatant " + i + " starts at (" + this.m_aCombatants[i].x + "," + this.m_aCombatants[i].y + ")\n");
-        };
+        }
         if (Globals.logDebuggingInfo) {
             Globals.WriteDebugString("Finished placing combatants on map\n");
-        };
+        }
         this.CheckAllAuraPlacements(null);
         // make sure every monster can reach the party
         pathMgr.SetPathSize(1, 1); // 1x1 good enough to let party reach
@@ -700,7 +700,7 @@ COMBAT_DATA.prototype.LoadSounds = function () {
 }
 
 COMBAT_DATA.prototype.RemoveAllCombatants = function() {
-    for (i = 0; i < this.m_iNumCombatants; i++) {
+    for (var i = 0; i < this.m_iNumCombatants; i++) {
         var pChar;
         var pCombatant;
         pCombatant = this.m_aCombatants[i];
@@ -753,7 +753,7 @@ COMBAT_DATA.prototype.AddCombatants = function () {
 COMBAT_DATA.prototype.AddCharsToCombatants = function() {
     var temp = new COMBATANT();
 
-    for (i = 0; i < party.numCharacters; i++)
+    for (var i = 0; i < party.numCharacters; i++)
     {
         var stype = party.characters[i].GetAdjStatus();
         if (((stype == charStatusType.Okay) || (stype == charStatusType.Dying))
@@ -923,10 +923,10 @@ COMBAT_DATA.prototype.AddMonstersToCombatants = function () {
                             delete pCharacter;
                         };
                         m_iNumCombatants--;
-                    };
+                    }
                 }                                                                                      
-            }; // for (j)
-        }; //for (i)
+            } // for (j)
+        } //for (i)
     }
 }
 
@@ -1121,9 +1121,9 @@ COMBAT_DATA.prototype.determineInitCombatPos = function () {
                     Globals.WriteDebugString("Party arrangement string is wrong size\n");
                     Globals.MsgBoxInfo("Party arrangement string is wrong size");
                 }
-            };
-        };
-    };
+            }
+        }
+    }
 
     //WriteDebugString("DEBUG - partyArrangement = %s\n", partyArrangement);
     // Allocate a global structure to contain information about monster placement.
@@ -2550,7 +2550,7 @@ COMBAT_DATA.prototype.DetermineCombatInitiative = function() {
     {
         var line = "";
         var swap = 0;
-        var combatant = []; for (idx = 0; idx < Globals.MAX_COMBATANTS; idx++) { combatant[idx] = 0; }   // PORT NOTE: C++ automatically initializes arrays (by size, anyway)
+        var combatant = []; for (var idx = 0; idx < Globals.MAX_COMBATANTS; idx++) { combatant[idx] = 0; }   // PORT NOTE: C++ automatically initializes arrays (by size, anyway)
         for (i = 0; i < this.m_iNumCombatants; i++) {
             combatant[i] = i;
         }

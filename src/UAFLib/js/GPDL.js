@@ -48,9 +48,9 @@ GPDL.prototype.ExecuteScript = function (code, entryPointOrdinal) {
     if (this.m_PC == 0) return m_false;
     this.m_program = binaryCode[12 + (4 * numEntry)];
     if (this.m_dataStack == null)
-        { this.m_dataStack = []; for (idx = 0; idx < this.m_SP0; idx++) { this.m_dataStack[this.m_SP0] = ""; } }
+        { this.m_dataStack = []; for (var idx = 0; idx < this.m_SP0; idx++) { this.m_dataStack[this.m_SP0] = ""; } }
     if (this.m_returnStack == null)
-        { this.m_returnStack = []; for (idx = 0; idx < this.m_RP0; idx++) { this.m_returnStack[this.m_RP0] = ""; } }
+        { this.m_returnStack = []; for (var idx = 0; idx < this.m_RP0; idx++) { this.m_returnStack[this.m_RP0] = ""; } }
     this.m_pGPDLevent = null;
     this.m_RP = this.m_RP0;
     this.m_SP = this.m_SP0;

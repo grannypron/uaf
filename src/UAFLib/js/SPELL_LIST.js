@@ -16,7 +16,7 @@ SPELL_LIST.prototype.SerializeCAR = function(ar, version) {
         var spell = new CHARACTER_SPELL();
         this.Clear();
         count = ar.readInt();
-        for (i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
             spell.SerializeCAR(ar, version);
             this.AddSpell(spell);
