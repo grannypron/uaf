@@ -1959,7 +1959,7 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
                 }
                 break;
 
-            case Throw:
+            case weaponClassType.Throw:
                 //
                 // handled by WpnCanAttackAtRange()
                 //
@@ -2371,7 +2371,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         if (wpn != NO_READY_ITEM) {
             if (wpnConsumesSelfAsAmmo) {
                 var myItem = new ITEM();
-                myItem = this.m_pCharacter.myItems.GetAtPos(wpn);
+                myItem.CopyConstructor(this.m_pCharacter.myItems.GetAtPos(wpn));  // PORT NOTE:  Had to explicitly call copy constructor here
                 myItem.qty = 1;
                 combatData.hurledWeapons.AddItem(myItem);
             };

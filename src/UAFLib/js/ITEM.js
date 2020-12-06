@@ -25,7 +25,7 @@ ITEM.prototype.Clear = function ()
     this.cursed = false;
     this.paid = -1;
     this.pItemData = null;
-};
+}
 
 ITEM.prototype.SerializeCAR = function (ar, ver) {
     var count = 0;
@@ -71,6 +71,21 @@ ITEM.prototype.GetReadyLocation = function() {
 ITEM.prototype.SetReadyLocation = function (readyLoc) {
     return this.readyLocation = new itemReadiedLocationObj(readyLoc);
 }
+
+
+ITEM.prototype.CopyConstructor = function (itm) {
+    this.key = itm.key;
+    this.itemID = itm.itemID;
+    this.readyLocation = itm.readyLocation;
+    this.qty = itm.qty;
+    this.identified = itm.identified;
+    this.charges = itm.charges;
+    this.cursed = itm.cursed;
+    this.paid = itm.paid;
+    this.pItemData = itm.pItemData;
+}
+
+
 /**TODO**
 void Serialize(CArchive & ar, double ver);
 void ReadyLocation(DWORD rdyLoc);

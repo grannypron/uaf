@@ -1,5 +1,5 @@
 function weaponClassType() {
-    // CanAttack?   AttackAdjacent?   AttackRanged?   NeedsAmmoReadied?  ConsumesAmmo?
+    //                           CanAttack?   AttackAdjacent?   AttackRanged?   NeedsAmmoReadied?  ConsumesAmmo?
     //
     this.NotWeapon = 0,       //   No              No               No                N/A              N/A
     this.HandBlunt = 1,       //   Yes             Yes              Yes               No               No

@@ -259,6 +259,7 @@
     <Content Include="js\DICEPLUS.js" />
     <Content Include="Tests\TestCombatMovementAttack.js" />
     <Content Include="Tests\TestExperience.js" />
+    <Content Include="Tests\TestThrownWeaponAttack.js" />
     <Content Include="Tests\TestRangedAttack.js" />
     <Content Include="Tests\TestSpecialAbilities.js" />
     <Content Include="Tests\TestWinCombat.js" />

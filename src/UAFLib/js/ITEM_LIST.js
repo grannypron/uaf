@@ -417,7 +417,7 @@ ITEM_LIST.prototype.GetQty = function(index) {
         return 0; 
 }
 
-ITEM_LIST.prototype.AdjustQty = function(index, qty) {
+ITEM_LIST.prototype.AdjustQty = function (index, qty) {
     var pos;
     if ((pos = this.m_items.FindKeyPos(index)) != null) {
         this.m_items.GetAtPos(pos).qty += qty;
@@ -442,3 +442,16 @@ ITEM_LIST.prototype.HaveItem = function (itemID) {
     }
     return false;
 }
+
+
+ITEM_LIST.prototype.DeleteItem = function(index) {
+    var pos;
+    if ((pos = this.m_items.FindKeyPos(index)) != null) {
+        if (this.UnReady(index)) {
+            this.m_items.RemoveAt(pos);
+            itemsModified = true;
+            return true;
+        }
+    }
+    return false;
+}  
