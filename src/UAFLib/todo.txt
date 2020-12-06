@@ -1,5 +1,4 @@
 ﻿- Test cases to make sure that thrown axes and such decrease in quantity
-- mocha framework
 - implement a simple spell like magic missile
 - Design an API for a wrapper that would simplify the combat rounds.  Then build it.
 - itemID.SpellID() is not supported so SCRIPT_CONTEXT.SetItemContext doesn't really allow the spellContext to be set like it should.  This probably affects items that have spells "attached" to them somehow

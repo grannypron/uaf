@@ -6,67 +6,147 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Xml;
+using NUnit.Framework;
 using UAFLib.serialization;
 
 namespace UAFLib
 {
-    public class Console
+    public class TestRunner
     {
-        public string mJSPath = @"..\..\..\UAFLib\js\";
+        public string mJSPath = Path.GetFullPath(typeof(TestRunner).Assembly.Location.ToString() + "\\..\\..\\..\\js");
         public string mJSUrls = null;//"https://raw.githubusercontent.com/grannypron/uaf/port/src/UAFLib/UAFLib.csproj";//null;
+        string startupPath = Path.GetFullPath(typeof(TestRunner).Assembly.Location.ToString() + "\\..\\..\\..");
 
-
-        public void helloWorld()
+        [TestCase]
+        public void TestParseDice()
         {
+            //throw new Exception(startupPath);
+            //loadAndSerializeObjects();  // Used to make bin versions of lookup collections
+            runTest(new string[] { startupPath + @"\Tests\TestParseDice.js" });
+        }
+        
+        //[TestCase]
+        //public void TestLoadItems()
+        //{
+        //    //runTest(new string[] { startupPath + @"\Tests\TestLoadItems.js" });
+        //}
 
-            Stopwatch watch = new Stopwatch();
-            try
-            {
-                watch.Start();
-                //loadAndSerializeObjects();  // Used to make bin versions of lookup collections
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadItems.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestParseDice.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadItems.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadSAs.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestUtilHex.js"});
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestEntityType.js" }); 
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestStripFilenamePath.js"});
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestCharacterSerialize.js"});
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestTagList.js"});
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestPathManager.js"});
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestRollDice.js"});
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestGlobalStats.js"});
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js"});
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestSimpleCombatMovement.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestFreeAttacks.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js", @"..\..\..\UAFLib\Tests\TestSimpleUnarmedAttack.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js", @"..\..\..\UAFLib\Tests\TestSimpleUnarmedAttack.js", @"..\..\..\UAFLib\Tests\TestKill.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadItems.js", @"..\..\..\UAFLib\Tests\TestInventory.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestCombatMovementAttack.js", @"..\..\..\UAFLib\Tests\TestSimpleAttack.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestMultiRoundCombat.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestMonsterAttack.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestWinCombat.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestRangedAttack.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestSetupCombat.js", @"..\..\..\UAFLib\Tests\TestThrownWeaponAttack.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestExperience.js" });
-                runTest(new string[] { @"..\..\..\UAFLib\Tests\TestLoadSAs.js" , @"..\..\..\UAFLib\Tests\TestSpecialAbilities.js" });
-                //runTest(new string[] { @"..\..\..\UAFLib\Tests\DemoCombat.js" });
-                //runTest(new string[] { @"..\..\..\UAFLib\Tests\TestGPDL.js" });
+        [TestCase]
+        public void TestLoadSAs()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestLoadSAs.js" });
+        }
 
-                watch.Stop();
-                System.Console.WriteLine("Tests complete!  " + watch.ElapsedMilliseconds + " milliseconds.  Press Any key.");
-            }
-            catch (JavaScriptException ex)
-            {
-                System.Console.WriteLine(ex.Message);
-                //Object[] errData = lib.getErrorFileAndLine(ex.Location.Start.Line);
-                //Console.WriteLine("File: " + errData[0] + "  Line: " + errData[1]);  // not working atm
-                System.Console.WriteLine("  Line: " + ex.Location.Start.Line);
-                System.Console.WriteLine(ex.Message);
-                System.Console.WriteLine(ex.CallStack);
-            }
+        [TestCase]
+        public void TestUtilHex()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestUtilHex.js" });
+        }
+        [TestCase]
+        public void TestEntityType()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestEntityType.js" });
+        }
+        [TestCase]
+        public void TestStripFilenamePath()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestStripFilenamePath.js" });
+        }
+        [TestCase]
+        public void TestCharacterSerialize()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestCharacterSerialize.js" });
+        }
+        [TestCase]
+        public void TestTagList()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestTagList.js" });
+        }
+        [TestCase]
+        public void TestPathManager()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestPathManager.js" });
+        }
+        [TestCase]
+        public void TestRollDice()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestRollDice.js" });
+        }
+        [TestCase]
+        public void TestGlobalStats()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestGlobalStats.js" });
+        }
+        [TestCase]
+        public void TestSetupCombat()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestSetupCombat.js" });
+        }
+        [TestCase]
+        public void TestSimpleCombatMovement()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestSetupCombat.js", startupPath + @"\Tests\TestSimpleCombatMovement.js" });
+        }
+        [TestCase]
+        public void TestFreeAttacks()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestFreeAttacks.js" });
+        }
+        [TestCase]
+        public void TestCombatMovementAttack()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestSetupCombat.js", startupPath + @"\Tests\TestCombatMovementAttack.js" });
+        }
+        [TestCase]
+        public void TestSimpleUnarmedAttack()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestSetupCombat.js", startupPath + @"\Tests\TestCombatMovementAttack.js", startupPath + @"\Tests\TestSimpleUnarmedAttack.js" });
+        }
+        [TestCase]
+        public void TestKill()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestSetupCombat.js", startupPath + @"\Tests\TestCombatMovementAttack.js", startupPath + @"\Tests\TestSimpleUnarmedAttack.js", startupPath + @"\Tests\TestKill.js" });
+        }
+        [TestCase]
+        public void TestSimpleAttack()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestSetupCombat.js", startupPath + @"\Tests\TestCombatMovementAttack.js", startupPath + @"\Tests\TestSimpleAttack.js" });
+        }
+        [TestCase]
+        public void TestMultiRoundCombat()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestSetupCombat.js", startupPath + @"\Tests\TestMultiRoundCombat.js" });
+        }
+        [TestCase]
+        public void TestMonsterAttack()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestSetupCombat.js", startupPath + @"\Tests\TestMonsterAttack.js" });
+        }
+        [TestCase]
+        public void TestWinCombat()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestSetupCombat.js", startupPath + @"\Tests\TestWinCombat.js" });
+        }
+        [TestCase]
+        public void TestRangedAttack()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestSetupCombat.js", startupPath + @"\Tests\TestRangedAttack.js" });
+        }
+        [TestCase]
+        public void TestThrownWeaponAttack()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestSetupCombat.js", startupPath + @"\Tests\TestThrownWeaponAttack.js" });
+        }
+        [TestCase]
+        public void TestExperience()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestExperience.js" });
+        }
 
+        [TestCase]
+        public void TestSpecialAbilities()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestLoadSAs.js", startupPath + @"\Tests\TestSpecialAbilities.js" });
         }
 
         public ConsoleResults runTest(string[] paths)
