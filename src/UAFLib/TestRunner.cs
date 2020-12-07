@@ -25,11 +25,11 @@ namespace UAFLib
             runTest(new string[] { startupPath + @"\Tests\TestParseDice.js" });
         }
         
-        //[TestCase]
-        //public void TestLoadItems()
-        //{
-        //    //runTest(new string[] { startupPath + @"\Tests\TestLoadItems.js" });
-        //}
+        [TestCase]
+        public void TestLoadItems()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestLoadItems.js" });
+        }
 
         [TestCase]
         public void TestLoadSAs()
@@ -147,6 +147,12 @@ namespace UAFLib
         public void TestSpecialAbilities()
         {
             runTest(new string[] { startupPath + @"\Tests\TestLoadSAs.js", startupPath + @"\Tests\TestSpecialAbilities.js" });
+        }
+
+        [TestCase]
+        public void TestInventory()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestLoadItems.js", startupPath + @"\Tests\TestInventory.js" });
         }
 
         public ConsoleResults runTest(string[] paths)

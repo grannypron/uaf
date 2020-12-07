@@ -1042,7 +1042,6 @@ void GetContext(ActorType * pActor, const SCHOOL_ID& schoolID) const ;
 void GetContext(ActorType * pActor, const SPELL_ID& spellID) const ;
 void GetContext(ActorType * pActor, const SPELL_DATA * pSpell) const ;
 void GetContext(ActorType * pActor) const ; // Unknown class; therefore unknown Level.
-BOOL CastSpell(const SPELL_ID& spellID, const SPELL_ID& secondarySpellID);
 BOOL CastItemSpell(const SPELL_ID& spellID);
 void SpellActivate(const PENDING_SPELL & data);
 void InstantSpellActivate(const SPELL_ID& attackSpellID,
@@ -4189,4 +4188,117 @@ COMBATANT.prototype.GetUndeadType = function () {
 
 COMBATANT.prototype.IsAnimal = function () {
     return this.m_pCharacter.IsAnimal();
+}
+
+
+COMBATANT.prototype.CastSpell = function(spellID, secondarySpellID) {
+    if (logDebuggingInfo) {
+        Globals.WriteDebugString("CastSpell() for " + this.self + ", sbkey " + spellID.UniqueName() + "\n");
+    }
+    Globals.ASSERT(Globals.IsCombatActive() == true);
+    var pSdata;
+    var charSp;
+    var result = this.m_pCharacter.FetchCharacterSpell(spellID, charSp); charSp = result.charSp;
+    if (!result.returnVal) return false;
+    if (secondarySpellID.IsValidSpell()) {
+        pSdata = spellData.GetSpell(secondarySpellID);
+    }
+    else {
+        pSdata = spellData.GetSpell(charSp.spellID);
+    }
+    if (pSdata == null) return false;
+
+    this.m_pCharacter.DecMemorized(spellID, 1);
+
+    var rnd = Globals.GetCurrentRound();//CurrCombatRound();
+
+    var data;
+    data.caster = this.GetContextActor();
+    data.caster.m_spellID = spellID;
+    data.spellID = spellID;
+    data.spellIDSecondary = secondarySpellID;
+    data.waitUntil = Math.max(rnd - 1, 0);
+    data.flags = pSdata.Casting_Time_Type;
+
+    // spellCastingTimeType { sctImmediate, sctInitiative, sctRounds, sctTurns }
+    // 
+    // long Casting_Time;
+    // spellCastingTimeType Casting_Time_Type;
+    //
+    // Casting Time (non-combat):
+    //   
+    //   not used, spells are activated immediately
+    //  
+    // Casting Time (combat):
+    //  
+    //   Each round has 10 initiatives
+    //   1 round = 1 minute
+    //   10 rounds = 1 Turn
+    //   Spells requiring 1 or more rounds/turns always get cast at the end of a round/turn
+    //   Any hit on caster during casting time voids the spell.
+    //
+    //   sctImmediate:  Spell activated immediately
+    //   sctInitiative: Casting_Time is added to current initiative. Spell is activated
+    //                  when initiative time is reached. Cannot go past current round.
+    //   sctRounds:     Casting_Time is added to current round. Spell is activated
+    //                  when result round is reached, at end of round.
+    //   sctTurns:      Casting_Time*10 is added to current round. Spell is activated
+    //                  when result turn is reached, at end of that round.
+    //
+
+    pSdata.Casting_Time = Math.max(0, pSdata.Casting_Time);
+    switch (pSdata.Casting_Time_Type) {
+        case spellCastingTimeType.sctImmediate:
+            data.waitUntil = this.m_iInitiative; // immediate activation
+            break;
+        case spellCastingTimeType.sctInitiative:
+            data.waitUntil = this.m_iInitiative + pSdata.Casting_Time;
+            if (data.waitUntil > INITIATIVE.INITIATIVE_Never) {
+                data.flags = spellCastingTimeType.sctRounds;
+                // PRS 20120318
+                // We could do many things here.
+                // But we certainly don't want to wait many rounds.
+                // That is what the following line accomplished.
+                // We will activate the spell at the end of this round.
+
+                data.waitUntil = rnd;
+            }
+            if (data.waitUntil == this.m_iInitiative)
+            {
+                data.flags = spellCastingTimeType.sctImmediate;
+                // What was this for?   data.waitUntil = m_iInitiative;
+            }
+            break;
+        case spellCastingTimeType.sctRounds:
+            data.waitUntil = (rnd + pSdata.Casting_Time);
+            if (data.waitUntil == rnd)
+            {
+                data.flags = spellCastingTimeType. sctImmediate;
+                data.waitUntil = this.m_iInitiative;
+            }
+            break;
+        case spellCastingTimeType.sctTurns:
+            data.waitUntil = (rnd + (pSdata.Casting_Time * 10));
+            if (data.waitUntil == rnd)
+            {
+                data.flags = spellCastingTimeType.sctImmediate;
+                data.waitUntil = this.m_iInitiative;
+            }
+            break;
+        default:
+            Globals.die(UAFUtil.ByteFromHexString("0xab500"));
+            data.flags = spellCastingTimeType.sctImmediate;
+            data.waitUntil = this.m_iInitiative;
+            break;
+    }
+
+    if (pSdata.Casting_Time_Type != spellCastingTimeType.sctImmediate) {
+        if (logDebuggingInfo) {
+            WriteDebugString("CastSpell() add pending spell for " + this.self + ", sdbkey " + data.spellID.UniqueName() + "\n");
+        };
+        combatant_pendingSpellKey = pendingSpellList.Add(data);
+    }
+    else
+        combatant_pendingSpellKey = -1;
+    return true;
 }

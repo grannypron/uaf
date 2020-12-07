@@ -19,7 +19,7 @@ function Deserialize(filename, debug) {
 var Warrior = Deserialize("Warrior.chr");
 Globals.ASSERT(Warrior.addCharacterItem("Long Sword", 1, 0, 0, 0), "TestInventory.js  - 1");
 Globals.ASSERT(!Warrior.myItems.IsReady(0), "TestInventory.js - 1.5");
-Globals.ASSERT("Long Sword" == Warrior.myItems.PeekAtPos(0).itemID);
+Globals.ASSERT("Long Sword" == Warrior.myItems.GetAtPos(0).itemID);
 Globals.ASSERT(Warrior.toggleReadyItem(0));
 Globals.ASSERT(Warrior.myItems.IsReady(0), "TestInventory.js - 2");
 Globals.ASSERT(itemReadiedLocation.WeaponHand.Equals(Warrior.myItems.PeekAtPos(0).readyLocation), "TestInventory.js - 3")
@@ -29,3 +29,26 @@ Globals.ASSERT(Warrior.myItems.PeekAtPos(0).itemID == "Long Sword", "TestInvento
 
 Globals.ASSERT(Warrior.maxMovement > 1, "TestInventory.js - 5");  // Shouldn't be completely weighed down
 
+Globals.ASSERT(Warrior.addCharacterItem("Arrow", 10, 0, 0, 0), "TestInventory.js  - 5");
+
+
+var fiveArrows = new ITEM();
+fiveArrows.itemID = "Arrow";
+fiveArrows.qty = 5;
+fiveArrows.ClearReadyLocation();
+fiveArrows.charges = 0;
+fiveArrows.identified = false;
+fiveArrows.cursed = false;
+fiveArrows.paid = 0;
+Globals.ASSERT(Warrior.myItems.AddItem(fiveArrows), "TestInventory.js  - 6");
+Globals.ASSERT(Warrior.myItems.PeekAtPos(1).qty == 15, "TestInventory.js  - 7");
+
+
+Warrior.myItems.halveItem(1);
+Globals.ASSERT(Warrior.myItems.PeekAtPos(1).qty == 8, "TestInventory.js - 8");
+Globals.ASSERT(Warrior.myItems.PeekAtPos(2).qty == 7, "TestInventory.js - 9");
+
+Warrior.myItems.joinItems(1);
+Globals.ASSERT(Warrior.myItems.PeekAtPos(1).qty == 15, "TestInventory.js  - 10");
+
+Globals.ASSERT(Warrior.myItems.PeekAtPos(2) == null, "TestInventory.js  - 11");

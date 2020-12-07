@@ -43,5 +43,9 @@ numAttacks = 0;
 cWarrior.makeAttack(1, 0, 0);
 Globals.ASSERT(numAttacks > 0, "TestThrownWeaponAttack.js - 6");
 
-// Should have one less arrow now
+// Should have one less thrown weapon now
 Globals.ASSERT(cWarrior.m_pCharacter.myItems.GetQty(0) == 2, "TestThrownWeaponAttack.js - 7");
+
+// And there should be one on the "ground" now
+Globals.ASSERT(combatData.hurledWeapons.GetAtPos(0).itemID == "Javelin", "TestThrownWeaponAttack.js - 8");
+Globals.ASSERT(combatData.hurledWeapons.GetAtPos(0).qty == 1, "TestThrownWeaponAttack.js - 9");

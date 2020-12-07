@@ -130,7 +130,7 @@ ITEM_LIST.prototype.GetHeadPosition = function () {
 
 ITEM_LIST.prototype.PeekFirst = function(pos) {
     pos = this.m_items.GetHeadPosition();
-    return (pos == null) ? null : PeekAtPos(pos);
+    return (pos == null) ? null : this.PeekAtPos(pos);
   }
 
 ITEM_LIST.prototype.GetAtPos = function(pos)  {
@@ -145,7 +145,8 @@ ITEM_LIST.prototype.PeekNext = function (pos) {
     return this.m_items.PeekNext(pos);
 }
 
-ITEM_LIST.prototype.GetItem = function (index) {
+ITEM_LIST.prototype.GetItem = function (index, data) {
+    if (data) { throw "Pass-by-reference not supported in this function:  ITEM_LIST.prototype.GetItem";}  // PORT NOTE:  Doing this check because I don't want bugs to creep in since there is no method signature checking
     return this.GetAtPos(index);    // PORT NOTE:  Simplified with array indexing scheme
 }
 
@@ -249,7 +250,11 @@ ITEM_LIST.prototype.addItem5 = function(itemID, qty, numCharges, id, cost) {
     return this.AddItem(newItem, false); // no auto-join
 }
 
-ITEM_LIST.prototype.AddItem = function(data, AutoJoin) {
+ITEM_LIST.prototype.AddItem = function (data, AutoJoin) {
+    if (AutoJoin == null || AutoJoin == undefined) {
+        AutoJoin = true;
+    }
+
     var newkey = 0;
     var joined = false;
     if (AutoJoin) {
@@ -259,19 +264,18 @@ ITEM_LIST.prototype.AddItem = function(data, AutoJoin) {
             var pos = this.GetHeadPosition();
             while ((pos != null) && (joinIndex < 0)) {
                 if ((this.PeekAtPos(pos).itemID == data.itemID))
-                    joinIndex = PeekAtPos(pos).key;
+                    joinIndex = this.PeekAtPos(pos).key;
                 this.GetNext(pos); pos = this.NextPos(pos);
             }
 
             // if item instance in list
             if (joinIndex >= 0) {
-                var joinItem;
-                if (this.GetItem(joinIndex, joinItem)) {
-                    joinItem.qty += data.qty;
-                    this.SetItem(joinIndex, joinItem);
-                    joined = true;
-                    newkey = joinIndex;
-                }
+                var joinItem = new ITEM();
+                joinItem.CopyConstructor(this.GetAtPos(joinIndex));
+                joinItem.qty += data.qty;
+                this.SetItem(joinIndex, joinItem);
+                joined = true;
+                newkey = joinIndex;
             }
         }
     }
@@ -455,3 +459,86 @@ ITEM_LIST.prototype.DeleteItem = function(index) {
     }
     return false;
 }  
+
+ITEM_LIST.prototype.GetAtPos = function (pos) {
+    return this.m_items.GetAtPos(pos);
+}
+
+ITEM_LIST.prototype.PeekAtPos = function (pos) {
+    return this.m_items.PeekAtPos(pos);
+}
+
+ITEM_LIST.prototype.GetNext = function (pos) {
+    return this.m_items.GetNext(pos);
+}
+
+ITEM_LIST.prototype.SetItem = function (index, data) {
+    return this.m_items.Set(index, data);
+}
+
+
+ITEM_LIST.prototype.halveItem = function(index) {
+    var theItem = new ITEM();
+    if (this.GetAtPos(index) != null)
+        theItem.CopyConstructor(this.GetAtPos(index));   // PORT NOTE:  Changed slightly.  Null check vs. true/false on pbr accessor
+
+    if (!itemData.itemCanBeHalved(theItem.itemID))
+        return;
+
+    if (theItem.qty <= 1)
+        return;
+
+    var newQty = Math.trunc(theItem.qty / 2);
+
+    // update original qty
+    theItem.qty -= newQty;
+    this.SetItem(index, theItem);
+
+    // insert new item
+    var newItem = new ITEM();
+    newItem.CopyConstructor(theItem);
+    newItem.qty = newQty;
+    newItem.ClearReadyLocation();
+
+    this.AddItem(newItem, false); // don't auto join them back together!
+}
+
+
+ITEM_LIST.prototype.joinItems = function(index) {
+    var origItem = new ITEM();
+    if (this.GetAtPos(index) != null)
+        origItem.CopyConstructor(this.GetAtPos(index));   // PORT NOTE:  Changed slightly.  Null check vs. true/false on pbr accessor
+
+    if (!itemData.itemCanBeJoined(origItem.itemID))
+        return;
+
+    // look for another instance of item
+    var joinIndex = -1;
+    var joinQty = 0;
+    var pos;
+    pos = this.m_items.GetHeadPosition();
+
+    var delList = new CList();
+    while ((pos != null) && (joinIndex < 0)) {
+        if ((this.m_items.PeekAtPos(pos).itemID == origItem.itemID)
+            && (this.m_items.PeekAtPos(pos).key != origItem.key)) {
+            joinQty += this.m_items.PeekAtPos(pos).qty;
+            delList.AddTail(this.m_items.PeekAtPos(pos).key);
+        }
+        pos = this.m_items.NextPos(pos);
+    }
+
+    if (joinQty > 0) {
+        var joinItem = new ITEM();
+        if (this.GetAtPos(index) != null) {
+            origItem.CopyConstructor(this.GetAtPos(index));   // PORT NOTE:  Changed slightly.  Null check vs. true/false on pbr accessor
+            origItem.qty += joinQty;
+            this.SetItem(index, origItem);
+            pos = delList.GetHeadPosition();
+            while (pos != null) {
+                this.DeleteItem(delList.GetAtPos(pos));
+                pos = delList.NextPos(pos);
+            }
+        }
+    }
+}

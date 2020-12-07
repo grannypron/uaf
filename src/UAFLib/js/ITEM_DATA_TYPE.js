@@ -410,3 +410,22 @@ ITEM_DATA_TYPE.prototype.PlayMiss = function(itemID) {
         pItem.PlayMiss();
     }
 }
+
+ITEM_DATA_TYPE.prototype.itemCanBeJoined = function(itemID) {
+    if (this.IsMoneyItem(itemID)) return false;
+    var pItem = itemData.GetItemFromID(itemID);
+    if (pItem == null) return false;
+    if (pItem.Bundle_Qty <= 1) return false;
+    if (!pItem.CanBeHalvedJoined) return false;
+    return true;
+}
+
+
+ITEM_DATA_TYPE.prototype.itemCanBeHalved = function (itemID) {
+    if (this.IsMoneyItem(itemID)) return false;
+    var pItem = itemData.GetItemFromID(itemID);
+    if (pItem == null) return false;
+    if (pItem.Bundle_Qty <= 1) return false;
+    if (!pItem.CanBeHalvedJoined) return false;
+    return true;
+}

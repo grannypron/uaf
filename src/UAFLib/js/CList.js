@@ -90,3 +90,11 @@ CList.prototype.GetHead = function () {
 CList.prototype.RemoveAt = function (idx) {
     this.mList.splice(idx, 1);
 }
+
+CList.prototype.Set = function (idx, obj) {
+    this.mList[idx] = obj;
+}
+
+CList.prototype.AddTail = function (obj) {
+    this.mList[this.mList.length] = obj;
+}

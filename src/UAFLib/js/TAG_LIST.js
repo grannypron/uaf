@@ -3,6 +3,7 @@
 function TAG_LIST(num) {
     this.numItems = num;
     this.items = [];
+    this.Clear();       // PORT NOTE:  This is not done in the original, but I do it for convenience / safety
 }
 
 TAG_LIST.prototype.Clear = function() {
