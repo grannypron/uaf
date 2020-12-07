@@ -1,14 +1,17 @@
-﻿- implement a simple spell like magic missile
+﻿- Test case for TestPathManager
+- Test case for TestTagList - look at how it is used thus far to determine assertions
+- Test case for TestFreeAttack
+- implement a simple spell like magic missile
 - Design an API for a wrapper that would simplify the combat rounds.  Then build it.
 - itemID.SpellID() is not supported so SCRIPT_CONTEXT.SetItemContext doesn't really allow the spellContext to be set like it should.  This probably affects items that have spells "attached" to them somehow
-- Test case where there is no line of sight to the target - Combatant.canAttack should fail because Drawtile.HaveVisibility should fail
 - Test cases for ReadyBestShield, ReadyBestArmor, etc
+- Test cases with multiple party members
 - Corner test cases:
 	- Ranger damage specialties
 	- Vorpal weapons
-- There are several accessors in ITEM_LIST that do the same thing.  All the calls should be consolidated into one method
+- After most features are added to engine: There are several accessors in ITEM_LIST that do the same thing.  All the calls should be consolidated into one method
 - TestLoadItems is not working because of protobuf problem with NUnit
-- Take off the item != null check in ITEM_LIST.prototype.GetItem and watch the crash in the test cases.  Null should probably not be getting passed in there.  Investigate
+- Take off the item != null check in ITEM_LIST.GetItem and watch the crash in the test cases.  Null should probably not be getting passed in there.  Investigate
 - TestCombatMovementAttack.js - 2 test case for Guarding-CanGuardAttack could be a little better - maybe after the status is set, the UpdateCombat() or HandleTimeDelayMsgBegin() gets called to let the guarder attack
 - Take a look at the CombatPlacement / MonsterPlacement special ability.  See if we can get that to be used in the way it was intended
 - Make a monster library loader, class library loader, etc.

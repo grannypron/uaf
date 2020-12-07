@@ -49,3 +49,34 @@ Globals.ASSERT(numAttacks > 0, "TestRangedAttack.js - 6");
 
 // Should have one less arrow now
 Globals.ASSERT(cWarrior.m_pCharacter.myItems.GetQty(1) == 49, "TestRangedAttack.js - 7");
+
+// Put a "wall" in between the player and the monsters 
+for (var idxWall = -2; idxWall < 2; idxWall++) {
+    var cell = Drawtile.terrain[cWarrior.y + idxWall][cWarrior.x - 2].cell;
+    Drawtile.CurrentTileData[cell].tile_invisible = 0;
+}
+
+// Now the player cannot attack because he has no visibility
+canAttack = cWarrior.canAttack(enemyIdx, -1, -1, 0, Drawtile.Distance6, false);
+Globals.ASSERT(!canAttack, "TestRangedAttack.js - 8");
+
+// Remove that "wall"
+for (var idxWall = -2; idxWall < 2; idxWall++) {
+    var cell = Drawtile.terrain[cWarrior.y + idxWall][cWarrior.x - 2].cell;
+    Drawtile.CurrentTileData[cell].tile_invisible = 1;
+}
+
+// Player can attack again
+canAttack = cWarrior.canAttack(enemyIdx, -1, -1, 0, Drawtile.Distance6, false);
+Globals.ASSERT(canAttack, "TestRangedAttack.js - 9");
+
+// Move a lot of steps away
+// but first, give him lots of moves
+cWarrior.m_pCharacter.maxMovement = 100;
+for (var idxMove = 0; idxMove < 20; idxMove++) {
+    cWarrior.MoveCombatant(cWarrior.x + 1, cWarrior.y + 1, false);
+}
+
+// Player is too far away for ranged attack
+canAttack = cWarrior.canAttack(enemyIdx, -1, -1, 0, Drawtile.Distance6, false);
+Globals.ASSERT(!canAttack, "TestRangedAttack.js - 10");
