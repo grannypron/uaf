@@ -880,7 +880,7 @@ CHARACTER.prototype.getCharWeaponText = function (wpn, dmg) {
     temp2 = "";
     var dmg_bonus = 0;
 
-    var wpnHand = this.myItems.GetReadiedItem(Items.WeaponHand, 0);
+    var wpnHand = this.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0);
 
     if (wpnHand != NO_READY_ITEM) {
         var itemID = new ITEM_ID();
@@ -1263,7 +1263,7 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
     var pos = this.myItems.GetHeadPosition();
     while (pos != null) {
         if ((data = itemData.GetItemFromID(this.myItems.PeekAtPos(pos).itemID)) != null) {
-            if (data.Location_Readied == Items.WeaponHand) {
+            if (itemReadiedLocation.WeaponHand.EqualsDWORD(data.Location_Readied)) {
                 var err;
                 err = this.myItems.CanReadyItem(this.myItems.PeekAtPos(pos), this);
                 if (err == miscErrorType.NoError) {
@@ -1340,7 +1340,7 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
     data = this.myItems.GetItem(IdxToUse).itemID;   // PORT NOTE:  Unwrapping itemID because of ID/string differences
     if (data != null) {
         if (data.Hands_to_Use > 1)
-            this.myItems.UnReady(this.myItems.GetReadiedItem(Items.ShieldHand, 0));
+            this.myItems.UnReady(this.myItems.GetReadiedItem(itemReadiedLocation.ShieldHand, 0));
     }
 
     this.ReadyWeaponScript(IdxToUse);
@@ -1350,8 +1350,8 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
 
 CHARACTER.prototype.ReadyBestShield = function () {
     // if 2-handed weapon being used, can't ready a shield
-    if ((this.myItems.GetReadiedItem(Items.ShieldHand, 0) != NO_READY_ITEM)
-        && (this.myItems.GetReadiedItem(Items.ShieldHand, 0) == this.myItems.GetReadiedItem(Items.WeaponHand, 0)))
+    if ((this.myItems.GetReadiedItem(itemReadiedLocation.ShieldHand, 0) != NO_READY_ITEM)
+        && (this.myItems.GetReadiedItem(itemReadiedLocation.ShieldHand, 0) == this.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0)))
         return;
 
     this.ReadyShieldScript(NO_READY_ITEM);
@@ -1366,7 +1366,7 @@ CHARACTER.prototype.ReadyBestShield = function () {
     var pos = this.myItems.GetHeadPosition();
     while (pos != null) {
         if ((data = itemData.GetItemFromID(this.myItems.PeekAtPos(pos).itemID)) != null) {
-            if (data.Location_Readied == Items.ShieldHand) {
+            if (itemReadiedLocation.ShieldHand.EqualsDWORD(data.Location_Readied)) {
                 var err;
                 err = this.myItems.CanReadyItem(myItems.PeekAtPos(pos), this);
                 if (err == miscErrorType.NoError) {
@@ -1407,7 +1407,7 @@ CHARACTER.prototype.ReadyBestArmor = function () {
     while (pos != null) {
         if ((data = itemData.GetItemFromID(this.myItems.PeekAtPos(pos).itemID)) != null) {
 
-            if (data.Location_Readied == Items.BodyArmor) {
+            if (itemReadiedLocation.BodyArmor.EqualsDWORD(data.Location_Readied)) {
                 var err;
                 err = this.myItems.CanReadyItem(myItems.PeekAtPos(pos), this);
                 if (err == miscErrorType.NoError) {
@@ -1455,7 +1455,7 @@ CHARACTER.prototype.ReadyBestAmmo = function (isLargeTarget) {
         var err;
         err = this.myItems.CanReadyItem(this.myItems.PeekAtPos(pos), this);
         if ((err == miscErrorType.NoError) && ((data = itemData.GetItemFromID(this.myItems.PeekAtPos(pos).itemID)) != null)) {
-            if ((data.Location_Readied == Items.AmmoQuiver) && (data.Wpn_Type == Items.Ammo)) {
+            if ((itemReadiedLocation.AmmoQuiver.EqualsDWORD(data.Location_Readied)) && (data.Wpn_Type == weaponClassType.Ammo)) {
                 if (data.Protection_Base + data.Protection_Bonus <= def) {
                     def = data.Protection_Base + data.Protection_Bonus;
                     defIdx = this.myItems.GetKeyAt(pos);
@@ -1617,7 +1617,7 @@ CHARACTER.prototype.UnReadyXXXScript = function (scriptName, index) {
 };
 
 CHARACTER.prototype.ReadyWeaponScript = function (index) {
-    this.ReadyXXXScript(Items.WeaponHand, SPECAB.ON_READY, index);
+    this.ReadyXXXScript(itemReadiedLocation.WeaponHand, SPECAB.ON_READY, index);
 };
 
 CHARACTER.prototype.UnReadyWeaponScript = function (index) {
@@ -1625,7 +1625,7 @@ CHARACTER.prototype.UnReadyWeaponScript = function (index) {
 };
 
 CHARACTER.prototype.ReadyShieldScript = function (index) {
-    this.ReadyXXXScript(Items.ShieldHand, SPECAB.ON_READY, index);
+    this.ReadyXXXScript(itemReadiedLocation.ShieldHand, SPECAB.ON_READY, index);
 };
 
 CHARACTER.prototype.UnReadyShieldScript = function (index) {
@@ -1633,7 +1633,7 @@ CHARACTER.prototype.UnReadyShieldScript = function (index) {
 };
 
 CHARACTER.prototype.ReadyArmorScript = function (index) {
-    this.ReadyXXXScript(Items.BodyArmor, SPECAB.ON_READY, index);
+    this.ReadyXXXScript(itemReadiedLocation.BodyArmor, SPECAB.ON_READY, index);
 };
 
 CHARACTER.prototype.UnReadyArmorScript = function (index) {
@@ -1641,7 +1641,7 @@ CHARACTER.prototype.UnReadyArmorScript = function (index) {
 };
 
 CHARACTER.prototype.ReadyGauntletsScript = function (index) {
-    this.ReadyXXXScript(Items.Hands, SPECAB.ON_READY, index);
+    this.ReadyXXXScript(itemReadiedLocation.Hands, SPECAB.ON_READY, index);
 };
 
 CHARACTER.prototype.UnReadyGauntletsScript = function (index) {
@@ -1649,7 +1649,7 @@ CHARACTER.prototype.UnReadyGauntletsScript = function (index) {
 };
 
 CHARACTER.prototype.ReadyHelmScript = function (index) {
-    this.ReadyXXXScript(Items.Head, SPECAB.ON_READY, index);
+    this.ReadyXXXScript(itemReadiedLocation.Head, SPECAB.ON_READY, index);
 };
 
 CHARACTER.prototype.UnReadyHelmScript = function (index) {
@@ -1657,7 +1657,7 @@ CHARACTER.prototype.UnReadyHelmScript = function (index) {
 };
 
 CHARACTER.prototype.ReadyBeltScript = function (index) {
-    this.ReadyXXXScript(Items.Waist, SPECAB.ON_READY, index);
+    this.ReadyXXXScript(itemReadiedLocation.Waist, SPECAB.ON_READY, index);
 };
 
 CHARACTER.prototype.UnReadyBeltScript = function (index) {
@@ -1665,7 +1665,7 @@ CHARACTER.prototype.UnReadyBeltScript = function (index) {
 };
 
 CHARACTER.prototype.ReadyRobeScript = function (index) {
-    this.ReadyXXXScript(Items.BodyRobe, SPECAB.ON_READY, index);
+    this.ReadyXXXScript(itemReadiedLocation.BodyRobe, SPECAB.ON_READY, index);
 };
 
 CHARACTER.prototype.UnReadyRobeScript = function (index) {
@@ -1673,7 +1673,7 @@ CHARACTER.prototype.UnReadyRobeScript = function (index) {
 };
 
 CHARACTER.prototype.ReadyCloakScript = function (index) {
-    this.ReadyXXXScript(Items.Back, SPECAB.ON_READY, index);
+    this.ReadyXXXScript(itemReadiedLocation.Back, SPECAB.ON_READY, index);
 };
 
 CHARACTER.prototype.UnReadyCloakScript = function (index) {
@@ -1681,7 +1681,7 @@ CHARACTER.prototype.UnReadyCloakScript = function (index) {
 };
 
 CHARACTER.prototype.ReadyBootsScript = function (index) {
-    this.ReadyXXXScript(Items.Feet, SPECAB.ON_READY, index);
+    this.ReadyXXXScript(itemReadiedLocation.Feet, SPECAB.ON_READY, index);
 };
 
 CHARACTER.prototype.UnReadyBootsScript = function (index) {
@@ -1689,7 +1689,7 @@ CHARACTER.prototype.UnReadyBootsScript = function (index) {
 };
 
 CHARACTER.prototype.ReadyRingScript = function (index) {
-    this.ReadyXXXScript(Items.Fingers, SPECAB.ON_READY, index);
+    this.ReadyXXXScript(itemReadiedLocation.Fingers, SPECAB.ON_READY, index);
 };
 
 CHARACTER.prototype.UnReadyRingScript = function (index) {
@@ -1697,7 +1697,7 @@ CHARACTER.prototype.UnReadyRingScript = function (index) {
 };
 
 CHARACTER.prototype.ReadyAmmoScript = function (index) {
-    this.ReadyXXXScript(Items.AmmoQuiver, SPECAB.ON_READY, index);
+    this.ReadyXXXScript(itemReadiedLocation.AmmoQuiver, SPECAB.ON_READY, index);
 };
 
 CHARACTER.prototype.UnReadyAmmoScript = function (index) {
@@ -2012,7 +2012,7 @@ CHARACTER.prototype.GetAdjTHAC0 = function (flags) {
 
     var val = this.GetTHAC0();
     var itemID;
-    var wpn = this.myItems.GetReadiedItem(Items.WeaponHand, 0);
+    var wpn = this.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0);
     var itemID = this.myItems.GetItem(wpn);
     val -= this.GetAdjHitBonus(itemID, 0); // subtract strength bonus from base THAC0
 
@@ -2428,7 +2428,7 @@ CHARACTER.prototype.determineNbrAttacks = function () {
         var pWeapon;
         var wpn;
         var weaponID;
-        wpn = this.myItems.GetReadiedItem(Items.WeaponHand, 0);
+        wpn = this.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0);
         if (wpn != NO_READY_ITEM) {
             weaponID = this.myItems.GetItem(wpn);
             pWeapon = itemData.GetItemFromID(weaponID);
@@ -2461,8 +2461,8 @@ CHARACTER.prototype.determineNbrAttacks = function () {
     else
         this.SetNbrAttacks(monsterData.GetMonsterNbrAttacks(this.monsterID));
 
-    if (this.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM) {
-        var wpnAttacks = itemData.GetItemFromID(this.myItems.GetAtPos(this.myItems.GetReadiedItem(Items.WeaponHand, 0)).itemID).ROF_Per_Round;   // PORT NOTE: Slight change here to use a different accessor
+    if (this.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0) != NO_READY_ITEM) {
+        var wpnAttacks = itemData.GetItemFromID(this.myItems.GetAtPos(this.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0)).itemID).ROF_Per_Round;   // PORT NOTE: Slight change here to use a different accessor
         if (wpnAttacks < 1.0) wpnAttacks = 1.0;
         this.SetNbrAttacks(wpnAttacks);
         // check for sweeps

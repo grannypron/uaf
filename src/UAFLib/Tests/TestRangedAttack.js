@@ -30,13 +30,14 @@ Globals.ASSERT(canAttack == false, "TestRangedAttack.js - 1");
 cWarrior.m_pCharacter.addCharacterItem("Long Bow", 1, 0, 0, 0);
 cWarrior.m_pCharacter.addCharacterItem("Arrow", 50, 0, 0, 0);
 cWarrior.m_pCharacter.ReadyBestWpn(5, false);
-cWarrior.m_pCharacter.myItems.SetReady(1, itemReadiedLocation.AmmoQuiver.location);
+cWarrior.m_pCharacter.myItems.SetReady(1, itemReadiedLocation.AmmoQuiver);
 // Are the items that we readied ready?
+Globals.debug("----:.m_items.PeekAtPos(pos).GetReadyLocation():" + cWarrior.m_pCharacter.myItems.m_items.PeekAtPos(0).GetReadyLocation().location + "/" + itemReadiedLocation.NotReady.location);
 Globals.ASSERT(cWarrior.m_pCharacter.myItems.IsReady(0), "TestRangedAttack.js - 2");
 Globals.ASSERT(cWarrior.m_pCharacter.myItems.IsReady(1), "TestRangedAttack.js - 3");
 
 // Is the bow readied in the weapon hand?  This check is taken from canAttack()
-Globals.ASSERT(cWarrior.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM, "TestRangedAttack.js - 4");
+Globals.ASSERT(cWarrior.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0) != NO_READY_ITEM, "TestRangedAttack.js - 4");
 
 canAttack = cWarrior.canAttack(enemyIdx, -1, -1, 0, Drawtile.Distance6, false);
 // Are we able to attack from this distance?

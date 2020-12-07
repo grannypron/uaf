@@ -69,7 +69,7 @@ ITEM.prototype.GetReadyLocation = function() {
 }
 
 ITEM.prototype.SetReadyLocation = function (readyLoc) {
-    return this.readyLocation = new itemReadiedLocationObj(readyLoc);
+    return this.readyLocation = new itemReadiedLocationObj(readyLoc.location);
 }
 
 

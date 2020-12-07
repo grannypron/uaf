@@ -99,7 +99,7 @@ DamageComputation.prototype.Compute = function(pAttacker, pTarget, wpn, toHitRol
                 if (pWeapon.Wpn_Type == weaponClassType.Ammo) {
                     // We need to find the launching weapon.
                     var launchWpnIndex = 0;
-                    launchWpnIndex = pAttacker.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0);
+                    launchWpnIndex = pAttacker.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0);
                     if (launchWpnIndex != NO_READY_ITEM) {
                         var launchID = "";
                         var pLauncher;

@@ -76,8 +76,8 @@ ITEM_LIST.prototype.GetReadiedCount = function(rdyLoc) {
 ITEM_LIST.prototype.SetReady = function(index, rdyLoc) {
     var pos;
     if ((pos = this.m_items.FindKeyPos(index)) != null) {
-        if (rdyLoc == Items.NotReady) {
-            this.m_items.GetAtPos(pos).SetReadyLocation(Items.NotReady); //readyLocation.Clear();
+        if (itemReadiedLocation.NotReady.EqualsDWORD(rdyLoc)) {
+            this.m_items.GetAtPos(pos).SetReadyLocation(itemReadiedLocation.NotReady); //readyLocation.Clear();
         }
         else {
             this.m_items.GetAtPos(pos).SetReadyLocation(rdyLoc);
@@ -98,7 +98,7 @@ ITEM_LIST.prototype.IsReady = function(index) {
 ITEM_LIST.prototype.UnReady = function (item) {
     if (!this.IsReady(item)) return true;
     if (!this.CanUnReady(item)) return false;
-    this.SetReady(item, Items.NotReady);
+    this.SetReady(item, itemReadiedLocation.NotReady);
     return true;
 }
 
@@ -109,7 +109,7 @@ ITEM_LIST.prototype.GetReadiedItem = function (rdyLoc, readiedItemCount) {
     //PORT NOTE: I don't know why the pCharItem is being set to PeekNext here.  It seems like the item at the head position would never be checked.  Changed in my code, but the original line is below
     // for (pCharItem=PeekNext(pos); pCharItem!=NULL; pCharItem=PeekNext(pos))
     for (pCharItem = this.PeekAtPos(pos); pCharItem != null; pCharItem = this.PeekAtPos(pos)) {
-        if (pCharItem.GetReadyLocation().EqualsDWORD(rdyLoc)) {
+        if (pCharItem.GetReadyLocation().Equals(rdyLoc)) {
             if (readiedItemCount == 0) {
                 return pos;//pCharItem.key;     // PORT NOTE:  Changed to use array-index based indexing
             }
@@ -190,7 +190,7 @@ ITEM_LIST.prototype.GetProtectModForRdyItems = function() {
     var pos;
     pos = this.m_items.GetHeadPosition();
     while (pos != null) {
-        if (this.PeekAtPos(pos).GetReadyLocation() != Items.NotReady) {
+        if (this.PeekAtPos(pos).GetReadyLocation() != itemReadiedLocation.NotReady) {
             var data = itemData.GetItemFromID(this.PeekAtPos(pos).itemID);
             if (data != null)
                 acMod += (data.Protection_Base + data.Protection_Bonus);
@@ -333,8 +333,8 @@ ITEM_LIST.prototype.CanReadyItem = function(pCharItem, pChar) {
     if (itemData.itemUsesRdySlot(pItem)) {
         if ((pItem.Hands_to_Use == 2)
             && ((itemReadiedLocation.WeaponHand.Equals(pItem.Location_Readied)) || itemReadiedLocation.ShieldHand.Equals(pItem.Location_Readied))) {
-            if ((this.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM)
-                || (this.GetReadiedItem(Items.ShieldHand, 0) != NO_READY_ITEM)) {
+            if ((this.GetReadiedItem(itemReadiedLocation.WeaponHand, 0) != NO_READY_ITEM)
+                || (this.GetReadiedItem(itemReadiedLocation.ShieldHand, 0) != NO_READY_ITEM)) {
                 return TakesTwoHands;
             }
         }

@@ -584,7 +584,7 @@ COMBATANT.prototype.ReadyBestWpn = function(targ) {
 
     // if target is distant but don't have distance weapon
     // then ready hand-to-hand weapon
-    if ((dist > 1) && (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) == NO_READY_ITEM))
+    if ((dist > 1) && (this.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0) == NO_READY_ITEM))
         this.m_pCharacter.ReadyBestWpn(1, isLargeTarget);
 }
 
@@ -1899,7 +1899,7 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
         }
     }
     var dis = DistanceFunction(this.self, this.x, this.y, targ, targetX, targetY);
-    var mywpnitemidx = this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0);
+    var mywpnitemidx = this.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0);
     if (mywpnitemidx != NO_READY_ITEM) {
         // using a weapon rather than natural attack types (ie claws/jaws/fists)
         var wpn_ID;
@@ -1935,7 +1935,7 @@ COMBATANT.prototype.canAttack = function(targ, targetX, targetY, additionalAttac
             case weaponClassType.Bow: // bow
             case weaponClassType.Crossbow: // crossbow
                 {
-                    var myammoitemidx = this.m_pCharacter.myItems.GetReadiedItem(Items.AmmoQuiver, 0);
+                    var myammoitemidx = this.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.AmmoQuiver, 0);
 
                     // arrows or bolts must be readied in AmmoQuiver
                     if (myammoitemidx == NO_READY_ITEM)
@@ -2174,7 +2174,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
 
     var decQty = false;
     var wpn = 0;
-    wpn = this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0);
+    wpn = this.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0);
 
     var itemID = "";
     itemID = "";
@@ -2189,7 +2189,7 @@ COMBATANT.prototype.makeAttack = function(targ, extraAttacksAvailable, pDeathInd
         wpnConsumesSelfAsAmmo = itemData.WpnConsumesSelfAsAmmo(itemID.itemID);
         if (decQty && !wpnConsumesSelfAsAmmo) {
             // ammo is readied and must be decremented
-            wpn = this.m_pCharacter.myItems.GetReadiedItem(Items.AmmoQuiver, 0);
+            wpn = this.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.AmmoQuiver, 0);
             itemID = this.m_pCharacter.myItems.GetAtPos(wpn);
         }
     }
@@ -2443,8 +2443,8 @@ COMBATANT.prototype.ModifyAttackRollDiceForItemAsTarget = function(pAttacker, it
 COMBATANT.prototype.GetAttackBonus = function (weaponID, distance) {
     var bonus = 0;
 
-    if (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM) {
-        var idata = itemData.GetItemFromID(this.m_pCharacter.myItems.GetAtPos(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)).itemID);
+    if (this.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0) != NO_READY_ITEM) {
+        var idata = itemData.GetItemFromID(this.m_pCharacter.myItems.GetAtPos(this.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0)).itemID);
         if (idata != null) {
             bonus += idata.Attack_Bonus;
         }
@@ -2517,8 +2517,8 @@ COMBATANT.prototype.GetAdjSpecAb = function (sa, pSource, pSpellName) {
 
 COMBATANT.prototype.PlayMiss = function() {
 //#ifdef newCombatant                                   // PORT NOTE:  I believe this is on
-    if (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM) {
-        itemData.PlayMiss(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)).itemID);
+    if (this.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0) != NO_READY_ITEM) {
+        itemData.PlayMiss(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0)).itemID);
     }
 //#else
 //    if (myItems.GetReadiedItem(WeaponHand, 0) != NO_READY_ITEM) {
@@ -2773,9 +2773,9 @@ COMBATANT.prototype.ModifyAttackDamageDiceForItemAsTarget = function(pAttacker, 
 }
 
 COMBATANT.prototype.PlayHit = function() {
-    if (this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM)
+    if (this.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0) != NO_READY_ITEM)
     {
-        itemData.PlayHit(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0)).itemID);
+        itemData.PlayHit(this.m_pCharacter.myItems.GetItem(this.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0)).itemID);
     }
     else
     {
@@ -3424,7 +3424,7 @@ COMBATANT.prototype.Think = function () {
                     this.ReadyBestArmor();
                     {
                         this.State(individualCombatantState.ICS_Attacking);
-                        itemIdx = this.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0);
+                        itemIdx = this.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0);
                         if (m_pCharacter.myItems.GetCharges(itemIdx) > 0) {
                             var pItem;
                             pItem = combatSummary.PeekCombatant(0).PeekWeapon(pCSA.weaponOrd - 1).pWeapon;
@@ -3800,7 +3800,7 @@ COMBATANT.prototype.Think = function () {
                 this.State(individualCombatantState.ICS_Attacking);
                 var itemID;
                 var itemIdx;
-                itemIdx = this. m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0);
+                itemIdx = this.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0);
                 if (itemIdx != NO_READY_ITEM) {
                     itemID = this.m_pCharacter.myItems.GetItem(itemIdx);
                     var weaponType;

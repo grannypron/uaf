@@ -33,7 +33,7 @@ cWarrior.m_pCharacter.ReadyBestWpn(5, false);
 Globals.ASSERT(cWarrior.m_pCharacter.myItems.IsReady(0), "TestThrownWeaponAttack.js - 2");
 
 // Is the bow readied in the weapon hand?  This check is taken from canAttack()
-Globals.ASSERT(cWarrior.m_pCharacter.myItems.GetReadiedItem(Items.WeaponHand, 0) != NO_READY_ITEM, "TestThrownWeaponAttack.js - 4");
+Globals.ASSERT(cWarrior.m_pCharacter.myItems.GetReadiedItem(itemReadiedLocation.WeaponHand, 0) != NO_READY_ITEM, "TestThrownWeaponAttack.js - 4");
 
 canAttack = cWarrior.canAttack(enemyIdx, -1, -1, 0, Drawtile.Distance6, false);
 // Are we able to attack from this distance?
