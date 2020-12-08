@@ -155,6 +155,12 @@ namespace UAFLib
             runTest(new string[] { startupPath + @"\Tests\TestLoadItems.js", startupPath + @"\Tests\TestInventory.js" });
         }
 
+        [TestCase]
+        public void TestReadyBest()
+        {
+            runTest(new string[] { startupPath + @"\Tests\TestLoadItems.js", startupPath + @"\Tests\TestReadyBest.js" });
+        }
+
         public ConsoleResults runTest(string[] paths)
         {
             List<string> strs = new List<string>();

@@ -1337,7 +1337,7 @@ CHARACTER.prototype.ReadyBestWpn = function (dist, isLargeTarget) {
     if (IdxToUse == NO_READY_ITEM)
         return;
 
-    data = this.myItems.GetItem(IdxToUse).itemID;   // PORT NOTE:  Unwrapping itemID because of ID/string differences
+    data = this.myItems.GetAtPos(IdxToUse);   // PORT NOTE:  Unwrapping itemID because of ID/string differences
     if (data != null) {
         if (data.Hands_to_Use > 1)
             this.myItems.UnReady(this.myItems.GetReadiedItem(itemReadiedLocation.ShieldHand, 0));
@@ -1368,19 +1368,19 @@ CHARACTER.prototype.ReadyBestShield = function () {
         if ((data = itemData.GetItemFromID(this.myItems.PeekAtPos(pos).itemID)) != null) {
             if (itemReadiedLocation.ShieldHand.EqualsDWORD(data.Location_Readied)) {
                 var err;
-                err = this.myItems.CanReadyItem(myItems.PeekAtPos(pos), this);
+                err = this.myItems.CanReadyItem(this.myItems.PeekAtPos(pos), this);
                 if (err == miscErrorType.NoError) {
                     if (data.Protection_Base + data.Protection_Bonus < def) {
                         def = data.Protection_Base + data.Protection_Bonus;
-                        defIdx = myItems.GetKeyAt(pos);
+                        defIdx = this.myItems.GetKeyAt(pos);
                     }
                 }
                 else {
                     Globals.SetMiscError(err);
-                };
+                }
             }
-        };
-        this.myItems.GetNext(pos);
+        }
+        pos = this.myItems.NextPos(pos);
     }
 
     // clear miscError that may have been set by CanReady()
@@ -1409,19 +1409,19 @@ CHARACTER.prototype.ReadyBestArmor = function () {
 
             if (itemReadiedLocation.BodyArmor.EqualsDWORD(data.Location_Readied)) {
                 var err;
-                err = this.myItems.CanReadyItem(myItems.PeekAtPos(pos), this);
+                err = this.myItems.CanReadyItem(this.myItems.PeekAtPos(pos), this);
                 if (err == miscErrorType.NoError) {
                     if (data.Protection_Base + data.Protection_Bonus < def) {
                         def = data.Protection_Base + data.Protection_Bonus;
-                        defIdx = myItems.GetKeyAt(pos);
+                        defIdx = this.myItems.GetKeyAt(pos);
                     }
                 }
                 else {
                     Globals.SetMiscError(err);
-                };
-            };
-        };
-        this.myItems.GetNext(pos);
+                }
+            }
+        }
+        pos = this.myItems.NextPos(pos);
     }
 
     // clear miscError that may have been set by CanReady()
@@ -1573,47 +1573,6 @@ CHARACTER.prototype.UnreadyItemByLocation = function (rdyLoc, specAbsOK) {
     };
 
     this.myItems.UnReady(myitemidx); 
-};
-
-CHARACTER.prototype.ReadyXXXScript = function (rdyLoc, scriptName, index) {
-    if (this.ReadyItemByLocation(rdyLoc, index, true)) {
-        if (index != NO_READY_ITEM) {
-            var actor;
-            var pItem;
-            var hookParameters = new HOOK_PARAMETERS();
-            var scriptContext = new SCRIPT_CONTEXT();
-            actor = this.GetContextActor();
-            actor = RunTimeIF.SetCharContext(actor);
-            pItem = itemData.GetItemFromID(this.myItems.GetItem(index));
-            scriptContext.SetCharacterContext(this);
-            scriptContext.SetItemContext(pItem);
-            scriptContext.SetItemContextKey(index);
-            pItem.RunItemScripts(scriptName,
-                SPECAB.ScriptCallback_RunAllScripts,
-                null,
-                "Character just readied an item");
-            RunTimeIF.ClearCharContext();
-        };
-    };
-};
-
-CHARACTER.prototype.UnReadyXXXScript = function (scriptName, index) {
-    var actor;
-    var pItem;
-    var hookParameters = new HOOK_PARAMETERS();
-    var scriptContext = new SCRIPT_CONTEXT();
-    actor = this.GetContextActor();
-    actor = RunTimeIF.SetCharContext(actor);
-    pItem = itemData.GetItemFromID(this.myItems.GetItem(index));
-    scriptContext.SetCharacterContext(this);
-    scriptContext.SetItemContext(pItem);
-    scriptContext.SetItemContextKey(index);
-    pItem.RunItemScripts(scriptName,
-        SPECAB.ScriptCallback_RunAllScripts,
-        null,
-        "Character just un-readied an item");
-    //specAbs.RunScripts(scriptName, SPECAB.ScriptCallback_RunAllScripts, null, name,"");
-    RunTimeIF.ClearCharContext();
 };
 
 CHARACTER.prototype.ReadyWeaponScript = function (index) {

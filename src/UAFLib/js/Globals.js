@@ -174,8 +174,8 @@ Globals.prototype.SetMiscError = function (error) {
     if ((error >= 0) && (error < MAX_MISC_ERROR_MSGS)) {
         miscError = error;
         if (error != miscErrorType.NoError) {
-            if (!debugStrings.AlreadyNoted("SME01" + miscErrorText[error])) {
-                this.WriteDebugString("MISC ERROR: " + miscErrorText[error] + "\n");
+            if (!debugStrings.AlreadyNoted("SME01" + Globals.miscErrorText[error])) {
+                this.WriteDebugString("MISC ERROR: " + Globals.miscErrorText[error] + "\n");
             };
         };
     }

@@ -333,16 +333,29 @@ ITEM_LIST.prototype.CanReadyItem = function(pCharItem, pChar) {
     if (!pItem.IsUsableByClass(pChar)) {
         return miscErrorType.WrongClass;
     }
-
     if (itemData.itemUsesRdySlot(pItem)) {
         if ((pItem.Hands_to_Use == 2)
-            && ((itemReadiedLocation.WeaponHand.Equals(pItem.Location_Readied)) || itemReadiedLocation.ShieldHand.Equals(pItem.Location_Readied))) {
+            && ((itemReadiedLocation.WeaponHand.EqualsDWORD(pItem.Location_Readied)) || itemReadiedLocation.ShieldHand.EqualsDWORD(pItem.Location_Readied))) {
             if ((this.GetReadiedItem(itemReadiedLocation.WeaponHand, 0) != NO_READY_ITEM)
                 || (this.GetReadiedItem(itemReadiedLocation.ShieldHand, 0) != NO_READY_ITEM)) {
                 return TakesTwoHands;
             }
         }
         else if (pItem.Hands_to_Use > 0) {
+            // PORT NOTE: Not sure why this was so complicated but I decided to simplify and I hope I didn't miss anything
+            // pItem.Hands_to_Use is necessarily 1
+            var pItemIdx = this.GetReadiedItem(itemReadiedLocation.WeaponHand, 0);
+            if (pItemIdx != null && pItemIdx >= 0) {
+                var pItem = this.GetAtPos(pItemIdx);
+                if (pItem != null) {
+                    var pItemData = itemData.GetItemFromID(pItem.itemID);
+                    if (pItemData.Hands_to_Use > 1) {
+                        return miscErrorType.NoFreeHands;
+                    }
+                }
+            }
+
+            /*
             var readiedItem = 0, hand = 0;
             var rdyLoc = 0;
             for (hand = 0, itemReadiedLocation.WeaponHand.EqualsDWORD(rdyLoc); hand < 2; hand++, itemReadiedLocation.ShieldHand.EqualsDWORD(rdyLoc)) {
@@ -354,15 +367,16 @@ ITEM_LIST.prototype.CanReadyItem = function(pCharItem, pChar) {
                         var pCharReadiedItem;
                         var pReadiedItem;
                         pCharReadiedItem = this.m_items.PeekAtPos(readiedPos);
-                        pReadiedItem = itemData.GetItem(pCharReadiedItem.itemID);
+                        pReadiedItem = itemData.GetItemFromID(pCharReadiedItem.itemID);
                         if (pReadiedItem != null) {
                             if (pReadiedItem.Hands_to_Use > 1) {
                                 return miscErrorType.NoFreeHands;
-                            };
-                        };
-                    };
-                };
-            };
+                            }
+                        }
+                    }
+                }
+            }
+                */
         }
         if (!this.CanReady(pItem.Location_Readied, pChar, pCharItem)) {
             {

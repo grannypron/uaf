@@ -3,14 +3,13 @@
 - implement a simple spell like magic missile
 - Design an API for a wrapper that would simplify the combat rounds.  Then build it.
 - itemID.SpellID() is not supported so SCRIPT_CONTEXT.SetItemContext doesn't really allow the spellContext to be set like it should.  This probably affects items that have spells "attached" to them somehow
-- Test cases for ReadyBestShield, ReadyBestArmor, etc
+- Take a look at the CombatPlacement / MonsterPlacement special ability.  See if we can get that to be used in the way it was intended
 - TestCombatMovementAttack.js - 2 test case for Guarding-CanGuardAttack could be a little better - maybe after the status is set, the UpdateCombat() or HandleTimeDelayMsgBegin() gets called to let the guarder attack
 - Corner test cases:
 	- Ranger damage specialties
 	- Vorpal weapons
 - Test case(s) for ITEM_LIST.joinItems, but not going over the max stack quantity value
 - Test cases with multiple party members
-- Take a look at the CombatPlacement / MonsterPlacement special ability.  See if we can get that to be used in the way it was intended
 - Make a monster library loader, class library loader, etc.
 - After most features are added to engine: There are several accessors in ITEM_LIST that do the same thing.  All the calls should be consolidated into one method
 - go back through the C++ source and find all instances of "delete" and re-insert them back with calls to a MemoryManager() class.  Apparently jint responds to delete statements, although all engines might not
