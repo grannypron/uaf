@@ -3302,8 +3302,6 @@ class SPLASH_DATA : public GameEvent
   POSITION currPos;
   bool IsFirstScreen;
   bool intro;
-  void *mScreens;
-  bool LoadNextScreen();
   void EndSplash();
 public:
     SPLASH_DATA(void) { event = CONTROL_Splash; hImage = -1; currPos = NULL; IsFirstScreen = true; intro = true; }
@@ -3322,6 +3320,9 @@ public:
 #ifdef TASKTRACE
   const char *GetEventTypeName(void){return "SPLASH_DATA";};
 #endif
+protected:
+    void* mScreens;
+    bool LoadNextScreen();
 };
 
 class START_MENU_DATA : public GameEvent

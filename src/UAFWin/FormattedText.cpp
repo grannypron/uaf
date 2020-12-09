@@ -1074,9 +1074,16 @@ void FormatMultiLineText(const char* text, int lineWidth, TEXT_DISPLAY_DATA* dat
       break;  // Ignore carriage return after newline.
     case FORMATTED_TEXT::FTNL:
       break;  // We only process FTCR.
+    case FORMATTED_TEXT::WAIT:
+        data->Add(FT.GetString(&preamble));  // Updates FT to start of new line.
+        data->numLines++;
+        currLineWidth = 0;
+        data->GetTextLine(data->GetTextLineCount()-1)->waitForReturn = TRUE;
+        break;  // We only process FTCR.
     default:
       die(0x4a744);
     };
+
   };
   {
     CString lastString;
@@ -1488,6 +1495,9 @@ FORMATTED_TEXT::FTStatus FORMATTED_TEXT::NextChar(void)
     case 'H': case 'h':
         m_currentColorChar = 'H';
         GraphicsMgr.HighlightText(true);  // This will be turned off in Graphics.DrawText after this string has been processed
+        break;
+    case 'N': case 'n':
+        return FTStatus::WAIT;
         break;
     case 'C': case 'c':
       m_customColorActive = TRUE;

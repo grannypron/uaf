@@ -2123,6 +2123,8 @@ BOOL Graphics::DrawFont(int X, int Y,
     case FORMATTED_TEXT::FTDigit:
     case FORMATTED_TEXT::FTFontTag:
       break; // ignore
+    case FORMATTED_TEXT::WAIT:
+      break; // ignore
     default:
       NotImplemented(0xea91e0, false);
     };

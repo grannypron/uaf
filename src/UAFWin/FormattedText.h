@@ -102,6 +102,7 @@ public:
     FTDigit,               // First digit of font tag received 
     FTFontTag,             // Font number received
     FTEOF,                 // End of String, there is no current character.
+    WAIT,                  // Wait for return at the end of this line
   };
 private:
   int            m_lastLineBreakIndex;  // last whitespace location;
