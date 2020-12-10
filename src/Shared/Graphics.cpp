@@ -1726,7 +1726,8 @@ static BOOL prevGreenOn = FALSE;
 static BOOL prevBlueOn = FALSE;
 static BOOL prevCustom1On = FALSE;
 
-static BOOL FontColorOn=TRUE;
+static BOOL FontColorOn = TRUE;
+static BOOL SkipNextFontColor = FALSE;
 
 //*****************************************************************************
 //    NAME: Graphics::EnableFontColorTags
@@ -1748,6 +1749,17 @@ void Graphics::EnableFontColorTags(BOOL enable)
 BOOL Graphics::GetEnableFontColorTags()
 {
   return FontColorOn;
+}
+
+
+void Graphics::EnableSkipNextFontColor(BOOL enable)
+{
+    SkipNextFontColor = enable;
+}
+
+BOOL Graphics::GetSkipNextFontColor()
+{
+    return SkipNextFontColor;
 }
 
 //*****************************************************************************
@@ -2064,8 +2076,8 @@ BOOL Graphics::DrawFont(int X, int Y,
         {
           pFont = m_FontMgr.GetSurfacePtr(
             globalData.fontLib.GetFont(FT.CurrentFont(), 
-                                       FT.CurrentColorNum(),
-                                       FT.IsCustomColorActive()));
+                                    FT.CurrentColorNum(),
+                                    FT.IsCustomColorActive()));
         }
         else
           pFont = pSrcFont;
@@ -2125,6 +2137,8 @@ BOOL Graphics::DrawFont(int X, int Y,
       break; // ignore
     case FORMATTED_TEXT::WAIT:
       break; // ignore
+    case FORMATTED_TEXT::SKIPNEXTCOLOR:
+        break; // ignore
     default:
       NotImplemented(0xea91e0, false);
     };

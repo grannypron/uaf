@@ -1080,6 +1080,8 @@ void FormatMultiLineText(const char* text, int lineWidth, TEXT_DISPLAY_DATA* dat
         currLineWidth = 0;
         data->GetTextLine(data->GetTextLineCount()-1)->waitForReturn = TRUE;
         break;  // We only process FTCR.
+    case FORMATTED_TEXT::SKIPNEXTCOLOR:
+        break; // ignore
     default:
       die(0x4a744);
     };
@@ -1435,101 +1437,110 @@ FORMATTED_TEXT::FTStatus FORMATTED_TEXT::NextChar(void)
   case FTEscape:
     m_currentChar = m_pText[m_currentCharIndex++];
     m_prevStatus = FTColor;  // Just a guess.
-    switch (m_currentChar)
-    {
-    case 'W': case 'w':
-      m_customColorActive = FALSE;
-      m_currentColorNum = whiteColor;
-      m_currentColorChar = 'W'; 
-      break;
-    case 'Y': case 'y':
-      m_customColorActive = FALSE;
-      m_currentColorNum = yellowColor;
-      m_currentColorChar = 'Y'; 
-      break;
-    case 'O': case 'o':
-      m_customColorActive = FALSE;
-      m_currentColorNum = orangeColor;
-      m_currentColorChar = 'O';
-      break;
-    case 'T': case 't':
-      m_customColorActive = FALSE;
-      m_currentColorNum = brightOrangeColor;
-      m_currentColorChar = 'T'; 
-      break;
-    case 'R': case 'r':
-      m_customColorActive = FALSE;
-      m_currentColorNum = redColor;
-      m_currentColorChar = 'R'; 
-      break;
-    case 'G': case 'g':
-      m_customColorActive = FALSE;
-      m_currentColorNum = greenColor;
-      m_currentColorChar = 'G'; 
-      break;
-    case 'B': case 'b':
-      m_customColorActive = FALSE;
-      m_currentColorNum = blueColor;
-      m_currentColorChar = 'B'; 
-      break;
-    case 'V': case 'v':
-      m_customColorActive = FALSE;
-      m_currentColorNum = cyanColor;
-      m_currentColorChar = 'V'; 
-      break;
-    case 'K': case 'k':
-      m_customColorActive = FALSE;
-      m_currentColorNum = blackColor;
-      m_currentColorChar = 'K'; 
-      break;
-    case 'M': case 'm':
-      m_customColorActive = FALSE;
-      m_currentColorNum = magentaColor;
-      m_currentColorChar = 'M'; 
-      break;
-    case 'S': case 's':
-      m_customColorActive = FALSE;
-      m_currentColorNum = silverColor;
-      m_currentColorChar = 'S'; 
-      break;
-    case 'H': case 'h':
-        m_currentColorChar = 'H';
-        GraphicsMgr.HighlightText(true);  // This will be turned off in Graphics.DrawText after this string has been processed
-        break;
-    case 'N': case 'n':
-        return FTStatus::WAIT;
-        break;
-    case 'C': case 'c':
-      m_customColorActive = TRUE;
-      // What are we to do?  There are as many as 100 different fonts.
-      // What font are we to assign to this custom color?
-      // Here is our plan.....All 100 fonts can have the color overridden
-      // with the "/c" escape sequence.
-      // So for example:
-      //   /26/M/C  will print in the font 35 in the custom color.
-      //   The /C will cease to apply when any other color is specified (/M /B etc)
-      //   Specifying a new base font ( /27 for example) leaves /C in effect.
-      //   So the /C simply overrides the RGB value of the currently selected font.
-      break;
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9':
-      m_prevStatus = FTDigit;
-      return m_prevStatus;
-    default:
-      // backup and send the characters as printable.
-      m_currentCharIndex -= 1;
-      m_currentChar = '/';
-      m_prevStatus = FTPrintable;
-      return m_prevStatus;
-    };
+    if (!GraphicsMgr.GetSkipNextFontColor()) {
+      switch (m_currentChar)
+        {
+        case 'W': case 'w':
+          m_customColorActive = FALSE;
+          m_currentColorNum = whiteColor;
+          m_currentColorChar = 'W'; 
+          break;
+        case 'Y': case 'y':
+          m_customColorActive = FALSE;
+          m_currentColorNum = yellowColor;
+          m_currentColorChar = 'Y'; 
+          break;
+        case 'O': case 'o':
+          m_customColorActive = FALSE;
+          m_currentColorNum = orangeColor;
+          m_currentColorChar = 'O';
+          break;
+        case 'T': case 't':
+          m_customColorActive = FALSE;
+          m_currentColorNum = brightOrangeColor;
+          m_currentColorChar = 'T'; 
+          break;
+        case 'R': case 'r':
+          m_customColorActive = FALSE;
+          m_currentColorNum = redColor;
+          m_currentColorChar = 'R'; 
+          break;
+        case 'G': case 'g':
+          m_customColorActive = FALSE;
+          m_currentColorNum = greenColor;
+          m_currentColorChar = 'G'; 
+          break;
+        case 'B': case 'b':
+          m_customColorActive = FALSE;
+          m_currentColorNum = blueColor;
+          m_currentColorChar = 'B'; 
+          break;
+        case 'V': case 'v':
+          m_customColorActive = FALSE;
+          m_currentColorNum = cyanColor;
+          m_currentColorChar = 'V'; 
+          break;
+        case 'K': case 'k':
+          m_customColorActive = FALSE;
+          m_currentColorNum = blackColor;
+          m_currentColorChar = 'K'; 
+          break;
+        case 'M': case 'm':
+          m_customColorActive = FALSE;
+          m_currentColorNum = magentaColor;
+          m_currentColorChar = 'M'; 
+          break;
+        case 'S': case 's':
+          m_customColorActive = FALSE;
+          m_currentColorNum = silverColor;
+          m_currentColorChar = 'S'; 
+          break;
+        case 'H': case 'h':
+          m_currentColorChar = 'H';
+          GraphicsMgr.HighlightText(true);  // This will be turned off in Graphics.DrawText after this string has been processed
+          break;
+        case 'N': case 'n':
+          return FTStatus::WAIT;
+          break;
+        case '#':
+          GraphicsMgr.EnableSkipNextFontColor(true);
+          return FTStatus::SKIPNEXTCOLOR;
+          break;
+       case 'C': case 'c':
+          m_customColorActive = TRUE;
+          // What are we to do?  There are as many as 100 different fonts.
+          // What font are we to assign to this custom color?
+          // Here is our plan.....All 100 fonts can have the color overridden
+          // with the "/c" escape sequence.
+          // So for example:
+          //   /26/M/C  will print in the font 35 in the custom color.
+          //   The /C will cease to apply when any other color is specified (/M /B etc)
+          //   Specifying a new base font ( /27 for example) leaves /C in effect.
+          //   So the /C simply overrides the RGB value of the currently selected font.
+          break;
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+          m_prevStatus = FTDigit;
+          return m_prevStatus;
+        default:
+          // backup and send the characters as printable.
+          m_currentCharIndex -= 1;
+          m_currentChar = '/';
+          m_prevStatus = FTPrintable;
+          return m_prevStatus;
+        };
+    }
+    else {
+      GraphicsMgr.EnableSkipNextFontColor(FALSE);
+    }
     return m_prevStatus;
   case FTDigit:
     m_currentChar = m_pText[m_currentCharIndex++];

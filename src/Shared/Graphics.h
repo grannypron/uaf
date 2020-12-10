@@ -169,6 +169,8 @@ public:
   void HighlightText(BOOL enable);
   void EnableFontColorTags(BOOL enable);
   BOOL GetEnableFontColorTags();
+  void EnableSkipNextFontColor(BOOL enable);
+  BOOL GetSkipNextFontColor();
   /*  20200208  PRS
   void StoreFontColorTags(void);
   void RestoreFontColorTags(void);

@@ -103,6 +103,7 @@ public:
     FTFontTag,             // Font number received
     FTEOF,                 // End of String, there is no current character.
     WAIT,                  // Wait for return at the end of this line
+    SKIPNEXTCOLOR,         // Skip the next color flag that we is used
   };
 private:
   int            m_lastLineBreakIndex;  // last whitespace location;
