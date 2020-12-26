@@ -715,6 +715,13 @@ void BackgroundSlotMemType::Serialize(CArchive &ar, double version)
      ar << useAlphaBlend;
      ar << AlphaBlendPcnt;
      ar << useTransparency;
+
+     if (globalData.version >= _VERSION_5261) {
+         ar << FrameHeight;
+         ar << FrameWidth;
+         ar << NumFrames;
+         ar << timeDelay;
+     }
   }
   else
   {
@@ -744,6 +751,13 @@ void BackgroundSlotMemType::Serialize(CArchive &ar, double version)
 
      if (version >= _VERSION_0630_)
       ar >> useTransparency;
+
+     if (globalData.version >= _VERSION_5261) {
+         ar >> FrameHeight;
+         ar >> FrameWidth;
+         ar >> NumFrames;
+         ar >> timeDelay;
+     }
   }
 }
 
@@ -773,6 +787,13 @@ void BackgroundSlotMemType::Serialize(CAR &ar, double version)
      ar << useAlphaBlend;
      ar << AlphaBlendPcnt;
      ar << useTransparency;
+
+     if (globalData.version >= _VERSION_5261) {
+         ar << FrameHeight;
+         ar << FrameWidth;
+         ar << NumFrames;
+         ar << timeDelay;
+     }
   }
   else
   {
@@ -808,6 +829,13 @@ void BackgroundSlotMemType::Serialize(CAR &ar, double version)
      }
      if (version >= _VERSION_0630_)
       ar >> useTransparency;
+
+     if (globalData.version >= _VERSION_5261) {
+         ar >> FrameHeight;
+         ar >> FrameWidth;
+         ar >> NumFrames;
+         ar >> timeDelay;
+     }
   }
 }
 
@@ -2074,6 +2102,7 @@ void BackgroundSlotMemType::Clear()
   backgroundFileHash=0;
   backgroundFileAltHash=0;
   memset(&surfRect, 0, sizeof(surfRect));
+  picData.Clear();
 }
 
 BackgroundSlotMemType& BackgroundSlotMemType::operator =(const BackgroundSlotMemType& src)
@@ -2097,6 +2126,10 @@ BackgroundSlotMemType& BackgroundSlotMemType::operator =(const BackgroundSlotMem
    if (!src.backgroundFile.IsEmpty()) backgroundFile = src.backgroundFile;
    if (!src.backgroundFileAlt.IsEmpty()) backgroundFileAlt = src.backgroundFileAlt;
    if (!src.soundFile.IsEmpty()) soundFile=src.soundFile;
+   FrameHeight = src.FrameHeight;
+   FrameWidth = src.FrameWidth;
+   NumFrames = src.NumFrames;
+   timeDelay = src.timeDelay;
    return *this;
 }
 #ifdef UAFEDITOR
@@ -2119,6 +2152,10 @@ bool BackgroundSlotMemType::operator ==(const BackgroundSlotMemType& src)
    if (backgroundFile != src.backgroundFile) return false;
    if (backgroundFileAlt != src.backgroundFileAlt) return false;
    if (soundFile != src.soundFile) return false;
+   if (FrameHeight != src.FrameHeight) return false;
+   if (FrameWidth != src.FrameWidth) return false;
+   if (NumFrames != src.NumFrames) return false;
+   if (timeDelay != src.timeDelay) return false;
    return true;
 }
 #endif

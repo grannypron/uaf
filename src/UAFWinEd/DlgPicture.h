@@ -48,7 +48,7 @@ protected:
   COLORREF m_Color;
   CRectTracker m_box;
   BOOL m_UseTracker;
-
+  int m_Frame;
   // dstRect = rect of m_PicDib
   // allows modification of m_PicDib bits before
   // they are drawn to CStatic window
@@ -71,7 +71,9 @@ public:
   long GetSrcDib() { return m_SrcDib; }
   CRect GetSrcRect() { return m_SrcRect; }
   void GetStats(int &w, int &h, int &bits);
-  
+  int GetFrame() { return m_Frame; }
+  void SetFrame(int frame) { m_Frame = frame; }
+
   // return TRUE if m_PicDib should be drawn 
   // to CStatic's window
   virtual BOOL ShouldDrawDib();

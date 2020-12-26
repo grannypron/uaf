@@ -1719,6 +1719,15 @@
 #define IDC_QuestStageTag               2265
 #define IDC_QuestStageDoc               2266
 #define IDC_PChanceTag                  2267
+#define IDC_BGFWIDTH                    2268
+#define IDC_BGFHEIGHT                   2269
+#define IDC_BGNUMFRAMES                 2270
+#define IDC_BGDELAY                     2271
+#define IDC_BGVIEWALLPIC                2272
+#define IDC_BGUPDATESTATS               2273
+#define IDC_BGTOGGLEANIM                2274
+#define IDC_BGNEXTFRAME                 2275
+#define IDC_BGANIMATIONSTYLE            2276
 #define IDS_HELP_ability_Name           2300
 #define IDS_HELP_ability_Abbrev         2301
 #define IDS_HELP_ability_Roll           2302
@@ -1861,7 +1870,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        317
+#define _APS_NEXT_RESOURCE_VALUE        318
 #define _APS_NEXT_COMMAND_VALUE         32887
 #define _APS_NEXT_CONTROL_VALUE         2268
 #define _APS_NEXT_SYMED_VALUE           101

@@ -456,7 +456,9 @@ BOOL PIC_DATA::AnimateNextFrame(LONGLONG timestamp)
   if (!IsPicLoaded()) return FALSE;
   
   //ASSERT(picType == SmallPicDib);
-
+  OutputDebugString(CString("PIC_DATA::AnimateNextFrame"));
+  OutputDebugString(CString(filename));
+  OutputDebugString("\n");
   // combat art is animated in COMBAT_SPRITE_DATA::Update()
   if ((picType == SmallPicDib || picType == BigPicDib) && (style == AS_None))
   {

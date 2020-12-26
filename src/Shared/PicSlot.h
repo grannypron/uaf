@@ -275,7 +275,15 @@ public:
   int StartTime;
   int EndTime;
   int AlphaBlendPcnt;
+  PIC_DATA picData;
   RECT surfRect; // used for overland only
+
+  // For animated backdrops
+  int timeDelay;
+  int NumFrames;
+  int FrameWidth;
+  int FrameHeight;
+  LONGLONG lastTime;
 };
 
 extern BackgroundSlotMemType BackgroundSets[MAX_BACKGROUNDS];

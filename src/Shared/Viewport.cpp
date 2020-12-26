@@ -1543,7 +1543,6 @@ void BltBackgroundSurface(long dstSurface, long srcSurface, RECT *pSrcRect, RECT
   //    draw regular backdrop
   // end if
   //    
-
   long altsurf=-1;
   if (BackgroundSets[slot].useAltBackground)
     altsurf = BackgroundSets[slot].GetBackgroundAltSurface();
@@ -3941,7 +3940,7 @@ void UpdateIndoorView(int plyrX, int plyrY, int facing, long int dstSurface)
 {
   DetermineView(facing, plyrX, plyrY);
   wallSubstitutionCacheCount = 0;
-  RenderBackground(facing, dstSurface);  
+  RenderBackground(facing, dstSurface);
   RenderWalls(facing, dstSurface);
 /*
   {

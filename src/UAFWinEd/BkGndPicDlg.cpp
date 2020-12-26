@@ -25,6 +25,7 @@
 //#include "SurfaceMgr.h"
 #include "class.h"
 #include "PicSlot.h"
+#include "ScrollPicDlg.h"
 #include "SoundChooser.h"
 #include "BkGndPicDlg.h"
 
@@ -53,7 +54,11 @@ CBkGndPicDlg::CBkGndPicDlg(BackgroundSlotMemType &data, CWnd* pParent /*=NULL*/)
 	m_UseTransparency = FALSE;
 	m_SuppressStepSound = FALSE;
 	//}}AFX_DATA_INIT
-  m_data = data;
+	m_data = data;
+	m_FrameWidth = 0;
+	m_FrameHeight = 0;
+	m_NumFrames = 0;
+	m_timeDelay = 0;
 }
 
 
@@ -75,6 +80,10 @@ void CBkGndPicDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_USEALPHABLEND, m_UseAlphaBlend);
 	DDX_Check(pDX, IDC_USETRANSPARENCY, m_UseTransparency);
 	DDX_Check(pDX, IDC_SUPPRESSSTEPSOUND, m_SuppressStepSound);
+	DDX_Text(pDX, IDC_BGFWIDTH, m_FrameWidth);
+	DDX_Text(pDX, IDC_BGFHEIGHT, m_FrameHeight);
+	DDX_Text(pDX, IDC_BGNUMFRAMES, m_NumFrames);
+	DDX_Text(pDX, IDC_BGDELAY, m_timeDelay);
 	//}}AFX_DATA_MAP
 }
 
@@ -86,6 +95,8 @@ BEGIN_MESSAGE_MAP(CBkGndPicDlg, CDialog)
 	ON_BN_CLICKED(IDC_SELECTALT, OnSelectalt)
 	ON_BN_CLICKED(IDC_SELECTSOUND, OnSelectsound)
 	//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDC_BGVIEWALLPIC, &CBkGndPicDlg::OnBnClickedBgviewallpic)
+	ON_BN_CLICKED(IDC_BGUPDATESTATS, &CBkGndPicDlg::OnBnClickedBgupdatestats)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -108,6 +119,11 @@ BOOL CBkGndPicDlg::OnInitDialog()
   m_UseTransparency = m_data.useTransparency;
   m_Sound = m_data.soundFile;
   m_SuppressStepSound = m_data.suppressStepSound;
+
+  m_FrameWidth = m_data.FrameWidth;
+  m_FrameHeight = m_data.FrameHeight;
+  m_NumFrames = m_data.NumFrames;
+  m_timeDelay = m_data.timeDelay;
 
   LoadFile(m_Filename);
   LoadAltFile(m_AltFilename);	
@@ -214,7 +230,12 @@ void CBkGndPicDlg::OnOK()
     m_data.EndTime=0;
     m_data.StartTime=0;
   }
-	CDialog::OnOK();
+  m_data.FrameWidth = m_FrameWidth;
+  m_data.FrameHeight = m_FrameHeight;
+  m_data.NumFrames = m_NumFrames;
+  m_data.timeDelay = m_timeDelay;
+  
+  CDialog::OnOK();
 }
 
 void CBkGndPicDlg::OnSelectsound() 
@@ -227,4 +248,31 @@ void CBkGndPicDlg::OnSelectsound()
     getBaseName(m_Sound, name, MAX_MEDITBUTTON_TEXT);
     m_SelectSound.SetWindowText(name);
   }		
+}
+
+
+void CBkGndPicDlg::OnBnClickedBgviewallpic()
+{
+	UpdateData(TRUE);
+	CScrollPicDlg dlg(m_Filename, rte.WallArtDir(), "");
+	dlg.DoModal();
+}
+
+
+void CBkGndPicDlg::OnBnClickedBgupdatestats()
+{
+	int frame;
+	UpdateData(TRUE);
+
+	if (m_NumFrames < 1) m_NumFrames = 1;
+	if (m_NumFrames == 1) { m_timeDelay = 0; }
+	if ((m_timeDelay < 30) && (m_timeDelay != 0))
+		m_timeDelay = 2000;
+	if (m_FrameWidth < 1) m_FrameWidth = 1;
+	if (m_FrameHeight < 1) m_FrameHeight = 1;
+
+	frame = this->m_Picture.GetFrame();
+	UpdateData(FALSE);
+	LoadFile(m_Filename);
+	this->m_Picture.SetFrame(frame);
 }

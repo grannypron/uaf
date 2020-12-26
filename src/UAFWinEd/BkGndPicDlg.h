@@ -44,6 +44,10 @@ public:
 	BOOL	m_UseAlphaBlend;
 	BOOL	m_UseTransparency;
 	BOOL	m_SuppressStepSound;
+	int     m_FrameWidth;
+	int     m_FrameHeight;
+	int     m_NumFrames;
+	int     m_timeDelay;
 	//}}AFX_DATA
 
 
@@ -72,4 +76,7 @@ protected:
 	afx_msg void OnSelectsound();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnBnClickedBgviewallpic();
+	afx_msg void OnBnClickedBgupdatestats(void);
 };

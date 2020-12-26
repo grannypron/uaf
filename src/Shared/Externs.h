@@ -174,6 +174,7 @@ enum FONT_COLOR_NUM;
 #define _VERSION_524      5.24
 #define _VERSION_525      5.25
 #define _VERSION_526      5.26
+#define _VERSION_5261     5.261
 
 
 
