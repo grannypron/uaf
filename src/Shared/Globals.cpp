@@ -531,6 +531,9 @@ COLORREF BACKGROUND_FILL        = RGB(0,0,0);
 COLORREF BACKWARD_BACKGROUND_FILL = RGB(0,0,0); // SOme functions want BGR values????
 COLORREF BACKGROUND_COMBAT_FILL = RGB(0,0,0);
 
+int currBgFrame = 1;
+int currBgSlot = 1;
+int lastBgUpdate = 0;
 
 /*
  * Font colors are defined in globalData.availableFonts

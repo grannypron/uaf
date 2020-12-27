@@ -1412,7 +1412,7 @@ BOOL IsTimeForAltBackdrop(int slot)
 // PURPOSE: 
 //
 //*****************************************************************************
-long getBackgroundSurface(int facing, int i) // viewmap index
+long getBackgroundSurface(int facing, int i, BackgroundSlotMemType &slot, int& wallSlotIdx) // viewmap index
 {
   long surface=-1;
   if ((i<0) || (i>14))  return -1;
@@ -1425,9 +1425,14 @@ long getBackgroundSurface(int facing, int i) // viewmap index
     // if no alt background, use default
     if (surface < 0)
       surface = BackgroundSets[wallSlot].GetBackgroundSurface();
+    slot = BackgroundSets[wallSlot];
+    wallSlotIdx = wallSlot;
   }
-  else
-     surface = BackgroundSets[wallSlot].GetBackgroundSurface();
+  else {
+      surface = BackgroundSets[wallSlot].GetBackgroundSurface();
+      slot = BackgroundSets[wallSlot];
+      wallSlotIdx = wallSlot;
+  }
   return surface;
 }
 
@@ -3719,17 +3724,29 @@ void RenderBackground(int facing, long int dstSurface)
   RECT srcRect;
   RECT imageSrcRect;
   long srcSurface;
+  BackgroundSlotMemType slotData;
 
   // check to see if distant background rendering is
   // enabled in the current square where player is
   // standing
   if (!RenderDistantBackgrounds(facing, 12))
   {
-    srcSurface = getBackgroundSurface(facing, 12);
+    srcSurface = getBackgroundSurface(facing, 12, slotData, currBgSlot);
 
     if (srcSurface > 0)
     { 
       GraphicsMgr.GetSurfaceRect(srcSurface, &imageSrcRect);
+      
+      // Get the Nth frame of the background
+      if (currBgFrame <= 0 || currBgFrame > slotData.NumFrames) {
+          currBgFrame = 1;
+      }
+      // Only bother changing if there is more than one background slot
+      if (slotData.NumFrames > 1) {
+          // Calculate the position in the image that should be used in the source image
+          imageSrcRect.left = imageSrcRect.left + ((currBgFrame - 1) * slotData.FrameWidth);
+          imageSrcRect.right = imageSrcRect.left + slotData.FrameWidth;
+      }
 
       dstRect.left = BackgroundX;
       dstRect.top = BackgroundY;
@@ -3786,7 +3803,7 @@ void RenderBackground(int facing, long int dstSurface)
       dstRect.left = ViewportX;
       dstRect.right = dstRect.left + ViewportWidth;
 
-      srcSurface = getBackgroundSurface(facing, 4);
+      srcSurface = getBackgroundSurface(facing, 4, slotData, currBgSlot);
       if (srcSurface > 0)
       { 
         GraphicsMgr.GetSurfaceRect(srcSurface, &imageSrcRect);
@@ -3803,7 +3820,7 @@ void RenderBackground(int facing, long int dstSurface)
         BltBackgroundSurface(dstSurface, srcSurface, &srcRect, &dstRect, getBackgroundSlot(facing, 4));
       }
 
-      srcSurface = getBackgroundSurface(facing, 9);
+      srcSurface = getBackgroundSurface(facing, 9, slotData, currBgSlot);
       if (srcSurface > 0)
       {
         GraphicsMgr.GetSurfaceRect(srcSurface, &imageSrcRect);
@@ -3831,7 +3848,7 @@ void RenderBackground(int facing, long int dstSurface)
         BltBackgroundSurface(dstSurface, srcSurface, &srcRect, &dstRect, getBackgroundSlot(facing, 9));
       }
 
-      srcSurface = getBackgroundSurface(facing, 12);
+      srcSurface = getBackgroundSurface(facing, 12, slotData, currBgSlot);
       if (srcSurface > 0)
       {
         GraphicsMgr.GetSurfaceRect(srcSurface, &imageSrcRect);
@@ -3862,7 +3879,7 @@ void RenderBackground(int facing, long int dstSurface)
     else // not in bands
     {
       // first fill background with normal backdrop image
-      srcSurface = getBackgroundSurface(facing, 12);
+      srcSurface = getBackgroundSurface(facing, 12, slotData, currBgSlot);
       if (srcSurface > 0)
       {    
         GraphicsMgr.GetSurfaceRect(srcSurface, &imageSrcRect);
@@ -3878,7 +3895,7 @@ void RenderBackground(int facing, long int dstSurface)
       dstRect.left = ViewportX+origin12.x+e_offset.x;
       dstRect.right = dstRect.left + ewidth;
 
-      srcSurface = getBackgroundSurface(facing, 9);
+      srcSurface = getBackgroundSurface(facing, 9, slotData, currBgSlot);
       if (srcSurface > 0)
       {
         GraphicsMgr.GetSurfaceRect(srcSurface, &imageSrcRect);
@@ -3910,7 +3927,7 @@ void RenderBackground(int facing, long int dstSurface)
       dstRect.left = ViewportX+origin9.x+h_offset.x;
       dstRect.right = dstRect.left + hwidth;
 
-      srcSurface = getBackgroundSurface(facing, 4);
+      srcSurface = getBackgroundSurface(facing, 4, slotData, currBgSlot);
       if (srcSurface > 0)
       { 
         GraphicsMgr.GetSurfaceRect(srcSurface, &imageSrcRect);

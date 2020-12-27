@@ -385,6 +385,11 @@ extern int SCREEN_WIDTH;  // these change to reflect the current
 extern int SCREEN_HEIGHT; // screen resolution for the editor,
 extern int COLOR_BITS;
 
+extern int currBgFrame;
+extern int currBgSlot;
+extern int lastBgUpdate;
+
+
 enum screenRes { res640x480=0, res800x600=1, res1024x768=2, res1152x864=3, res1280x1024=4 };
 extern screenRes m_GameScreenRes;
 
@@ -396,7 +401,6 @@ extern COLORREF BACKGROUND_COMBAT_FILL;
  // used by editor to display map
 extern CString MAPART;
 extern CString OVERLANDART;
-
 
 // used by engine to display area view of map
 extern CString AREAVIEWART;
@@ -1682,6 +1686,7 @@ extern int LogCompileErrors; // In databases
 extern BOOL UseOldAVStyle;
 //extern BOOL UseAVZoneStyle;
 
+// For animated backdrops
 enum WRITE_DEBUG_DIALOG
 {
   WRITE_DEBUG_DIALOG_NONE = 0,

@@ -29,6 +29,7 @@
 #include "CProcInp.h"
 #include "Screen.h"
 #include "Dgngame.h"
+#include "PicSlot.h"
 #include "Graphics.h"
 #include "Viewport.h"
 #include "path.h"
@@ -448,6 +449,13 @@ bool GameEvent::OnCycle(void)
     result = combatData.ProcessTimeSensitiveData(currTime);
   else
     result = party.ProcessTimeSensitiveData(currTime);
+  BackgroundSlotMemType currBg = BackgroundSets[currBgSlot];
+  // Advance the frame counter for the background.  RenderBackground will take care of the rest
+  if ((currTime - lastBgUpdate) >= (DWORD)currBg.timeDelay) {
+      currBgFrame++;
+      lastBgUpdate = currTime;
+      result = true;
+  }
 
   // this advances to next frame if timeDelay ms
   // have passed since last update.  
