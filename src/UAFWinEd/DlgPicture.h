@@ -393,7 +393,7 @@ protected:
 // CDlgMap3DPicture window
 
 
-class CDlgMap3DPicture : public CDlgPicture
+class CDlgMap3DPicture : public CDlgPicture, public CTimer
 {
 public:
 	CDlgMap3DPicture();
@@ -405,6 +405,7 @@ public:
   void SetCurrPos(int x, int y, int facing) { m_x=x; m_y=y; m_facing=facing; }
   BOOL Initialize();
   void PrepareDestDC(CDC *pdc);
+  VOID OnTimerEvent(UINT TimerId);
 
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDlgMap3DPicture)
@@ -421,6 +422,7 @@ private:
   int m_x;
   int m_y;
   int m_facing;
+  int currTime;
 };
 
 
@@ -440,4 +442,5 @@ extern RECT MapBlockSize;
 //extern RECT VO_WallRects[MAX_WALLSETS];
 //extern RECT BlockRects[MAX_WALLSETS];
 extern RECT WallOffsetRects[17];
+extern int EDITOR_TIMER_CYCLE; // Cycle that animation timer runs on.  Background animation won't be able to render any faster than this
 #endif

@@ -750,6 +750,8 @@ RECT VO_WallSize = {0,0,2,6};           // Can be overridden by config.txt
 RECT MapSquareSize = {0,0,16,16};       // Can be overridden by config.txt
 RECT MapBlockSize = {0,0,6,6};          // Can be overridden by config.txt
 
+int EDITOR_TIMER_CYCLE = 250; // Cycle that animation timer runs on.  Background animation won't be able to render any faster than this
+
 // for overland.
 // zone and ep color blocks have the same coords as for dungeons,
 // arrow rects are also the same.
@@ -1352,11 +1354,14 @@ END_MESSAGE_MAP()
 
 CDlgMap3DPicture::CDlgMap3DPicture() : CDlgPicture()
 {
-  m_x=m_y=m_facing=0;
+  m_x=m_y=m_facing=0;currTime=0;
 }
 
 CDlgMap3DPicture::~CDlgMap3DPicture()
 {
+  if (CTimer::Active()) {
+      CTimer::StopTimer();
+  }
   if (globalData.MapArtSurf >= 0)
     GraphicsMgr.ReleaseSurface(globalData.MapArtSurf);
 }
@@ -1375,6 +1380,10 @@ BOOL CDlgMap3DPicture::Initialize()
     WriteDebugString("Failed LoadAreaViewArt() in CDlgMap3DPicture()\n");
     return FALSE;
   }
+
+  currTime = 0;
+  CTimer::StopTimer();
+  CTimer::StartPeriodicTimer(EDITOR_TIMER_CYCLE);
 
   return TRUE;
 }
@@ -1415,4 +1424,17 @@ BOOL CDlgMap3DPicture::OnEraseBkgnd(CDC* pDC)
 void CDlgMap3DPicture::PrepareDestDC(CDC *pdc)
 {
   // do nothing
+}
+
+VOID CDlgMap3DPicture::OnTimerEvent(UINT TimerId) {
+    BackgroundSlotMemType currBg = BackgroundSets[currBgSlot];
+    if (currBgFrame > currBg.NumFrames) {
+        currBgFrame = 1;
+    }
+    if ((currTime - lastBgUpdate) >= (DWORD)currBg.timeDelay) {
+        currBgFrame++;
+        lastBgUpdate = currTime;
+        Invalidate();
+    }
+    currTime += EDITOR_TIMER_CYCLE;
 }

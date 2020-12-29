@@ -1412,7 +1412,7 @@ BOOL IsTimeForAltBackdrop(int slot)
 // PURPOSE: 
 //
 //*****************************************************************************
-long getBackgroundSurface(int facing, int i, BackgroundSlotMemType &slot, int& wallSlotIdx) // viewmap index
+long getBackgroundSurface(int facing, int i, BackgroundSlotMemType &slot, int& bgSlotIdx) // viewmap index
 {
   long surface=-1;
   if ((i<0) || (i>14))  return -1;
@@ -1426,12 +1426,12 @@ long getBackgroundSurface(int facing, int i, BackgroundSlotMemType &slot, int& w
     if (surface < 0)
       surface = BackgroundSets[wallSlot].GetBackgroundSurface();
     slot = BackgroundSets[wallSlot];
-    wallSlotIdx = wallSlot;
+    bgSlotIdx = wallSlot;
   }
   else {
       surface = BackgroundSets[wallSlot].GetBackgroundSurface();
       slot = BackgroundSets[wallSlot];
-      wallSlotIdx = wallSlot;
+      bgSlotIdx = wallSlot;
   }
   return surface;
 }
