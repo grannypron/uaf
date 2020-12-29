@@ -22,7 +22,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CBkGndPicDlg dialog
 
-class CBkGndPicDlg : public CDialog
+class CBkGndPicDlg : public CDialog, public CTimer
 {
 // Construction
 public:
@@ -48,10 +48,12 @@ public:
 	int     m_FrameHeight;
 	int     m_NumFrames;
 	int     m_timeDelay;
+	CButton	m_ToggleAnim;
 	//}}AFX_DATA
 
 
   BackgroundSlotMemType m_data;
+  VOID OnTimerEvent(UINT TimerId);
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -65,6 +67,8 @@ protected:
    CString m_Sound;
    void LoadFile(CString file);
    void LoadAltFile(CString file);
+   void UpdateSrcRectForFrame();
+   void AdvanceBGFrame();
 
 	// Generated message map functions
 	//{{AFX_MSG(CBkGndPicDlg)
@@ -79,4 +83,6 @@ protected:
 public:
 	afx_msg void OnBnClickedBgviewallpic();
 	afx_msg void OnBnClickedBgupdatestats(void);
+	afx_msg void OnBnClickedBgtoggleanim();
+	afx_msg void OnBnClickedBgnextframe();
 };

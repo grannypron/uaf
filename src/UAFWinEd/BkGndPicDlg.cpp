@@ -84,6 +84,7 @@ void CBkGndPicDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_BGFHEIGHT, m_FrameHeight);
 	DDX_Text(pDX, IDC_BGNUMFRAMES, m_NumFrames);
 	DDX_Text(pDX, IDC_BGDELAY, m_timeDelay);
+	DDX_Control(pDX, IDC_BGTOGGLEANIM, m_ToggleAnim);
 	//}}AFX_DATA_MAP
 }
 
@@ -97,6 +98,8 @@ BEGIN_MESSAGE_MAP(CBkGndPicDlg, CDialog)
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_BGVIEWALLPIC, &CBkGndPicDlg::OnBnClickedBgviewallpic)
 	ON_BN_CLICKED(IDC_BGUPDATESTATS, &CBkGndPicDlg::OnBnClickedBgupdatestats)
+	ON_BN_CLICKED(IDC_BGTOGGLEANIM, &CBkGndPicDlg::OnBnClickedBgtoggleanim)
+	ON_BN_CLICKED(IDC_BGNEXTFRAME, &CBkGndPicDlg::OnBnClickedBgnextframe)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -131,6 +134,12 @@ BOOL CBkGndPicDlg::OnInitDialog()
   char name[MAX_MEDITBUTTON_TEXT+1];
   getBaseName(m_Sound, name, MAX_MEDITBUTTON_TEXT);
   m_SelectSound.SetWindowText(name);
+
+  if (m_NumFrames <= 0) {
+	  m_NumFrames = 1;
+  }
+  m_Picture.SetFrame(1);
+  UpdateSrcRectForFrame();
 
   UpdateData(FALSE);
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -234,7 +243,7 @@ void CBkGndPicDlg::OnOK()
   m_data.FrameHeight = m_FrameHeight;
   m_data.NumFrames = m_NumFrames;
   m_data.timeDelay = m_timeDelay;
-  
+  CTimer::StopTimer();
   CDialog::OnOK();
 }
 
@@ -274,5 +283,73 @@ void CBkGndPicDlg::OnBnClickedBgupdatestats()
 	frame = this->m_Picture.GetFrame();
 	UpdateData(FALSE);
 	LoadFile(m_Filename);
+
+	UpdateSrcRectForFrame();
 	this->m_Picture.SetFrame(frame);
+}
+
+void CBkGndPicDlg::UpdateSrcRectForFrame() {
+	if (m_NumFrames > 1) {
+		// Change the position of the src image's viewed rectangle by the frame of that is specified if there is more than one
+		CRect framedRect;
+		framedRect = this->m_Picture.GetSrcRect();
+		framedRect.left = m_FrameWidth * (this->m_Picture.GetFrame() - 1);
+		framedRect.right = framedRect.left + m_FrameWidth;
+		this->m_Picture.SetSrcRect(framedRect);
+	}
+	else {
+		m_Picture.SetFrame(1);
+	}
+}
+
+void CBkGndPicDlg::OnBnClickedBgtoggleanim()
+{
+	if (m_NumFrames <= 1)
+	{
+		m_ToggleAnim.SetWindowText("Start");
+		return;
+	}
+
+	CString title;
+	m_ToggleAnim.GetWindowText(title);
+	if (title == "Start")
+	{
+		if (CTimer::Active())
+			StopTimer();
+
+		StartPeriodicTimer(m_timeDelay);
+		m_ToggleAnim.SetWindowText("Stop");
+	}
+	else
+	{
+		StopTimer();
+		m_ToggleAnim.SetWindowText("Start");
+	}
+}
+
+VOID CBkGndPicDlg::OnTimerEvent(UINT TimerId) {
+	AdvanceBGFrame();
+}
+
+
+void CBkGndPicDlg::OnBnClickedBgnextframe()
+{
+	CString title;
+	m_ToggleAnim.GetWindowText(title);
+	if (title == "Start")
+	{
+		AdvanceBGFrame();
+	}
+}
+
+void CBkGndPicDlg::AdvanceBGFrame() {
+	if (m_Picture.GetFrame() < m_NumFrames && m_Picture.GetFrame() > 0) {
+		m_Picture.SetFrame(m_Picture.GetFrame() + 1);
+	}
+	else {
+		m_Picture.SetFrame(1);
+	}
+	UpdateSrcRectForFrame();
+	m_Picture.Invalidate(FALSE);
+
 }

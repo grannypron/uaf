@@ -73,6 +73,7 @@ public:
   void GetStats(int &w, int &h, int &bits);
   int GetFrame() { return m_Frame; }
   void SetFrame(int frame) { m_Frame = frame; }
+  void SetSrcRect(CRect rect) { m_SrcRect = rect; }
 
   // return TRUE if m_PicDib should be drawn 
   // to CStatic's window
