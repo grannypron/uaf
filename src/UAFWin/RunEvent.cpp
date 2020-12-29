@@ -15225,6 +15225,11 @@ void COMBAT_EVENT_DATA::OnKeypress(key_code key, char ascii)
 
 void COMBAT_EVENT_DATA::ChangeToTaskState(TASKSTATE state)
 {
+    OutputDebugString(CString("COMBAT_EVENT_DATA::ChangeToTaskState: "));
+    char tmp[10];
+    sprintf(tmp, "%d", static_cast<int>(state));
+    OutputDebugString(CString(tmp));
+    OutputDebugString("\n");
 
   if (state == GetMyState())
     int kkk=1; //return;
@@ -26333,25 +26338,10 @@ void CAST_COMBAT_SPELL_MENU_DATA::OnInitialEvent(void)
   if (NeedSpellTargeting(pSpData))
   {
 
-
-
-
-    /* ********************** 20200204 PRS 
-    if (targs == 0) WriteDebugString("Spell %s targets eval to 0 in CAST_COMBAT_SPELL_MENU_DATA\n", pSpData->Name);
-      ReplaceEvent(new COMBAT_SPELL_AIM_MENU_DATA(m_pCaster,pSpData), DeleteEvent); 
-      return;
-      */
-
-    if (targs == 0)
-    {
-      WriteDebugString("Spell %s targets eval to 0 in CAST_COMBAT_SPELL_MENU_DATA\n", pSpData->Name);
+      if (targs == 0) WriteDebugString("Spell %s targets eval to 0 in CAST_COMBAT_SPELL_MENU_DATA\n", pSpData->Name);
       ReplaceEvent(new COMBAT_SPELL_AIM_MENU_DATA(m_pCaster, pSpData), DeleteEvent);
       return;
-    };
-    
-      
-      
-      
+
   }
   else // whole party or self targeting
   {        
