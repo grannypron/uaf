@@ -5172,6 +5172,7 @@ void ToHitComputation::Compute(const COMBATANT *pAttacker,
   else
   {
     m_isBackStab = pAttacker->DetermineIfBackStab(wpn, targetIndex);
+    m_backstabMultiplier = bsm;
   };
   //if (m_isBackStab) m_attDiceBonus += pAttacker->m_pCharacter->GetThiefBackstabAttackAdjustment();
 
