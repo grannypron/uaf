@@ -752,7 +752,7 @@ void BackgroundSlotMemType::Serialize(CArchive &ar, double version)
      if (version >= _VERSION_0630_)
       ar >> useTransparency;
 
-     if (globalData.version >= _VERSION_527) {
+     if (version >= _VERSION_527) {
          ar >> FrameHeight;
          ar >> FrameWidth;
          ar >> NumFrames;
@@ -830,7 +830,7 @@ void BackgroundSlotMemType::Serialize(CAR &ar, double version)
      if (version >= _VERSION_0630_)
       ar >> useTransparency;
 
-     if (globalData.version >= _VERSION_527) {
+     if (version >= _VERSION_527) {
          ar >> FrameHeight;
          ar >> FrameWidth;
          ar >> NumFrames;
