@@ -6143,7 +6143,7 @@ int COMBATANT::makeAttack(int targ, int extraAttacksAvailable, int *pDeathIndex)
     PlayMiss();
     if (toHitComputation.IsBackStab())
     {
-      CombatMsg.Format("Rolls %i amd fails BackStab", toHitComputation.Rolled());
+      CombatMsg.Format("Rolls %i and fails BackStab", toHitComputation.Rolled());
     }
     else
     {
