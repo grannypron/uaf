@@ -20919,6 +20919,7 @@ void COMBAT_MOVE_MENU_DATA::OnKeypress(key_code key, char ascii)
     {
       combatData.m_iMoveToX = -1;
       combatData.m_iMoveToY = -1;
+      combatData.getActiveCombatCharacter().State(ICS_None);     // This is the case where the mouse is clicked on the PC's position (that is, no move has been requested in any direction)
       break;
     }
 
