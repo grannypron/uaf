@@ -2709,7 +2709,8 @@ void PARTY::deductPoolMoney(itemClassType type, int qty)
   default:
     poolSack.Subtract(type , qty);
     break;
-  }  
+  }
+  moneyPooled = !(poolSack.IsEmpty());
 }
 
 
@@ -2926,7 +2927,8 @@ void PARTY::sharePartyGold()
    }
 
    moneyPooled = (poolSack.Total() > 0);
-  //poolSack.Clear();
+   moneyPooled = !(poolSack.IsEmpty());
+   //poolSack.Clear();
 }
 
 

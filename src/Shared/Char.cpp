@@ -6759,8 +6759,10 @@ void CHARACTER::payForItem(int moneyCost, itemClassType moneyType, int gemCost, 
 {
   if (moneyCost > 0)
   {
-    if ((party.moneyPooled) && (party.poolSack.HaveEnough(moneyType, moneyCost)))
+    if ((party.moneyPooled) && (party.poolSack.HaveEnough(moneyType, moneyCost))) {
       party.poolSack.Subtract(moneyType, moneyCost);
+      party.moneyPooled = !(party.poolSack.IsEmpty());
+    }
     else
       money.Subtract(moneyType, moneyCost);
   }

@@ -1355,6 +1355,8 @@ BOOL MONEY_SACK::IsEmpty()
 {
   for (int i=0;i<NumCoinTypes();i++)
     if (Coins[i] > 0) return FALSE;
+  if (!(Gems.IsEmpty())) return FALSE;
+  if (!(Jewelry.IsEmpty())) return FALSE;
   return TRUE;
 }
 
