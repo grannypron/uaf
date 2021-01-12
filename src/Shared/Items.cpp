@@ -1345,6 +1345,7 @@ BOOL ITEM_DATA::IsUsableByBaseclass(const BASECLASS_ID& baseclassID) const
 {
   int i, n;
   n = usableByBaseclass.GetCount();
+  if (n == 0) { return TRUE; }  // No base classes = any base class
   for (i=0; i<n; i++)
   {
     if (*this->PeekBaseclass(i) == baseclassID) return true;
@@ -1380,6 +1381,7 @@ BOOL ITEM_DATA::IsUsableByClass(const CLASS_ID& charClassID) const
 BOOL ITEM_DATA::IsUsableByClass(const CHARACTER *pChar) const
 {
   {
+    if (GetBaseclassCount() == 0) { return TRUE; }  // No base classes = any base class
     int i, n;
     n = pChar->GetBaseclassStatsCount();
     for (i=0; i<n; i++)
