@@ -6371,7 +6371,7 @@ void COMBAT_DATA::TurnUndead()
       end = scriptResult.Find(delim, col+1);
       if (end < 0) end = scriptResult.GetLength();
       type = scriptResult.Mid(col+1, end-col-1);
-      col = end+1;
+      col = end;
       // Find how many of this undead type can be turned.
       pUndeadType = turningSummary.GetUndeadType(type);
       if (pUndeadType == NULL) continue; // Skip illegal undead types
