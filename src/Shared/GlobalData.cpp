@@ -33,6 +33,7 @@
 #include "..\UAFWinEd\CrossReference.h"
 #include "ConfigFile.h"
 #endif
+#include "FileParse.h"
 #include "Graphics.h"
 #include "PicSlot.h"
 #include "party.h"
@@ -227,6 +228,13 @@ void ImportGlobal(CString filename)
 
 void FillDefaultFontData(LPCSTR font, BYTE size, LOGFONT *plf)
 {
+  int tmpCharset, charset;
+  charset = ANSI_CHARSET;
+  if (ConfigFile.FindToken("CHARSET", tmpCharset))
+  {
+      charset = tmpCharset;
+  }
+
   memset(plf,0,sizeof(LOGFONT));
 	CFont Font;
   Font.CreateFont(size,0,0,0,
@@ -234,7 +242,7 @@ void FillDefaultFontData(LPCSTR font, BYTE size, LOGFONT *plf)
 		              FALSE,
 		              FALSE,
 		              FALSE,
-		              ANSI_CHARSET,
+                      (byte) charset,
 		              OUT_DEFAULT_PRECIS,
 		              CLIP_DEFAULT_PRECIS,
 		              NONANTIALIASED_QUALITY,

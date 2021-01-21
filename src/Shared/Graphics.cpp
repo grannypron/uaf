@@ -2119,7 +2119,7 @@ BOOL Graphics::DrawFont(int X, int Y,
       {
         X += pFont->GetCharacterWidth(FT.CurrentCharacter());
 
-        if ((!ispunct(FT.CurrentCharacter())) && (delay > 0))
+        if (FT.CurrentCharacter() > 0 && FT.CurrentCharacter() < 127 && (!ispunct(FT.CurrentCharacter())) && (delay > 0))
           theApp.AppSleep(delay);
 
       }

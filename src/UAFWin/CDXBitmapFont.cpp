@@ -61,7 +61,7 @@ CDXBitmapFont::~CDXBitmapFont( )
 void CDXBitmapFont::Create(CDXScreen * Scr, LOGFONT *lf, int Color, int ColKey, int BackColor, int MemSurfaceType)
 {
     int             X , Y , i;
-    char            TextBuffer[ 2 ];
+    unsigned char            TextBuffer[ 2 ];
     SIZE            size;
     CDXSurface *    TempSurface;
 
@@ -110,7 +110,7 @@ void CDXBitmapFont::Create(CDXScreen * Scr, LOGFONT *lf, int Color, int ColKey, 
     TEXTMETRIC texmet;
     GetTextMetrics(hDC, &texmet);
 
-    for( i=0; i<128; i++ )
+    for( i=0; i<MAX_CHAR; i++ )
     {
         TextBuffer[ 0 ] = i;
         TextBuffer[ 1 ] = '\0';
@@ -122,7 +122,7 @@ void CDXBitmapFont::Create(CDXScreen * Scr, LOGFONT *lf, int Color, int ColKey, 
         SetBkMode( hDC , OPAQUE );
         SetTextColor(hDC, Color);
         SetBkColor( hDC, BackColor );
-        GetTextExtentPoint32( hDC , TextBuffer , 1 , &size );
+        GetTextExtentPoint32( hDC , (LPCSTR)TextBuffer , 1 , &size );
         //size.cy += 1;
 
         if( X+size.cx >= ((320-texmet.tmMaxCharWidth)-1) )
@@ -161,7 +161,7 @@ void CDXBitmapFont::Create( CDXScreen * Scr , const char * FontNam , int Height 
                               int Color , int ColKey, int BackColor , int Attributes , int MemSurfaceType )
 {
     int             X , Y , i;
-    char            TextBuffer[ 2 ];
+    unsigned char            TextBuffer[ 2 ];
     SIZE            size;
     CDXSurface *    TempSurface;
 
@@ -197,7 +197,7 @@ void CDXBitmapFont::Create( CDXScreen * Scr , const char * FontNam , int Height 
     X = Y = 0;
     HDC hDC = TempSurface->GetDC( );
 
-    for( i=0; i<128; i++ )
+    for( i=0; i<MAX_CHAR; i++ )
     {
         TextBuffer[ 0 ] = i;
         TextBuffer[ 1 ] = '\0';
@@ -206,7 +206,7 @@ void CDXBitmapFont::Create( CDXScreen * Scr , const char * FontNam , int Height 
         SetBkMode( hDC , OPAQUE );
         SetTextColor( hDC, RGB( 255 , 255 , 255 ) );
         SetBkColor( hDC, RGB( 0 , 0 , 0 ) );
-        GetTextExtentPoint32( hDC , TextBuffer , 1 , &size );
+        GetTextExtentPoint32( hDC , (LPCSTR)TextBuffer , 1 , &size );
 
         // if x + character width exceed 310 then begin new line
         if( X+size.cx >= 310 )
@@ -245,7 +245,7 @@ void CDXBitmapFont::Create( CDXScreen * Scr , const char * FontNam , int Height 
 // --------------------------------------------------------------------------------------
 void CDXBitmapFont::PaintCharactersInSurface( void )
 {
-    char    TextBuffer[ 2 ];
+    unsigned char    TextBuffer[ 2 ];
     int     i;
 
     if (TextSurface == NULL)
@@ -267,7 +267,7 @@ void CDXBitmapFont::PaintCharactersInSurface( void )
 
     HRGN Region;
 
-    for( i=0; i<128; i++ )
+    for( i=0; i<MAX_CHAR; i++ )
     {
         TextBuffer[ 0 ] = i;
         TextBuffer[ 1 ] = '\0';
@@ -284,7 +284,7 @@ void CDXBitmapFont::PaintCharactersInSurface( void )
         TextOut( hDC, 
                  CDXBitmapFontArray[i].Rectangle.left , 
                  CDXBitmapFontArray[i].Rectangle.top , 
-                 TextBuffer , 1 );
+                 (LPCSTR)TextBuffer , 1 );
         
         DeleteObject( Region );
     }
@@ -312,7 +312,7 @@ HRESULT CDXBitmapFont::DrawAligned( int X , int Y , int Width , char * Text , CD
 {
     int     TWidth, Width2;
     HRESULT rval = DD_OK;
-    char    ch;
+    unsigned char    ch;
 
     if (TextSurface == NULL)
       return DDERR_SURFACELOST;
@@ -419,7 +419,7 @@ HRESULT CDXBitmapFont::DrawAlignedTrans( int X , int Y , int Width , char * Text
 {
     int     TWidth, Width2;
     HRESULT rval = DD_OK;
-    char    ch;
+    unsigned char    ch;
 
     if (TextSurface == NULL)
       return DDERR_SURFACELOST;
@@ -525,7 +525,7 @@ HRESULT CDXBitmapFont::DrawAlignedTrans( int X , int Y , int Width , char * Text
 HRESULT CDXBitmapFont::Draw(int X, int Y, const char * Text , CDXSurface* lpDDest , int Length )
 {
     HRESULT rval = DD_OK;
-    char    ch;
+    unsigned char    ch;
 
     if (TextSurface == NULL)
       return DDERR_SURFACELOST;
@@ -559,7 +559,7 @@ HRESULT CDXBitmapFont::DrawClipped(int X, int Y, char * Text , CDXSurface* lpDDe
     HRESULT rval = DD_OK;
     RECT    ModSrc;
     int     XSave , YSave;
-    char    ch;
+    unsigned char    ch;
 
     if (TextSurface == NULL)
       return DDERR_SURFACELOST;
@@ -602,7 +602,7 @@ HRESULT CDXBitmapFont::DrawClipped(int X, int Y, char * Text , CDXSurface* lpDDe
 HRESULT CDXBitmapFont::DrawTrans(int X, int Y, const char * Text , CDXSurface* lpDDest , int Length )
 {
     HRESULT rval = DD_OK;
-    char    ch;
+    unsigned char    ch;
 
     if (TextSurface == NULL)
       return DDERR_SURFACELOST;
@@ -611,8 +611,8 @@ HRESULT CDXBitmapFont::DrawTrans(int X, int Y, const char * Text , CDXSurface* l
             (  Length--      != 0    )    )
 
     {
-        ASSERT( (ch >= 0) && (ch <= MAX_CHAR-1) );
-        if ((ch >= 0) && (ch <= MAX_CHAR-1))
+        //ASSERT( (ch >= 0) && (ch <= MAX_CHAR-1) );
+        //if ((ch >= 0) && (ch <= MAX_CHAR-1))
         {
           RECT temp = CDXBitmapFontArray[ ch ].Rectangle;
 
@@ -650,7 +650,7 @@ HRESULT CDXBitmapFont::DrawTransClipped(int X, int Y, char * Text , CDXSurface* 
     HRESULT rval = DD_OK;
     RECT    ModSrc;
     int     XSave , YSave;
-    char    ch;
+    unsigned char    ch;
 
     if (TextSurface == NULL)
       return DDERR_SURFACELOST;
@@ -729,8 +729,9 @@ void CDXBitmapFont::SetBackgroundColor( int Color )
 
 // --------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
-int CDXBitmapFont::GetCharacterWidth( char ch )
+int CDXBitmapFont::GetCharacterWidth( char chIn )
 {
+    unsigned char ch = chIn;
     ASSERT( (ch >= 0) && (ch <= MAX_CHAR-1) );
     return CDXBitmapFontArray[ ch ].Width;
 }
@@ -739,8 +740,9 @@ int CDXBitmapFont::GetCharacterWidth( char ch )
 
 // --------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
-int CDXBitmapFont::GetCharacterHeight( char ch )
+int CDXBitmapFont::GetCharacterHeight( char chIn )
 {
+    unsigned char ch = chIn;
     ASSERT( (ch >= 0) && (ch <= MAX_CHAR-1) );
     return CDXBitmapFontArray[ ch ].Height;
 }
@@ -753,7 +755,7 @@ int CDXBitmapFont::GetTextWidth(const char * Text, int length )
 {
   if (Text==NULL) return 0;
     int  Result;
-    char ch;
+    unsigned char ch;
 
     Result = 0;
 

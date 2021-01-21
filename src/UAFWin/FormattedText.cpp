@@ -775,7 +775,7 @@ void StripInvalidChars(char *pIn)
   char *pChar=pIn;
   while ((pChar != NULL) && (*pChar != '\0'))
   {
-    if ((*pChar < 0) || (*pChar > 127))
+    if ((*pChar < -127) || (*pChar > 255))
       *pChar = ' ';
     pChar++;
   }   
@@ -1621,7 +1621,7 @@ CString FORMATTED_TEXT::GetString(CString *preamble)
   CString result;
   int length;
   length = m_currentCharIndex;
-  while ((length > 0) && (m_pText[length - 1] < ' '))
+  while ((length > 0) && (((unsigned char)m_pText[length - 1]) < ' '))
   {
     length--;
   };

@@ -28,7 +28,7 @@ class CDXBitmapFont
   CDXBitmapFont() { } // default ctor not used
 public:
   
-  enum { MAX_CHAR=128 };
+  enum { MAX_CHAR=256 };
   typedef struct 
   {
     RECT    Rectangle;
