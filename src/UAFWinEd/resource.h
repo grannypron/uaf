@@ -755,6 +755,7 @@
 #define IDS_HELP_item_RechargeRate      1327
 #define IDC_EXPORTRACEDB                1327
 #define IDS_HELP_monster_Item           1328
+#define IDS_HELP_monster_Money          1384
 #define IDC_EXPORTABILITY               1328
 #define IDS_HELP_monster_UndeadType     1329
 #define IDS_HELP_monster_UndeadLevel    1329

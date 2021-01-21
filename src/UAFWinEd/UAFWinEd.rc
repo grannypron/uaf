@@ -6442,6 +6442,7 @@ END
 STRINGTABLE
 BEGIN
     IDS_HELP_monster_Item   "List the items that this monster will have"
+    IDS_HELP_monster_Money   "Money that this monster will have"
     IDS_HELP_monster_UndeadLevel 
                             "The undead level of the monster or 999 if not undead."
     IDS_HELP_monster_UseHitDice 

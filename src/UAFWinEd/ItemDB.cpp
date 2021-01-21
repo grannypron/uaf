@@ -2706,6 +2706,149 @@ static void DmonsterItem(CONFIG_PKT *pkt)
   }
 }
 
+static bool startedHandling = false;
+static bool handleGems = false;
+static bool handleJewelry = false;
+static int handleCoinIdx = 0;
+static void DmonsterMoney(CONFIG_PKT* pkt)
+{
+    CString LINE_DELIM = "\r\n";
+    if (pkt->IsStoring)
+    {
+        if (tempMONSTER.money.IsEmpty())
+        {
+            pkt->value = "none";
+            startedHandling = false;
+            pkt->status = CONFIG_STAT_ok;
+            return;
+        }
+        else {
+            if (!startedHandling) {
+                startedHandling = true;
+                handleGems = true;
+                pkt->status = CONFIG_STAT_more;
+            }
+        }
+
+        if (startedHandling) {
+            if (handleGems) {
+                if (!tempMONSTER.money.Gems.IsEmpty()) {
+                    pkt->value.Format("%s,%d", "Gems", tempMONSTER.money.Gems.GetCount());
+                    pkt->status = CONFIG_STAT_more;
+                }
+                else {
+                    pkt->status = CONFIG_STAT_next;
+                }
+                handleJewelry = true;
+                handleGems = false;
+                return;
+            }
+
+            if (handleJewelry) {
+                if (!tempMONSTER.money.Jewelry.IsEmpty()) {
+                    pkt->value.Format("%s,%d", "Jewelry", tempMONSTER.money.Jewelry.GetCount());
+                    pkt->status = CONFIG_STAT_more;
+                }
+                else {
+                    pkt->status = CONFIG_STAT_next;
+                }
+                handleCoinIdx = 0;
+                handleJewelry = false;
+                return;
+            }
+
+            if (tempMONSTER.money.Coins == NULL) {
+                pkt->status = CONFIG_STAT_end;
+                return;
+            }
+
+            int coinTypeCount = sizeof(tempMONSTER.money.Coins) / sizeof(tempMONSTER.money.Coins[0]);
+            if (handleCoinIdx < coinTypeCount)
+            {
+                pkt->status = CONFIG_STAT_next;
+                if (tempMONSTER.money.IsActive(globalData.moneyData.GetItemClass(handleCoinIdx))) {
+                    if (handleCoinIdx < coinTypeCount) {
+                        itemClassType itype = MONEY_DATA_TYPE::GetItemClass(handleCoinIdx);
+                        if (tempMONSTER.money.Coins[handleCoinIdx] > 0) {
+                            pkt->value.Format("%s,%d", tempMONSTER.money.Name(itype), tempMONSTER.money.Coins[handleCoinIdx]);
+                            pkt->status = CONFIG_STAT_more;
+                        }
+                    }
+                }
+                handleCoinIdx++;
+                return;
+            }
+            else {
+                startedHandling = false;
+                pkt->status = CONFIG_STAT_end;
+                return;
+            }
+        }
+    }
+    else
+    {
+        CString moneyName;
+        int moneyQuantity;
+        //!pkt->IsStoring
+        if ((pkt->value == "") || (pkt->value.CompareNoCase("none") == 0))
+        {
+            return;
+        }
+        else
+        {
+            int col;
+            if ((col = pkt->value.Find(',')) > 0)
+            {
+                moneyName = pkt->value.Left(col);
+                if (sscanf(pkt->value.GetBuffer(0) + col + 1, "%d", &moneyQuantity) != 1)
+                {
+                    moneyQuantity = 1;
+                };
+                pkt->status = CONFIG_STAT_ok;
+            }
+            else
+            {
+                pkt->status = CONFIG_DECODE_string(
+                    pkt->value,
+                    pkt->errorMsg,
+                    moneyName);
+                moneyQuantity = 1;
+                pkt->errorMsg.Format("No quantity found for money item %s", moneyName);
+                pkt->status = CONFIG_STAT_value;
+                return;
+            }
+
+            if (pkt->status == CONFIG_STAT_ok)
+            {
+ 
+                if (moneyName == "Gems") 
+                {
+                    for (int idxGem = 0; idxGem < moneyQuantity; idxGem++)
+                        tempMONSTER.money.AddGem();
+                }
+                else if (moneyName == "Jewelry")
+                {
+                    for (int idxJewelry = 0; idxJewelry < moneyQuantity; idxJewelry++)
+                        tempMONSTER.money.AddJewelry();
+                } 
+                else
+                {
+                    for (int idxCoinTypes = 0; idxCoinTypes < MONEY_DATA_TYPE::MAX_COIN_TYPES; idxCoinTypes++) {
+                        if (tempMONSTER.money.Name(MONEY_DATA_TYPE::GetItemClass(idxCoinTypes)) == moneyName)
+                        {
+                            tempMONSTER.money.Coins[idxCoinTypes] = moneyQuantity;
+                            return;
+                        }
+                    }
+                    pkt->errorMsg.Format("No such money called %s is defined", moneyName);
+                    pkt->status = CONFIG_STAT_value;
+                    return;
+                }
+            }
+        }
+    }
+}
+
 static void DmonsterAttack(CONFIG_PKT *pkt)
 {
   CString iname;
@@ -2786,6 +2929,7 @@ DEFID( "penalty"                 ,flags  ,Penalty),
 DEFID( "immunity"                ,flags  ,Immunity),
 DEFID( "Misc Options"            ,flags  ,MiscOptions),
 DEFID( "item"                    ,string ,Item),
+DEFID( "money"                   ,string ,Money),
 DEFID( "attack"                  ,string ,Attack),
 DEFID( "Undead"                  ,string ,UndeadType),
 CONFIGID( "" ,CONFIG_DATA_end ,NULL)
