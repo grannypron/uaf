@@ -8043,6 +8043,8 @@ BOOL COMBATANT::AddMapTarget(int mapx, int mapy, PATH_DIR dir, int dirX, int dir
 //                               m_pCharacter->targets.Height());   // height
         GetCombatantsInRectangle(targlist, maplist);
       };
+      VisCheckX = mapx;
+      VisCheckY = mapy;
       break;
     case LingerAreaSquare: // square is centered at x,y
       GetMapTilesInRectangle(maplist, 
