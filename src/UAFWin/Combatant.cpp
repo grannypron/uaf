@@ -1347,8 +1347,9 @@ void COMBAT_DATA::ListAttacks(COMBAT_SUMMARY_COMBATANT* pCSC, int numAdditionalA
       pCSC->attackSummary.Add(attackSummary);
     };
     break;
+  case CHAR_TYPE:
   case NPC_TYPE:
-    {
+  {
       int numDice, numSides, bonus;
       BOOL nonLethal;
       CString spellName;
