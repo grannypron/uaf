@@ -679,6 +679,8 @@ struct COMBAT_DATA
   BOOL m_bNoMagic;
   BOOL m_bPartyNeverDies; 
   BOOL m_bPartyNoExperience;
+
+  BOOL m_bNoCapOnTurnUndeadByTotalRoll;  // This flag not dependent on debug build like the others above
   
   // which combat map format is used
   BOOL m_bIsWilderness;

@@ -150,6 +150,8 @@ void COMBAT_DATA::InitCombatData(COMBAT_EVENT_DATA *event)
   m_fullRect.right = SCREEN_WIDTH;
   m_fullRect.bottom = SCREEN_HEIGHT;
 
+  ConfigFile.FindToken("NO_CAP_ON_TURN_UNDEAD_BY_TOTAL_ROLL", m_bNoCapOnTurnUndeadByTotalRoll, true);
+
   if (logDebuggingInfo)
   {
     ConfigFile.FindToken("Monster_NoMove", m_bMonsterNoMove, false); // don't remove these tokens
@@ -6394,7 +6396,7 @@ void COMBAT_DATA::TurnUndead()
               // we were supposed to 'roll' for the single undead
               // type rather than for each monster type.  Breaking
               // out of the loop will have that effect.  PRS 20130118
-              break;  
+              if (!m_bNoCapOnTurnUndeadByTotalRoll) { break; }
             };
           };
         };
