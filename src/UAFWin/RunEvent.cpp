@@ -26414,37 +26414,15 @@ void SCRIBE_MENU_DATA::OnUpdateUI(void)
 
 void SCRIBE_MENU_DATA::OnReturnToTopOfQueue(void)
 {
-  //if (m_giID_scroll.IsValidItem())
   if (m_itemID_scroll.IsValidItem())
   {
     ITEM_DATA *pScroll;
-    //pScroll = itemData.GetItemData(m_giID_scroll);
     pScroll = itemData.GetItem(m_itemID_scroll);
-    //ASSERT (pScroll->m_gsID.IsValidSpell());
     ASSERT (pScroll->spellID.IsValidSpell());
-    //if (pScroll->m_gsID.IsValidSpell())
     if (pScroll->spellID.IsValidSpell())
     {
-      //WORD casterClassFlag, spellClassFlag;
-      SPELL_ID spellSchoolID;
-      const BASECLASS_LIST *pBaseclassList;
-      int spellLevel;
-      //spellClassFlag = spellData.GetSpellSchool(pScroll->m_gsID);
-      //spellLevel = spellData.GetSpellLevel(pScroll->m_gsID);
-      //spellClassFlag = spellData.GetSpellSchool(pScroll->spellID);
-      spellSchoolID = spellData.GetSpellSchool(pScroll->spellID);
-      spellLevel = spellData.GetSpellLevel(pScroll->spellID);
-      //casterClassFlag = SetClassBitsFromCharClass(m_pDude->GetClass());
-      pBaseclassList = classData.PeekClass(m_pDude->GetClass())->BaseclassList();
-
-      //m_pDude->KnowSpell(casterClassFlag,spellClassFlag, pScroll->m_gsID,spellLevel,TRUE);
-
-
-/*
-      m_pDude->KnowSpell(casterClassFlag,spellClassFlag, pScroll->spellID,spellLevel,TRUE);
-*/ /* Really */ NotImplemented(0x4d67ab9, false);
-
-
+      SPELL_DATA *pSpell = spellData.GetSpell(pScroll->spellID);
+      m_pDude->KnowSpellyyy(pSpell, true);
     };
   };
   PopEvent();
