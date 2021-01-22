@@ -188,14 +188,14 @@ BOOL CDungeonApp::InitInstance()
   WriteDebugString("Working directory = %s\n", designDir);
 
   // Standard initialization
-  globalData.fontLib.LoadFonts();
   if (!LoadConfigFile(rte.ConfigDir()+"config.txt"))
   {
     debugSeverity = 8;
     WriteDebugString("Failed to load config.txt file in InitInstance()\n");
     //return FALSE;
   }
-  
+  globalData.fontLib.LoadFonts();
+
   // Don't create a doc template, just load the frame
   CMainFrame* pMainFrame = new CMainFrame;
   int w,h;
