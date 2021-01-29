@@ -1476,7 +1476,7 @@ void CMyMenu::setMenuItems(const int qty, MENU_ENTRY *items)
    int i;
    for (i=0; i<numItems;i++)
    {
-     strncpy(menu[i], getGameText(items[i].label), Max_Item_Len);
+     strncpy(menu[i], items[i].label, Max_Item_Len);
      menu[i][Max_Item_Len-1] = '\0';
      displayItem[i]=TRUE;
      shortcutIndex[i] = items[i].index;
@@ -1844,7 +1844,7 @@ void CMyMenu::DrawFont(int x, int y, int baseFontNumber, LPCSTR ptext, BOOL high
    long int SrcFont;
    FONT_COLOR_NUM colorNum = whiteColor;
    int font;
-
+   ptext = getGameText(ptext);
    GraphicsMgr.HighlightText(FALSE);
 
    if (highlight)
