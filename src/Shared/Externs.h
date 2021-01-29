@@ -611,6 +611,7 @@ int  loadData(A_SPECABILITY_DEF_L& data, LPCSTR fullpath);
 //void loadUADefaults(TRAIT_DATA_TYPE& data);
 //int  GetDataSize(TRAIT_DATA_TYPE& data);
 
+#define MESSAGEMAP_FILE_NAME "messageMap.txt"
 
 #ifdef USE_TRAITS
 void Clear(TRAIT_DATA_TYPE& data);
