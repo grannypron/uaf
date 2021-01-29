@@ -2774,6 +2774,13 @@ void PARTY::AutoUpConvertPoolMoney()
 //*****************************************************************************
 void PARTY::sharePartyGold()
 {
+    //Doing this 10 times just clears up the remainders if there are any
+    for (int i = 0; i < 10; i++)
+        sharePartyGoldOnce();
+}
+
+void PARTY::sharePartyGoldOnce()
+{
    int tot = 0;
    int temp = 0;
    int i;

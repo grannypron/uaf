@@ -498,6 +498,7 @@ public:
   void turnPartyRight();
   void poolPartyGold();  
   void sharePartyGold();
+  void sharePartyGoldOnce();
   void AutoUpConvertPoolMoney();
   int  GetPoolGoldValue();
   BOOL PartyHasMoney();
