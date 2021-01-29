@@ -4283,8 +4283,8 @@ void DisplayText(int x, int y,
                  BOOL slowText, 
                  BOOL UseBackBuffer)
 {   
-   long int SrcFont;
    ptext = getGameText(ptext);
+   long int SrcFont;
    if (highlight)
    {
      SrcFont = globalData.HighlightFont;
@@ -4376,8 +4376,8 @@ void DisplayColoredText(int x, int y,
                         FONT_COLOR_NUM colorNum, BOOL customColor,
                         BOOL highlight, BOOL slowText, BOOL UseBackBuffer)
 {
-  BOOL saveFontColorTag;
   ptext = getGameText(ptext);
+  BOOL saveFontColorTag;
   saveFontColorTag = GraphicsMgr.GetEnableFontColorTags();
   GraphicsMgr.EnableFontColorTags(TRUE);
   /* 20200208  PRS
