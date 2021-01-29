@@ -53,15 +53,8 @@ void MESSAGEMAP::LoadFile(CString path) {
     idToValueMap = new std::unordered_map<std::string, std::string>;
 
     for (json::iterator it = jsonData.begin(); it != jsonData.end(); ++it) {
-        CString key = it.key().c_str();
         std::string strValue;
         it.value().get_to(strValue);
-        CString value = strValue.c_str();
-
-        // This does NOT support Unicode
-        char* cKey = key.GetBuffer();
-        char* cValue = value.GetBuffer();
-
         idToValueMap->insert({ it.key(), strValue });
     }
 }
