@@ -8875,6 +8875,7 @@ void SPELL_TEXT_LIST::FillTempleCastSpellListText(CHARACTER &data, costFactorTyp
 //        currSelectBySchool[spellSchool][level-1] += data.PeekCharacterSpell(i)->selected;
         //Add((DWORD)pos);
         Add(i);
+        Add(data.PeekCharacterSpell(i)->spellID);
       }
     //data.GetNextSpell(pos);
 //    };
