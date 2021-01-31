@@ -29,7 +29,7 @@ public:
 	MESSAGEMAP(void);
 	~MESSAGEMAP(void);
 	void LoadFile(CString path);
-	const char* getTextFromId(const char* id);
+	LPCSTR getTextFromId(const char* id);
 private:
 };
 

@@ -59,6 +59,30 @@ void MESSAGEMAP::LoadFile(CString path) {
     }
 }
 
+std::string UTF8ToANSI(std::string s)
+{
+    BSTR    bstrWide;
+    char* pszAnsi;
+    int     nLength;
+    const char* pszCode = s.c_str();
+
+    nLength = MultiByteToWideChar(CP_UTF8, 0, pszCode, strlen(pszCode) + 1, NULL, NULL);
+    bstrWide = SysAllocStringLen(NULL, nLength);
+
+    MultiByteToWideChar(CP_UTF8, 0, pszCode, strlen(pszCode) + 1, bstrWide, nLength);
+
+    nLength = WideCharToMultiByte(CP_ACP, 0, bstrWide, -1, NULL, 0, NULL, NULL);
+    pszAnsi = new char[nLength];
+
+    WideCharToMultiByte(CP_ACP, 0, bstrWide, -1, pszAnsi, nLength, NULL, NULL);
+    SysFreeString(bstrWide);
+
+    std::string r(pszAnsi);
+    delete[] pszAnsi;
+    return r;
+}
+
+
 const char* MESSAGEMAP::getTextFromId(const char* id)
 {
     std::unordered_map<std::string, std::string>::const_iterator mapFind = idToValueMap->find(id);
@@ -66,8 +90,13 @@ const char* MESSAGEMAP::getTextFromId(const char* id)
         return id;
     }
     else {
-        return &(mapFind->second[0]);
+        // UTF-8 to wstring
+        std::string str(&(mapFind->second[0]));
+        std::string str2 = UTF8ToANSI(str);
+        char* cStr = new char[strlen(str2.c_str()) + 1];
+        strncpy(cStr, str2.c_str(), strlen(str2.c_str()));
+        cStr[strlen(str2.c_str())] = '\0';
+
+        return cStr;
     }
 }
-
-
