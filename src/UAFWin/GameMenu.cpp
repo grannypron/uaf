@@ -1824,7 +1824,7 @@ void CMyMenu::WriteText(int x, int y, int item, int fontNumber)
     return;
   }
 
-   char *ptext = menu[item];
+   const char *ptext = getGameText(menu[item]);
    
    if ((ptext == NULL) || (strlen(ptext) == 0))
       return;
