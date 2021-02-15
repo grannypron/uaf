@@ -5337,7 +5337,7 @@ CString FormatCombatAttackText()
   if (msg.GetLength()==0) msg = "attacks";
   temp.Format("%s %s %s", 
               combatData.GetCombatant(dude)->GetName(),
-              msg,
+              getGameText(msg),
               combatData.GetCombatant(target)->GetName());
 
   return temp;

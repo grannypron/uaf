@@ -315,7 +315,7 @@ void showCharStats(TEXT_FORM *pForm, CHARACTER& dude)
    // char age
    int charTrueAge = dude.GetAge();
    int charCurrAge = dude.GetAdjAge();
-   temp.Format("%i YEARS", charCurrAge);
+   temp.Format("%i " + CString(getGameText("YEARS")), charCurrAge);
    if (charTrueAge!=charCurrAge)
 // prs 20191221     pForm->SetText(STF_age, temp, AdjColor);
       pForm->SetText(STF_age, temp, adjColorNum);
@@ -325,7 +325,7 @@ void showCharStats(TEXT_FORM *pForm, CHARACTER& dude)
 
    // char hitpoints/maxhitpoints
    int charTrueHp = dude.GetHitPoints();
-   pForm->SetText(STF_HITS, "HIT POINTS");    
+   pForm->SetText(STF_HITS, CString(getGameText("HIT POINTS")));
    if (charCurrHp!=charTrueHp)
    {
      temp.Format("%i", charCurrHp);
@@ -602,7 +602,7 @@ void showCharStats(TEXT_FORM *pForm, CHARACTER& dude)
 
    // strength
    //pForm->SetText( STF_STR,"STR     "); 
-   abbreviation = abilityData.GetShortName("Strength");
+   abbreviation = CString(getGameText(abilityData.GetShortName("Strength")));
    abbreviation += "          ";
    abbreviation = abbreviation.Left(8);
    pForm->SetText( STF_STR,abbreviation); 
@@ -632,7 +632,7 @@ void showCharStats(TEXT_FORM *pForm, CHARACTER& dude)
    charTrueStat = dude.GetPermInt();
    IsAdj = (charCurrStat!=charTrueStat);
    //pForm->SetText( STF_INT,"INT     ");
-   abbreviation = abilityData.GetShortName("Intelligence");
+   abbreviation = CString(getGameText(abilityData.GetShortName("Intelligence")));
    abbreviation += "          ";
    abbreviation = abbreviation.Left(8);
    pForm->SetText( STF_INT,abbreviation); 
@@ -649,7 +649,7 @@ void showCharStats(TEXT_FORM *pForm, CHARACTER& dude)
    charTrueStat = dude.GetPermWis();
    IsAdj = (charCurrStat!=charTrueStat);
    //pForm->SetText( STF_WIS,"WIS     ");
-   abbreviation = abilityData.GetShortName("Wisdom");
+   abbreviation = CString(getGameText(abilityData.GetShortName("Wisdom")));
    abbreviation += "          ";
    abbreviation = abbreviation.Left(8);
    pForm->SetText( STF_WIS,abbreviation); 
@@ -666,7 +666,7 @@ void showCharStats(TEXT_FORM *pForm, CHARACTER& dude)
    charTrueStat = dude.GetPermDex();
    IsAdj = (charCurrStat!=charTrueStat);
    //pForm->SetText( STF_DEX,"DEX     ");
-   abbreviation = abilityData.GetShortName("Dexterity");
+   abbreviation = CString(getGameText(abilityData.GetShortName("Dexterity")));
    abbreviation += "          ";
    abbreviation = abbreviation.Left(8);
    pForm->SetText( STF_DEX,abbreviation); 
@@ -683,7 +683,7 @@ void showCharStats(TEXT_FORM *pForm, CHARACTER& dude)
    charTrueStat = dude.GetPermCon();
    IsAdj = (charCurrStat!=charTrueStat);
    //pForm->SetText( STF_CON,"CON     ");
-   abbreviation = abilityData.GetShortName("Constitution");
+   abbreviation = CString(getGameText(abilityData.GetShortName("Constitution")));
    abbreviation += "          ";
    abbreviation = abbreviation.Left(8);
    pForm->SetText( STF_CON,abbreviation); 
@@ -700,7 +700,7 @@ void showCharStats(TEXT_FORM *pForm, CHARACTER& dude)
    charTrueStat = dude.GetPermCha();
    IsAdj = (charCurrStat!=charTrueStat);
    //pForm->SetText( STF_CHA,"CHA    ");
-   abbreviation = abilityData.GetShortName("Charisma");
+   abbreviation = CString(getGameText(abilityData.GetShortName("Charisma")));
    abbreviation += "          ";
    abbreviation = abbreviation.Left(8);
    pForm->SetText( STF_CHA,abbreviation); 
