@@ -6102,12 +6102,12 @@ int COMBATANT::makeAttack(int targ, int extraAttacksAvailable, int *pDeathIndex)
           {
             if (toHitComputation.IsBackStab())
             {
-              CombatMsg.Format("Rolls %i and BackStabs for %i dmg",
+              CombatMsg.Format(CString(getGameText("Rolls")) + "  %i " + CString(getGameText("and BackStabs for")) + " %i " + CString(getGameText("dmg")),
                             toHitComputation.Rolled(), damageComputation.Damage());
             }
             else
             {
-              CombatMsg.Format("Rolls %i and hits for %i dmg",
+              CombatMsg.Format(CString(getGameText("Rolls")) + " %i " + CString(getGameText("and hits for")) + " %i " + CString(getGameText("dmg")),
                             toHitComputation.Rolled(), damageComputation.Damage());
             }
           }
@@ -6145,11 +6145,11 @@ int COMBATANT::makeAttack(int targ, int extraAttacksAvailable, int *pDeathIndex)
     PlayMiss();
     if (toHitComputation.IsBackStab())
     {
-      CombatMsg.Format("Rolls %i and fails BackStab", toHitComputation.Rolled());
+      CombatMsg.Format(CString(getGameText("Rolls")) + " %i " + CString(getGameText("and fails BackStab")), toHitComputation.Rolled());
     }
     else
     {
-      CombatMsg.Format("Rolls %i and misses", toHitComputation.Rolled());
+      CombatMsg.Format(CString(getGameText("Rolls")) + " %i " + CString(getGameText("and misses")), toHitComputation.Rolled());
     };
     continueAttack=TRUE;
   }
