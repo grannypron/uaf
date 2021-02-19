@@ -513,6 +513,9 @@
     <ClCompile Include="..\Shared\ramfile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Shared\MessageMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="UAFWinEd.rc">
@@ -1028,6 +1031,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FlowControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\json.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\MessageMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

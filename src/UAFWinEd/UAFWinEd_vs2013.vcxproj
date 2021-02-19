@@ -165,6 +165,7 @@ copy release\UAFWinEd.exe ..\..\UAFWinEd\UAFWinEd.exe
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Shared\MessageMap.cpp" />
     <ClCompile Include="..\Shared\ramfile.cpp">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
     </ClCompile>
@@ -341,6 +342,8 @@ copy release\UAFWinEd.exe ..\..\UAFWinEd\UAFWinEd.exe
     <ResourceCompile Include="UAFWinEd.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Shared\json.hpp" />
+    <ClInclude Include="..\Shared\MessageMap.h" />
     <ClInclude Include="AccessDlg.h" />
     <ClInclude Include="Addnpc.h" />
     <ClInclude Include="AddSpecialObject.h" />
