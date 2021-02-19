@@ -1364,6 +1364,7 @@ void CMyMenu::reset(const SELECTION_PAGE_FORMAT *form)
 
 int CMyMenu::addMenuItem(LPCSTR ptext, char shortcut)
 {
+   ptext = getGameText(ptext);
    if (numItems < (Max_Menu_Items))
    {
       numItems++;
@@ -1476,7 +1477,7 @@ void CMyMenu::setMenuItems(const int qty, MENU_ENTRY *items)
    int i;
    for (i=0; i<numItems;i++)
    {
-     strncpy(menu[i], items[i].label, Max_Item_Len);
+     strncpy(menu[i], getGameText(items[i].label), Max_Item_Len);
      menu[i][Max_Item_Len-1] = '\0';
      displayItem[i]=TRUE;
      shortcutIndex[i] = items[i].index;
@@ -1823,7 +1824,7 @@ void CMyMenu::WriteText(int x, int y, int item, int fontNumber)
     return;
   }
 
-   char *ptext = menu[item];
+   const char *ptext = getGameText(menu[item]);
    
    if ((ptext == NULL) || (strlen(ptext) == 0))
       return;
@@ -1844,7 +1845,6 @@ void CMyMenu::DrawFont(int x, int y, int baseFontNumber, LPCSTR ptext, BOOL high
    long int SrcFont;
    FONT_COLOR_NUM colorNum = whiteColor;
    int font;
-
    GraphicsMgr.HighlightText(FALSE);
 
    if (highlight)

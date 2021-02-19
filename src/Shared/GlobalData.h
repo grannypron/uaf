@@ -25,6 +25,7 @@
 #include "party.h"
 #include "GameEvent.h"
 #include "SoundMgr.h"
+#include "MessageMap.h"
 
 //#include "SoundMgr.h"
 //#include "SharedQueue.h"
@@ -956,4 +957,5 @@ enum {
 };
 
 //lint +e1411
+const char* getGameText(const char* msg);
 #endif

@@ -2898,7 +2898,7 @@ bool CREATE_CHARACTER_DATA::OnIdle(void)
         SetMyState(TASK_Create_Character_AskToSave);
         CString msg;
         character.UpdateSpellAbility();
-        msg.Format("DO YOU WANT TO SAVE %s?", character.GetName());
+        msg.Format(CString(getGameText("DO YOU WANT TO SAVE")) + " %s?", character.GetName());
         PushEvent(new ASK_YES_NO_MENU_DATA(msg,TRUE, CONTROL_CreateCharacter), DeleteEvent);
       }
     }
@@ -2914,7 +2914,7 @@ bool CREATE_CHARACTER_DATA::OnIdle(void)
     {
       SetMyState(TASK_Create_Character_AskToSave);
       CString msg;
-      msg.Format("DO YOU WANT TO SAVE %s?", character.GetName());
+      msg.Format(CString(getGameText("DO YOU WANT TO SAVE")) + " %s?", character.GetName());
       PushEvent(new ASK_YES_NO_MENU_DATA(msg,TRUE, CONTROL_CreateCharacter), DeleteEvent);
     }
     break;
@@ -8117,7 +8117,7 @@ void ITEMS_MENU_DATA::OnKeypress(key_code key, char ascii)
             if (pData->sellprice > worth) pData->sellprice=worth;
             SetMyState(TASK_AskToSellItem);
             CString msg;
-            msg.Format("I WILL GIVE YOU %i %s FOR THIS ITEM, SELL IT?",
+            msg.Format(CString(getGameText("I WILL GIVE YOU")) + " %i %s " + CString(getGameText("FOR THIS ITEM, SELL IT?")),
                         pData->sellprice, globalData.moneyData.GetName(globalData.moneyData.GetDefaultType()));
             PushEvent(new ASK_YES_NO_MENU_DATA(msg,TRUE, CONTROL_ItemsMenu), DeleteEvent);
           };
@@ -8195,12 +8195,12 @@ void ITEMS_MENU_DATA::OnKeypress(key_code key, char ascii)
           CString msg;
           if (GetActiveChar(m_pOrigEvent,party.activeCharacter).enoughMoney(pData->costToId,0,0,globalData.moneyData.GetDefaultType()))
           {
-            msg.Format("IDENTIFICATION WILL COST %i %s, PAY IT?", pData->costToId, globalData.moneyData.GetName(globalData.moneyData.GetDefaultType()));
+            msg.Format(CString(getGameText("IDENTIFICATION WILL COST")) + " %i %s, " + CString(getGameText("PAY IT?")), pData->costToId, globalData.moneyData.GetName(globalData.moneyData.GetDefaultType()));
             PushEvent(new ASK_YES_NO_MENU_DATA(msg,TRUE, CONTROL_ItemsMenu), DeleteEvent);      
           }
           else
           {
-            msg.Format("THE COST OF IDENTIFICATION IS %i %s\r\nYOU DO NOT HAVE ENOUGH", pData->costToId, globalData.moneyData.GetName(globalData.moneyData.GetDefaultType()));
+            msg.Format(CString(getGameText("THE COST OF IDENTIFICATION IS")) + " %i %s\r\n" + CString(getGameText("YOU DO NOT HAVE ENOUGH")), pData->costToId, globalData.moneyData.GetName(globalData.moneyData.GetDefaultType()));
             PushEvent(new ASK_YES_NO_MENU_DATA(msg,FALSE, CONTROL_ItemsMenu), DeleteEvent);
           }        
         }
@@ -19735,10 +19735,10 @@ void COMBAT_RESULTS_MENU_DATA::OnInitialEvent(void)
       {
         CString tmp;
         if (party.numCharacters == 1)
-          tmp.Format("\r\nYOU RECEIVE %i EXPERIENCE POINTS",
+          tmp.Format("\r\n" + CString(getGameText("YOU RECEIVE")) + " %i " + CString(getGameText("EXPERIENCE POINTS")),
             m_exptotal);
           else
-            tmp.Format("\r\nTHE PARTY RECEIVES %i EXPERIENCE POINTS",
+            tmp.Format("\r\n" + CString(getGameText("THE PARTY RECEIVES")) + " %i " + CString(getGameText("EXPERIENCE POINTS")),
                  m_exptotal);
         tempText += tmp;
 
@@ -23932,13 +23932,13 @@ void LEARN_SPELLS_MENU::OnKeypress(key_code key, char ascii)
           die(0xc60aa8);
         };
         m_dude.DelKnowableSpell(pSpell->uniqueName);
-        m_successMsg.Format("%s successfully wrote %s into the spellbook.",
+        m_successMsg.Format("%s " + CString(getGameText("successfully wrote")) + " %s " + CString(getGameText("into the spellbook")) + ".",
                                               m_dude.GetName(),
                                               pSpell->Name);
       }
       else
       {
-        m_successMsg.Format("%s failed to learn %s.",
+        m_successMsg.Format("%s " + CString(getGameText("failed to learn")) + " %s.",
                                               m_dude.GetName(),
                                               pSpell->Name);
       };

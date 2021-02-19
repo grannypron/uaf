@@ -6469,6 +6469,27 @@ void ReleaseAllSounds()
   //WriteDebugString("RemoveAllSounds\n");
 }
 
+int messageMapInitStatus = 0;
+MESSAGEMAP *messageMap;
+const char* getGameText(const char* id) {
+    if (messageMapInitStatus == -1) {  // -1 indicates failed status
+        return id;
+    }
+    if (messageMapInitStatus == 0) {
+        messageMap = new MESSAGEMAP();
+        messageMapInitStatus = 1;
+        if (FileExists(rte.DataDir() + MESSAGEMAP_FILE_NAME)) {
+            messageMap->LoadFile(rte.DataDir() + MESSAGEMAP_FILE_NAME);
+        }
+        else {
+            messageMapInitStatus = -1;
+            return id;
+        }
+    }
+    return messageMap->getTextFromId(id);
+}
+
+
 #ifdef UAFEngine
 void CheckAndPlayBackgroundMusic(int &UsingDayMusic)
 {

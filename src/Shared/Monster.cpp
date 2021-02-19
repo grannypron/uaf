@@ -2196,7 +2196,7 @@ void MONSTER_DATA_TYPE::GetMonsterAttackMsg(const MONSTER_ID& monsterID, int att
     //int attackMsgCnt = MonsterData[index].attackData.GetMonsterAttackDetailsCount();
     if (attackMsgCnt==0) // shouldn't happen if monster configured properly
     {
-      msg = "attacks";
+      msg = getGameText("attacks");
       return;
     }
 
@@ -2208,6 +2208,7 @@ void MONSTER_DATA_TYPE::GetMonsterAttackMsg(const MONSTER_ID& monsterID, int att
     //msg = MonsterData[index].attackData.PeekMonsterAttackDetails(attackNum)->attackMsg;
   }
   if (msg.GetLength()==0) msg = "attacks";
+  msg = getGameText(msg);
 }
 
 //void MONSTER_DATA_TYPE::GetMonsterDamageDice(int index, int attackNum, int &num, int &sides, int &bonus) const
