@@ -118,6 +118,7 @@ void Kf_CcolonState(void);
 void Kf_CcolonDistance(void);
 void Kf_CcolonFriendly(void);
 void Kf_CcolonAIBaseclass(void);
+void Kf_CcolonHasLineOfSight(void);
 void Kf_Me(void);
 void Kf_He(void);
 void Kf_A(void);
@@ -210,6 +211,7 @@ void (*Kf[])(void) = {
   Kf_CcolonDistance,
   Kf_CcolonFriendly,
   Kf_CcolonAIBaseclass,
+  Kf_CcolonHasLineOfSight,
 };
 
 
@@ -1499,6 +1501,7 @@ _:BootStrap docolon         _\ Read and interpret the open file;
 " PRIM C:Distance"
 " PRIM C:Friendly"
 " PRIM C:AIBaseclass"
+" PRIM C:HasLineOfSight"
 "   "
 " 0  CONSTANT A:T:Unknnown"
 " 1  CONSTANT A:T:SpellCaster"
@@ -2150,6 +2153,7 @@ void Kf_CcolonAIBaseclass(void)
 {
   PUSHSP(pCSC->AIBaseclass);
 };
+void Kf_CcolonHasLineOfSight(void) { PUSHSP(pCSA->hasLineOfSight); };
 
 void Kf_Me(void)
 {

@@ -146,14 +146,15 @@ struct COMBAT_SUMMARY_ACTION
 {
   COMBAT_SUMMARY_ACTION(void)
   {
-    actionType  = AT_Unknown;
-    targetOrd   = 0;           // COMBAT_SUMMARY ordinal
-    weaponOrd   = 0;           // COMBAT_SUMMARY_COMBATANT ordinal
-    ammoOrd     = 0;           // COMBAT_SUMMARY_COMBATANT ordinal
-    attackOrd   = 0;           // COMBAT_SUMMARY_COMBATANT ordinal
-    advance     = 0;           // Move closer to target.
-    distance22  = 0;
-    damage      = 0;
+    actionType     = AT_Unknown;
+    targetOrd      = 0;           // COMBAT_SUMMARY ordinal
+    weaponOrd      = 0;           // COMBAT_SUMMARY_COMBATANT ordinal
+    ammoOrd        = 0;           // COMBAT_SUMMARY_COMBATANT ordinal
+    attackOrd      = 0;           // COMBAT_SUMMARY_COMBATANT ordinal
+    advance        = 0;           // Move closer to target.
+    distance22     = 0;
+    damage         = 0;
+    hasLineOfSight = 0;
     pCSC=pMe=pHe=NULL;
   };
   ACTION_TYPE actionType;
@@ -164,6 +165,7 @@ struct COMBAT_SUMMARY_ACTION
   int distance22;// (distance * 2) squared
   int damage;
   int advance;
+  int hasLineOfSight;
   COMBAT_SUMMARY_COMBATANT *pCSC;
   COMBAT_SUMMARY_COMBATANT *pMe;
   COMBAT_SUMMARY_COMBATANT *pHe;

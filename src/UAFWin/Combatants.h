@@ -367,6 +367,7 @@ struct COMBAT_DATA
                            int              weaponIndex,
                            bool             friendly,
                            int              distance22,
+                           bool             hasLineOfSight,
                            bool             judoMeleeOnly);
   void ListActionsByAttack(COMBAT_SUMMARY  *pCombatSummary,
                            int              activeCombatantIndex,

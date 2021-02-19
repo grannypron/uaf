@@ -1525,6 +1525,7 @@ void COMBAT_DATA::ListActionsByWeapon(COMBAT_SUMMARY  *pCombatSummary,
                                       int              weaponIndex,
                                       bool             friendly,
                                       int              distance22,
+                                      bool             hasLineOfSight,
                                       bool             judoMeleeOnly)
 {
   COMBAT_SUMMARY_ACTION csa;
@@ -1551,6 +1552,7 @@ void COMBAT_DATA::ListActionsByWeapon(COMBAT_SUMMARY  *pCombatSummary,
   csa.pMe = pCombatSummary->GetCombatant(activeCombatantIndex);
   csa.pHe = pCombatSummary->GetCombatant(targetCombatantIndex);
   csa.distance22 = distance22;
+  csa.hasLineOfSight = hasLineOfSight;
 
   if ((pItemData!=NULL) && (pItemData->Wpn_Type == SpellCaster))
   {
@@ -1716,10 +1718,11 @@ void COMBAT_DATA::ListActionsForTarget(COMBAT_SUMMARY *pCombatSummary,
 {
   COMBATANT *pTarget, *pActive;
   int wpnIndex, atkIndex;
-  int numWpn, numAtk, distance22;
+  int numWpn, numAtk, distance22, hasLineOfSight;
   pTarget = &m_aCombatants[pCombatSummary->GetCombatant(targetIndex)->index];
   pActive = &m_aCombatants[pCombatSummary->PeekCombatant(activeCombatant)->index];
   distance22 = Distance22(pActive, pTarget);
+  hasLineOfSight = HaveLineOfSight(pActive->x, pActive->y, pTarget->x, pTarget->y, NULL);
   numWpn = pCombatSummary->GetCombatant(0)->GetWeaponCount();
   if ( pActive->availAttacks + numAdditionalAttacks > 0)
   {
@@ -1733,6 +1736,7 @@ void COMBAT_DATA::ListActionsForTarget(COMBAT_SUMMARY *pCombatSummary,
                           wpnIndex, 
                           friendly, 
                           distance22,
+                          hasLineOfSight,
                           judoMeleeOnly);
     };
   };
