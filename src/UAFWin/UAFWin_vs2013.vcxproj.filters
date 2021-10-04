@@ -385,10 +385,7 @@
     <ClInclude Include="..\Shared\MessageMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\json.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-   </ItemGroup>
+  </ItemGroup>
   <ItemGroup>
     <None Include="cursor1.cur" />
     <None Include="cursor2.cur" />

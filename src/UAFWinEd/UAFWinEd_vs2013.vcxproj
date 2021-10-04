@@ -14,11 +14,12 @@
     <ProjectName>UAFWinEd</ProjectName>
     <ProjectGuid>{0CCD48C3-1D34-443A-BCB3-9292E7087370}</ProjectGuid>
     <Keyword>MFCProj</Keyword>
+    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
     <UseOfMfc>Static</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -143,7 +144,7 @@
       <AdditionalDependencies>vfw32.lib;amstrmid.lib;winmm.lib;ddraw.lib;dsound.lib;dxguid.lib;cdx.lib;bass.lib;zlibr.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Release/UAFWinEd.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\shared;%(AdditionalLibraryDirectories);C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\atlmfc\lib\x86;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\lib\onecore\x86;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\lib\x86;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0\um\x86</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\shared;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>.\Release/UAFWinEd.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
       <MapFileName>.\Release/UAFWinEd.map</MapFileName>
