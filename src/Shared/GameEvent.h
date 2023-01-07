@@ -338,7 +338,7 @@ const int NUM_TAKEITEMQTY_TYPES = 4;
 enum takeItemsAffectsType { TakeAffectsParty, TakeAffectsRndChar, TakeAffectsActiveChar };
 const int NUM_TAKEAFFECTS_TYPES = 3;
 
-const int MAX_TALES = 20;
+const int MAX_TALES = 255;
 const int MAX_DRINKS = 5;
 const int MAX_DRINK_LEN = 15;
 
