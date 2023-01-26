@@ -32,7 +32,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-static const int pagesize=Items_Per_Page;
+static int pagesize=Items_Per_Page;
 
 static const int labelsX=18;
 static const int labelsY=18;
@@ -91,62 +91,68 @@ enum ST_ITEMSFORM { // Define field names as integers for quicker comparisons
 
 #if _MSC_VER >= 1310
 #define STIF(item,xrel,x,yrel,y) \
-  DISPLAY_FORM(STIF_##xrel,STIF_##yrel,STIF_##item,x,y),
+  DISPLAY_FORM(STIF_##xrel,STIF_##yrel,STIF_##item,x,y)
 #else
 #define STIF(item,xrel,x,yrel,y) \
-  { DISPLAY_FORM(STIF_##xrel,STIF_##yrel,STIF_##item,x,y) },
+  { DISPLAY_FORM(STIF_##xrel,STIF_##yrel,STIF_##item,x,y) }
 #endif
+
 
 // when using relative coords, it is imperative
 // that you dont display item B relative to item A 
 // before actually displaying item A.
-static DISPLAY_FORM itemsForm[] =
+static DISPLAY_FORM itemsForm[32];
+static bool itemsFormInitialized = false;
+static void initItemsForm(int pgSize)
 {
   //
   //   enum      xrel           x        yrel       y
   // 
-  STIF(READY    ,none          ,labelsX ,none     ,labelsY)  // "READY"
-  STIF(QUANTITY ,READY+END     ,50      ,none     ,labelsY)  // "QTY"
-  STIF(COST     ,QUANTITY+END  ,50      ,none     ,labelsY)  // "COST"
-  STIF(NAME     ,COST+END      ,15      ,none     ,labelsY)  // "NAME"
+  itemsForm[0] = STIF(READY    ,none          ,labelsX ,none     ,labelsY);  // "READY"
+  itemsForm[1] = STIF(QUANTITY ,READY+END     ,50      ,none     ,labelsY);  // "QTY"
+  itemsForm[2] = STIF(COST     ,QUANTITY+END  ,50      ,none     ,labelsY);  // "COST"
+  itemsForm[3] = STIF(NAME     ,COST+END      ,15      ,none     ,labelsY);  // "NAME"
 
   //STIF(MONEYLABEL,none         ,moneyX  ,none     , moneyY-20)  // 'Dude's Money'
-  STIF(MONEYLABEL,none         ,labelsX ,none     ,  moneyY+19*10)  // 'Dude's Name
+  itemsForm[4] = STIF(MONEYLABEL,none         ,labelsX ,none     ,  moneyY+19*10);  // 'Dude's Name
 
-  STIF(PLAT      ,none         ,moneyX  ,none     , moneyY)  // "PLATINUM"
-  STIF(plat      ,PLAT+END     , 50     ,PLAT     ,   0)  // platinum
-  STIF(GOLD      ,PLAT         , 0      ,PLAT     ,  20)  // "GOLD"
-  STIF(gold      ,plat+RIGHT   , 0      ,GOLD     ,   0)  // gold
-  STIF(ELEC      ,PLAT         , 0      ,GOLD     ,  20)  // "ELECTRUM"
-  STIF(elec      ,plat+RIGHT   , 0      ,ELEC     ,   0)  // electrum  
-  STIF(SILVER    ,PLAT         , 0      ,ELEC     ,  20)  // "SILVER"
-  STIF(silver    ,plat+RIGHT   , 0      ,SILVER   ,   0)  // silver  
-  STIF(COPPER    ,PLAT         , 0      ,SILVER   ,  20)  // "COPPER"
-  STIF(copper    ,plat+RIGHT   , 0      ,COPPER   ,   0)  // copper
-  STIF(COIN6     ,PLAT         , 0      ,COPPER   ,  20)  // "COIN6"
-  STIF(coin6     ,plat+RIGHT   , 0      ,COIN6    ,   0)  // coin6
-  STIF(COIN7     ,PLAT         , 0      ,COIN6    ,  20)  // "COIN7"
-  STIF(coin7     ,plat+RIGHT   , 0      ,COIN7    ,   0)  // coin7
-  STIF(COIN8     ,PLAT         , 0      ,COIN7    ,  20)  // "COIN8"
-  STIF(coin8     ,plat+RIGHT   , 0      ,COIN8    ,   0)  // coin8
-  STIF(COIN9     ,PLAT         , 0      ,COIN8    ,  20)  // "COIN9"
-  STIF(coin9     ,plat+RIGHT   , 0      ,COIN9    ,   0)  // coin9
-  STIF(COIN10    ,PLAT         , 0      ,COIN9    ,  20)  // "COIN10"
-  STIF(coin10    ,plat+RIGHT   , 0      ,COIN10   ,   0)  // coin10  
+  itemsForm[5] = STIF(PLAT      ,none         ,moneyX  ,none     , moneyY);  // "PLATINUM"
+  itemsForm[6] = STIF(plat      ,PLAT+END     , 50     ,PLAT     ,   0);  // platinum
+  itemsForm[7] = STIF(GOLD      ,PLAT         , 0      ,PLAT     ,  20);  // "GOLD"
+  itemsForm[8] = STIF(gold      ,plat+RIGHT   , 0      ,GOLD     ,   0);  // gold
+  itemsForm[9] = STIF(ELEC      ,PLAT         , 0      ,GOLD     ,  20);  // "ELECTRUM"
+  itemsForm[10] = STIF(elec      ,plat+RIGHT   , 0      ,ELEC     ,   0);  // electrum  
+  itemsForm[11] = STIF(SILVER    ,PLAT         , 0      ,ELEC     ,  20);  // "SILVER"
+  itemsForm[12] = STIF(silver    ,plat+RIGHT   , 0      ,SILVER   ,   0);  // silver  
+  itemsForm[13] = STIF(COPPER    ,PLAT         , 0      ,SILVER   ,  20);  // "COPPER"
+  itemsForm[14] = STIF(copper    ,plat+RIGHT   , 0      ,COPPER   ,   0);  // copper
+  itemsForm[15] = STIF(COIN6     ,PLAT         , 0      ,COPPER   ,  20);  // "COIN6"
+  itemsForm[16] = STIF(coin6     ,plat+RIGHT   , 0      ,COIN6    ,   0);  // coin6
+  itemsForm[17] = STIF(COIN7     ,PLAT         , 0      ,COIN6    ,  20);  // "COIN7"
+  itemsForm[18] = STIF(coin7     ,plat+RIGHT   , 0      ,COIN7    ,   0);  // coin7
+  itemsForm[19] = STIF(COIN8     ,PLAT         , 0      ,COIN7    ,  20);  // "COIN8"
+  itemsForm[20] = STIF(coin8     ,plat+RIGHT   , 0      ,COIN8    ,   0);  // coin8
+  itemsForm[21] = STIF(COIN9     ,PLAT         , 0      ,COIN8    ,  20);  // "COIN9"
+  itemsForm[22] = STIF(coin9     ,plat+RIGHT   , 0      ,COIN9    ,   0);  // coin9
+  itemsForm[23] = STIF(COIN10    ,PLAT         , 0      ,COIN9    ,  20);  // "COIN10"
+  itemsForm[24] = STIF(coin10    ,plat+RIGHT   , 0      ,COIN10   ,   0);  // coin10  
 
   // Repeat lines must be last
   // This one says, take the next 5 lines and repeat them 'pagesize' times.
   // The enums (fieldname) will be auto incremented
-  STIF(REPEAT   ,repeat        ,5       ,none     ,pagesize) // auto repeat the rest
+  itemsForm[25] = STIF(REPEAT   ,repeat        ,5       ,none     ,pgSize); // auto repeat the rest
 
-  STIF(ready    ,READY         ,0       ,none     ,itemsY)   // "YES/NO"
-  STIF(quantity ,QUANTITY+RIGHT,0       ,none     ,itemsY)   // "10"
-  STIF(cost     ,COST+RIGHT    ,0       ,none     ,itemsY)   // "100"
-  STIF(name     ,NAME          ,0       ,none     ,itemsY)   // "Long Sword of Sillyness"  
-  STIF(Row      ,ready+SEL     ,0       ,name+SEL ,0)        // rdy+qty+cost+name
+  itemsForm[26] = STIF(ready    ,READY         ,0       ,none     ,itemsY);   // "YES/NO"
+  itemsForm[27] = STIF(quantity ,QUANTITY+RIGHT,0       ,none     ,itemsY);   // "10"
+  itemsForm[28] = STIF(cost     ,COST+RIGHT    ,0       ,none     ,itemsY);   // "100"
+  itemsForm[29] = STIF(name     ,NAME          ,0       ,none     ,itemsY);   // "Long Sword of Sillyness"  
+  itemsForm[30] = STIF(Row      ,ready+SEL     ,0       ,name+SEL ,0);        // rdy+qty+cost+name
   
-  STIF(none,none,0,none,0)  // End of list
-};
+  itemsForm[31] = STIF(none,none,0,none,0);  // End of list
+
+  pagesize = pgSize;
+  itemsFormInitialized = true;
+}
 
 void showItems(TEXT_FORM *pForm, ITEM_TEXT_LIST &data)
 { 
@@ -156,7 +162,7 @@ void showItems(TEXT_FORM *pForm, ITEM_TEXT_LIST &data)
    //pForm->ClearForm();
 
    int totalListItems = data.GetCount();
-   memset(InventoryRects, 0, sizeof(InventoryRects));
+   initInventoryRects(InventoryRects);
    int ir_idx = 0;   
 
    //pForm->SetText(STIF_title, data.title);  
@@ -382,7 +388,7 @@ void showItems(TEXT_FORM *pForm, ITEM_TEXT_LIST &data)
 
       pForm->Highlight(STIF_name+EnumOffset, shouldHighlight(currItem)?true:false);
       
-      CopyRect(&InventoryRects[ir_idx], &totalRECT);
+      CopyRect(&InventoryRects.GetAt(ir_idx), &totalRECT);
 
       ir_idx++;
       currItem++;
@@ -416,8 +422,17 @@ static bool STIF_highlight (TEXT_FORM *frm,
   return false;
 }
 
+void initItemFormsIfNecessary() {
+    if (!itemsFormInitialized) {
+        // Lazy initialization due to # of items being configurable
+        initItemsForm(Items_Per_Page);
+    }
+}
+
 void displayItems(ITEM_TEXT_LIST &data)
 {
+
+  initItemFormsIfNecessary();
   TEXT_FORM ItemsForm(itemsForm);
   ItemsForm.ClearForm();
   showItems(&ItemsForm,data);
@@ -431,6 +446,7 @@ int handleItemsFormInput(ITEMS_FORM_INPUT_MESSAGE_TYPE msg,
 // Returns 0x0001 if you should display menu and flip surfaces.
 // Returns 0x0002 if we handled a keystroke and you can ignore it
 {
+  initItemFormsIfNecessary();
   TEXT_FORM ItemsForm(itemsForm);
   //static int currentSelection;
   //int newSelection;

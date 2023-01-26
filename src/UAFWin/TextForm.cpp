@@ -499,7 +499,7 @@ enum ST_LISTFORM { // Define field names as integers for quicker comparisons
 
 
 
-static const int pagesize=Items_Per_Page;
+static const int pagesize=14;  // Hardcoded this when it was diverged from the customizable ITEMS_PER_PAGE parameter since that would not really apply here - see GitHub issue #62
 
 static const int titleX = 18;
 static const int titleY = 18;
@@ -558,8 +558,8 @@ void showLines(TEXT_FORM *pForm, LINE_TEXT_LIST &lineTextList)
    // make sure that highlight flags are set after clearing form
    //pForm->ClearForm();
    
-   memset(InventoryRects, 0, sizeof(InventoryRects));
-   int ir_idx = 0;   
+   initInventoryRects(InventoryRects);
+   int ir_idx = 0;
 
    if (lineTextList.IsSimpleLayout())
    {
@@ -599,7 +599,7 @@ void showLines(TEXT_FORM *pForm, LINE_TEXT_LIST &lineTextList)
 
       pForm->Highlight(STLF_Line+EnumOffset, shouldHighlight(currItem)?true:false);
       
-      CopyRect(&InventoryRects[ir_idx], &totalRECT);
+      CopyRect(&InventoryRects.GetAt(ir_idx), &totalRECT);
 
       ir_idx++;
       currItem++;

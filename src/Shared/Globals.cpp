@@ -134,7 +134,7 @@ extern unsigned int gamedatSignature;
 //
 // Editor version
 
-
+int Items_Per_Page = 14; // leave room at the bottom for error messages
 
 #ifdef TRACE_TIMER_DETAILS
 #define DETAILTRACE(a,b) detailTrace.trace((a),(b));
@@ -2752,6 +2752,9 @@ BOOL LoadConfigFile(const char *path)
   
     TEXTBOX_HEIGHT = 16 * TEXTBOX_LINES;
   }
+
+  if (!ConfigFile.FindToken("ITEMS_PER_PAGE", Items_Per_Page))
+      Items_Per_Page = 14;
 
   //
   // the new way to define textbox size/location

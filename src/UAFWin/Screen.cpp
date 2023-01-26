@@ -1166,7 +1166,7 @@ void UpdateRaceMenuScreen(const SELECTION_PAGE_FORMAT& format)
     return;
   }
 
-  memset(InventoryRects, 0, sizeof(InventoryRects));
+  initInventoryRects(InventoryRects);
   int ir_idx = 0;
 
 // prs 20191221  displayColoredText(format.Title_x, format.Title_y, spellListText.title, White);
@@ -1209,12 +1209,12 @@ void UpdateRaceMenuScreen(const SELECTION_PAGE_FORMAT& format)
                        FALSE, FALSE, TRUE);
 
     //InventoryRects[ir_idx].left = 18;
-    InventoryRects[ir_idx].left = format.Table_x;
+    InventoryRects.GetAt(ir_idx).left = format.Table_x;
 
-    InventoryRects[ir_idx].top = shopY;
+    InventoryRects.GetAt(ir_idx).top = shopY;
     //InventoryRects[ir_idx].right = 18 + GraphicsMgr.GetTextWidth(spellListText.GetSpellText(currItem), strlen(spellListText.GetSpellText(currItem)));
-    InventoryRects[ir_idx].right = format.Table_x + GraphicsMgr.GetTextWidth(raceName, strlen(raceName));
-    InventoryRects[ir_idx].bottom = shopY + GraphicsMgr.GetMaxCharacterHeight();
+    InventoryRects.GetAt(ir_idx).right = format.Table_x + GraphicsMgr.GetTextWidth(raceName, strlen(raceName));
+    InventoryRects.GetAt(ir_idx).bottom = shopY + GraphicsMgr.GetMaxCharacterHeight();
     ir_idx++;
 
     //if (totalListItems > Items_Per_Page)
@@ -1257,7 +1257,7 @@ void UpdateGenderMenuScreen(const SELECTION_PAGE_FORMAT& format)
     return;
   }
 
-  memset(InventoryRects, 0, sizeof(InventoryRects));
+  initInventoryRects(InventoryRects);
   int ir_idx = 0;
 
 // prs 20191221  displayColoredText(format.Title_x, format.Title_y, format.Title_Format);
@@ -1297,10 +1297,10 @@ void UpdateGenderMenuScreen(const SELECTION_PAGE_FORMAT& format)
                        whiteColor, FALSE,
                        FALSE, FALSE, TRUE);
 
-    InventoryRects[ir_idx].left = format.Table_x;
-    InventoryRects[ir_idx].top = shopY;
-    InventoryRects[ir_idx].right = format.Table_x + GraphicsMgr.GetTextWidth(genderName, strlen(genderName));
-    InventoryRects[ir_idx].bottom = shopY + GraphicsMgr.GetMaxCharacterHeight();
+    InventoryRects.GetAt(ir_idx).left = format.Table_x;
+    InventoryRects.GetAt(ir_idx).top = shopY;
+    InventoryRects.GetAt(ir_idx).right = format.Table_x + GraphicsMgr.GetTextWidth(genderName, strlen(genderName));
+    InventoryRects.GetAt(ir_idx).bottom = shopY + GraphicsMgr.GetMaxCharacterHeight();
     ir_idx++;
 
     if (totalListItems > Items_Per_Page)
@@ -1340,7 +1340,7 @@ void UpdateClassMenuScreen(const SELECTION_PAGE_FORMAT& format)
     return;
   }
 
-  memset(InventoryRects, 0, sizeof(InventoryRects));
+  initInventoryRects(InventoryRects);
   int ir_idx = 0;
 
   //displayText(18, 18, spellListText.title);
@@ -1382,10 +1382,10 @@ void UpdateClassMenuScreen(const SELECTION_PAGE_FORMAT& format)
                        whiteColor, FALSE,
                        FALSE, FALSE, TRUE);
 
-    InventoryRects[ir_idx].left = format.Table_x;
-    InventoryRects[ir_idx].top = shopY;
-    InventoryRects[ir_idx].right = format.Table_x + GraphicsMgr.GetTextWidth(className, strlen(className));
-    InventoryRects[ir_idx].bottom = shopY + GraphicsMgr.GetMaxCharacterHeight();
+    InventoryRects.GetAt(ir_idx).left = format.Table_x;
+    InventoryRects.GetAt(ir_idx).top = shopY;
+    InventoryRects.GetAt(ir_idx).right = format.Table_x + GraphicsMgr.GetTextWidth(className, strlen(className));
+    InventoryRects.GetAt(ir_idx).bottom = shopY + GraphicsMgr.GetMaxCharacterHeight();
     ir_idx++;
 
     if (totalListItems > format.Lines_Per_Page)
@@ -1422,7 +1422,7 @@ void UpdateAlignmentMenuScreen(const SELECTION_PAGE_FORMAT& format)
     return;
   }
 
-  memset(InventoryRects, 0, sizeof(InventoryRects));
+  initInventoryRects(InventoryRects);
   int ir_idx = 0;
 
 // prs 20191221  displayColoredText(format.Title_x, format.Title_y, format.Title_Format);
@@ -1466,10 +1466,10 @@ void UpdateAlignmentMenuScreen(const SELECTION_PAGE_FORMAT& format)
                        whiteColor, FALSE,
                        FALSE, FALSE, TRUE);
 
-    InventoryRects[ir_idx].left = format.Table_x;
-    InventoryRects[ir_idx].top = shopY;
-    InventoryRects[ir_idx].right = format.Table_x + GraphicsMgr.GetTextWidth(alignmentName, strlen(alignmentName));
-    InventoryRects[ir_idx].bottom = shopY + GraphicsMgr.GetMaxCharacterHeight();
+    InventoryRects.GetAt(ir_idx).left = format.Table_x;
+    InventoryRects.GetAt(ir_idx).top = shopY;
+    InventoryRects.GetAt(ir_idx).right = format.Table_x + GraphicsMgr.GetTextWidth(alignmentName, strlen(alignmentName));
+    InventoryRects.GetAt(ir_idx).bottom = shopY + GraphicsMgr.GetMaxCharacterHeight();
     ir_idx++;
 
     if (totalListItems > format.Lines_Per_Page)

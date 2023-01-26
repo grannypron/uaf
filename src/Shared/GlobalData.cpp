@@ -6489,6 +6489,17 @@ const char* getGameText(const char* id) {
     return messageMap->getTextFromId(id);
 }
 
+void initInventoryRects(mCArray<RECT, RECT&> &rects) {
+    if (rects.GetSize() < Items_Per_Page) {
+        rects.SetSize(Items_Per_Page);
+    }
+    for (int idx = 0; idx < Items_Per_Page; idx++) {
+        rects.GetAt(idx).left = 0;
+        rects.GetAt(idx).right = 0;
+        rects.GetAt(idx).top = 0;
+        rects.GetAt(idx).bottom = 0;
+    };
+}
 
 #ifdef UAFEngine
 void CheckAndPlayBackgroundMusic(int &UsingDayMusic)

@@ -28,13 +28,12 @@
 //const int ITEM_SEP = 200;
 const int ITEMY = 60;
 //const int ITEMX = 75;
-const int Items_Per_Page = 14; // leave room at the bottom for error messages
 
 extern int ItemsOnPage;
 extern int startItem;
 extern CString CombatMsg;
 extern CString timeDelayMsg;
-extern RECT InventoryRects[Items_Per_Page];
+extern mCArray<RECT, RECT&> InventoryRects;
 
 void setCharItemTextState(CHARACTER &dude, 
                           BOOL (*pFilter)(ITEM *pItem, void *pFilterPkt),

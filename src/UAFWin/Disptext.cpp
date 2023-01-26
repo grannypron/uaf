@@ -45,6 +45,7 @@ extern int DEFAULT_COMBAT_STAT_X;
 extern int DEFAULT_COMBAT_STAT_Y;
 
 
+
 #ifdef TRACE_TIMER_DETAILS
 class DETAIL_TRACE
 {
@@ -83,7 +84,7 @@ static char THIS_FILE[] = __FILE__;
 int ItemsOnPage = 0;
 int startItem;
 
-RECT InventoryRects[Items_Per_Page];
+mCArray<RECT, RECT&> InventoryRects;
 RECT PartyNameRects[MAX_PARTY_MEMBERS];
 
 CString CombatMsg;
@@ -963,7 +964,7 @@ int IntersectPointWithInventory(long x, long y)
 
   for (int i=0; i < Items_Per_Page; i++)
   {
-    if (PtInRect(&InventoryRects[i], pt))
+    if (PtInRect(&InventoryRects.GetAt(i), pt))
       return i;
   }
 

@@ -33,7 +33,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 
-static const int pagesize=Items_Per_Page;
+static int pagesize=Items_Per_Page;
 
 static const int labelsX=18;
 static const int labelsY=18;
@@ -95,89 +95,90 @@ enum ST_SPELLFORM { // Define field names as integers for quicker comparisons
 
 #if _MSC_VER >= 1310
 #define STSF(item,xrel,x,yrel,y) \
-  DISPLAY_FORM(STSF_##xrel,STSF_##yrel,STSF_##item,x,y),
+  DISPLAY_FORM(STSF_##xrel,STSF_##yrel,STSF_##item,x,y)
 #else
 #define STSF(item,xrel,x,yrel,y) \
   { DISPLAY_FORM(STSF_##xrel,STSF_##yrel,STSF_##item,x,y) },
 #endif
 
 #define STSFC(item,xrel,x,yrel,y,c,s) \
-  DISPLAY_FORM(STSF_##xrel,STSF_##yrel,STSF_##item,x,y,c,s),
+  DISPLAY_FORM(STSF_##xrel,STSF_##yrel,STSF_##item,x,y,c,s)
 
 
 // when using relative coords, it is imperative
 // that you dont display item B relative to item A 
 // before actually displaying item A.
-static DISPLAY_FORM spellForm[] =
+static DISPLAY_FORM spellForm[26];
+DISPLAY_FORM initialSpellForm[14];
+DISPLAY_FORM memorizeSpellForm[14];
+static bool spellFormsInitialized = false;
+static void initSpellForms(int pgSize)
 {
   //
   //   enum      xrel            x          yrel       y
   // 
-  STSF(LEVEL    ,none           ,labelsX   ,none     ,labelsY)  // "LEVEL"
-  STSF(SELECT   ,LEVEL+END      ,5         ,none     ,labelsY)  // "SELECTED"
-  STSF(MEMORIZE ,SELECT+END     ,5         ,none     ,labelsY)  // "MEMORIZED"
-  STSF(COST     ,MEMORIZE+END   ,5         ,none     ,labelsY)  // "COST"
-  STSF(NAME     ,COST+END       ,40        ,none     ,labelsY)  // "SPELL"
+  spellForm[0] = STSF(LEVEL    ,none           ,labelsX   ,none     ,labelsY);  // "LEVEL"
+  spellForm[1] = STSF(SELECT   ,LEVEL+END      ,5         ,none     ,labelsY);  // "SELECTED"
+  spellForm[2] = STSF(MEMORIZE ,SELECT+END     ,5         ,none     ,labelsY);  // "MEMORIZED"
+  spellForm[3] = STSF(COST     ,MEMORIZE+END   ,5         ,none     ,labelsY);  // "COST"
+  spellForm[4] = STSF(NAME     ,COST+END       ,40        ,none     ,labelsY);  // "SPELL"
 
   // TEXTBOX_WIDTH varies at runtime depending on
   // current resolution mode (640,800,1024).
   //
   // The MUAVAIL x,y values (non-relative) are updated on the fly below,
   // so these numbers don't mean anything.
-  STSF(MUAVAIL      ,none+RIGHTJUST,0         ,none             ,0)
-  STSF(muavail      ,MUAVAIL+END   ,0         ,MUAVAIL          ,0)
+  spellForm[5] = STSF(MUAVAIL      ,none+RIGHTJUST,0         ,none             ,0);
+  spellForm[6] = STSF(muavail      ,MUAVAIL+END   ,0         ,MUAVAIL          ,0);
 
   // the rest are drawn relative to the first pair
-  STSF(CLERICAVAIL  ,MUAVAIL+RIGHT ,0         ,MUAVAIL+END      ,0)
-  STSF(clericavail  ,muavail       ,0         ,CLERICAVAIL      ,0)
-  STSF(THIEFAVAIL   ,MUAVAIL+RIGHT ,0         ,CLERICAVAIL+END  ,0)
-  STSF(thiefavail   ,muavail       ,0         ,THIEFAVAIL       ,0)
-  STSF(FIGHTERAVAIL ,MUAVAIL+RIGHT ,0         ,THIEFAVAIL+END   ,0)
-  STSF(fighteravail ,muavail       ,0         ,FIGHTERAVAIL     ,0)
-  STSF(PALADINAVAIL ,MUAVAIL+RIGHT ,0         ,FIGHTERAVAIL+END ,0)
-  STSF(paladinavail ,muavail       ,0         ,PALADINAVAIL     ,0)
-  STSF(RANGERAVAIL  ,MUAVAIL+RIGHT ,0         ,FIGHTERAVAIL+END ,0)//manikus 7-20-07
-  STSF(rangeravail  ,muavail       ,0         ,RANGERAVAIL      ,0)
-  STSF(DRUIDAVAIL   ,MUAVAIL+RIGHT ,0         ,CLERICAVAIL+END  ,0)//manikus 7-20-07
-  STSF(druidavail   ,muavail       ,0         ,DRUIDAVAIL       ,0)
+  spellForm[7] = STSF(CLERICAVAIL  ,MUAVAIL+RIGHT ,0         ,MUAVAIL+END      ,0);
+  spellForm[8] = STSF(clericavail  ,muavail       ,0         ,CLERICAVAIL      ,0);
+  spellForm[9] = STSF(THIEFAVAIL   ,MUAVAIL+RIGHT ,0         ,CLERICAVAIL+END  ,0);
+  spellForm[10] = STSF(thiefavail   ,muavail       ,0         ,THIEFAVAIL       ,0);
+  spellForm[11] = STSF(FIGHTERAVAIL ,MUAVAIL+RIGHT ,0         ,THIEFAVAIL+END   ,0);
+  spellForm[12] = STSF(fighteravail ,muavail       ,0         ,FIGHTERAVAIL     ,0);
+  spellForm[13] = STSF(PALADINAVAIL ,MUAVAIL+RIGHT ,0         ,FIGHTERAVAIL+END ,0);
+  spellForm[14] = STSF(paladinavail ,muavail       ,0         ,PALADINAVAIL     ,0);
+  spellForm[15] = STSF(RANGERAVAIL  ,MUAVAIL+RIGHT ,0         ,FIGHTERAVAIL+END ,0);//manikus 7-20-07
+  spellForm[16] = STSF(rangeravail  ,muavail       ,0         ,RANGERAVAIL      ,0);
+  spellForm[17] = STSF(DRUIDAVAIL   ,MUAVAIL+RIGHT ,0         ,CLERICAVAIL+END  ,0);//manikus 7-20-07
+  spellForm[18] = STSF(druidavail   ,muavail       ,0         ,DRUIDAVAIL       ,0);
   /*Druid and Ranger spell availabitly was moved up from bottom to avoid being displayed over border graphics.*/
 
   // Repeat lines must be last
   // This one says, take the next 5 lines and repeat them 'pagesize' times.
   // The enums (fieldname) will be auto incremented
-  STSF(REPEAT   ,repeat         ,5       ,none     ,pagesize) // auto repeat the rest
+  spellForm[19] = STSF(REPEAT   ,repeat         ,5       ,none     ,pgSize); // auto repeat the rest
 
-  STSF(level    ,LEVEL+RIGHT    ,0       ,none     ,itemsY)   // "1"
-  STSF(select   ,SELECT+RIGHT   ,0       ,none     ,itemsY)   // "Yes"
-  STSF(memorize ,MEMORIZE+RIGHT ,0       ,none     ,itemsY)   // "1"
-  STSF(cost     ,COST+RIGHT     ,0       ,none     ,itemsY)   // "100"  
-  STSF(name     ,NAME           ,0       ,none     ,itemsY)   // "Cure Light Wounds"
+  spellForm[20] = STSF(level    ,LEVEL+RIGHT    ,0       ,none     ,itemsY);   // "1"
+  spellForm[21] = STSF(select   ,SELECT+RIGHT   ,0       ,none     ,itemsY);   // "Yes"
+  spellForm[22] = STSF(memorize ,MEMORIZE+RIGHT ,0       ,none     ,itemsY);   // "1"
+  spellForm[23] = STSF(cost     ,COST+RIGHT     ,0       ,none     ,itemsY);   // "100"  
+  spellForm[24] = STSF(name     ,NAME           ,0       ,none     ,itemsY);   // "Cure Light Wounds"
   
-  STSF(none,none,0,none,0)  // End of list
-};
+  spellForm[25] = STSF(none,none,0,none,0);  // End of list
 
 // when using relative coords, it is imperative
 // that you dont display item B relative to item A 
 // before actually displaying item A.
-DISPLAY_FORM initialSpellForm[] =
-{
   //
   //   enum      xrel            x          yrel       y
   // 
-  STSF(LEVEL    ,none           ,labelsX   ,none     ,labelsY)  // "LEVEL"
+  initialSpellForm[0] = STSF(LEVEL    ,none           ,labelsX   ,none     ,labelsY);  // "LEVEL"
   //STSF(SELECT   ,LEVEL+END      ,5         ,none     ,labelsY)  // "SELECTED"
   //STSF(MEMORIZE ,SELECT+END     ,5         ,none     ,labelsY)  // "MEMORIZED"
   //STSF(COST     ,MEMORIZE+END   ,5         ,none     ,labelsY)  // "COST"
-  STSF(NAME     ,LEVEL+END       ,40        ,none     ,labelsY)  // "SPELL"
+  initialSpellForm[1] = STSF(NAME     ,LEVEL+END       ,40        ,none     ,labelsY);  // "SPELL"
 
   // TEXTBOX_WIDTH varies at runtime depending on
   // current resolution mode (640,800,1024).
   //
-  STSF(TEXT1        ,none          ,0         ,none             ,0)
-  STSF(TEXT2        ,TEXT1         ,0         ,TEXT1+END        ,0)
-  STSF(TEXT3        ,TEXT1         ,0         ,TEXT2+END        ,0)
-  STSF(TEXT4        ,TEXT1         ,0         ,TEXT3+END        ,0)
-  STSF(TEXT5        ,TEXT1         ,0         ,TEXT4+END        ,0)
+  initialSpellForm[2] = STSF(TEXT1        ,none          ,0         ,none             ,0);
+  initialSpellForm[3] = STSF(TEXT2        ,TEXT1         ,0         ,TEXT1+END        ,0);
+  initialSpellForm[4] = STSF(TEXT3        ,TEXT1         ,0         ,TEXT2+END        ,0);
+  initialSpellForm[5] = STSF(TEXT4        ,TEXT1         ,0         ,TEXT3+END        ,0);
+  initialSpellForm[6] = STSF(TEXT5        ,TEXT1         ,0         ,TEXT4+END        ,0);
 
   // the rest are drawn relative to the first pair
   //STSF(CLERICAVAIL  ,MUAVAIL+RIGHT ,0         ,MUAVAIL+END      ,0)
@@ -197,32 +198,29 @@ DISPLAY_FORM initialSpellForm[] =
   // Repeat lines must be last
   // This one says, take the next 5 lines and repeat them 'pagesize' times.
   // The enums (fieldname) will be auto incremented
-  STSF(REPEAT   ,repeat         ,5       ,none     ,pagesize) // auto repeat the rest
+  initialSpellForm[7] = STSF(REPEAT   ,repeat         ,5       ,none     ,pgSize); // auto repeat the rest
 
-  STSF(level    ,LEVEL+RIGHT    ,0       ,none     ,itemsY)   // "1"
-  STSF(select   ,SELECT+RIGHT   ,0       ,none     ,itemsY)   // "Yes"
-  STSF(memorize ,MEMORIZE+RIGHT ,0       ,none     ,itemsY)   // "1"
-  STSF(cost     ,COST+RIGHT     ,0       ,none     ,itemsY)   // "100"  
-  STSF(name     ,NAME           ,0       ,none     ,itemsY)   // "Cure Light Wounds"
+  initialSpellForm[8] = STSF(level    ,LEVEL+RIGHT    ,0       ,none     ,itemsY);   // "1"
+  initialSpellForm[9] = STSF(select   ,SELECT+RIGHT   ,0       ,none     ,itemsY);   // "Yes"
+  initialSpellForm[10] = STSF(memorize ,MEMORIZE+RIGHT ,0       ,none     ,itemsY);   // "1"
+  initialSpellForm[11] = STSF(cost     ,COST+RIGHT     ,0       ,none     ,itemsY);   // "100"  
+  initialSpellForm[12] = STSF(name     ,NAME           ,0       ,none     ,itemsY);   // "Cure Light Wounds"
   
-  STSF(none,none,0,none,0)  // End of list
-};
+  initialSpellForm[13] = STSF(none,none,0,none,0);  // End of list
 
 // when using relative coords, it is imperative
 // that you dont display item B relative to item A 
 // before actually displaying item A.
-DISPLAY_FORM memorizeSpellForm[] =
-{
   //
   //   enum      xrel            x          yrel       y
   // 
-  STSFC(SCHOOL   ,none           ,labelsX   ,none     ,labelsY,1,0)  // SCHOOL
-  STSFC(LEVEL    ,SCHOOL+END     ,5         ,none     ,labelsY,2,5)  // "LEVEL"
-  STSFC(SELECT   ,LEVEL+END      ,5         ,none     ,labelsY,3,5)  // "SELECTED"
-  STSFC(MEMORIZE ,SELECT+END     ,5         ,none     ,labelsY,4,5)  // "MEMORIZED"
-  STSFC(AVAILABLE,MEMORIZE+END   ,5         ,none     ,labelsY,5,5)  // "MEMORIZED"
+  memorizeSpellForm[0] = STSFC(SCHOOL   ,none           ,labelsX   ,none     ,labelsY,1,0);  // SCHOOL
+  memorizeSpellForm[1] = STSFC(LEVEL    ,SCHOOL+END     ,5         ,none     ,labelsY,2,5);  // "LEVEL"
+  memorizeSpellForm[2] = STSFC(SELECT   ,LEVEL+END      ,5         ,none     ,labelsY,3,5);  // "SELECTED"
+  memorizeSpellForm[3] = STSFC(MEMORIZE ,SELECT+END     ,5         ,none     ,labelsY,4,5);  // "MEMORIZED"
+  memorizeSpellForm[4] = STSFC(AVAILABLE,MEMORIZE+END   ,5         ,none     ,labelsY,5,5);  // "MEMORIZED"
   //STSF(COST     ,MEMORIZE+END  ,5         ,none     ,labelsY)  // "COST"
-  STSFC(NAME     ,AVAILABLE+END  ,40        ,none     ,labelsY,6,5)  // "SPELL"
+  memorizeSpellForm[5] = STSFC(NAME     ,AVAILABLE+END  ,40        ,none     ,labelsY,6,5);  // "SPELL"
 
   // TEXTBOX_WIDTH varies at runtime depending on
   // current resolution mode (640,800,1024).
@@ -251,17 +249,20 @@ DISPLAY_FORM memorizeSpellForm[] =
   // Repeat lines must be last
   // This one says, take the next 6 lines and repeat them 'pagesize' times.
   // The enums (fieldname) will be auto incremented by TEST_FORM::repeatIncr
-  STSFC(REPEAT   ,repeat         ,6       ,none     ,pagesize, 0,0) // auto repeat the rest
+  memorizeSpellForm[6] = STSFC(REPEAT   ,repeat         ,6       ,none     ,pagesize, 0,0); // auto repeat the rest
 
-  STSFC(school   ,SCHOOL         ,0       ,none     ,itemsY,1,0)   // Magic User
-  STSFC(level    ,LEVEL+RIGHT    ,0       ,none     ,itemsY,2,0)   // "1"
-  STSFC(select   ,SELECT+RIGHT   ,0       ,none     ,itemsY,3,0)   // "Yes"
-  STSFC(memorize ,MEMORIZE+RIGHT ,0       ,none     ,itemsY,4,0)   // "1"
-  STSFC(available,AVAILABLE+RIGHT,0       ,none     ,itemsY,5,0)   // "1"
+  memorizeSpellForm[7] = STSFC(school   ,SCHOOL         ,0       ,none     ,itemsY,1,0);   // Magic User
+  memorizeSpellForm[8] = STSFC(level    ,LEVEL+RIGHT    ,0       ,none     ,itemsY,2,0);   // "1"
+  memorizeSpellForm[9] = STSFC(select   ,SELECT+RIGHT   ,0       ,none     ,itemsY,3,0);   // "Yes"
+  memorizeSpellForm[10] = STSFC(memorize ,MEMORIZE+RIGHT ,0       ,none     ,itemsY,4,0);   // "1"
+  memorizeSpellForm[11] = STSFC(available,AVAILABLE+RIGHT,0       ,none     ,itemsY,5,0);   // "1"
   //STSF(cost     ,COST+RIGHT     ,0       ,none     ,itemsY)   // "100"  
-  STSFC(name     ,NAME           ,0       ,none     ,itemsY,6,0)   // "Cure Light Wounds"
+  memorizeSpellForm[12] = STSFC(name     ,NAME           ,0       ,none     ,itemsY,6,0);   // "Cure Light Wounds"
   
-  STSFC(none,none,0,none,0,0,0)  // End of list
+  memorizeSpellForm[13] = STSFC(none,none,0,none,0,0,0);  // End of list
+
+  pagesize = pgSize;
+  spellFormsInitialized = true;
 };
 
 
@@ -370,8 +371,8 @@ void showItems(TEXT_FORM *pForm, SPELL_TEXT_LIST &spellTextList)
    // make sure that highlight flags are set after clearing form
    pForm->ClearForm();
    
-   memset(InventoryRects, 0, sizeof(InventoryRects));
-   int ir_idx = 0;   
+   initInventoryRects(InventoryRects);
+   int ir_idx = 0;
 
    if (spellTextList.UseMemorizeLayout())
    {
@@ -830,7 +831,7 @@ void showItems(TEXT_FORM *pForm, SPELL_TEXT_LIST &spellTextList)
 
       pForm->Highlight(STSF_name+EnumOffset, shouldHighlight(currItem)?true:false);
       
-      CopyRect(&InventoryRects[ir_idx], &totalRECT);
+      CopyRect(&InventoryRects.GetAt(ir_idx), &totalRECT);
 
       ir_idx++;
       currItem++;
@@ -838,8 +839,15 @@ void showItems(TEXT_FORM *pForm, SPELL_TEXT_LIST &spellTextList)
    }
 }
 
+void initSpellFormsIfNecessary() {
+    if (!spellFormsInitialized) {
+        // Lazy initialization due to # of items being configurable
+        initSpellForms(Items_Per_Page);
+    }
+}
 void displaySpells(SPELL_TEXT_LIST &data)
 {
+  initSpellFormsIfNecessary();
   TEXT_FORM SpellForm(spellForm);
   SpellForm.ClearForm();
   showItems(&SpellForm,data);
@@ -852,6 +860,7 @@ int handleSpellFormInput(SPELL_FORM_INPUT_MESSAGE_TYPE msg,
 // Returns 0x0001 if you should display menu and flip surfaces.
 // Returns 0x0002 if we handled a keystroke and you can ignore it
 {
+  initSpellFormsIfNecessary();
   TEXT_FORM SpellForm((pDisplayForm!=NULL)? pDisplayForm : spellForm);
   int result=0;
   bool flip=false, redraw=false;

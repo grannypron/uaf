@@ -928,6 +928,8 @@ const int MAX_PARTY_PCS = 12;
 // max characters + 2 NPC's added using ADD_NPC event
 const int MAX_PARTY_MEMBERS = 12;
 
+// Items per page in an item listing
+extern int Items_Per_Page;
 
 #ifdef UAFEngine
 int GetMaxPartyPCs();

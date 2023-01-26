@@ -947,6 +947,7 @@ void PlayOuttro(BOOL play = TRUE);
 void PlayDeath(BOOL play=TRUE); 
 void PlayCampMusic(BOOL play=TRUE);
 void CheckAndPlayBackgroundMusic(int &UsingDayMusic);
+void initInventoryRects(mCArray<RECT, RECT&> &rects);
 
 // global attribute flags for RunAs versions
 enum {
