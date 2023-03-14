@@ -1537,6 +1537,7 @@
 #define IDC_Suggestions                 2112
 #define IDC_SelectSkills                2112
 #define IDC_MarkIdentified              2112
+#define IDC_MarkReady                   2114
 #define IDC_BG_SLOTS                    2112
 #define IDC_ZONE_DATA                   2112
 #define IDC_LOGIC_BLOCK                 2112

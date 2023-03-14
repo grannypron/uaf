@@ -396,6 +396,7 @@ void CCharacter::OnCharitems()
 {
   UpdateData(TRUE);
 	CItemDlg iDlg(m_CharData.myItems);
+    iDlg.SetCharacterContext(&m_CharData);
 	iDlg.m_AllItemsAreIdentified = TRUE;
 
 	UINT result = iDlg.DoModal();

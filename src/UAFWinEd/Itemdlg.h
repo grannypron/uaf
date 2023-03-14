@@ -30,6 +30,7 @@ public:
 	CItemDlg(ITEM_LIST& list, DWORD MaxSelectable=0, CWnd* pParent = NULL);
 
 	void GetItemList(ITEM_LIST& list);
+	void SetCharacterContext(CHARACTER* pChar);  // Not always necessary.   Only really used for specifying readiness status
 
 
 // Dialog Data
@@ -50,7 +51,7 @@ public:
 
 // Implementation
 protected:
-  void AddToChosenList(DWORD index, int itemCount, int identified);
+  void AddToChosenList(DWORD index, int itemCount, int identified, bool ready);
   void AddToAvailList(ITEM_DATA &data, int index);
   //BOOL FindItemInList(GLOBAL_ITEM_ID giID);
   BOOL FindItemInList(ITEM_ID itemID);
@@ -59,6 +60,7 @@ protected:
 
   DWORD m_max;
 	ITEM_LIST m_list;
+  CHARACTER* pChar = NULL;
 
 	// Generated message map functions
 	//{{AFX_MSG(CItemDlg)
@@ -69,6 +71,7 @@ protected:
 	afx_msg void OnDelete();
 	afx_msg void OnDeleteall();
 	afx_msg void OnMarkIdentified();
+	afx_msg void OnMarkReady();
 	virtual void OnOK();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()

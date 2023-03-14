@@ -73,7 +73,8 @@ BEGIN_MESSAGE_MAP(CItemDlg, CDialog)
 	ON_BN_CLICKED(IDC_DELETE, OnDelete)
 	ON_BN_CLICKED(IDC_DELETEALL, OnDeleteall)
 	ON_BN_CLICKED(IDC_MarkIdentified, OnMarkIdentified)
-	//}}AFX_MSG_MAP
+    ON_BN_CLICKED(IDC_MarkReady, OnMarkReady)
+    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -85,12 +86,15 @@ void CItemDlg::GetItemList(ITEM_LIST& list)
 	list = m_list;
 }
 
+void CItemDlg::SetCharacterContext(CHARACTER* p) {
+    pChar = p;
+}
 
 BOOL CItemDlg::OnInitDialog() 
 {
   POSITION pos;
 	CDialog::OnInitDialog();
-	
+
 	// insert columns
 	LV_COLUMN lvc;
 	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
@@ -137,6 +141,10 @@ BOOL CItemDlg::OnInitDialog()
   lvc.cx = 70;
   m_ChosenList.InsertColumn(5,&lvc, CListSort::dtINT, true);
 
+  lvc.pszText = "Ready";
+  lvc.cx = 100;
+  m_ChosenList.InsertColumn(6, &lvc, CListSort::dtINT, true);
+
 	m_AvailList.SetDefaultSortAttributes(0, CSortableListCtrl::sdASCENDING);
   m_ChosenList.SetDefaultSortAttributes(0, CSortableListCtrl::sdASCENDING);
 
@@ -170,7 +178,7 @@ BOOL CItemDlg::OnInitDialog()
   while (pos != NULL)
   {
     int key = m_list.GetKeyAt(pos);
-    AddToChosenList(key, m_list.GetQty(key), m_list.GetId(key));
+    AddToChosenList(key, m_list.GetQty(key), m_list.GetId(key), m_list.IsReady(key));
     m_list.GetNext(pos);
     c_count++;
   }
@@ -193,6 +201,9 @@ BOOL CItemDlg::OnInitDialog()
     //m_ChosenList.EnsureVisible(0, FALSE);
     m_ChosenList.SelectItem(0, TRUE);
   }
+
+  GetDlgItem(IDC_MarkReady)->EnableWindow(pChar != NULL);
+
 
 	UpdateData(FALSE);
 
@@ -244,7 +255,7 @@ void CItemDlg::AddToAvailList(ITEM_DATA &data, int index)
   m_AvailList.SelectItem(listIdx, TRUE);
 }
 
-void CItemDlg::AddToChosenList(DWORD index, int itemCount, int identified)
+void CItemDlg::AddToChosenList(DWORD index, int itemCount, int identified, bool isReady)
 {
   ITEM_DATA *data = itemData.GetItem(m_list.GetItem(index));
   if (data == NULL)
@@ -289,6 +300,7 @@ void CItemDlg::AddToChosenList(DWORD index, int itemCount, int identified)
   m_ChosenList.SetItemText(listIdx, 3, type); 
   m_ChosenList.SetItemText(listIdx, 4, qty); 
   m_ChosenList.SetItemText(listIdx, 5, identified?"yes":"no");
+  m_ChosenList.SetItemText(listIdx, 6, isReady?"yes":"no");
 
   UnselectAllChosenItems();
   //m_ChosenList.SetItemState(listIdx, LVIS_SELECTED, LVIS_SELECTED);
@@ -381,7 +393,7 @@ void CItemDlg::OnAdd()
             temp.cursed = data->Cursed;
 			      temp.identified = FALSE;
 
-            AddToChosenList(m_list.AddItem(temp), temp.qty, temp.identified);
+            AddToChosenList(m_list.AddItem(temp), temp.qty, temp.identified, FALSE);
           }
           else
           {
@@ -411,7 +423,7 @@ void CItemDlg::OnAdd()
                if ((itemID == m_list.PeekAtPos(pos).itemID) && (qty > 1))
                  m_list.AdjustQty(key, qty);
 
-               AddToChosenList(key, m_list.GetQty(key), m_list.GetId(key));
+               AddToChosenList(key, m_list.GetQty(key), m_list.GetId(key), FALSE);
                m_list.GetNext(pos);
              }
 
@@ -448,7 +460,7 @@ void CItemDlg::OnDelete()
      while (pos != NULL)
      {
        int key = m_list.GetKeyAt(pos);
-       AddToChosenList(key, m_list.GetQty(key), m_list.GetId(key));
+       AddToChosenList(key, m_list.GetQty(key), m_list.GetId(key), m_list.IsReady(key));
        m_list.GetNext(pos);
      }
 
@@ -482,6 +494,26 @@ void CItemDlg::OnMarkIdentified()
     m_ChosenList.SetItemText(i, 5, "yes");
   };
 } 
+
+void CItemDlg::OnMarkReady()
+{
+    if (pChar == NULL) {
+        return;
+    }
+    int listIdx, i;
+    POSITION pos = m_list.GetHeadPosition();
+    listIdx = m_ChosenList.GetItemCount();
+    for (i = 0; i < m_ChosenList.GetItemCount(); i++)
+    {
+        ITEM* item = m_list.GetITEM(i+1);
+        const ITEM_ID& id = item->itemID;
+        ITEM_DATA* data = itemData.GetItem(id);
+        bool readied = m_list.Ready(id, data->Location_Readied, pChar);
+        m_ChosenList.SetItemText(i, 6, readied?"yes":"no");
+    };
+
+    MsgBoxInfo("Warning: Changes to the owner of these items may affect their ability to ready some of the items.  Items from being readied against game rules may cause unexpected results or errors.  Consider editing items last when modifying characters/NPCs", "Warning");
+}
 
 void CItemDlg::OnOK() 
 {
