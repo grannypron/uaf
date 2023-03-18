@@ -6540,6 +6540,20 @@ void VAULT_EVENT_DATA::OnLeaveQueue(void)
 
 void GIVE_TREASURE_DATA::OnInitialEvent(void)
 {
+
+  int m_exptotal = 0;
+  // Get all XP from items in the combat treasure and sum it
+  {
+      ITEM pItem;
+      POSITION pos;
+      pos = items.GetHeadPosition();
+      while (pos != NULL)
+      {
+          pItem = items.GetNext(pos);
+          m_exptotal += itemData.GetItem(pItem.itemID)->Experience;
+      };
+  }
+
   if (SilentGiveToActiveChar)
   {
     CHARACTER &dude = GetActiveChar(this);
@@ -6550,9 +6564,18 @@ void GIVE_TREASURE_DATA::OnInitialEvent(void)
 
     dude.money.Transfer(money);
 
+    dude.giveCharacterExperience(m_exptotal);
+
     ChainHappened();
     return;
-  }
+  } 
+
+  // Distribute xp to party
+  if (m_exptotal > 0)
+      party.distributeExpPoints(m_exptotal);
+
+
+
 
   SetMyState(TASK_initialized);
   menu.setMenu(GiveTreasureMenuData, NULL, FALSE, this, "GiveTreasure");
@@ -19658,6 +19681,17 @@ void COMBAT_RESULTS_MENU_DATA::OnInitialEvent(void)
   clearTreasureItemState();
   
   m_exptotal = combatData.m_iExpPointTotal;
+  // Get all XP from items in the combat treasure and add it in
+  {
+      ITEM* pItem;
+      POSITION pos;
+      pos = globalData.combatTreasure.items.GetHeadPosition();
+      while (pos != NULL)
+      {
+          pItem = &globalData.combatTreasure.items.GetNext(pos);
+          m_exptotal += itemData.GetItem(pItem->itemID)->Experience;
+      };
+  }
   combatData.m_iExpPointTotal = 0;
 
   combatData.RestoreToParty();
