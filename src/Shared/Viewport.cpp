@@ -3972,42 +3972,6 @@ void UpdateIndoorView(int plyrX, int plyrY, int facing, long int dstSurface)
   }
   */
 
-#define DisplayCellContents
-#ifdef UAFEngine
-#ifdef DisplayCellContents
-  {
-    CELL_LEVEL_CONTENTS* pContents;
-    pContents = &globalData.levelInfo.stats[globalData.currLevel].m_cellContents;
-    if (pContents->GetCount(party.Posx, party.Posy))
-
-    //HOOK_PARAMETERS hookParameters;
-    //SCRIPT_CONTEXT scriptContext;
-    //RunGlobalScript("UpdateIndoorView", "SpecialGraphic", true);
-    //if (!hookParameters[3].IsEmpty())
-    {
-      CString fname;
-      long l;
-      RECT srcRect, dstRect;
-
-      srcRect.left = 0;
-      srcRect.top = 0;
-      srcRect.right = 47;
-      srcRect.bottom = 47;
-
-      dstRect.left = 180;
-      dstRect.top = 210;
-      dstRect.right = dstRect.left + srcRect.right - srcRect.left;
-      dstRect.bottom = dstRect.top + srcRect.bottom - srcRect.top;
-
-      fname = "item_Hammer.png";
-      l = GraphicsMgr.AddFileSurface(fname, SmallPicDib, rte.PicArtDir());
-      GraphicsMgr.BlitImage(dstSurface, l, &srcRect, &dstRect);
-      GraphicsMgr.ReleaseSurface(l);
-    };
-  }
-#endif
-#endif
-
 
 
 
